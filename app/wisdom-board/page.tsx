@@ -1,0 +1,205 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Navigation from '@/components/layout/Navigation';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+
+// ============================================
+// SEA WITHIN — Wisdom Board
+// ============================================
+// A sacred space where members share reflections,
+// insights, and light. All posts are moderated
+// through the positive-vibe filter to keep this
+// space safe, warm, and uplifting.
+// ============================================
+
+interface WisdomPost {
+  id: string;
+  content: string;
+  author: string;
+  created_at: string;
+}
+
+export default function WisdomBoardPage() {
+  const [posts, setPosts] = useState<WisdomPost[]>([]);
+  const [newPost, setNewPost] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState('');
+  const [feedbackType, setFeedbackType] = useState<'success' | 'error'>('success');
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const res = await fetch('/api/messages?type=wisdom');
+      const data = await res.json();
+      if (data.posts) setPosts(data.posts);
+    } catch (err) {
+      console.error('Failed to fetch posts');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPost.trim()) return;
+
+    setIsSubmitting(true);
+    setFeedback('');
+
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: newPost, type: 'wisdom' }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Moderation blocked the message
+        setFeedbackType('error');
+        setFeedback(
+          data.suggestion ||
+          'This space is for uplifting, reflective, and supportive communication. Please rephrase with kindness.'
+        );
+        return;
+      }
+
+      setFeedbackType('success');
+      setFeedback('Your wisdom has been shared with the community.');
+      setNewPost('');
+      fetchPosts();
+    } catch (err) {
+      setFeedbackType('error');
+      setFeedback('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-CA', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  return (
+    <main className="min-h-screen bg-sanctuary-dark">
+      <Navigation />
+
+      {/* Hero */}
+      <section className="relative pt-32 pb-16 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-golden-400/4 blur-[120px]" />
+        </div>
+
+        <div className="relative z-10 text-center px-6">
+          <ScrollReveal delay={200}>
+            <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-6">
+              collective light
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={400}>
+            <h1 className="font-display text-3xl md:text-5xl font-light text-sea-100">
+              The Wisdom Board
+            </h1>
+          </ScrollReveal>
+          <ScrollReveal delay={600}>
+            <p className="font-body text-base text-white/30 mt-6 max-w-lg mx-auto leading-relaxed">
+              Share your reflections. Receive light from the community.
+              Every word here is a gift to someone who needs it.
+            </p>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Post Form */}
+      <section className="max-w-2xl mx-auto px-6 pb-12">
+        <ScrollReveal>
+          <form onSubmit={handleSubmit} className="sanctuary-card p-8">
+            <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-3">
+              Share Your Wisdom
+            </label>
+            <textarea
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+              placeholder="What truth is alive in you today?"
+              rows={4}
+              maxLength={500}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3.5
+                       font-body text-sea-100 placeholder:text-white/20 resize-none
+                       focus:outline-none focus:border-golden-400/40 focus:bg-white/8
+                       transition-all duration-300"
+            />
+
+            {/* Character count */}
+            <div className="flex justify-between items-center mt-3">
+              <p className="font-body text-[11px] text-white/20">
+                {newPost.length}/500
+              </p>
+              <button
+                type="submit"
+                disabled={isSubmitting || !newPost.trim()}
+                className="btn-golden text-[11px] px-6 py-2.5 disabled:opacity-40"
+              >
+                {isSubmitting ? 'Sharing...' : 'Share Light'}
+              </button>
+            </div>
+
+            {/* Feedback */}
+            {feedback && (
+              <div
+                className={`mt-4 p-4 rounded-lg border text-sm font-body ${
+                  feedbackType === 'success'
+                    ? 'bg-sea-400/10 border-sea-400/20 text-sea-200'
+                    : 'bg-golden-400/10 border-golden-400/20 text-golden-300'
+                }`}
+              >
+                {feedback}
+              </div>
+            )}
+          </form>
+        </ScrollReveal>
+      </section>
+
+      {/* Posts Grid */}
+      <section className="max-w-4xl mx-auto px-6 pb-24">
+        <div className="columns-1 md:columns-2 gap-6 space-y-6">
+          {posts.map((post, index) => (
+            <ScrollReveal key={post.id} delay={100 + index * 50}>
+              <div className="wisdom-card break-inside-avoid">
+                <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic">
+                  &ldquo;{post.content}&rdquo;
+                </p>
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
+                  <p className="font-body text-[11px] text-golden-400/50 tracking-wide">
+                    {post.author}
+                  </p>
+                  <p className="font-body text-[11px] text-white/20">
+                    {formatDate(post.created_at)}
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+          ))}
+
+          {posts.length === 0 && (
+            <div className="col-span-2 text-center py-16">
+              <p className="font-display text-xl text-white/20 font-light">
+                The board awaits its first light.
+              </p>
+              <p className="font-body text-sm text-white/10 mt-3">
+                Be the first to share your wisdom.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}

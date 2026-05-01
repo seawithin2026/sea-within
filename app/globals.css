@@ -1,0 +1,322 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   SEA WITHIN — Global Styles
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --sea-dark: #0a1628;
+  --sea-deep: #0d1f3c;
+  --sea-glow: #1a3a5c;
+  --golden: #e5ad43;
+  --golden-soft: #faf0d5;
+  --ocean-light: #d0f0f4;
+  --ocean-mist: #a1e0e9;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--sea-dark);
+  color: var(--ocean-light);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--sea-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sea-glow);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--golden);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(229, 173, 67, 0.3);
+  color: var(--ocean-light);
+}
+
+/* Cinematic video sections */
+.video-section {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.video-section video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 22, 40, 0.3) 0%,
+    rgba(10, 22, 40, 0.1) 40%,
+    rgba(10, 22, 40, 0.1) 60%,
+    rgba(10, 22, 40, 0.5) 100%
+  );
+  z-index: 1;
+}
+
+/* Whisper text animation */
+.whisper-text {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  line-height: 1.8;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.whisper-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Golden glow effect */
+.golden-glow {
+  text-shadow: 0 0 40px rgba(229, 173, 67, 0.3),
+               0 0 80px rgba(229, 173, 67, 0.1);
+}
+
+/* Breathing circle animation */
+.breathing-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 1px solid rgba(229, 173, 67, 0.3);
+  animation: breathe 6s ease-in-out infinite;
+}
+
+/* Underwater glow door effect */
+.glowing-door {
+  position: relative;
+  display: inline-block;
+}
+
+.glowing-door::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(229, 173, 67, 0.2) 0%,
+    transparent 70%
+  );
+  animation: glow 4s ease-in-out infinite;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Sanctuary card styling */
+.sanctuary-card {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 58, 92, 0.4) 0%,
+    rgba(13, 31, 60, 0.6) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: all 0.4s ease;
+}
+
+.sanctuary-card:hover {
+  border-color: rgba(229, 173, 67, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Golden button */
+.btn-golden {
+  background: linear-gradient(135deg, #e5ad43, #dd9527);
+  color: #0a1628;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-golden:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(229, 173, 67, 0.3);
+}
+
+/* Ghost button */
+.btn-ghost {
+  background: transparent;
+  color: var(--ocean-light);
+  padding: 14px 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(229, 173, 67, 0.5);
+  color: var(--golden);
+}
+
+/* Section transitions */
+.section-fade {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.section-fade.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Ripple effect */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(229, 173, 67, 0.2);
+  animation: ripple 3s ease-out infinite;
+}
+
+/* Chat message styling */
+.chat-bubble {
+  background: rgba(26, 58, 92, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px 16px 16px 4px;
+  padding: 12px 18px;
+  max-width: 80%;
+}
+
+.chat-bubble.own {
+  background: rgba(229, 173, 67, 0.15);
+  border-color: rgba(229, 173, 67, 0.2);
+  border-radius: 16px 16px 4px 16px;
+  margin-left: auto;
+}
+
+/* Wisdom board card */
+.wisdom-card {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 58, 92, 0.3) 0%,
+    rgba(13, 31, 60, 0.4) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.wisdom-card:hover {
+  border-color: rgba(229, 173, 67, 0.2);
+}
+
+/* Admin dashboard */
+.stat-card {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 58, 92, 0.4) 0%,
+    rgba(13, 31, 60, 0.6) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .whisper-text {
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+  }
+}
+.story {
+  padding: 200px 20px;
+}
+
+.line {
+  opacity: 0;
+  transform: translateY(20px);
+  font-size: 1.6rem;
+  margin: 80px 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.replay-btn {
+  margin-top: 80px;
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.story-line {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(6px);
+  color: #d9e8ff; /* soft blue */
+  text-shadow: 
+    0 0 12px rgba(80, 140, 255, 0.6),
+    0 0 24px rgba(40, 80, 160, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.6);
+  transition: opacity 1.4s ease, 
+              transform 1.4s ease,
+              filter 1.4s ease;
+}
+
+.story-line.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0px);
+}
