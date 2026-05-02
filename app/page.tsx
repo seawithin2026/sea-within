@@ -1,5 +1,5 @@
 'use client';
-// force vercel rebuild
+// rebuild
 
 import Navigation from '@/components/layout/Navigation';
 import CinematicSection from '@/components/videos/CinematicSection';

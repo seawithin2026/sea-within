@@ -46,7 +46,7 @@ export default function Footer() {
             <h4 className="font-body text-white/70 text-sm uppercase tracking-wider mb-4">
               Connect
             </h4>
-            <p className="text-white/40 text-sm mb-2">hello@seawithinyourself.com</p>
+            <p className="text-white/40 text-sm mb-2">seawithinyourself@gmail.com</p>
             <p className="text-white/30 text-xs mt-6">
               New Brunswick, Canada
             </p>

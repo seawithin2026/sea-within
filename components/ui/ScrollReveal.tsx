@@ -22,22 +22,9 @@ export default function ScrollReveal({
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold }
-    );
-
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [threshold]);
-
-  const getTransform = () => {
+  // PREVENT HYDRATION MISMATCH:
+  // Always start with the SAME transform on server + client.
+  const initialTransform = (() => {
     switch (direction) {
       case 'up': return 'translateY(60px)';
       case 'down': return 'translateY(-60px)';
@@ -46,7 +33,31 @@ export default function ScrollReveal({
       case 'fade': return 'none';
       default: return 'translateY(60px)';
     }
-  };
+  })();
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    let observer: IntersectionObserver | null = null;
+
+    try {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer?.unobserve(entry.target);
+          }
+        },
+        { threshold }
+      );
+
+      observer.observe(ref.current);
+    } catch (err) {
+      setIsVisible(true);
+    }
+
+    return () => observer?.disconnect();
+  }, [threshold]);
 
   return (
     <div
@@ -54,8 +65,8 @@ export default function ScrollReveal({
       className={className}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'none' : getTransform(),
-        transition: `opacity ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms, transform ${duration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}ms`,
+        transform: isVisible ? 'none' : initialTransform,
+        transition: `opacity ${duration}ms ease ${delay}ms, transform ${duration}ms ease ${delay}ms`,
       }}
     >
       {children}
