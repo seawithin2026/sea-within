@@ -22,15 +22,14 @@ export default function CinematicSection({
   return (
     <section id={id} className={`relative w-screen h-screen overflow-hidden ${className}`}>
       <video
+        src={videoSrc}
         autoPlay
         muted
         loop
         playsInline
         poster={posterSrc}
         className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover"
-      >
-        <source src={videoSrc} type="video/mp4" />
-      </video>
+      />
 
       <div
         className="absolute inset-0 z-10"
