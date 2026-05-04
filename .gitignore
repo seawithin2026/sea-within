@@ -18,6 +18,4 @@ yarn-error.log*
 # OS files
 .DS_Store
 
-# Videos (optional)
-*.mp4
-*.mov
+
