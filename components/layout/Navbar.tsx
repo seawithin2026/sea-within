@@ -45,7 +45,7 @@ export default function Navbar() {
             alt="Sea Within Logo"
             width={34}
             height={34}
-            className="opacity-90 group-hover:opacity-100 transition-all duration-300"
+            className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-white"
           />
           <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
             Sea Within
