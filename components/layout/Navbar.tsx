@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -36,8 +37,16 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
+
+        {/* Logo + Brand */}
         <Link href="/" className="group flex items-center gap-3">
+          <Image
+            src="/images/logo.png"
+            alt="Sea Within Logo"
+            width={34}
+            height={34}
+            className="opacity-90 group-hover:opacity-100 transition-all duration-300"
+          />
           <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
             Sea Within
           </span>
