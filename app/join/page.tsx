@@ -44,8 +44,7 @@ export default function JoinPage() {
         </h1>
 
         <p className="font-body text-lg text-white/70 leading-relaxed mb-12">
-          No forms. No barriers.  
-          Just the doorway into the world you&apos;ve been sensing all along.
+         Enter the doorway into the world you&apos;ve been sensing all along.
         </p>
 
         {/* MONTHLY */}
