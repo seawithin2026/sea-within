@@ -17,9 +17,7 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -37,9 +35,9 @@ export default function Navigation() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Logo / Brand */}
+        {/* Brand */}
         <Link href="/" className="group flex items-center gap-3">
-          <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
+          <span className="text-2xl font-display font-semibold tracking-wide text-sea-glow group-hover:text-sea-glow/80 transition-colors duration-500">
             Sea Within
           </span>
         </Link>
@@ -64,11 +62,10 @@ export default function Navigation() {
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="md:hidden text-white/70 hover:text-sea-glow transition-colors"
-          aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
