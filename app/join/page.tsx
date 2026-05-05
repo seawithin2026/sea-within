@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navigation from '@/components/layout/Navigation';
 
 export default function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +29,6 @@ export default function JoinPage() {
 
   return (
     <main className="min-h-screen bg-sanctuary-dark text-sea-100">
-      <Navigation />
 
       <section className="relative px-6 pt-32 pb-40 max-w-2xl mx-auto text-center">
 
