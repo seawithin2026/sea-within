@@ -43,8 +43,8 @@ export default function Navigation() {
           <Image
             src="/images/logo.png"
             alt="Sea Within Logo"
-            width={80}
-            height={80}
+            width={120}
+            height={120}
             className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-golden-400 rounded-full"
           />
           <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
