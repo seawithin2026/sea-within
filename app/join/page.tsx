@@ -1,32 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
 export default function JoinPage() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleJoin = async (plan: 'monthly' | 'yearly') => {
-    setIsLoading(true);
-
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <main className="min-h-screen bg-sanctuary-dark text-sea-100">
 
@@ -44,26 +18,16 @@ export default function JoinPage() {
         </h1>
 
         <p className="font-body text-lg text-white/70 leading-relaxed mb-12">
-         Enter the doorway into the world you&apos;ve been sensing all along.
+          Enter the doorway into the world you&apos;ve been sensing all along.
         </p>
 
-        {/* MONTHLY */}
-        <button
-          onClick={() => handleJoin('monthly')}
-          disabled={isLoading}
-          className="btn-golden w-full py-4 text-lg disabled:opacity-50"
+        {/* BUTTON → REVEAL PAGE */}
+        <a
+          href="/reveal"
+          className="btn-golden w-full py-4 text-lg inline-block"
         >
-          {isLoading ? 'Opening the door…' : 'Enter the Sanctuary — $77/month'}
-        </button>
-
-        {/* YEARLY */}
-        <button
-          onClick={() => handleJoin('yearly')}
-          disabled={isLoading}
-          className="btn-golden w-full py-4 text-lg disabled:opacity-50 mt-4"
-        >
-          {isLoading ? 'Opening the door…' : 'Enter the Sanctuary — $770/year (Save 2 Months)'}
-        </button>
+          See Membership Options
+        </a>
 
       </section>
     </main>
