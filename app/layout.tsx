@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
-import Navigation from '@/components/layout/Navigation';
+import Navbar from '@/components/layout/Navbar';
 import { AudioProvider } from './providers/AudioProvider';
 
 const cormorant = Cormorant_Garamond({
