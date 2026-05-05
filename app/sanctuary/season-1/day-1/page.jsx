@@ -4,24 +4,29 @@ import { useState, useEffect, useRef } from "react";
 import { useAudio } from "@/app/providers/AudioProvider";
 import NarrationPlayer from "@/components/NarrationPlayer";
 import { getDayScript } from "@/lib/voice/voiceConfig";
+import SubmergedMemoryReveal from "@/components/SubmergedMemoryReveal/SubmergedMemoryReveal"; // ⭐ ADDED
 import "./day1.css";
 
 // PERFECT narrator configs for your voice
 const INTRO_VOICE = {
   volume: 0.50,
   playbackRate: 0.92,
-  lineDelay: 6500, // human natural pace
+  lineDelay: 6500,
 };
 
 const RITUAL_VOICE = {
   volume: 0.40,
   playbackRate: 0.98,
-  lineDelay: 5000, // slightly slower, ritual pace
+  lineDelay: 5000,
 };
-
 
 export default function Day1Page() {
   const [mode, setMode] = useState("intro");
+
+  // ⭐ ADDED — separate reveal states
+  const [showRevealIntro, setShowRevealIntro] = useState(false);
+  const [showRevealRitual, setShowRevealRitual] = useState(false);
+
   const { setAmbientMuted } = useAudio();
 
   // Pull correct audio + script
@@ -44,6 +49,18 @@ export default function Day1Page() {
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }, 50);
+  };
+
+  // ⭐ ADDED — trigger intro reveal
+  const handleIntroPlay = () => {
+    introPlay.current();
+    setShowRevealIntro(true);
+  };
+
+  // ⭐ ADDED — trigger ritual reveal
+  const handleRitualPlay = () => {
+    ritualPlay.current();
+    setShowRevealRitual(true);
   };
 
   return (
@@ -84,14 +101,27 @@ export default function Day1Page() {
             <div className="narrationButtonWrapper">
               <button
                 className="narrationButton"
-                onClick={() => introPlay.current()}
+                onClick={handleIntroPlay} // ⭐ UPDATED
               >
                 <span className="narrationDot"></span>
                 <span className="narrationLabel">Play Narration</span>
               </button>
             </div>
 
-            {/* INTRO TEXT REVEAL */}
+            {/* ⭐ ADDED — INTRO CINEMATIC REVEAL */}
+            {showRevealIntro && (
+              <SubmergedMemoryReveal
+                lines={[
+                  "Settle into the quiet.",
+                  "Let the noise of the world fall away.",
+                  "This is the beginning of your descent.",
+                  "A soft return to the place within you.",
+                  "You are arriving."
+                ]}
+              />
+            )}
+
+            {/* ORIGINAL NARRATION PLAYER */}
             <div className="chamberLines">
               <NarrationPlayer
                 audioSrc={intro.audio}
@@ -130,14 +160,27 @@ export default function Day1Page() {
             <div className="narrationButtonWrapper ritualPlayButton">
               <button
                 className="narrationButton"
-                onClick={() => ritualPlay.current()}
+                onClick={handleRitualPlay} // ⭐ UPDATED
               >
                 <span className="narrationDot"></span>
                 <span className="narrationLabel">Play Narration</span>
               </button>
             </div>
 
-            {/* RITUAL TEXT REVEAL */}
+            {/* ⭐ ADDED — RITUAL CINEMATIC REVEAL */}
+            {showRevealRitual && (
+              <SubmergedMemoryReveal
+                lines={[
+                  "Let your breath guide you downward.",
+                  "Feel the body soften, layer by layer.",
+                  "You are crossing a threshold within yourself.",
+                  "The deeper you go, the clearer everything becomes.",
+                  "Welcome to the Sanctuary."
+                ]}
+              />
+            )}
+
+            {/* ORIGINAL RITUAL NARRATION PLAYER */}
             <div className="ritualLines">
               <NarrationPlayer
                 audioSrc={ritual.audio}
