@@ -6,29 +6,20 @@ import CinematicSection from '@/components/videos/CinematicSection';
 import ElementSection from '@/components/videos/ElementSection';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreathingCircle from '@/components/ui/BreathingCircle';
-import GoldenButton from '@/components/ui/GoldenButton';
 import { useEffect } from 'react';
 
 // ============================================
 // SEA WITHIN — Cinematic Homepage
 // ============================================
-// The scroll journey descends from the ocean surface
-// DOWN into the depths — a portal to inner awakening.
-//
-// VIDEO INSTRUCTIONS:
-// Place your video files in /public/videos/
-// Recommended format: MP4, H.264 codec, 1920x1080 or 4K
-// Keep file sizes under 20MB each for fast loading
-// ============================================
 
 export default function HomePage() {
-    useEffect(() => {
+  useEffect(() => {
     const audio = document.getElementById('seaAudio') as HTMLAudioElement;
     if (!audio) return;
 
     const enableAudio = () => {
       audio.muted = false;
-      audio.volume = 0.4; // gentle, cinematic
+      audio.volume = 0.4;
       audio.play();
       window.removeEventListener('scroll', enableAudio);
     };
@@ -36,22 +27,33 @@ export default function HomePage() {
     window.addEventListener('scroll', enableAudio);
   }, []);
 
+  // DIRECT STRIPE CHECKOUT FUNCTION
+  const handleJoin = async () => {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: 'monthly' }),
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    }
+  };
+
   return (
     <main className="relative">
 
       {/* BACKGROUND AUDIO */}
       <audio id="seaAudio" muted loop playsInline>
-  <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
-</audio>
+        <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
+      </audio>
 
       <Navigation />
 
-
       {/* =============================================
-          SECTION 1 — OCEAN SURFACE (Nature First)
-          Full-screen video. No text. Just breath.
-          The viewer arrives at the surface of the ocean.
-          ============================================= */}
+          SECTION 1 — OCEAN SURFACE
+      ============================================= */}
       <CinematicSection
         id="surface"
         videoSrc="/videos/ocean-surface.mp4"
@@ -59,10 +61,10 @@ export default function HomePage() {
       >
         <div className="flex flex-col items-center justify-center text-center px-6">
           <ScrollReveal delay={1000} duration={2000}>
-  <div className="animate-[breathPulse_10s_ease-in-out_infinite]">
-    <BreathingCircle size={100} />
-  </div>
-</ScrollReveal>
+            <div className="animate-[breathPulse_10s_ease-in-out_infinite]">
+              <BreathingCircle size={100} />
+            </div>
+          </ScrollReveal>
 
           <ScrollReveal delay={2000} duration={2000}>
             <p className="font-whisper text-lg md:text-xl text-white/45 tracking-[6px] mt-12">
@@ -73,10 +75,8 @@ export default function HomePage() {
       </CinematicSection>
 
       {/* =============================================
-          SECTION 2 — THE DESCENT BEGINS
-          Transition from surface to depths.
-          First whisper of text appears.
-          ============================================= */}
+          SECTION 2 — THE DESCENT
+      ============================================= */}
       <CinematicSection
         id="descent"
         videoSrc="/videos/the-descent.mp4"
@@ -107,11 +107,8 @@ export default function HomePage() {
 
       {/* =============================================
           SECTION 3 — ELEMENTAL JOURNEY
-          Five elements, each with its own video + whisper text.
-          Earth → Air → Fire → Water → Universe
-          ============================================= */}
+      ============================================= */}
 
-      {/* EARTH */}
       <ElementSection
         element="earth"
         videoSrc="/videos/element-earth.mp4"
@@ -119,7 +116,6 @@ export default function HomePage() {
         subText="The foundation of everything you are begins here."
       />
 
-      {/* AIR */}
       <ElementSection
         element="air"
         videoSrc="/videos/element-air.mp4"
@@ -127,7 +123,6 @@ export default function HomePage() {
         subText="Every exhale is a release. Every inhale, a return."
       />
 
-      {/* FIRE */}
       <ElementSection
         element="fire"
         videoSrc="/videos/element-fire.mp4"
@@ -135,7 +130,6 @@ export default function HomePage() {
         subText="Your passion, your truth, your aliveness — still burning."
       />
 
-      {/* WATER */}
       <ElementSection
         element="water"
         videoSrc="/videos/element-water.mp4"
@@ -143,7 +137,6 @@ export default function HomePage() {
         subText="Water knows how to find its way home. So do you."
       />
 
-      {/* UNIVERSE */}
       <ElementSection
         element="universe"
         videoSrc="/videos/element-universe.mp4"
@@ -152,10 +145,8 @@ export default function HomePage() {
       />
 
       {/* =============================================
-          SECTION 4 — INTERWOVEN (Nature + Humanity)
-          Nature footage blended with raw human emotion.
-          Joy. Freedom. Aliveness.
-          ============================================= */}
+          SECTION 4 — INTERWOVEN
+      ============================================= */}
       <CinematicSection
         id="interwoven"
         videoSrc="/videos/interwoven-humanity.mp4"
@@ -180,10 +171,8 @@ export default function HomePage() {
       </CinematicSection>
 
       {/* =============================================
-          SECTION 5 — HUMANITY (Raw Emotion)
-          Wet skin in golden light. Joy. Freedom.
-          The mirror — seeing yourself through nature.
-          ============================================= */}
+          SECTION 5 — HUMANITY
+      ============================================= */}
       <CinematicSection
         id="humanity"
         videoSrc="/videos/humanity-joy.mp4"
@@ -208,10 +197,8 @@ export default function HomePage() {
       </CinematicSection>
 
       {/* =============================================
-          SECTION 6 — THE GLOWING DOOR (Portal)
-          The underwater door — golden light filtering through water.
-          This is the portal to the sanctuary.
-          ============================================= */}
+          SECTION 6 — THE DOORWAY
+      ============================================= */}
       <CinematicSection
         id="doorway"
         videoSrc="/videos/the-doorway.mp4"
@@ -232,27 +219,31 @@ export default function HomePage() {
               It has always been yours.
             </h2>
           </ScrollReveal>
+
+          {/* DIRECT STRIPE BUTTON */}
           <ScrollReveal delay={1000}>
             <div className="mt-12">
-              <GoldenButton href="/join" size="lg">
+              <button
+                onClick={handleJoin}
+                className="btn-golden text-lg py-4 px-10"
+              >
                 Step Inside
-              </GoldenButton>
+              </button>
             </div>
           </ScrollReveal>
         </div>
       </CinematicSection>
 
       {/* =============================================
-          SECTION 7 — THE INVITATION (Final Text)
-          Your perfected invitation text.
-          The emotional climax of the homepage.
-          ============================================= */}
+          SECTION 7 — THE INVITATION
+      ============================================= */}
       <CinematicSection
         id="invitation"
         videoSrc="/videos/the-invitation.mp4"
         overlayOpacity={0.55}
       >
         <div className="text-center px-6 max-w-3xl">
+
           <ScrollReveal delay={200}>
             <p className="font-whisper text-sm tracking-[8px] uppercase text-sea-300/70 mb-12">
               the invitation
@@ -302,19 +293,23 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
+          {/* DIRECT STRIPE BUTTON */}
           <ScrollReveal delay={2000}>
             <div className="mt-16">
-              <GoldenButton href="/join" size="lg">
+              <button
+                onClick={handleJoin}
+                className="btn-golden text-lg py-4 px-10"
+              >
                 Join the Movement
-              </GoldenButton>
+              </button>
             </div>
           </ScrollReveal>
         </div>
       </CinematicSection>
 
       {/* =============================================
-          FOOTER — Minimal, Cinematic
-          ============================================= */}
+          FOOTER
+      ============================================= */}
       <footer className="relative bg-sanctuary-dark border-t border-white/5 py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
           <p className="font-display text-xl tracking-[4px] text-golden-400/60">
@@ -334,9 +329,12 @@ export default function HomePage() {
             <a href="/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Community
             </a>
-            <a href="/join" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+            <button
+              onClick={handleJoin}
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
+            >
               Join
-            </a>
+            </button>
           </div>
 
           <p className="font-body text-[11px] text-white/15 mt-12">
