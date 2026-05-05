@@ -32,11 +32,11 @@ export default function Navigation() {
       transition={{ duration: 1, delay: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${
         isScrolled
-          ? 'bg-sea-deep/80 backdrop-blur-xl border-b border-sea-mid/20'
+          ? 'bg-[#020617]/85 backdrop-blur-xl border-b border-[#d4af37]/20'
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-1 py-2 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 py-3 flex items-center justify-between">
 
         {/* Logo + Brand */}
         <Link href="/" className="group flex items-center gap-4">
@@ -45,9 +45,9 @@ export default function Navigation() {
             alt="Sea Within Logo"
             width={120}
             height={120}
-            className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-golden-400 rounded-full"
+            className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-[#d4af37] rounded-full shadow-[0_0_12px_rgba(212,175,55,0.35)]"
           />
-          <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
+          <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-[#d4af37] transition-colors duration-500">
             Sea Within
           </span>
         </Link>
@@ -58,12 +58,17 @@ export default function Navigation() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-white/70 hover:text-sea-glow font-body text-sm tracking-wider uppercase transition-colors duration-300"
+              className="text-white/80 hover:text-[#d4af37] font-body text-sm tracking-wider uppercase transition-colors duration-300"
             >
               {link.label}
             </Link>
           ))}
-          <Link href="/join" className="btn-sanctuary text-sm py-2.5 px-6">
+
+          {/* Join Button */}
+          <Link
+            href="/join"
+            className="border border-[#d4af37] text-[#d4af37] px-6 py-2.5 rounded-full text-sm tracking-wide hover:bg-[#d4af37] hover:text-black transition-all duration-300"
+          >
             Join the Movement
           </Link>
         </div>
@@ -71,7 +76,7 @@ export default function Navigation() {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-white/70 hover:text-sea-glow transition-colors"
+          className="md:hidden text-white/80 hover:text-[#d4af37] transition-colors"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -85,7 +90,7 @@ export default function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-sea-deep/95 backdrop-blur-xl border-t border-sea-mid/20"
+            className="md:hidden bg-[#020617]/95 backdrop-blur-xl border-t border-[#d4af37]/20"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
               {navLinks.map((link) => (
@@ -93,15 +98,16 @@ export default function Navigation() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-white/70 hover:text-sea-glow font-body text-lg tracking-wider transition-colors duration-300"
+                  className="text-white/80 hover:text-[#d4af37] font-body text-lg tracking-wider transition-colors duration-300"
                 >
                   {link.label}
                 </Link>
               ))}
+
               <Link
                 href="/join"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="btn-sanctuary text-center mt-4"
+                className="border border-[#d4af37] text-[#d4af37] px-6 py-3 rounded-full text-center text-lg tracking-wide hover:bg-[#d4af37] hover:text-black transition-all duration-300"
               >
                 Join the Movement
               </Link>
