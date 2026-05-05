@@ -7,13 +7,13 @@ import { useState } from 'react';
 export default function RevealPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleJoin = async () => {
+  const handleJoin = async (plan: 'monthly' | 'yearly') => {
     setLoading(true);
 
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: 'monthly' }),
+      body: JSON.stringify({ plan }),
     });
 
     const data = await res.json();
@@ -123,7 +123,7 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-        {/* Invitation + Button */}
+        {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-8">
@@ -133,12 +133,22 @@ export default function RevealPage() {
             immediately. This is your doorway.
           </p>
 
+          {/* MONTHLY */}
           <button
-            onClick={handleJoin}
+            onClick={() => handleJoin('monthly')}
             disabled={loading}
             className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
           >
-            {loading ? 'Opening the door…' : 'Enter the Sanctuary'}
+            {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77/month'}
+          </button>
+
+          {/* YEARLY */}
+          <button
+            onClick={() => handleJoin('yearly')}
+            disabled={loading}
+            className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50 mt-4"
+          >
+            {loading ? 'Opening the door…' : 'Enter Yearly — $770/year'}
           </button>
         </ScrollReveal>
       </section>
