@@ -5,14 +5,14 @@ import { useState } from 'react';
 export default function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleJoin = async () => {
+  const handleJoin = async (plan: 'monthly' | 'yearly') => {
     setIsLoading(true);
 
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'monthly' }),
+        body: JSON.stringify({ plan }),
       });
 
       const data = await res.json();
@@ -48,13 +48,24 @@ export default function JoinPage() {
           Just the doorway into the world you&apos;ve been sensing all along.
         </p>
 
+        {/* MONTHLY */}
         <button
-          onClick={handleJoin}
+          onClick={() => handleJoin('monthly')}
           disabled={isLoading}
           className="btn-golden w-full py-4 text-lg disabled:opacity-50"
         >
           {isLoading ? 'Opening the door…' : 'Enter the Sanctuary — $77/month'}
         </button>
+
+        {/* YEARLY */}
+        <button
+          onClick={() => handleJoin('yearly')}
+          disabled={isLoading}
+          className="btn-golden w-full py-4 text-lg disabled:opacity-50 mt-4"
+        >
+          {isLoading ? 'Opening the door…' : 'Enter Yearly — $770/year'}
+        </button>
+
       </section>
     </main>
   );
