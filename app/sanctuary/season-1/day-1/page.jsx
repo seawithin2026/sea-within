@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAudio } from "@/app/providers/AudioProvider";
 import NarrationPlayer from "@/components/NarrationPlayer";
 import { getDayScript } from "@/lib/voice/voiceConfig";
-import SubmergedMemoryReveal from "@/components/SubmergedMemoryReveal/SubmergedMemoryReveal"; // ⭐ ADDED
+import SubmergedMemoryReveal from "@/components/SubmergedMemoryReveal/SubmergedMemoryReveal";
 import "./day1.css";
 
 // PERFECT narrator configs for your voice
@@ -23,7 +23,7 @@ const RITUAL_VOICE = {
 export default function Day1Page() {
   const [mode, setMode] = useState("intro");
 
-  // ⭐ ADDED — separate reveal states
+  // Reveal states
   const [showRevealIntro, setShowRevealIntro] = useState(false);
   const [showRevealRitual, setShowRevealRitual] = useState(false);
 
@@ -51,13 +51,13 @@ export default function Day1Page() {
     }, 50);
   };
 
-  // ⭐ ADDED — trigger intro reveal
+  // Trigger intro reveal
   const handleIntroPlay = () => {
     introPlay.current();
     setShowRevealIntro(true);
   };
 
-  // ⭐ ADDED — trigger ritual reveal
+  // Trigger ritual reveal
   const handleRitualPlay = () => {
     ritualPlay.current();
     setShowRevealRitual(true);
@@ -101,14 +101,14 @@ export default function Day1Page() {
             <div className="narrationButtonWrapper">
               <button
                 className="narrationButton"
-                onClick={handleIntroPlay} // ⭐ UPDATED
+                onClick={handleIntroPlay}
               >
                 <span className="narrationDot"></span>
                 <span className="narrationLabel">Play Narration</span>
               </button>
             </div>
 
-            {/* ⭐ ADDED — INTRO CINEMATIC REVEAL */}
+            {/* INTRO CINEMATIC REVEAL */}
             {showRevealIntro && (
               <SubmergedMemoryReveal
                 lines={[
@@ -160,14 +160,14 @@ export default function Day1Page() {
             <div className="narrationButtonWrapper ritualPlayButton">
               <button
                 className="narrationButton"
-                onClick={handleRitualPlay} // ⭐ UPDATED
+                onClick={handleRitualPlay}
               >
                 <span className="narrationDot"></span>
                 <span className="narrationLabel">Play Narration</span>
               </button>
             </div>
 
-            {/* ⭐ ADDED — RITUAL CINEMATIC REVEAL */}
+            {/* RITUAL CINEMATIC REVEAL */}
             {showRevealRitual && (
               <SubmergedMemoryReveal
                 lines={[
