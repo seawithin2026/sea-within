@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAudio } from "@/app/providers/AudioProvider";
 import NarrationPlayer from "@/components/NarrationPlayer";
 import { getDayScript } from "@/lib/voice/voiceConfig";
-import SubmergedMemoryReveal from "@/components/SubmergedMemoryReveal/SubmergedMemoryReveal";
+import SubmergedMemoryReveal from "@/app/components/SubmergedMemoryReveal/SubmergedMemoryReveal";
 import "./day1.css";
 
 // PERFECT narrator configs for your voice
