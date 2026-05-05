@@ -36,16 +36,16 @@ export default function Navigation() {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 py-4 flex items-center justify-between">
 
         {/* Logo + Brand */}
-        <Link href="/" className="group flex items-center gap-3">
+        <Link href="/" className="group flex items-center gap-4">
           <Image
             src="/images/logo.png"
             alt="Sea Within Logo"
-            width={34}
-            height={34}
-            className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-white"
+            width={52}
+            height={52}
+            className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-golden-400 rounded-full"
           />
           <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-sea-glow transition-colors duration-500">
             Sea Within
