@@ -36,7 +36,7 @@ export default function Navigation() {
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-3 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-1 py-2 flex items-center justify-between">
 
         {/* Logo + Brand */}
         <Link href="/" className="group flex items-center gap-4">
