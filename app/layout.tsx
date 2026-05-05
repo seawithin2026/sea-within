@@ -26,8 +26,7 @@ export const metadata: Metadata = {
   keywords: ['wellness', 'sanctuary', 'mindfulness', 'community', 'awakening', 'sea within'],
   openGraph: {
     title: 'Sea Within — Come Home to Yourself',
-    description:
-      'A movement for the ones who are ready to feel again.',
+    description: 'A movement for the ones who are ready to feel again.',
     url: 'https://seawithinyourself.com',
     siteName: 'Sea Within',
     type: 'website',
@@ -39,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
         <AudioProvider>
-          <Navigation />
+          <Navbar />
           {children}
         </AudioProvider>
       </body>
