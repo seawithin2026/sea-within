@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2024-04-10",
 });
 
 // Replace these with YOUR real Price IDs
 const PRICE_IDS = {
-  monthly: "price_1TTQaIDpMHFesd6pbMIHDkvB", 
+  monthly: "price_1TTQaIDpMHFesd6pbMIHDkvB",
   yearly: "price_1TTQcfDpMHFesd6pViruLFrV",
 };
 
