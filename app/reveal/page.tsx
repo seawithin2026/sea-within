@@ -123,34 +123,36 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-        {/* Invitation + Buttons */}
-        <ScrollReveal delay={900}>
-          <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
-          <p className="font-body text-white/60 leading-relaxed mb-8">
-            If something in you is leaning forward — if something in you is quietly
-            whispering yes — the sanctuary is open. Membership is{' '}
-            <span className="text-golden-400">$77/month</span>, cancel anytime, enter
-            immediately. This is your doorway.
-          </p>
+  {/* Invitation + Buttons */}
+<ScrollReveal delay={900}>
+  <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
+  <p className="font-body text-white/60 leading-relaxed mb-8">
+    If something in you is leaning forward — if something in you is quietly
+    whispering yes — the sanctuary is open. Membership is available as{' '}
+    <span className="text-golden-400">$77/month</span> or{' '}
+    <span className="text-golden-400">$770/year (Save 2 Months)</span>, 
+    cancel anytime, enter immediately. This is your doorway.
+  </p>
 
-          {/* MONTHLY */}
-          <button
-            onClick={() => handleJoin('monthly')}
-            disabled={loading}
-            className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
-          >
-            {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77/month'}
-          </button>
+  {/* MONTHLY */}
+  <button
+    onClick={() => handleJoin('monthly')}
+    disabled={loading}
+    className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
+  >
+    {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77/month'}
+  </button>
 
-          {/* YEARLY */}
-          <button
-            onClick={() => handleJoin('yearly')}
-            disabled={loading}
-            className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50 mt-4"
-          >
-            {loading ? 'Opening the door…' : 'Enter Yearly — $770/year'}
-          </button>
-        </ScrollReveal>
+  {/* YEARLY */}
+  <button
+    onClick={() => handleJoin('yearly')}
+    disabled={loading}
+    className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50 mt-4"
+  >
+    {loading ? 'Opening the door…' : 'Enter Yearly — $770/year (Save 2 Months)'}
+  </button>
+</ScrollReveal>
+
       </section>
     </main>
   );

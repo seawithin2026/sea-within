@@ -220,16 +220,15 @@ export default function HomePage() {
             </h2>
           </ScrollReveal>
 
-          {/* DIRECT STRIPE BUTTON */}
+          {/* BUTTON → REVEAL PAGE */}
           <ScrollReveal delay={1000}>
             <div className="mt-12">
               <a
-             href="/reveal"
-            className="btn-golden text-lg py-4 px-10 inline-block"
-            >
-            Step Inside
-            </a>
-
+                href="/reveal"
+                className="btn-golden text-lg py-4 px-10 inline-block"
+              >
+                Step Inside
+              </a>
             </div>
           </ScrollReveal>
         </div>
@@ -294,16 +293,15 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-          {/* DIRECT STRIPE BUTTON */}
+          {/* BUTTON → REVEAL PAGE */}
           <ScrollReveal delay={2000}>
             <div className="mt-16">
               <a
-              href="/reveal"
-             className="btn-golden text-lg py-4 px-10 inline-block"
-            >
-            Join the Movement
-            </a>
-
+                href="/reveal"
+                className="btn-golden text-lg py-4 px-10 inline-block"
+              >
+                Join the Movement
+              </a>
             </div>
           </ScrollReveal>
         </div>
@@ -322,21 +320,33 @@ export default function HomePage() {
           </p>
 
           <div className="flex justify-center gap-8 mt-10">
-            <a href="/sanctuary" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+            <a
+              href="/sanctuary"
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
+            >
               Sanctuary
             </a>
-            <a href="/wisdom-board" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+
+            <a
+              href="/wisdom-board"
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
+            >
               Wisdom
             </a>
-            <a href="/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+
+            <a
+              href="/community"
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
+            >
               Community
             </a>
-            <button
-              onClick={handleJoin}
+
+            <a
+              href="/reveal"
               className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
             >
               Join
-            </button>
+            </a>
           </div>
 
           <p className="font-body text-[11px] text-white/15 mt-12">
