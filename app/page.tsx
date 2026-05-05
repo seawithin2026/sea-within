@@ -223,12 +223,13 @@ export default function HomePage() {
           {/* DIRECT STRIPE BUTTON */}
           <ScrollReveal delay={1000}>
             <div className="mt-12">
-              <button
-                onClick={handleJoin}
-                className="btn-golden text-lg py-4 px-10"
-              >
-                Step Inside
-              </button>
+              <a
+             href="/reveal"
+            className="btn-golden text-lg py-4 px-10 inline-block"
+            >
+            Step Inside
+            </a>
+
             </div>
           </ScrollReveal>
         </div>
@@ -296,12 +297,13 @@ export default function HomePage() {
           {/* DIRECT STRIPE BUTTON */}
           <ScrollReveal delay={2000}>
             <div className="mt-16">
-              <button
-                onClick={handleJoin}
-                className="btn-golden text-lg py-4 px-10"
-              >
-                Join the Movement
-              </button>
+              <a
+              href="/reveal"
+             className="btn-golden text-lg py-4 px-10 inline-block"
+            >
+            Join the Movement
+            </a>
+
             </div>
           </ScrollReveal>
         </div>
