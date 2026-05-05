@@ -63,7 +63,7 @@ export default function JoinPage() {
           disabled={isLoading}
           className="btn-golden w-full py-4 text-lg disabled:opacity-50 mt-4"
         >
-          {isLoading ? 'Opening the door…' : 'Enter Yearly — $770/year'}
+          {isLoading ? 'Opening the door…' : 'Enter Yearly — $770/year (Save 2 Months)'}
         </button>
 
       </section>
