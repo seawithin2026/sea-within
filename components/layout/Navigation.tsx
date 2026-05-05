@@ -29,16 +29,19 @@ export default function Navigation() {
       transition={{ duration: 1, delay: 0.5 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
         isScrolled
-          ? 'bg-sea-deep/80 backdrop-blur-xl border-b border-sea-mid/20'
+          ? 'backdrop-blur-xl border-b border-white/5'
           : 'bg-transparent'
       }`}
+      style={{
+        backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
+      }}
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
         {/* Brand */}
         <Link href="/" className="group flex items-center gap-3">
-          <span className="text-2xl font-display font-semibold tracking-wide text-sea-glow group-hover:text-sea-glow/80 transition-colors duration-500">
-            Sea Within
+          <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400 group-hover:text-golden-300 transition-colors duration-500">
+            SEA WITHIN
           </span>
         </Link>
 
@@ -48,24 +51,21 @@ export default function Navigation() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-white/70 hover:text-sea-glow font-body text-sm tracking-wider uppercase transition-colors duration-300"
+              className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
             >
               {link.label}
             </Link>
           ))}
 
-          <Link
-            href="/join"
-            className="btn-sanctuary text-sm py-2.5 px-6"
-          >
-            Join the Movement
+          <Link href="/join" className="btn-golden text-[11px] px-6 py-2.5">
+            Join
           </Link>
         </div>
 
         {/* Mobile Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-white/70 hover:text-sea-glow transition-colors"
+          className="md:hidden text-white/60 hover:text-golden-400 transition-colors"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -78,7 +78,8 @@ export default function Navigation() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-sea-deep/95 backdrop-blur-xl border-t border-sea-mid/20"
+            className="md:hidden backdrop-blur-xl border-t border-white/5"
+            style={{ backgroundColor: 'rgba(10, 22, 40, 0.95)' }}
           >
             <div className="px-6 py-8 flex flex-col gap-6">
               {navLinks.map((link) => (
@@ -86,7 +87,7 @@ export default function Navigation() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-white/70 hover:text-sea-glow font-body text-lg tracking-wider transition-colors duration-300"
+                  className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -95,7 +96,7 @@ export default function Navigation() {
               <Link
                 href="/join"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="btn-sanctuary text-center mt-4"
+                className="btn-golden text-center text-[11px]"
               >
                 Join the Movement
               </Link>
