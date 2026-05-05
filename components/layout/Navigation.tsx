@@ -18,9 +18,7 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -47,7 +45,7 @@ export default function Navigation() {
             height={120}
             className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-[#d4af37] rounded-full shadow-[0_0_12px_rgba(212,175,55,0.35)]"
           />
-          <span className="text-2xl font-display font-semibold text-white tracking-wide group-hover:text-[#d4af37] transition-colors duration-500">
+          <span className="text-2xl font-display font-semibold tracking-wide text-white group-hover:text-[#d4af37] transition-colors duration-500">
             Sea Within
           </span>
         </Link>
@@ -58,7 +56,7 @@ export default function Navigation() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-white/80 hover:text-[#d4af37] font-body text-sm tracking-wider uppercase transition-colors duration-300"
+              className="text-white/85 hover:text-[#d4af37] font-body text-sm tracking-wider uppercase transition-colors duration-300"
             >
               {link.label}
             </Link>
@@ -76,7 +74,7 @@ export default function Navigation() {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-white/80 hover:text-[#d4af37] transition-colors"
+          className="md:hidden text-white/85 hover:text-[#d4af37] transition-colors"
           aria-label="Toggle menu"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -98,7 +96,7 @@ export default function Navigation() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-white/80 hover:text-[#d4af37] font-body text-lg tracking-wider transition-colors duration-300"
+                  className="text-white/85 hover:text-[#d4af37] font-body text-lg tracking-wider transition-colors duration-300"
                 >
                   {link.label}
                 </Link>
