@@ -4,6 +4,20 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+
+  // ⭐ FIX: Prevent Tailwind from deleting your gold + sanctuary classes
+  safelist: [
+    'text-golden-400',
+    'text-golden-300',
+    'hover:text-golden-400',
+    'hover:text-golden-300',
+    'btn-golden',
+    'bg-sanctuary-dark',
+    'bg-sanctuary-dark/90',
+    'bg-sanctuary-dark/95',
+    'border-white/5',
+  ],
+
   theme: {
     extend: {
       colors: {
@@ -37,7 +51,7 @@ module.exports = {
           100: '#faf0d5',
           200: '#f4dea9',
           300: '#edc873',
-          400: '#e5ad43',
+          400: '#e5ad43', // ⭐ Your gold
           500: '#dd9527',
           600: '#c4751d',
           700: '#a3571b',
@@ -45,7 +59,7 @@ module.exports = {
           900: '#6e3a1b',
         },
         sanctuary: {
-          dark: '#0a1628',
+          dark: '#0a1628', // ⭐ Your deep navy
           deep: '#0d1f3c',
           glow: '#1a3a5c',
         },
@@ -92,27 +106,26 @@ module.exports = {
           '0%': { transform: 'scale(1)', opacity: '0.6' },
           '100%': { transform: 'scale(2.5)', opacity: '0' },
         },
-    breathPulse: {
-  '0%': {
-    transform: 'scale(1)',
-    opacity: '0.8',
-    boxShadow: '0 0 0px rgba(229, 173, 67, 0)',
-  },
-  '40%': {
-    transform: 'scale(1.12)',
-    opacity: '1',
-    boxShadow: '0 0 55px rgba(229, 173, 67, 0.55)',
-  },
-  '100%': {
-    transform: 'scale(1)',
-    opacity: '0.8',
-    boxShadow: '0 0 0px rgba(229, 173, 67, 0)',
-  },
-},
-
-
+        breathPulse: {
+          '0%': {
+            transform: 'scale(1)',
+            opacity: '0.8',
+            boxShadow: '0 0 0px rgba(229, 173, 67, 0)',
+          },
+          '40%': {
+            transform: 'scale(1.12)',
+            opacity: '1',
+            boxShadow: '0 0 55px rgba(229, 173, 67, 0.55)',
+          },
+          '100%': {
+            transform: 'scale(1)',
+            opacity: '0.8',
+            boxShadow: '0 0 0px rgba(229, 173, 67, 0)',
+          },
+        },
       },
     },
   },
+
   plugins: [],
 };
