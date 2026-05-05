@@ -45,7 +45,7 @@ export default function Navigation() {
             height={120}
             className="opacity-90 group-hover:opacity-100 transition-all duration-300 border border-[#d4af37] rounded-full shadow-[0_0_12px_rgba(212,175,55,0.35)]"
           />
-          <span className="text-2xl font-display font-semibold tracking-wide text-white group-hover:text-[#d4af37] transition-colors duration-500">
+          <span className="text-2xl font-display font-semibold tracking-wide text-[#d4af37] group-hover:text-[#f5d97c] transition-colors duration-500">
             Sea Within
           </span>
         </Link>
