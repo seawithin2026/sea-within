@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Navbar from '@/components/layout/Navbar';
+import Navigation from '@/components/layout/Navigation'
 import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-sea-deep">
-      <Navbar />
+      <Navigation />
 
       <section className="pt-32 pb-32 px-6">
         <div className="max-w-md mx-auto">
