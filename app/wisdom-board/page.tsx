@@ -8,9 +8,8 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 // SEA WITHIN — Wisdom Board
 // ============================================
 // A sacred space where members share reflections,
-// insights, and light. All posts are moderated
-// through the positive-vibe filter to keep this
-// space safe, warm, and uplifting.
+// insights, and truth. Emotional honesty is welcome.
+// Only harmful or attacking language is blocked.
 // ============================================
 
 interface WisdomPost {
@@ -62,13 +61,13 @@ export default function WisdomBoardPage() {
         setFeedbackType('error');
         setFeedback(
           data.suggestion ||
-          'This space is for uplifting, reflective, and supportive communication. Please rephrase with kindness.'
+          'This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed.'
         );
         return;
       }
 
       setFeedbackType('success');
-      setFeedback('Your wisdom has been shared with the community.');
+      setFeedback('Your reflection has been shared with the community.');
       setNewPost('');
       fetchPosts();
     } catch (err) {
@@ -111,8 +110,8 @@ export default function WisdomBoardPage() {
           </ScrollReveal>
           <ScrollReveal delay={600}>
             <p className="font-body text-base text-white/30 mt-6 max-w-lg mx-auto leading-relaxed">
-              Share your reflections. Receive light from the community.
-              Every word here is a gift to someone who needs it.
+              Share your reflections. Speak your truth.  
+              This space welcomes depth, honesty, and emotional openness.
             </p>
           </ScrollReveal>
         </div>
@@ -123,7 +122,7 @@ export default function WisdomBoardPage() {
         <ScrollReveal>
           <form onSubmit={handleSubmit} className="sanctuary-card p-8">
             <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-3">
-              Share Your Wisdom
+              Share Your Reflection
             </label>
             <textarea
               value={newPost}
@@ -173,7 +172,7 @@ export default function WisdomBoardPage() {
           {posts.map((post, index) => (
             <ScrollReveal key={post.id} delay={100 + index * 50}>
               <div className="wisdom-card break-inside-avoid">
-                <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic">
+                <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
                   &ldquo;{post.content}&rdquo;
                 </p>
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
@@ -191,10 +190,10 @@ export default function WisdomBoardPage() {
           {posts.length === 0 && (
             <div className="col-span-2 text-center py-16">
               <p className="font-display text-xl text-white/20 font-light">
-                The board awaits its first light.
+                The board awaits its first reflection.
               </p>
               <p className="font-body text-sm text-white/10 mt-3">
-                Be the first to share your wisdom.
+                Be the first to share your truth.
               </p>
             </div>
           )}
