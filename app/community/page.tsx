@@ -29,7 +29,6 @@ export default function CommunityPage() {
 
   useEffect(() => {
     fetchMessages();
-    // Poll for new messages every 5 seconds
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -43,7 +42,7 @@ export default function CommunityPage() {
       const res = await fetch('/api/messages?type=chat');
       const data = await res.json();
       if (data.messages) setMessages(data.messages);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch messages');
     }
   };
@@ -74,7 +73,7 @@ export default function CommunityPage() {
 
       setNewMessage('');
       fetchMessages();
-    } catch (err) {
+    } catch {
       setFeedback('Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
