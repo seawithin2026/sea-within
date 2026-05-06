@@ -136,7 +136,11 @@ export async function POST(request: NextRequest) {
 
       if (error) throw error;
 
-      return NextResponse.json({ post: data });
+      return NextResponse.json({
+       approved: true,
+       post: data
+       });
+
     }
 
     const { data, error } = await supabase
@@ -152,7 +156,11 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ chatMessage: data });
+    return NextResponse.json({
+    approved: true,
+    chatMessage: data
+    });
+
 
   } catch (err: any) {
     return NextResponse.json(
