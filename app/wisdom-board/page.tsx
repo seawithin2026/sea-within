@@ -4,14 +4,6 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/layout/Navigation';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-// ============================================
-// SEA WITHIN — Wisdom Board
-// ============================================
-// A sacred space where members share reflections,
-// insights, and truth. Emotional honesty is welcome.
-// Only harmful or attacking language is blocked.
-// ============================================
-
 interface WisdomPost {
   id: string;
   content: string;
@@ -25,6 +17,10 @@ export default function WisdomBoardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [feedbackType, setFeedbackType] = useState<'success' | 'error'>('success');
+
+  // Editing state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState('');
 
   useEffect(() => {
     fetchPosts();
@@ -57,11 +53,10 @@ export default function WisdomBoardPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Moderation blocked the message
         setFeedbackType('error');
         setFeedback(
           data.suggestion ||
-          'This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed.'
+            'This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed.'
         );
         return;
       }
@@ -76,6 +71,37 @@ export default function WisdomBoardPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const startEditing = (post: WisdomPost) => {
+    setEditingId(post.id);
+    setEditingContent(post.content);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+
+    await fetch('/api/messages', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: editingId,
+        content: editingContent,
+        type: 'wisdom',
+      }),
+    });
+
+    setEditingId(null);
+    setEditingContent('');
+    fetchPosts();
+  };
+
+  const deletePost = async (id: string) => {
+    await fetch(`/api/messages?id=${id}&type=wisdom`, {
+      method: 'DELETE',
+    });
+
+    fetchPosts();
   };
 
   const formatDate = (dateStr: string) => {
@@ -110,7 +136,7 @@ export default function WisdomBoardPage() {
           </ScrollReveal>
           <ScrollReveal delay={600}>
             <p className="font-body text-base text-white/30 mt-6 max-w-lg mx-auto leading-relaxed">
-              Share your reflections. Speak your truth.  
+              Share your reflections. Speak your truth.
               This space welcomes depth, honesty, and emotional openness.
             </p>
           </ScrollReveal>
@@ -124,6 +150,7 @@ export default function WisdomBoardPage() {
             <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-3">
               Share Your Reflection
             </label>
+
             <textarea
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
@@ -136,7 +163,6 @@ export default function WisdomBoardPage() {
                        transition-all duration-300"
             />
 
-            {/* Character count */}
             <div className="flex justify-between items-center mt-3">
               <p className="font-body text-[11px] text-white/20">
                 {newPost.length}/500
@@ -150,7 +176,6 @@ export default function WisdomBoardPage() {
               </button>
             </div>
 
-            {/* Feedback */}
             {feedback && (
               <div
                 className={`mt-4 p-4 rounded-lg border text-sm font-body ${
@@ -172,13 +197,61 @@ export default function WisdomBoardPage() {
           {posts.map((post, index) => (
             <ScrollReveal key={post.id} delay={100 + index * 50}>
               <div className="wisdom-card break-inside-avoid">
-                <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
-                  &ldquo;{post.content}&rdquo;
-                </p>
+
+                {/* EDIT MODE */}
+                {editingId === post.id ? (
+                  <div>
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sea-100"
+                      rows={4}
+                    />
+
+                    <div className="flex gap-3 mt-3">
+                      <button
+                        onClick={saveEdit}
+                        className="text-[11px] text-golden-300 hover:text-golden-200"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-[11px] text-white/30 hover:text-white/50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
+                    &ldquo;{post.content}&rdquo;
+                  </p>
+                )}
+
+                {/* Footer */}
                 <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
                   <p className="font-body text-[11px] text-golden-400/50 tracking-wide">
                     {post.author}
                   </p>
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => startEditing(post)}
+                      className="text-[11px] text-sea-200 hover:text-golden-300 transition"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => deletePost(post.id)}
+                      className="text-[11px] text-red-300 hover:text-red-400 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
                   <p className="font-body text-[11px] text-white/20">
                     {formatDate(post.created_at)}
                   </p>
