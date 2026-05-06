@@ -1,16 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Navigation from '@/components/layout/Navigation';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import { createClient } from '@supabase/supabase-js';
-
-// ============================================
-// SEA WITHIN — Private Journal
-// ============================================
-// A sacred, personal space for reflection.
-// Only the member can see their entries.
-// ============================================
+import { useState, useEffect } from "react";
+import Navigation from "@/components/layout/Navigation";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import { createClient } from "@/lib/supabase/client";
 
 interface JournalEntry {
   id: string;
@@ -19,24 +12,30 @@ interface JournalEntry {
 }
 
 export default function JournalPage() {
-  const [entry, setEntry] = useState('');
+  const supabase = createClient();
+
+  const [entry, setEntry] = useState("");
   const [saved, setSaved] = useState(false);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [user, setUser] = useState<any>(null);
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
+  // Load user session
   useEffect(() => {
-    fetchEntries();
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
   }, []);
+
+  // Load entries once user is known
+  useEffect(() => {
+    if (user) fetchEntries();
+  }, [user]);
 
   const fetchEntries = async () => {
     const { data, error } = await supabase
-      .from('journal_entries')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .from("journal_entries")
+      .select("*")
+      .order("created_at", { ascending: false });
 
     if (!error && data) setEntries(data);
   };
@@ -46,30 +45,28 @@ export default function JournalPage() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      alert('You must be logged in to save your journal.');
+      alert("You must be logged in to save your journal.");
       return;
     }
 
-    const { error } = await supabase
-      .from('journal_entries')
-      .insert({
-        user_id: user.id,
-        content: entry,
-      });
+    const { error } = await supabase.from("journal_entries").insert({
+      user_id: user.id,
+      content: entry,
+    });
 
     if (!error) {
       setSaved(true);
-      setEntry('');
+      setEntry("");
       fetchEntries();
     }
   };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-CA', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
+    return date.toLocaleDateString("en-CA", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
