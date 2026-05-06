@@ -1,232 +1,130 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabase } from '@/lib/supabase';
+import { NextResponse } from 'next/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
-// ============================================
-// SEA WITHIN — LIGHT MODERATION
-// Allows emotional honesty.
-// Blocks ONLY hate, violence, harassment.
-// ============================================
-function lightModeration(content: string) {
-  if (!content || !content.trim()) {
-    return {
-      isApproved: false,
-      suggestion: 'Share something real, even if it’s small.',
-    };
-  }
+// GET — fetch posts/messages
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const type = searchParams.get('type')
 
-  const harmfulWords = [
-    'kill',
-    'hurt you',
-    'hate you',
-    'slur1',
-    'slur2',
-    'slur3'
-  ];
+  const supabase = createServerSupabaseClient()
 
-  const lower = content.toLowerCase();
-  const isHarmful = harmfulWords.some(word => lower.includes(word));
-
-  if (isHarmful) {
-    return {
-      isApproved: false,
-      suggestion:
-        'This space welcomes honesty and depth. Only harmful or attacking language is not allowed.',
-    };
-  }
-
-  return { isApproved: true };
-}
-
-// ============================================
-// GET — Fetch wisdom posts or chat messages
-// ============================================
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const type = searchParams.get('type') || 'wisdom';
-  const supabase = createServerSupabase();
-
-  try {
-    if (type === 'wisdom') {
-      const { data, error } = await supabase
-        .from('wisdom_posts')
-        .select('id, content, created_at, profiles(full_name)')
-        .eq('is_approved', true)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-
-      const posts = (data || []).map((post: any) => ({
-        id: post.id,
-        content: post.content,
-        author: post.profiles?.full_name || 'Anonymous Soul',
-        created_at: post.created_at,
-      }));
-
-      return NextResponse.json({ posts });
-    }
-
-    // CHAT
-    const { data, error } = await supabase
-      .from('chat_messages')
-      .select('id, message, created_at, user_id, profiles(full_name)')
-      .eq('is_approved', true)
-      .eq('room', 'general')
-      .order('created_at', { ascending: true })
-      .limit(100);
-
-    if (error) throw error;
-
-    const messages = (data || []).map((msg: any) => ({
-      id: msg.id,
-      message: msg.message,
-      author: msg.profiles?.full_name || 'Anonymous Soul',
-      created_at: msg.created_at,
-      user_id: msg.user_id,
-    }));
-
-    return NextResponse.json({ messages });
-
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Failed to fetch messages' },
-      { status: 500 }
-    );
-  }
-}
-
-// ============================================
-// POST — Create new wisdom post or chat message
-// ============================================
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { content, type } = body;
-  const supabase = createServerSupabase();
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Please sign in to share your light.' },
-      { status: 401 }
-    );
-  }
-
-  const moderation = lightModeration(content);
-  if (!moderation.isApproved) {
-    return NextResponse.json(
-      {
-        error: 'Message not approved',
-        suggestion: moderation.suggestion,
-      },
-      { status: 422 }
-    );
-  }
-
-  try {
-    if (type === 'wisdom') {
-      const { data, error } = await supabase
-        .from('wisdom_posts')
-        .insert({
-          user_id: user.id,
-          content: content.trim(),
-          is_approved: true,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return NextResponse.json({
-       approved: true,
-       post: data
-       });
-
-    }
-
-    const { data, error } = await supabase
-      .from('chat_messages')
-      .insert({
-        user_id: user.id,
-        message: content.trim(),
-        room: 'general',
-        is_approved: true,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    return NextResponse.json({
-    approved: true,
-    chatMessage: data
-    });
-
-
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || 'Failed to save message' },
-      { status: 500 }
-    );
-  }
-}
-
-// ============================================
-// PUT — Edit wisdom post
-// ============================================
-export async function PUT(request: NextRequest) {
-  const body = await request.json();
-  const { id, content, type } = body;
-
-  const supabase = createServerSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const table = type === 'wisdom' ? 'wisdom_posts' : 'chat_messages';
+  let table = ''
+  if (type === 'wisdom') table = 'wisdom_posts'
+  if (type === 'journal') table = 'journal_entries'
+  if (type === 'chat') table = 'community_messages'
 
   const { data, error } = await supabase
     .from(table)
-    .update({ content })
-    .eq('id', id)
-    .eq('user_id', user.id)
-    .select()
-    .single();
+    .select(`
+      id,
+      content,
+      message,
+      created_at,
+      user:users(full_name)
+    `)
+    .order('created_at', { ascending: false })
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Wisdom + Journal return "posts"
+  if (type === 'wisdom' || type === 'journal') {
+    const posts = data.map((p: any) => ({
+      id: p.id,
+      content: p.content,
+      created_at: p.created_at,
+      author: p.user?.full_name || 'Anonymous',
+    }))
+    return NextResponse.json({ posts })
   }
 
-  return NextResponse.json({ post: data });
+  // Community Chat returns "messages"
+  if (type === 'chat') {
+    const messages = data.map((m: any) => ({
+      id: m.id,
+      message: m.message || m.content,
+      created_at: m.created_at,
+      author: m.user?.full_name || 'Anonymous',
+    }))
+    return NextResponse.json({ messages })
+  }
 }
 
-// ============================================
-// DELETE — Delete wisdom post
-// ============================================
-export async function DELETE(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  const type = searchParams.get('type') || 'wisdom';
+// POST — create new post/message
+export async function POST(req: Request) {
+  const body = await req.json()
+  const { content, type } = body
 
-  const supabase = createServerSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
+  const supabase = createServerSupabaseClient()
+  const { data: auth } = await supabase.auth.getUser()
 
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!auth?.user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const table = type === 'wisdom' ? 'wisdom_posts' : 'chat_messages';
+  let table = ''
+  let payload: any = {
+    user_id: auth.user.id,
+    is_approved: true,
+  }
+
+  if (type === 'wisdom') {
+    table = 'wisdom_posts'
+    payload.content = content
+  }
+
+  if (type === 'journal') {
+    table = 'journal_entries'
+    payload.content = content
+  }
+
+  if (type === 'chat') {
+    table = 'community_messages'
+    payload.message = content
+  }
+
+  const { error } = await supabase.from(table).insert(payload)
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ success: true })
+}
+
+// PUT — edit wisdom/journal posts
+export async function PUT(req: Request) {
+  const body = await req.json()
+  const { id, content, type } = body
+
+  const supabase = createServerSupabaseClient()
+
+  let table = ''
+  if (type === 'wisdom') table = 'wisdom_posts'
+  if (type === 'journal') table = 'journal_entries'
 
   const { error } = await supabase
     .from(table)
-    .delete()
+    .update({ content })
     .eq('id', id)
-    .eq('user_id', user.id);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true })
+}
+
+// DELETE — delete wisdom/journal posts
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const id = searchParams.get('id')
+  const type = searchParams.get('type')
+
+  const supabase = createServerSupabaseClient()
+
+  let table = ''
+  if (type === 'wisdom') table = 'wisdom_posts'
+  if (type === 'journal') table = 'journal_entries'
+
+  const { error } = await supabase.from(table).delete().eq('id', id)
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ success: true })
 }
