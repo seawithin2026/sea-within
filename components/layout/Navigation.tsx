@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react';
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
+  { href: '/sanctuary/journal', label: 'Journal' },
   { href: '/wisdom-board', label: 'Wisdom Board' },
   { href: '/community', label: 'Community' },
 ];
