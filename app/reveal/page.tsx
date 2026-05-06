@@ -149,7 +149,7 @@ export default function RevealPage() {
     disabled={loading}
     className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50 mt-4"
   >
-    {loading ? 'Opening the door…' : 'Enter Yearly — $770/year (Save 2 Months)'}
+    {loading ? 'Opening the door…' : 'Enter the Sanctuary — $770/year (Save 2 Months)'}
   </button>
 </ScrollReveal>
 
