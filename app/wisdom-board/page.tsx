@@ -18,7 +18,6 @@ export default function WisdomBoardPage() {
   const [feedback, setFeedback] = useState('');
   const [feedbackType, setFeedbackType] = useState<'success' | 'error'>('success');
 
-  // Editing state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
 
@@ -31,7 +30,7 @@ export default function WisdomBoardPage() {
       const res = await fetch('/api/messages?type=wisdom');
       const data = await res.json();
       if (data.posts) setPosts(data.posts);
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch posts');
     }
   };
@@ -65,7 +64,7 @@ export default function WisdomBoardPage() {
       setFeedback('Your reflection has been shared with the community.');
       setNewPost('');
       fetchPosts();
-    } catch (err) {
+    } catch {
       setFeedbackType('error');
       setFeedback('Something went wrong. Please try again.');
     } finally {
