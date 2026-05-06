@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabase } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 
 // ============================================
 // SEA WITHIN — Auth API Routes
@@ -9,9 +9,8 @@ import { createServerSupabase } from '@/lib/supabase';
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const { email, password, fullName } = body;
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabaseClient();
 
-  // Determine if this is signup or login
   const isSignup = !!fullName;
 
   try {
