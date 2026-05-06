@@ -2,7 +2,7 @@
 // SEA WITHIN — Revenue & Tax Tracking System
 // ============================================
 
-import { createServerSupabase } from './supabase';
+import { createServerSupabaseClient } from './supabase/server';
 
 export interface RevenueStats {
   totalRevenue: number;
@@ -19,7 +19,7 @@ export interface RevenueStats {
  * Get comprehensive revenue statistics for the admin dashboard
  */
 export async function getRevenueStats(year?: number): Promise<RevenueStats> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabaseClient();
   const currentYear = year || new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
@@ -136,7 +136,7 @@ export async function getRevenueStats(year?: number): Promise<RevenueStats> {
  * Export revenue data as CSV for tax season
  */
 export async function exportRevenueCSV(year: number): Promise<string> {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabaseClient();
 
   const yearStart = new Date(year, 0, 1).toISOString();
   const yearEnd = new Date(year, 11, 31).toISOString();
@@ -149,7 +149,6 @@ export async function exportRevenueCSV(year: number): Promise<string> {
     .lte('created_at', yearEnd)
     .order('created_at', { ascending: true });
 
-  // Build CSV
   const headers = [
     'Date', 'Transaction ID', 'Customer Name', 'Customer Email',
     'Type', 'Amount', 'Currency', 'Status', 'Description'
@@ -177,7 +176,7 @@ export async function exportRevenueCSV(year: number): Promise<string> {
  * Generate a tax summary for a given fiscal year
  */
 export async function getTaxSummary(year: number) {
-  const supabase = createServerSupabase();
+  const supabase = createServerSupabaseClient();
 
   const yearStart = new Date(year, 0, 1).toISOString();
   const yearEnd = new Date(year, 11, 31).toISOString();
