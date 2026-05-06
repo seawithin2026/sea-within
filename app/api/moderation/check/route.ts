@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { moderateContent } from '@/lib/moderation/moderator';
+import { moderateContent } from '@/lib/moderation';
 
 /**
  * POST /api/moderation/check
- * Checks content against the positive-vibe moderation system.
+ * Checks content against the Sea Within moderation system.
  * Used by Wisdom Board and Community Chat before publishing.
  */
 export async function POST(request: NextRequest) {
@@ -22,11 +22,12 @@ export async function POST(request: NextRequest) {
     const result = moderateContent(content);
 
     // Log moderation result for admin review
-    console.log(`[Moderation] Type: ${type}, Approved: ${result.approved}, Score: ${result.score}`);
+    console.log(
+      `[Moderation] Type: ${type}, Approved: ${result.approved}, Reason: ${result.reason}`
+    );
 
     return NextResponse.json({
       approved: result.approved,
-      score: result.score,
       message: result.message,
     });
   } catch (error) {
