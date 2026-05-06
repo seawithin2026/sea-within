@@ -1,4 +1,6 @@
-import { supabase } from './supabase';
+import { createClient } from './supabase/client';
+
+const supabase = createClient();
 
 // ============================================
 // SEA WITHIN — Authentication
@@ -66,11 +68,14 @@ export async function getCurrentUser() {
   return profile;
 }
 
-export async function updateProfile(userId: string, updates: Partial<{
-  full_name: string;
-  avatar_url: string;
-  bio: string;
-}>) {
+export async function updateProfile(
+  userId: string,
+  updates: Partial<{
+    full_name: string;
+    avatar_url: string;
+    bio: string;
+  }>
+) {
   const { data, error } = await supabase
     .from('profiles')
     .update({ ...updates, updated_at: new Date().toISOString() })
