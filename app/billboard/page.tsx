@@ -1,831 +1,337 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Cormorant_Garamond, Playfair_Display } from 'next/font/google';
-import Link from 'next/link';
+import React, { useEffect, useMemo, useState } from 'react';
 
-// ============================================
-// SEA WITHIN — THE SAND BILLBOARD (ENHANCED)
-// Realistic waves. Textured sand. Sacred words.
-// ============================================
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  style: ['normal', 'italic'],
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  style: ['normal', 'italic'],
-});
-
-interface WisdomMessage {
+type WisdomMessage = {
   id: string;
   content: string;
-  author_name?: string;
-  display_name?: string;
   created_at?: string;
+  author_name?: string | null;
+};
+
+const MAX_LOTUSES = 30;
+
+function clampLotuses(messages: WisdomMessage[]): WisdomMessage[] {
+  if (!messages) return [];
+  if (messages.length <= MAX_LOTUSES) return messages;
+  // Prefer most recent 30
+  return [...messages]
+    .sort((a, b) => {
+      const da = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const db = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return db - da;
+    })
+    .slice(0, MAX_LOTUSES);
 }
 
-const SANCTUARY_MESSAGES: WisdomMessage[] = [
-  { id: 's1', content: 'The ocean does not hurry. Yet everything is accomplished.' },
-  { id: 's2', content: 'Be still. The answers are already within you.' },
-  { id: 's3', content: 'Every wave that reaches the shore once began as a whisper in the deep.' },
-  { id: 's4', content: 'You are not a drop in the ocean. You are the entire ocean in a drop.' },
-  { id: 's5', content: 'The wound is the place where the light enters you.' },
-  { id: 's6', content: 'What you seek is also seeking you.' },
-  { id: 's7', content: 'Let yourself be silently drawn by the strange pull of what you truly love.' },
-];
+function getLotusPosition(index: number, total: number) {
+  // Spread lotuses gently across the “ocean”
+  const rows = 3;
+  const row = index % rows;
+  const col = Math.floor(index / rows);
 
-export default function SandBillboard() {
-  const [messages, setMessages] = useState<WisdomMessage[]>(SANCTUARY_MESSAGES);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [phase, setPhase] = useState<'entering' | 'visible' | 'exiting'>('entering');
+  const colFraction = total > 1 ? col / Math.max(1, Math.ceil(total / rows)) : 0.5;
+  const baseX = 10 + colFraction * 70; // 10%–80%
+  const baseY = 25 + row * 20; // 25%, 45%, 65%
 
-  // Golden light particles
-  const [particles] = useState(() =>
-    Array.from({ length: 35 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 20,
-      duration: 10 + Math.random() * 15,
-      size: 1.5 + Math.random() * 3.5,
-      opacity: 0.15 + Math.random() * 0.35,
-    }))
-  );
+  const jitterX = (Math.random() - 0.5) * 8;
+  const jitterY = (Math.random() - 0.5) * 6;
 
-  // Sand sparkle particles
-  const [sparkles] = useState(() =>
-    Array.from({ length: 50 }, (_, i) => ({
-      id: i,
-      left: 5 + Math.random() * 90,
-      top: 55 + Math.random() * 40,
-      delay: Math.random() * 8,
-      duration: 2 + Math.random() * 4,
-      size: 1 + Math.random() * 2,
-    }))
-  );
+  return {
+    left: `${baseX + jitterX}%`,
+    top: `${baseY + jitterY}%`,
+  };
+}
 
-  // Foam bubbles along shoreline
-  const [foamBubbles] = useState(() =>
-    Array.from({ length: 25 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 6,
-      duration: 3 + Math.random() * 4,
-      size: 2 + Math.random() * 5,
-    }))
-  );
+type LotusProps = {
+  message: WisdomMessage;
+  index: number;
+  total: number;
+  onSelect: (m: WisdomMessage) => void;
+};
 
-  // Fetch real wisdom board messages
-  useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const res = await fetch('/api/messages?type=wisdom');
-        const data = await res.json();
-        const msgs = data.messages || data.posts || [];
-        if (msgs.length > 0) {
-          const shuffled = [...msgs].sort(() => Math.random() - 0.5);
-          setMessages(shuffled);
-        }
-      } catch {
-        // Fallback to sanctuary messages
-      }
-    }
-    fetchMessages();
-  }, []);
-
-  // Message cycling with wave-wash rhythm
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    const revealTimer = setTimeout(() => setPhase('visible'), 800);
-
-    const cycle = setInterval(() => {
-      setPhase('exiting');
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % messages.length);
-        setPhase('entering');
-      }, 2200);
-      setTimeout(() => {
-        setPhase('visible');
-      }, 3200);
-    }, 10000);
-
-    return () => {
-      clearTimeout(revealTimer);
-      clearInterval(cycle);
-    };
-  }, [messages.length]);
-
-  const currentMessage = messages[currentIndex];
-  const author = currentMessage?.author_name || currentMessage?.display_name || '';
+const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
+  const position = useMemo(() => getLotusPosition(index, total), [index, total]);
+  const driftDuration = 40 + Math.random() * 25; // seconds
+  const floatDelay = Math.random() * 10;
 
   return (
-    <div className={`sand-billboard ${cormorant.className}`}>
+    <button
+      type="button"
+      onClick={() => onSelect(message)}
+      className="absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+      style={{
+        ...position,
+        animation: `lotus-drift ${driftDuration}s ease-in-out infinite alternate`,
+        animationDelay: `${floatDelay}s`,
+      }}
+    >
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28">
+        {/* Hybrid glow aura */}
+        <div className="absolute inset-0 rounded-full bg-gradient-radial from-amber-300/35 via-amber-200/10 to-transparent blur-2xl opacity-80 pointer-events-none" />
+        {/* Lotus body */}
+        <div className="relative flex items-center justify-center w-full h-full">
+          <svg
+            viewBox="0 0 120 120"
+            className="w-full h-full drop-shadow-[0_0_18px_rgba(251,191,36,0.45)]"
+          >
+            <defs>
+              <radialGradient id="lotusCenterGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FDE68A" stopOpacity="0.95" />
+                <stop offset="45%" stopColor="#FBBF24" stopOpacity="0.75" />
+                <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="lotusPetalGold" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#FDE68A" />
+                <stop offset="45%" stopColor="#FBBF24" />
+                <stop offset="100%" stopColor="#D97706" />
+              </linearGradient>
+            </defs>
 
-      {/* ====== SKY / OCEAN BACKGROUND ====== */}
-      <div className="sb-sky" />
+            {/* Hybrid inner glow (candle + eye aura suggestion) */}
+            <circle cx="60" cy="60" r="26" fill="url(#lotusCenterGlow)" />
 
-      {/* ====== SUN ====== */}
-      <div className="sb-sun" />
-      <div className="sb-sun-reflection" />
+            {/* Teardrop petals – logo‑matched feeling */}
+            {/* Back petals */}
+            <g className="opacity-80">
+              <path
+                d="M60 16 C50 30 44 44 46 58 C48 70 55 78 60 82 C65 78 72 70 74 58 C76 44 70 30 60 16 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-soft"
+              />
+              <path
+                d="M32 34 C26 46 24 58 28 68 C32 78 40 84 48 86 C48 76 50 66 54 58 C58 50 62 44 60 36 C52 34 42 32 32 34 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-soft"
+              />
+              <path
+                d="M88 34 C78 32 68 34 60 36 C58 44 62 50 66 58 C70 66 72 76 72 86 C80 84 88 78 92 68 C96 58 94 46 88 34 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-soft"
+              />
+            </g>
 
-      {/* ====== SAND AREA ====== */}
-      <div className="sb-sand" />
+            {/* Front petals */}
+            <g>
+              <path
+                d="M60 26 C52 38 48 50 50 60 C52 70 56 76 60 80 C64 76 68 70 70 60 C72 50 68 38 60 26 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-foreground"
+              />
+              <path
+                d="M44 40 C36 46 32 54 32 62 C32 70 36 76 42 80 C44 72 48 66 52 60 C56 54 58 48 58 42 C52 40 48 40 44 40 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-foreground"
+              />
+              <path
+                d="M76 40 C72 40 68 40 62 42 C62 48 64 54 68 60 C72 66 76 72 78 80 C84 76 88 70 88 62 C88 54 84 46 76 40 Z"
+                fill="url(#lotusPetalGold)"
+                className="lotus-petal-foreground"
+              />
+            </g>
 
-      {/* ====== WET SAND ZONE ====== */}
-      <div className="sb-wet-sand-zone" />
-
-      {/* ====== SAND RIPPLES ====== */}
-      <div className="sb-sand-ripple sb-ripple-1" />
-      <div className="sb-sand-ripple sb-ripple-2" />
-      <div className="sb-sand-ripple sb-ripple-3" />
-      <div className="sb-sand-ripple sb-ripple-4" />
-
-      {/* ====== SAND GRAIN TEXTURE ====== */}
-      <div className="sb-grain" />
-      <div className="sb-grain-fine" />
-
-      {/* ====== SAND SPARKLES ====== */}
-      {sparkles.map((s) => (
-        <div
-          key={`sparkle-${s.id}`}
-          className="sb-sparkle"
-          style={{
-            left: `${s.left}%`,
-            top: `${s.top}%`,
-            width: `${s.size}px`,
-            height: `${s.size}px`,
-            animationDelay: `${s.delay}s`,
-            animationDuration: `${s.duration}s`,
-          }}
-        />
-      ))}
-
-      {/* ====== VIGNETTE ====== */}
-      <div className="sb-vignette" />
-
-      {/* ====== GOLDEN PARTICLES ====== */}
-      {particles.map((p) => (
-        <div
-          key={`particle-${p.id}`}
-          className="sb-particle"
-          style={{
-            left: `${p.left}%`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            opacity: p.opacity,
-            animationDuration: `${p.duration}s`,
-            animationDelay: `${p.delay}s`,
-          }}
-        />
-      ))}
-
-      {/* ====== WAVE LAYERS (5 ORGANIC) ====== */}
-
-      {/* Deep ocean swell */}
-      <svg className="sb-wave sb-wave-1" viewBox="0 0 1440 180" preserveAspectRatio="none">
-        <path d="M0,90 C120,140 240,50 360,90 C480,130 540,60 720,100 C900,140 960,50 1080,80 C1200,110 1320,60 1440,90 L1440,180 L0,180 Z" />
-      </svg>
-
-      {/* Mid-ocean wave */}
-      <svg className="sb-wave sb-wave-2" viewBox="0 0 1440 150" preserveAspectRatio="none">
-        <path d="M0,75 C180,120 300,30 480,75 C660,120 720,40 900,80 C1020,110 1140,35 1260,70 C1350,95 1400,55 1440,75 L1440,150 L0,150 Z" />
-      </svg>
-
-      {/* Shore approach wave */}
-      <svg className="sb-wave sb-wave-3" viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path d="M0,60 C100,95 200,25 360,55 C520,85 580,30 720,65 C860,100 940,25 1080,55 C1180,80 1300,35 1440,60 L1440,120 L0,120 Z" />
-      </svg>
-
-      {/* Breaking wave with curl */}
-      <svg className="sb-wave sb-wave-4" viewBox="0 0 1440 100" preserveAspectRatio="none">
-        <path d="M0,50 C60,75 120,20 240,45 C360,70 420,25 540,50 C660,75 780,20 900,50 C1020,80 1080,30 1200,50 C1320,70 1380,35 1440,50 L1440,100 L0,100 Z" />
-      </svg>
-
-      {/* Thin shore wash */}
-      <svg className="sb-wave sb-wave-5" viewBox="0 0 1440 60" preserveAspectRatio="none">
-        <path d="M0,30 C180,50 360,10 540,30 C720,50 900,10 1080,30 C1200,45 1320,15 1440,30 L1440,60 L0,60 Z" />
-      </svg>
-
-      {/* ====== FOAM BUBBLES AT SHORELINE ====== */}
-      {foamBubbles.map((b) => (
-        <div
-          key={`foam-${b.id}`}
-          className="sb-foam-bubble"
-          style={{
-            left: `${b.left}%`,
-            width: `${b.size}px`,
-            height: `${b.size}px`,
-            animationDelay: `${b.delay}s`,
-            animationDuration: `${b.duration}s`,
-          }}
-        />
-      ))}
-
-      {/* ====== FOAM LINE ====== */}
-      <div className="sb-foam-line" />
-      <div className="sb-foam-line-2" />
-
-      {/* ====== WAVE WASH OVERLAY ====== */}
-      <div className={`sb-wave-wash ${phase === 'exiting' ? 'sb-wash-in' : ''} ${phase === 'entering' ? 'sb-wash-out' : ''}`} />
-
-      {/* ====== TITLE ====== */}
-      <div className="sb-title-area">
-        <p className={`sb-brand ${playfair.className}`}>Sea Within</p>
-        <h1 className={`sb-title ${playfair.className}`}>Written in the Sand</h1>
-        <div className="sb-title-line" />
-      </div>
-
-      {/* ====== MESSAGE DISPLAY ====== */}
-      <div className="sb-message-area">
-        <div className="sb-wet-glow" />
-        <div className={`sb-message-content sb-phase-${phase}`}>
-          <p className="sb-message-text">
-            &ldquo;{currentMessage?.content}&rdquo;
-          </p>
-          {author && (
-            <p className={`sb-author ${playfair.className}`}>— {author}</p>
-          )}
+            {/* Subtle inner “candle” core */}
+            <ellipse
+              cx="60"
+              cy="60"
+              rx="10"
+              ry="14"
+              fill="#FEF3C7"
+              className="opacity-90"
+            />
+            <circle cx="60" cy="54" r="3.2" fill="#FBBF24" />
+          </svg>
         </div>
       </div>
+    </button>
+  );
+};
 
-      {/* ====== BOTTOM CTA ====== */}
-      <div className="sb-bottom">
-        <Link href="/wisdom-board" className={`sb-cta ${playfair.className}`}>
-          Write Your Truth in the Sand
-        </Link>
-        <p className={`sb-footer ${playfair.className}`}>
-          Reflections from the Sea Within Community
-        </p>
+const WisdomBoardRevealPage: React.FC = () => {
+  const [messages, setMessages] = useState<WisdomMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<WisdomMessage | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMessages() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await fetch('/api/messages?type=wisdom', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store',
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to load wisdom messages (${res.status})`);
+        }
+
+        const data = await res.json();
+
+        const list: WisdomMessage[] = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+
+        if (!cancelled) {
+          setMessages(clampLotuses(list));
+        }
+      } catch (e: any) {
+        if (!cancelled) {
+          setError('The lotus sanctuary is quiet at the moment. Please try again in a little while.');
+          console.error(e);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    loadMessages();
+
+    const interval = setInterval(loadMessages, 60_000); // refresh every minute
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const hasMessages = messages && messages.length > 0;
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
+      {/* Main content container */}
+      <div className="flex-1 flex flex-col px-4 sm:px-6 md:px-10 lg:px-16 pt-20 pb-16">
+        {/* Header – Community Circle style, but with your text */}
+        <header className="max-w-4xl mx-auto mb-10 sm:mb-12 md:mb-14">
+          <p className="text-xs tracking-[0.35em] uppercase text-amber-300/70 mb-3">
+            wisdom board reveal
+          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-50 mb-3">
+            The Lotus Sanctuary
+          </h1>
+          <p className="text-sm sm:text-base text-slate-300/80 max-w-xl">
+            Where your shared wisdom becomes awakening light.
+          </p>
+        </header>
+
+        {/* Ocean + lotuses */}
+        <main className="flex-1 flex flex-col">
+          <div className="relative flex-1 max-w-6xl mx-auto w-full rounded-3xl overflow-hidden bg-gradient-to-b from-slate-950 via-slate-950 to-slate-950 border border-slate-800/70 shadow-[0_0_80px_rgba(15,23,42,0.9)]">
+            {/* “Ocean” base */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.2),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.9),_rgba(15,23,42,1))]" />
+            {/* Soft horizon glow */}
+            <div className="absolute inset-x-0 top-1/4 h-40 bg-gradient-to-b from-amber-100/5 via-amber-200/8 to-transparent pointer-events-none" />
+            {/* Gentle water sheen */}
+            <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.18),transparent_55%),radial-gradient(circle_at_80%_60%,rgba(148,163,184,0.16),transparent_55%)]" />
+
+            {/* Messages state */}
+            {loading && (
+              <div className="relative z-10 flex h-full items-center justify-center">
+                <p className="text-sm text-slate-300/80">
+                  The water is still… gathering lotus lights.
+                </p>
+              </div>
+            )}
+
+            {!loading && error && (
+              <div className="relative z-10 flex h-full items-center justify-center px-4 text-center">
+                <p className="text-sm text-slate-300/80">{error}</p>
+              </div>
+            )}
+
+            {!loading && !error && !hasMessages && (
+              <div className="relative z-10 flex h-full items-center justify-center px-4 text-center">
+                <p className="text-sm text-slate-300/80 max-w-md">
+                  No wisdom has been released into the water yet. When the first message is shared,
+                  a lotus will bloom here.
+                </p>
+              </div>
+            )}
+
+            {!loading && !error && hasMessages && (
+              <div className="relative z-10 w-full h-full">
+                {messages.map((m, idx) => (
+                  <Lotus
+                    key={m.id ?? idx}
+                    message={m}
+                    index={idx}
+                    total={messages.length}
+                    onSelect={setSelected}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
       </div>
 
-      {/* ====== STYLES ====== */}
-      <style>{`
-        /* === CONTAINER === */
-        .sand-billboard {
-          position: relative;
-          width: 100vw;
-          height: 100vh;
-          overflow: hidden;
-          cursor: default;
-          user-select: none;
-        }
+      {/* Modal for selected wisdom */}
+      {selected && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
+          <div className="relative max-w-lg w-full mx-4 rounded-3xl bg-slate-950/95 border border-amber-200/20 shadow-[0_0_60px_rgba(251,191,36,0.35)] px-6 py-6 sm:px-8 sm:py-7">
+            <div className="absolute -inset-px rounded-3xl bg-gradient-to-b from-amber-200/10 via-transparent to-amber-500/5 pointer-events-none" />
+            <div className="relative space-y-4">
+              <p className="text-xs tracking-[0.3em] uppercase text-amber-300/70">
+                shared wisdom
+              </p>
+              <p className="text-sm sm:text-base text-slate-50 whitespace-pre-wrap leading-relaxed">
+                {selected.content}
+              </p>
+              {selected.author_name && (
+                <p className="text-xs text-slate-400/80 mt-1">
+                  — {selected.author_name}
+                </p>
+              )}
+              <div className="pt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  className="inline-flex items-center rounded-full border border-amber-200/40 bg-slate-950/60 px-4 py-1.5 text-xs sm:text-sm text-amber-100 hover:bg-slate-900/80 transition-colors"
+                >
+                  Close sanctuary
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-        /* === SKY / OCEAN === */
-        .sb-sky {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            180deg,
-            #050d1a 0%,
-            #0a1628 6%,
-            #0e2035 12%,
-            #132d42 20%,
-            #1a3d4e 28%,
-            #224f5a 36%,
-            #2d6260 42%,
-            #3a7565 48%
-          );
-          height: 55%;
-        }
-
-        /* === SAND ZONE === */
-        .sb-sand {
-          position: absolute;
-          top: 48%;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(
-            180deg,
-            #8a7352 0%,
-            #9b8260 5%,
-            #a88e68 10%,
-            #b69970 18%,
-            #c2a478 28%,
-            #cbad7e 40%,
-            #d4b884 55%,
-            #d8be88 70%,
-            #dcc28c 85%,
-            #dfc590 100%
-          );
-        }
-
-        /* === WET SAND ZONE === */
-        .sb-wet-sand-zone {
-          position: absolute;
-          top: 48%;
-          left: 0;
-          right: 0;
-          height: 12%;
-          background: linear-gradient(
-            180deg,
-            rgba(70, 65, 50, 0.5) 0%,
-            rgba(90, 80, 58, 0.35) 30%,
-            rgba(120, 100, 70, 0.15) 70%,
-            transparent 100%
-          );
-          z-index: 3;
-        }
-
-        /* === SAND RIPPLES === */
-        .sb-sand-ripple {
-          position: absolute;
-          left: 0;
-          right: 0;
-          height: 1px;
-          z-index: 3;
-          opacity: 0.12;
-        }
-
-        .sb-ripple-1 {
-          top: 62%;
-          background: linear-gradient(90deg, transparent 5%, rgba(180, 155, 110, 0.5) 20%, rgba(160, 135, 90, 0.3) 50%, rgba(180, 155, 110, 0.5) 80%, transparent 95%);
-          animation: rippleShift 12s ease-in-out infinite;
-        }
-
-        .sb-ripple-2 {
-          top: 68%;
-          background: linear-gradient(90deg, transparent 10%, rgba(190, 165, 115, 0.4) 30%, rgba(170, 145, 100, 0.25) 55%, rgba(190, 165, 115, 0.4) 75%, transparent 90%);
-          animation: rippleShift 15s ease-in-out infinite reverse;
-        }
-
-        .sb-ripple-3 {
-          top: 75%;
-          background: linear-gradient(90deg, transparent 8%, rgba(200, 175, 125, 0.35) 25%, rgba(180, 155, 105, 0.2) 60%, rgba(200, 175, 125, 0.35) 85%, transparent 92%);
-          animation: rippleShift 18s ease-in-out infinite;
-        }
-
-        .sb-ripple-4 {
-          top: 83%;
-          background: linear-gradient(90deg, transparent 15%, rgba(195, 170, 120, 0.3) 35%, rgba(175, 150, 100, 0.18) 65%, rgba(195, 170, 120, 0.3) 80%, transparent 95%);
-          animation: rippleShift 14s ease-in-out infinite reverse;
-        }
-
-        /* === SUN === */
-        .sb-sun {
-          position: absolute;
-          top: 5%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 180px;
-          height: 180px;
-          border-radius: 50%;
-          background: radial-gradient(
-            circle,
-            rgba(255, 220, 150, 0.25) 0%,
-            rgba(255, 200, 120, 0.12) 30%,
-            rgba(255, 180, 90, 0.05) 60%,
-            transparent 100%
-          );
-          z-index: 2;
-          animation: sunPulse 8s ease-in-out infinite;
-        }
-
-        .sb-sun-reflection {
-          position: absolute;
-          top: 20%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 120px;
-          height: 400px;
-          background: linear-gradient(
-            180deg,
-            rgba(255, 220, 150, 0.06) 0%,
-            rgba(255, 200, 120, 0.04) 30%,
-            rgba(255, 190, 100, 0.02) 60%,
-            transparent 100%
-          );
-          z-index: 2;
-          filter: blur(20px);
-          animation: reflectionShimmer 6s ease-in-out infinite;
-        }
-
-        /* === GRAIN TEXTURES === */
-        .sb-grain {
-          position: absolute;
-          top: 48%;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          opacity: 0.08;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          background-size: 256px 256px;
-          pointer-events: none;
-          z-index: 4;
-        }
-
-        .sb-grain-fine {
-          position: absolute;
-          top: 48%;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          opacity: 0.04;
-          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='turbulence' baseFrequency='2.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)'/%3E%3C/svg%3E");
-          background-size: 128px 128px;
-          pointer-events: none;
-          z-index: 4;
-        }
-
-        /* === SAND SPARKLES === */
-        .sb-sparkle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(255, 245, 220, 0.9);
-          box-shadow: 0 0 3px rgba(255, 230, 180, 0.6);
-          animation: sparkleGlint ease-in-out infinite;
-          pointer-events: none;
-          z-index: 5;
-        }
-
-        /* === VIGNETTE === */
-        .sb-vignette {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(
-            ellipse at 50% 50%,
-            transparent 35%,
-            rgba(5, 13, 26, 0.4) 100%
-          );
-          pointer-events: none;
-          z-index: 15;
-        }
-
-        /* === PARTICLES === */
-        .sb-particle {
-          position: absolute;
-          bottom: -20px;
-          border-radius: 50%;
-          background: radial-gradient(circle, rgba(255, 220, 150, 0.9), rgba(194, 154, 76, 0.2));
-          animation: particleFloat linear infinite;
-          pointer-events: none;
-          z-index: 14;
-        }
-
-        /* === WAVES (5 ORGANIC LAYERS) === */
-        .sb-wave {
-          position: absolute;
-          left: 0;
-          width: 200%;
-          pointer-events: none;
-        }
-
-        .sb-wave-1 {
-          bottom: 48%;
-          height: 140px;
-          opacity: 0.15;
-          z-index: 6;
-          animation: waveRoll 18s ease-in-out infinite;
-        }
-        .sb-wave-1 path { fill: rgba(20, 60, 65, 0.5); }
-
-        .sb-wave-2 {
-          bottom: 46%;
-          height: 120px;
-          opacity: 0.2;
-          z-index: 7;
-          animation: waveRoll 13s ease-in-out infinite reverse;
-        }
-        .sb-wave-2 path { fill: rgba(30, 75, 70, 0.45); }
-
-        .sb-wave-3 {
-          bottom: 44%;
-          height: 100px;
-          opacity: 0.25;
-          z-index: 8;
-          animation: waveRoll 10s ease-in-out infinite;
-        }
-        .sb-wave-3 path { fill: rgba(50, 95, 80, 0.4); }
-
-        .sb-wave-4 {
-          bottom: 42%;
-          height: 80px;
-          opacity: 0.3;
-          z-index: 9;
-          animation: waveRoll 7s ease-in-out infinite reverse;
-        }
-        .sb-wave-4 path { fill: rgba(80, 110, 85, 0.35); }
-
-        .sb-wave-5 {
-          bottom: 41%;
-          height: 50px;
-          opacity: 0.35;
-          z-index: 10;
-          animation: waveRoll 5s ease-in-out infinite;
-        }
-        .sb-wave-5 path { fill: rgba(110, 120, 90, 0.3); }
-
-        /* === FOAM BUBBLES === */
-        .sb-foam-bubble {
-          position: absolute;
-          bottom: 50%;
-          border-radius: 50%;
-          background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
-          border: 0.5px solid rgba(255, 255, 255, 0.1);
-          animation: foamBubbleFloat ease-in-out infinite;
-          pointer-events: none;
-          z-index: 11;
-        }
-
-        /* === FOAM LINES === */
-        .sb-foam-line {
-          position: absolute;
-          bottom: 50%;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.03) 10%,
-            rgba(255, 255, 255, 0.08) 25%,
-            rgba(255, 255, 255, 0.14) 40%,
-            rgba(255, 255, 255, 0.08) 55%,
-            rgba(255, 255, 255, 0.12) 70%,
-            rgba(255, 255, 255, 0.06) 85%,
-            transparent 100%
-          );
-          z-index: 12;
-          animation: foamSlide 8s ease-in-out infinite;
-        }
-
-        .sb-foam-line-2 {
-          position: absolute;
-          bottom: 49%;
-          left: 0;
-          width: 100%;
-          height: 1px;
-          background: linear-gradient(
-            90deg,
-            transparent 5%,
-            rgba(255, 255, 255, 0.05) 20%,
-            rgba(255, 255, 255, 0.1) 45%,
-            rgba(255, 255, 255, 0.05) 70%,
-            transparent 95%
-          );
-          z-index: 12;
-          animation: foamSlide 6s ease-in-out infinite reverse;
-        }
-
-        /* === WAVE WASH OVERLAY === */
-        .sb-wave-wash {
-          position: absolute;
-          bottom: 0;
-          left: -5%;
-          width: 110%;
-          height: 0%;
-          background: linear-gradient(
-            0deg,
-            rgba(35, 70, 68, 0.6) 0%,
-            rgba(35, 70, 68, 0.3) 40%,
-            rgba(35, 70, 68, 0.1) 70%,
-            transparent 100%
-          );
-          z-index: 18;
-          pointer-events: none;
-          transition: height 2s ease-in-out;
-        }
-
-        .sb-wash-in {
-          height: 75%;
-          transition: height 2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sb-wash-out {
-          height: 0%;
-          transition: height 1.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* === TITLE === */
-        .sb-title-area {
-          position: absolute;
-          top: 8%;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          z-index: 20;
-          animation: fadeInSlow 3s ease-out forwards;
-        }
-
-        .sb-brand {
-          font-size: 0.6rem;
-          letter-spacing: 0.4em;
-          text-transform: uppercase;
-          color: rgba(255, 220, 170, 0.25);
-          margin: 0 0 10px 0;
-        }
-
-        .sb-title {
-          font-style: italic;
-          font-weight: 400;
-          font-size: clamp(1.4rem, 3.5vw, 2.6rem);
-          color: rgba(255, 220, 170, 0.2);
-          letter-spacing: 0.08em;
-          margin: 0;
-          text-shadow: 0 0 30px rgba(255, 200, 120, 0.06);
-        }
-
-        .sb-title-line {
-          width: 60px;
-          height: 1px;
-          margin: 16px auto 0;
-          background: linear-gradient(90deg, transparent, rgba(255, 220, 170, 0.18), transparent);
-        }
-
-        /* === MESSAGE AREA === */
-        .sb-message-area {
-          position: absolute;
-          top: 62%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 88%;
-          max-width: 780px;
-          text-align: center;
-          z-index: 20;
-          padding: 50px 30px;
-        }
-
-        .sb-wet-glow {
-          position: absolute;
-          inset: -40px;
-          border-radius: 50%;
-          background: radial-gradient(
-            ellipse,
-            rgba(100, 85, 55, 0.2) 0%,
-            rgba(100, 85, 55, 0.08) 40%,
-            transparent 70%
-          );
-          filter: blur(25px);
-          pointer-events: none;
-        }
-
-        /* === MESSAGE TEXT — CARVED IN SAND === */
-        .sb-message-content {
-          position: relative;
-          transition: opacity 2s ease, transform 2s ease, filter 1.5s ease;
-        }
-
-        .sb-phase-entering {
-          opacity: 0;
-          transform: translateY(8px);
-          filter: blur(2px);
-        }
-
-        .sb-phase-visible {
-          opacity: 1;
-          transform: translateY(0);
-          filter: blur(0);
-        }
-
-        .sb-phase-exiting {
-          opacity: 0;
-          transform: translateY(-4px);
-          filter: blur(3px);
-          transition: opacity 1.8s ease-in, transform 1.8s ease-in, filter 1.5s ease-in;
-        }
-
-        .sb-message-text {
-          font-family: inherit;
-          font-style: italic;
-          font-weight: 300;
-          font-size: clamp(1.3rem, 3.8vw, 2.6rem);
-          line-height: 1.7;
-          margin: 0 0 28px 0;
-          color: #5d4a2e;
-          text-shadow:
-            1px 2px 3px rgba(0, 0, 0, 0.3),
-            -1px -1px 0px rgba(255, 240, 210, 0.12),
-            0 0 15px rgba(180, 145, 80, 0.12),
-            0 0 40px rgba(180, 145, 80, 0.05),
-            2px 3px 8px rgba(60, 45, 20, 0.25),
-            inset 0 0 0 rgba(255, 240, 210, 0.1);
-          letter-spacing: 0.02em;
-        }
-
-        .sb-author {
-          font-size: clamp(0.55rem, 1.2vw, 0.8rem);
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: rgba(93, 74, 46, 0.35);
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-          margin: 0;
-        }
-
-        /* === BOTTOM CTA === */
-        .sb-bottom {
-          position: absolute;
-          bottom: 3%;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          z-index: 20;
-        }
-
-        .sb-cta {
-          display: inline-block;
-          font-size: clamp(0.55rem, 1.1vw, 0.7rem);
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: rgba(160, 135, 90, 0.5);
-          text-decoration: none;
-          padding: 8px 24px;
-          border: 1px solid rgba(160, 135, 90, 0.18);
-          border-radius: 30px;
-          transition: all 0.6s ease;
-          margin-bottom: 10px;
-        }
-
-        .sb-cta:hover {
-          color: rgba(200, 175, 120, 0.75);
-          border-color: rgba(200, 175, 120, 0.3);
-          background: rgba(160, 135, 90, 0.06);
-          text-shadow: 0 0 12px rgba(200, 175, 120, 0.12);
-        }
-
-        .sb-footer {
-          font-size: 0.5rem;
-          letter-spacing: 0.25em;
-          color: rgba(140, 120, 85, 0.25);
-          text-transform: uppercase;
-          margin: 6px 0 0 0;
-        }
-
-        /* === KEYFRAMES === */
-        @keyframes waveRoll {
-          0% { transform: translateX(0); }
-          50% { transform: translateX(-25%); }
-          100% { transform: translateX(0); }
-        }
-
-        @keyframes particleFloat {
-          0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
-          5% { transform: translateY(-5vh) translateX(3px) scale(1); opacity: 0.3; }
-          50% { transform: translateY(-50vh) translateX(-8px) scale(0.8); }
-          95% { opacity: 0.3; }
-          100% { transform: translateY(-105vh) translateX(5px) scale(0.2); opacity: 0; }
-        }
-
-        @keyframes sparkleGlint {
-          0%, 100% { opacity: 0; transform: scale(0.5); }
-          50% { opacity: 0.8; transform: scale(1.2); }
-        }
-
-        @keyframes foamBubbleFloat {
-          0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-          20% { opacity: 0.6; transform: translateY(-5px) translateX(3px) scale(1); }
-          80% { opacity: 0.3; transform: translateY(-15px) translateX(-5px) scale(0.7); }
-          100% { transform: translateY(-25px) translateX(2px) scale(0.3); opacity: 0; }
-        }
-
-        @keyframes foamSlide {
-          0%, 100% { transform: translateX(-3%); opacity: 0.4; }
-          50% { transform: translateX(3%); opacity: 0.8; }
-        }
-
-        @keyframes rippleShift {
-          0%, 100% { transform: translateX(-2px); opacity: 0.1; }
-          50% { transform: translateX(2px); opacity: 0.16; }
-        }
-
-        @keyframes sunPulse {
-          0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
-          50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
-        }
-
-        @keyframes reflectionShimmer {
-          0%, 100% { opacity: 1; transform: translateX(-50%) scaleX(1); }
-          50% { opacity: 0.5; transform: translateX(-50%) scaleX(1.3); }
-        }
-
-        @keyframes fadeInSlow {
-          0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
-          100% { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* === RESPONSIVE === */
-        @media (max-width: 768px) {
-          .sb-message-area {
-            width: 92%;
-            padding: 30px 20px;
-            top: 65%;
+      {/* Page‑local styles for drift + petals */}
+      <style jsx global>{`
+        @keyframes lotus-drift {
+          0% {
+            transform: translate3d(-50%, -50%, 0) translateX(-8px) translateY(4px);
           }
-          .sb-title-area { top: 6%; }
-          .sb-sun { width: 120px; height: 120px; }
-          .sb-sun-reflection { width: 80px; height: 250px; }
+          50% {
+            transform: translate3d(-50%, -50%, 0) translateX(10px) translateY(-6px);
+          }
+          100% {
+            transform: translate3d(-50%, -50%, 0) translateX(-6px) translateY(3px);
+          }
         }
 
-        @media (max-width: 480px) {
-          .sb-message-area { padding: 20px 15px; top: 68%; }
-          .sb-title-area { top: 5%; }
-          .sb-bottom { bottom: 2%; }
-          .sb-cta { padding: 6px 18px; }
+        .lotus-petal-soft {
+          filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.35));
+        }
+
+        .lotus-petal-foreground {
+          filter: drop-shadow(0 0 14px rgba(251, 191, 36, 0.5));
+        }
+
+        .bg-gradient-radial {
+          background-image: radial-gradient(circle, var(--tw-gradient-stops));
         }
       `}</style>
     </div>
   );
-}
+};
+
+export default WisdomBoardRevealPage;
