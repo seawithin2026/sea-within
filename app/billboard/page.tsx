@@ -14,7 +14,6 @@ const MAX_LOTUSES = 30;
 function clampLotuses(messages: WisdomMessage[]): WisdomMessage[] {
   if (!messages) return [];
   if (messages.length <= MAX_LOTUSES) return messages;
-  // Prefer most recent 30
   return [...messages]
     .sort((a, b) => {
       const da = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -25,14 +24,13 @@ function clampLotuses(messages: WisdomMessage[]): WisdomMessage[] {
 }
 
 function getLotusPosition(index: number, total: number) {
-  // Spread lotuses gently across the “ocean”
   const rows = 3;
   const row = index % rows;
   const col = Math.floor(index / rows);
 
   const colFraction = total > 1 ? col / Math.max(1, Math.ceil(total / rows)) : 0.5;
-  const baseX = 10 + colFraction * 70; // 10%–80%
-  const baseY = 25 + row * 20; // 25%, 45%, 65%
+  const baseX = 10 + colFraction * 70;
+  const baseY = 25 + row * 20;
 
   const jitterX = (Math.random() - 0.5) * 8;
   const jitterY = (Math.random() - 0.5) * 6;
@@ -52,7 +50,7 @@ type LotusProps = {
 
 const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
   const position = useMemo(() => getLotusPosition(index, total), [index, total]);
-  const driftDuration = 40 + Math.random() * 25; // seconds
+  const driftDuration = 40 + Math.random() * 25;
   const floatDelay = Math.random() * 10;
 
   return (
@@ -67,9 +65,7 @@ const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
       }}
     >
       <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28">
-        {/* Hybrid glow aura */}
         <div className="absolute inset-0 rounded-full bg-gradient-radial from-amber-300/35 via-amber-200/10 to-transparent blur-2xl opacity-80 pointer-events-none" />
-        {/* Lotus body */}
         <div className="relative flex items-center justify-center w-full h-full">
           <svg
             viewBox="0 0 120 120"
@@ -88,11 +84,8 @@ const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
               </linearGradient>
             </defs>
 
-            {/* Hybrid inner glow (candle + eye aura suggestion) */}
             <circle cx="60" cy="60" r="26" fill="url(#lotusCenterGlow)" />
 
-            {/* Teardrop petals – logo‑matched feeling */}
-            {/* Back petals */}
             <g className="opacity-80">
               <path
                 d="M60 16 C50 30 44 44 46 58 C48 70 55 78 60 82 C65 78 72 70 74 58 C76 44 70 30 60 16 Z"
@@ -111,7 +104,6 @@ const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
               />
             </g>
 
-            {/* Front petals */}
             <g>
               <path
                 d="M60 26 C52 38 48 50 50 60 C52 70 56 76 60 80 C64 76 68 70 70 60 C72 50 68 38 60 26 Z"
@@ -130,15 +122,7 @@ const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
               />
             </g>
 
-            {/* Subtle inner “candle” core */}
-            <ellipse
-              cx="60"
-              cy="60"
-              rx="10"
-              ry="14"
-              fill="#FEF3C7"
-              className="opacity-90"
-            />
+            <ellipse cx="60" cy="60" rx="10" ry="14" fill="#FEF3C7" className="opacity-90" />
             <circle cx="60" cy="54" r="3.2" fill="#FBBF24" />
           </svg>
         </div>
@@ -163,28 +147,19 @@ const WisdomBoardRevealPage: React.FC = () => {
 
         const res = await fetch('/api/messages?type=wisdom', {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           cache: 'no-store',
         });
 
-        if (!res.ok) {
-          throw new Error(`Failed to load wisdom messages (${res.status})`);
-        }
+        if (!res.ok) throw new Error(`Failed to load wisdom messages (${res.status})`);
 
         const data = await res.json();
 
-        const list: WisdomMessage[] = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.data)
-          ? data.data
-          : [];
+        // ⭐ FIXED: API returns { posts: [...] }
+        const list: WisdomMessage[] = data.posts || [];
 
-        if (!cancelled) {
-          setMessages(clampLotuses(list));
-        }
-      } catch (e: any) {
+        if (!cancelled) setMessages(clampLotuses(list));
+      } catch (e) {
         if (!cancelled) {
           setError('The lotus sanctuary is quiet at the moment. Please try again in a little while.');
           console.error(e);
@@ -195,8 +170,7 @@ const WisdomBoardRevealPage: React.FC = () => {
     }
 
     loadMessages();
-
-    const interval = setInterval(loadMessages, 60_000); // refresh every minute
+    const interval = setInterval(loadMessages, 60000);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -207,9 +181,7 @@ const WisdomBoardRevealPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
-      {/* Main content container */}
       <div className="flex-1 flex flex-col px-4 sm:px-6 md:px-10 lg:px-16 pt-20 pb-16">
-        {/* Header – Community Circle style, but with your text */}
         <header className="max-w-4xl mx-auto mb-10 sm:mb-12 md:mb-14">
           <p className="text-xs tracking-[0.35em] uppercase text-amber-300/70 mb-3">
             wisdom board reveal
@@ -222,17 +194,12 @@ const WisdomBoardRevealPage: React.FC = () => {
           </p>
         </header>
 
-        {/* Ocean + lotuses */}
         <main className="flex-1 flex flex-col">
           <div className="relative flex-1 max-w-6xl mx-auto w-full rounded-3xl overflow-hidden bg-gradient-to-b from-slate-950 via-slate-950 to-slate-950 border border-slate-800/70 shadow-[0_0_80px_rgba(15,23,42,0.9)]">
-            {/* “Ocean” base */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.2),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.9),_rgba(15,23,42,1))]" />
-            {/* Soft horizon glow */}
             <div className="absolute inset-x-0 top-1/4 h-40 bg-gradient-to-b from-amber-100/5 via-amber-200/8 to-transparent pointer-events-none" />
-            {/* Gentle water sheen */}
             <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.18),transparent_55%),radial-gradient(circle_at_80%_60%,rgba(148,163,184,0.16),transparent_55%)]" />
 
-            {/* Messages state */}
             {loading && (
               <div className="relative z-10 flex h-full items-center justify-center">
                 <p className="text-sm text-slate-300/80">
@@ -273,7 +240,6 @@ const WisdomBoardRevealPage: React.FC = () => {
         </main>
       </div>
 
-      {/* Modal for selected wisdom */}
       {selected && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
           <div className="relative max-w-lg w-full mx-4 rounded-3xl bg-slate-950/95 border border-amber-200/20 shadow-[0_0_60px_rgba(251,191,36,0.35)] px-6 py-6 sm:px-8 sm:py-7">
@@ -304,7 +270,6 @@ const WisdomBoardRevealPage: React.FC = () => {
         </div>
       )}
 
-      {/* Page‑local styles for drift + petals */}
       <style jsx global>{`
         @keyframes lotus-drift {
           0% {
