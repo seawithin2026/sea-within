@@ -96,6 +96,9 @@ export default function WisdomBoardPage() {
   };
 
   const deletePost = async (id: string) => {
+    const confirmDelete = confirm("Delete this reflection?");
+    if (!confirmDelete) return;
+
     await fetch(`/api/messages?id=${id}&type=wisdom`, {
       method: 'DELETE',
     });
@@ -207,17 +210,17 @@ export default function WisdomBoardPage() {
                       rows={4}
                     />
 
-                    <div className="flex gap-3 mt-3">
+                    <div className="flex gap-4 mt-4">
                       <button
                         onClick={saveEdit}
-                        className="text-[11px] text-golden-300 hover:text-golden-200"
+                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
                       >
                         Save
                       </button>
 
                       <button
                         onClick={() => setEditingId(null)}
-                        className="text-[11px] text-white/30 hover:text-white/50"
+                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
                       >
                         Cancel
                       </button>
@@ -238,14 +241,14 @@ export default function WisdomBoardPage() {
                   <div className="flex gap-4">
                     <button
                       onClick={() => startEditing(post)}
-                      className="text-[11px] text-sea-200 hover:text-golden-300 transition"
+                      className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
                     >
                       Edit
                     </button>
 
                     <button
                       onClick={() => deletePost(post.id)}
-                      className="text-[11px] text-red-300 hover:text-red-400 transition"
+                      className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
                     >
                       Delete
                     </button>
