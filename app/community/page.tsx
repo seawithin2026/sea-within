@@ -23,6 +23,9 @@ export default function CommunityPage() {
   const [feedback, setFeedback] = useState('');
   const [user, setUser] = useState<any>(null);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState('');
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load user
@@ -100,6 +103,40 @@ export default function CommunityPage() {
     }
   };
 
+  const startEditing = (msg: ChatMsg) => {
+    setEditingId(msg.id);
+    setEditingContent(msg.message);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+
+    await fetch('/api/messages', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: editingId,
+        content: editingContent,
+        type: 'chat',
+      }),
+    });
+
+    setEditingId(null);
+    setEditingContent('');
+    fetchMessages();
+  };
+
+  const deleteMessage = async (id: string) => {
+    const confirmDelete = confirm("Delete this message?");
+    if (!confirmDelete) return;
+
+    await fetch(`/api/messages?id=${id}&type=chat`, {
+      method: 'DELETE',
+    });
+
+    fetchMessages();
+  };
+
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString('en-CA', {
@@ -146,20 +183,73 @@ export default function CommunityPage() {
               className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`chat-bubble ${msg.is_own ? 'own' : ''}`}>
-                {!msg.is_own && (
-                  <p className="font-body text-[10px] tracking-[1px] uppercase text-golden-400/50 mb-1">
-                    {msg.author}
-                  </p>
+
+                {/* EDIT MODE */}
+                {editingId === msg.id ? (
+                  <>
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      rows={3}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sea-100 text-sm"
+                    />
+
+                    <div className="flex gap-4 mt-3">
+                      <button
+                        onClick={saveEdit}
+                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {!msg.is_own && (
+                      <p className="font-body text-[10px] tracking-[1px] uppercase text-golden-400/50 mb-1">
+                        {msg.author}
+                      </p>
+                    )}
+
+                    <p className="font-body text-sm text-sea-100/80 leading-relaxed">
+                      {msg.message}
+                    </p>
+
+                    {/* EDIT + DELETE BUTTONS (LEFT SIDE) */}
+                    {msg.is_own && (
+                      <div className="flex gap-4 mt-3">
+                        <button
+                          onClick={() => startEditing(msg)}
+                          className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => deleteMessage(msg.id)}
+                          className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+
+                    <p className="font-body text-[10px] text-white/15 mt-2 text-right">
+                      {formatTime(msg.created_at)}
+                    </p>
+                  </>
                 )}
-                <p className="font-body text-sm text-sea-100/80 leading-relaxed">
-                  {msg.message}
-                </p>
-                <p className="font-body text-[10px] text-white/15 mt-2 text-right">
-                  {formatTime(msg.created_at)}
-                </p>
               </div>
             </div>
           ))}
+
           <div ref={messagesEndRef} />
         </div>
       </section>
