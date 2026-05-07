@@ -30,10 +30,10 @@ function getLotusPosition(index: number, total: number) {
 
   const colFraction = total > 1 ? col / Math.max(1, Math.ceil(total / rows)) : 0.5;
   const baseX = 10 + colFraction * 70;
-  const baseY = 25 + row * 20;
+  const baseY = 40 + row * 18;
 
-  const jitterX = (Math.random() - 0.5) * 8;
-  const jitterY = (Math.random() - 0.5) * 6;
+  const jitterX = (Math.random() - 0.5) * 6;
+  const jitterY = (Math.random() - 0.5) * 4;
 
   return {
     left: `${baseX + jitterX}%`,
@@ -50,8 +50,8 @@ type LotusProps = {
 
 const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
   const position = useMemo(() => getLotusPosition(index, total), [index, total]);
-  const driftDuration = 40 + Math.random() * 25;
-  const floatDelay = Math.random() * 10;
+  const driftDuration = 38 + Math.random() * 22;
+  const floatDelay = Math.random() * 8;
 
   return (
     <button
@@ -67,6 +67,7 @@ const Lotus: React.FC<LotusProps> = ({ message, index, total, onSelect }) => {
       <div className="relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28">
         <div className="absolute inset-0 rounded-full bg-gradient-radial from-amber-300/35 via-amber-200/10 to-transparent blur-2xl opacity-80 pointer-events-none" />
         <div className="relative flex items-center justify-center w-full h-full">
+          {/* your lotus SVG unchanged */}
           <svg
             viewBox="0 0 120 120"
             className="w-full h-full drop-shadow-[0_0_18px_rgba(251,191,36,0.45)]"
@@ -154,8 +155,6 @@ const WisdomBoardRevealPage: React.FC = () => {
         if (!res.ok) throw new Error(`Failed to load wisdom messages (${res.status})`);
 
         const data = await res.json();
-
-        // ⭐ FIXED: API returns { posts: [...] }
         const list: WisdomMessage[] = data.posts || [];
 
         if (!cancelled) setMessages(clampLotuses(list));
@@ -180,66 +179,74 @@ const WisdomBoardRevealPage: React.FC = () => {
   const hasMessages = messages && messages.length > 0;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
-      <div className="flex-1 flex flex-col px-4 sm:px-6 md:px-10 lg:px-16 pt-20 pb-16">
-        <header className="max-w-4xl mx-auto mb-10 sm:mb-12 md:mb-14">
-          <p className="text-xs tracking-[0.35em] uppercase text-amber-300/70 mb-3">
-            wisdom board reveal
-          </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-slate-50 mb-3">
-            The Lotus Sanctuary
-          </h1>
-          <p className="text-sm sm:text-base text-slate-300/80 max-w-xl">
-            Where your shared wisdom becomes awakening light.
-          </p>
-        </header>
+    <div className="relative min-h-screen w-full overflow-hidden bg-slate-950 text-slate-50">
 
-        <main className="flex-1 flex flex-col">
-          <div className="relative flex-1 max-w-6xl mx-auto w-full rounded-3xl overflow-hidden bg-gradient-to-b from-slate-950 via-slate-950 to-slate-950 border border-slate-800/70 shadow-[0_0_80px_rgba(15,23,42,0.9)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(15,23,42,0.2),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.9),_rgba(15,23,42,1))]" />
-            <div className="absolute inset-x-0 top-1/4 h-40 bg-gradient-to-b from-amber-100/5 via-amber-200/8 to-transparent pointer-events-none" />
-            <div className="absolute inset-0 opacity-40 mix-blend-screen pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.18),transparent_55%),radial-gradient(circle_at_80%_60%,rgba(148,163,184,0.16),transparent_55%)]" />
+      {/* ⭐ FULL-SCREEN OCEAN BACKGROUND */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Moon glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.18),_rgba(255,255,255,0.05),_transparent_70%)] opacity-70" />
 
-            {loading && (
-              <div className="relative z-10 flex h-full items-center justify-center">
-                <p className="text-sm text-slate-300/80">
-                  The water is still… gathering lotus lights.
-                </p>
-              </div>
-            )}
+        {/* Horizon shimmer */}
+        <div className="absolute top-1/3 left-0 right-0 h-40 bg-gradient-to-b from-amber-200/10 via-amber-100/5 to-transparent" />
 
-            {!loading && error && (
-              <div className="relative z-10 flex h-full items-center justify-center px-4 text-center">
-                <p className="text-sm text-slate-300/80">{error}</p>
-              </div>
-            )}
-
-            {!loading && !error && !hasMessages && (
-              <div className="relative z-10 flex h-full items-center justify-center px-4 text-center">
-                <p className="text-sm text-slate-300/80 max-w-md">
-                  No wisdom has been released into the water yet. When the first message is shared,
-                  a lotus will bloom here.
-                </p>
-              </div>
-            )}
-
-            {!loading && !error && hasMessages && (
-              <div className="relative z-10 w-full h-full">
-                {messages.map((m, idx) => (
-                  <Lotus
-                    key={m.id ?? idx}
-                    message={m}
-                    index={idx}
-                    total={messages.length}
-                    onSelect={setSelected}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </main>
+        {/* Water texture */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.12),transparent_55%),radial-gradient(circle_at_80%_60%,rgba(148,163,184,0.1),transparent_55%)] opacity-40 mix-blend-screen" />
       </div>
 
+      {/* HEADER */}
+      <header className="relative z-10 max-w-4xl mx-auto pt-24 px-6 text-center">
+        <p className="text-xs tracking-[0.35em] uppercase text-amber-300/70 mb-3">
+          wisdom board reveal
+        </p>
+        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-50 mb-3">
+          The Lotus Sanctuary
+        </h1>
+        <p className="text-sm sm:text-base text-slate-300/80 max-w-xl mx-auto">
+          Where your shared wisdom becomes awakening light.
+        </p>
+      </header>
+
+      {/* LOTUS FIELD */}
+      <main className="relative z-10 w-full h-[70vh] mt-10">
+        {loading && (
+          <div className="flex h-full items-center justify-center">
+            <p className="text-sm text-slate-300/80">
+              The water is still… gathering lotus lights.
+            </p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="flex h-full items-center justify-center px-4 text-center">
+            <p className="text-sm text-slate-300/80">{error}</p>
+          </div>
+        )}
+
+        {!loading && !error && !hasMessages && (
+          <div className="flex h-full items-center justify-center px-4 text-center">
+            <p className="text-sm text-slate-300/80 max-w-md">
+              No wisdom has been released into the water yet. When the first message is shared,
+              a lotus will bloom here.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && hasMessages && (
+          <div className="absolute inset-0">
+            {messages.map((m, idx) => (
+              <Lotus
+                key={m.id ?? idx}
+                message={m}
+                index={idx}
+                total={messages.length}
+                onSelect={setSelected}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* MODAL */}
       {selected && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
           <div className="relative max-w-lg w-full mx-4 rounded-3xl bg-slate-950/95 border border-amber-200/20 shadow-[0_0_60px_rgba(251,191,36,0.35)] px-6 py-6 sm:px-8 sm:py-7">
@@ -270,16 +277,17 @@ const WisdomBoardRevealPage: React.FC = () => {
         </div>
       )}
 
+      {/* ANIMATIONS */}
       <style jsx global>{`
         @keyframes lotus-drift {
           0% {
-            transform: translate3d(-50%, -50%, 0) translateX(-8px) translateY(4px);
+            transform: translate3d(-50%, -50%, 0) translateX(-6px) translateY(3px);
           }
           50% {
-            transform: translate3d(-50%, -50%, 0) translateX(10px) translateY(-6px);
+            transform: translate3d(-50%, -50%, 0) translateX(8px) translateY(-5px);
           }
           100% {
-            transform: translate3d(-50%, -50%, 0) translateX(-6px) translateY(3px);
+            transform: translate3d(-50%, -50%, 0) translateX(-4px) translateY(2px);
           }
         }
 
