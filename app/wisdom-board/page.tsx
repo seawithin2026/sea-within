@@ -29,7 +29,10 @@ export default function WisdomBoardPage() {
     try {
       const res = await fetch('/api/messages?type=wisdom');
       const data = await res.json();
-      if (data.posts) setPosts(data.posts);
+
+      // FIXED: API returns an array, not { posts: [...] }
+      const list = Array.isArray(data) ? data : data.data || [];
+      setPosts(list);
     } catch {
       console.error('Failed to fetch posts');
     }
