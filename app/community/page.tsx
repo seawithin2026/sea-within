@@ -4,14 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import Navigation from '@/components/layout/Navigation';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-// ============================================
-// SEA WITHIN — Community Chat
-// ============================================
-// Positive-vibe-only chat space where members
-// connect in real time. All messages are filtered
-// through the moderation system before appearing.
-// ============================================
-
 interface ChatMsg {
   id: string;
   message: string;
@@ -64,10 +56,14 @@ export default function CommunityPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setFeedback(
-          data.suggestion ||
-          'This space is for uplifting, reflective, and supportive communication.'
-        );
+        if (res.status === 401) {
+          setFeedback('Please sign in to share your light with the circle.');
+        } else {
+          setFeedback(
+            data.suggestion ||
+            'This space is for uplifting, reflective, and supportive communication.'
+          );
+        }
         return;
       }
 
@@ -93,7 +89,6 @@ export default function CommunityPage() {
     <main className="min-h-screen bg-sanctuary-dark flex flex-col">
       <Navigation />
 
-      {/* Header */}
       <section className="pt-24 pb-6 px-6 text-center border-b border-white/5">
         <ScrollReveal>
           <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-3">
@@ -108,7 +103,6 @@ export default function CommunityPage() {
         </ScrollReveal>
       </section>
 
-      {/* Chat Messages */}
       <section className="flex-1 overflow-y-auto px-4 md:px-8 py-6 max-w-3xl mx-auto w-full">
         <div className="space-y-4">
           {messages.length === 0 && (
@@ -146,7 +140,6 @@ export default function CommunityPage() {
         </div>
       </section>
 
-      {/* Moderation feedback */}
       {feedback && (
         <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
           <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
@@ -155,35 +148,74 @@ export default function CommunityPage() {
         </div>
       )}
 
-      {/* Message Input */}
       <section className="border-t border-white/5 px-4 md:px-8 py-4">
-        <form
-          onSubmit={handleSend}
-          className="max-w-3xl mx-auto flex gap-3"
-        >
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Share something uplifting..."
-            maxLength={300}
-            className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
-                     font-body text-sm text-sea-100 placeholder:text-white/20
-                     focus:outline-none focus:border-golden-400/30 focus:bg-white/8
-                     transition-all duration-300"
-          />
-          <button
-            type="submit"
-            disabled={isSubmitting || !newMessage.trim()}
-            className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
-                     rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
-                     uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
-                     disabled:opacity-40"
+        <div className="max-w-3xl mx-auto">
+          <p className="font-body text-[10px] text-white/15 text-center mb-3 tracking-wide">
+            This space is for uplifting, reflective, and supportive communication.
+          </p>
+          <form
+            onSubmit={handleSend}
+            className="flex gap-3"
           >
-            {isSubmitting ? '...' : 'Send'}
-          </button>
-        </form>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Share something uplifting..."
+              maxLength={300}
+              className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
+                       font-body text-sm text-sea-100 placeholder:text-white/20
+                       focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
+                       transition-all duration-300"
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting || !newMessage.trim()}
+              className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
+                       rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
+                       uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
+                       disabled:opacity-40"
+            >
+              {isSubmitting ? '...' : 'Send'}
+            </button>
+          </form>
+        </div>
       </section>
+
+      <style>{`
+        .chat-bubble {
+          max-width: 75%;
+          padding: 14px 18px;
+          border-radius: 18px 18px 18px 4px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+        }
+
+        .chat-bubble:hover {
+          background: rgba(255, 255, 255, 0.07);
+          border-color: rgba(229, 173, 67, 0.1);
+        }
+
+        .chat-bubble.own {
+          border-radius: 18px 18px 4px 18px;
+          background: rgba(229, 173, 67, 0.08);
+          border: 1px solid rgba(229, 173, 67, 0.12);
+        }
+
+        .chat-bubble.own:hover {
+          background: rgba(229, 173, 67, 0.12);
+          border-color: rgba(229, 173, 67, 0.2);
+        }
+
+        @media (max-width: 640px) {
+          .chat-bubble {
+            max-width: 88%;
+            padding: 12px 15px;
+          }
+        }
+      `}</style>
     </main>
   );
 }
