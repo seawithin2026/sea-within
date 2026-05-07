@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { moderateContent } from '@/lib/moderation'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -78,6 +79,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
+  // ⭐ RUN MODERATION HERE
+  const moderation = moderateContent(content)
+  if (!moderation.approved) {
+    return NextResponse.json(
+      {
+        error: 'blocked',
+        suggestion:
+          moderation.message ||
+          'This space is for uplifting, reflective, and supportive communication.',
+      },
+      { status: 400 }
+    )
+  }
+
   let table = ''
   let payload: any = {
     user_id: auth.user.id,
@@ -105,7 +120,16 @@ export async function POST(req: Request) {
 
   const { error } = await supabase.from(table).insert(payload)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    return NextResponse.json(
+      {
+        error: error.message,
+        suggestion:
+          'This space is for uplifting, reflective, and supportive communication.',
+      },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json({ success: true })
 }
