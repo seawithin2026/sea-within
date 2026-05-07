@@ -3,28 +3,44 @@
 import { useState, useEffect, useRef } from 'react';
 import Navigation from '@/components/layout/Navigation';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import { createClient } from '@/lib/supabase/client';
 
 interface ChatMsg {
   id: string;
   message: string;
   author: string;
+  user_id: string;
   created_at: string;
   is_own?: boolean;
 }
 
 export default function CommunityPage() {
+  const supabase = createClient();
+
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState('');
+  const [user, setUser] = useState<any>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Load user
   useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
+
+  // Fetch messages once user is known
+  useEffect(() => {
+    if (!user) return;
     fetchMessages();
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
+  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -33,7 +49,15 @@ export default function CommunityPage() {
     try {
       const res = await fetch('/api/messages?type=chat');
       const data = await res.json();
-      if (data.messages) setMessages(data.messages);
+
+      if (data.messages) {
+        const withOwnership = data.messages.map((msg: ChatMsg) => ({
+          ...msg,
+          is_own: user && msg.user_id === user.id,
+        }));
+
+        setMessages(withOwnership);
+      }
     } catch {
       console.error('Failed to fetch messages');
     }
@@ -61,7 +85,7 @@ export default function CommunityPage() {
         } else {
           setFeedback(
             data.suggestion ||
-            'This space is for uplifting, reflective, and supportive communication.'
+              'This space is for uplifting, reflective, and supportive communication.'
           );
         }
         return;
@@ -153,10 +177,8 @@ export default function CommunityPage() {
           <p className="font-body text-[10px] text-white/15 text-center mb-3 tracking-wide">
             This space is for uplifting, reflective, and supportive communication.
           </p>
-          <form
-            onSubmit={handleSend}
-            className="flex gap-3"
-          >
+
+          <form onSubmit={handleSend} className="flex gap-3">
             <input
               type="text"
               value={newMessage}
