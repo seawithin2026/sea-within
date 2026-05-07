@@ -11,7 +11,7 @@ export async function GET(req: Request) {
   if (type === 'wisdom') {
     const { data, error } = await supabase
       .from('wisdom_posts')
-      .select('id, content, created_at, user_id')
+      .select('id, content, created_at, user_id, is_approved')   // ⭐ FIXED: REQUIRED FOR RLS
       .order('created_at', { ascending: false })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
 
     const messages = (data || []).map((m: any) => ({
       id: m.id,
-      message: m.content,   // ⭐ FIXED
+      message: m.content,
       created_at: m.created_at,
       author: 'A Beautiful Soul',
       is_own: auth?.user?.id ? m.user_id === auth.user.id : false,
@@ -110,7 +110,7 @@ export async function POST(req: Request) {
 
   if (type === 'chat') {
     table = 'chat_messages'
-    payload.content = content   // ⭐ FIXED
+    payload.content = content
   }
 
   if (!table) {
