@@ -19,6 +19,10 @@ export default function JournalPage() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [user, setUser] = useState<any>(null);
 
+  // Editing state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+
   // Load user session
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -59,6 +63,38 @@ export default function JournalPage() {
       setEntry("");
       fetchEntries();
     }
+  };
+
+  const startEditing = (entry: JournalEntry) => {
+    setEditingId(entry.id);
+    setEditingContent(entry.content);
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+
+    const { error } = await supabase
+      .from("journal_entries")
+      .update({ content: editingContent })
+      .eq("id", editingId);
+
+    if (!error) {
+      setEditingId(null);
+      setEditingContent("");
+      fetchEntries();
+    }
+  };
+
+  const deleteEntry = async (id: string) => {
+    const confirmDelete = confirm("Delete this entry forever?");
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("journal_entries")
+      .delete()
+      .eq("id", id);
+
+    if (!error) fetchEntries();
   };
 
   const formatDate = (dateStr: string) => {
@@ -150,15 +186,69 @@ export default function JournalPage() {
           {entries.map((entry, index) => (
             <ScrollReveal key={entry.id} delay={100 + index * 50}>
               <div className="wisdom-card break-inside-avoid">
-                <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
-                  {entry.content}
-                </p>
 
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-                  <p className="font-body text-[11px] text-white/20">
-                    {formatDate(entry.created_at)}
-                  </p>
-                </div>
+                {/* EDIT MODE */}
+                {editingId === entry.id ? (
+                  <>
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      rows={5}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3.5
+                                 font-body text-sea-100 placeholder:text-white/20 resize-none
+                                 focus:outline-none focus:border-golden-400/40 focus:bg-white/8
+                                 transition-all duration-300"
+                    />
+
+                    <div className="flex justify-end gap-4 mt-4">
+                      <button
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditingContent("");
+                        }}
+                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        onClick={saveEdit}
+                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* NORMAL VIEW */}
+                    <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
+                      {entry.content}
+                    </p>
+
+                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
+                      <p className="font-body text-[11px] text-white/20">
+                        {formatDate(entry.created_at)}
+                      </p>
+
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => startEditing(entry)}
+                          className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => deleteEntry(entry.id)}
+                          className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </ScrollReveal>
           ))}
