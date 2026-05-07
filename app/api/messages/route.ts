@@ -48,7 +48,7 @@ export async function GET(req: Request) {
     const { data: auth } = await supabase.auth.getUser()
 
     const { data, error } = await supabase
-      .from('community_messages')
+      .from('chat_messages')   // ⭐ FIXED
       .select('id, message, created_at, user_id')
       .order('created_at', { ascending: true })
 
@@ -79,7 +79,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  // ⭐ RUN MODERATION HERE
   const moderation = moderateContent(content)
   if (!moderation.approved) {
     return NextResponse.json(
@@ -110,7 +109,7 @@ export async function POST(req: Request) {
   }
 
   if (type === 'chat') {
-    table = 'community_messages'
+    table = 'chat_messages'   // ⭐ FIXED
     payload.message = content
   }
 
