@@ -48,15 +48,15 @@ export async function GET(req: Request) {
     const { data: auth } = await supabase.auth.getUser()
 
     const { data, error } = await supabase
-      .from('chat_messages')   // ⭐ FIXED
-      .select('id, message, created_at, user_id')
+      .from('chat_messages')
+      .select('id, content, created_at, user_id')
       .order('created_at', { ascending: true })
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     const messages = (data || []).map((m: any) => ({
       id: m.id,
-      message: m.message,
+      message: m.content,   // ⭐ FIXED
       created_at: m.created_at,
       author: 'A Beautiful Soul',
       is_own: auth?.user?.id ? m.user_id === auth.user.id : false,
@@ -109,8 +109,8 @@ export async function POST(req: Request) {
   }
 
   if (type === 'chat') {
-    table = 'chat_messages'   // ⭐ FIXED
-    payload.message = content
+    table = 'chat_messages'
+    payload.content = content   // ⭐ FIXED
   }
 
   if (!table) {
