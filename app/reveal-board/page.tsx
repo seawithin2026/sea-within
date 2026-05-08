@@ -117,30 +117,36 @@ export default function RevealBoard() {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Drifting lotuses — now ABOVE the video */}
-      <section className="pointer-events-none relative z-20 h-screen w-full">
-        {driftingLotuses.map((l, index) => (
-          <button
-            key={l.id}
-            type="button"
-            className="absolute pointer-events-auto"
-            style={{
-              animation: `lotus-drift-${index} ${l.duration}s linear ${l.delay}s infinite`,
-            }}
-            onClick={() => setSelectedPost({ id: l.id, content: l.content })}
-          >
-            <div className="relative h-32 w-32">
-              <div className="absolute inset-0 rounded-full bg-amber-400/40 blur-2xl" />
-              <Image
-                src="/lotus/lotus-amber.png"
-                alt="Lotus Lantern"
-                fill
-                className="object-contain drop-shadow-[0_0_35px_rgba(251,191,36,0.9)]"
-              />
-            </div>
-          </button>
-        ))}
-      </section>
+    {/* Cinematic drifting lanterns */}
+<section className="pointer-events-none relative z-20 h-screen w-full">
+  {driftingLotuses.map((l, index) => (
+    <button
+      key={l.id}
+      type="button"
+      className="absolute pointer-events-auto"
+      style={{
+        animation: `lotus-drift-${index} ${l.duration}s ease-in-out ${l.delay}s infinite`,
+      }}
+      onClick={() => setSelectedPost({ id: l.id, content: l.content })}
+    >
+      <div className="relative h-40 w-40">
+        {/* Soft cinematic bloom */}
+        <div className="absolute inset-0 rounded-full bg-amber-300/20 blur-3xl" />
+
+        {/* Reflection ripple */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-6 bg-amber-200/15 blur-xl rounded-full" />
+
+        {/* Lotus lantern */}
+        <Image
+          src="/lotus/lotus-amber.png"
+          alt="Lotus Lantern"
+          fill
+          className="object-contain drop-shadow-[0_0_25px_rgba(255,200,120,0.8)]"
+        />
+      </div>
+    </button>
+  ))}
+</section>
 
       {/* Modal — highest layer */}
       {selectedPost && (
