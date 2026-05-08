@@ -45,24 +45,32 @@ export default function RevealBoard() {
     loadPosts();
   }, []);
 
-  // Generate drifting lotus paths
+  // Generate drifting lotus paths (cinematic floating)
   const driftingLotuses: DriftLotus[] = useMemo(() => {
     if (!posts.length) return [];
 
     return posts.map((p, index) => {
-      const delay = index * 6;
-      const duration = 40 + (index % 5) * 5;
+      const delay = index * 8;
+
+      // MUCH slower drift
+      const duration = 90 + (index % 5) * 15;
+
+      // Alternate drift direction
       const startFromLeft = index % 2 === 0;
 
-      const startX = startFromLeft ? -15 : 115;
-      const endX = startFromLeft ? 115 : -15;
+      const startX = startFromLeft ? -10 : 110;
+      const endX = startFromLeft ? 110 : -10;
 
-      const bandTop = 55;
-      const bandBottom = 80;
+      // Wider vertical band for natural floating
+      const bandTop = 25;
+      const bandBottom = 75;
+
       const startY =
         bandTop + ((bandBottom - bandTop) / posts.length) * index +
         (index % 3) * 2;
-      const endY = startY - 10 + (index % 4) * 3;
+
+      // Slight diagonal drift
+      const endY = startY + (index % 2 === 0 ? 8 : -8);
 
       return {
         id: p.id,
@@ -87,8 +95,8 @@ export default function RevealBoard() {
             transform: translate3d(${l.startX}vw, ${l.startY}vh, 0);
             opacity: 0;
           }
-          8% { opacity: 1; }
-          92% { opacity: 1; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
           100% {
             transform: translate3d(${l.endX}vw, ${l.endY}vh, 0);
             opacity: 0;
@@ -115,6 +123,7 @@ export default function RevealBoard() {
           playsInline
           className="w-full h-full object-cover"
         />
+        {/* LIGHTER overlay so video is visible */}
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
@@ -130,13 +139,13 @@ export default function RevealBoard() {
             }}
             onClick={() => setSelectedPost({ id: l.id, content: l.content })}
           >
-            <div className="relative h-20 w-20">
+            <div className="relative h-32 w-32">
               <div className="absolute inset-0 rounded-full bg-amber-400/40 blur-2xl" />
               <Image
                 src="/lotus/lotus-amber.png"
                 alt="Lotus Lantern"
                 fill
-                className="object-contain drop-shadow-[0_0_25px_rgba(251,191,36,0.9)]"
+                className="object-contain drop-shadow-[0_0_35px_rgba(251,191,36,0.9)]"
               />
             </div>
           </button>
