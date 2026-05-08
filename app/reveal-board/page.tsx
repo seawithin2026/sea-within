@@ -25,7 +25,7 @@ export default function RevealBook() {
   useEffect(() => {
     const loadPages = async () => {
       const { data, error } = await supabase
-        .from("journal_entries")
+        .from("wisdom_posts")
         .select("id, content, author, created_at")
         .eq("type", "wisdom")
         .order("created_at", { ascending: true });
