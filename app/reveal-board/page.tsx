@@ -29,7 +29,6 @@ export default function RevealBoard() {
   const [posts, setPosts] = useState<WisdomPost[]>([]);
   const [selectedPost, setSelectedPost] = useState<WisdomPost | null>(null);
 
-  // Load approved wisdom posts
   useEffect(() => {
     const loadPosts = async () => {
       const { data, error } = await supabase
@@ -45,23 +44,17 @@ export default function RevealBoard() {
     loadPosts();
   }, []);
 
-  // Generate drifting lotus paths (cinematic floating)
   const driftingLotuses: DriftLotus[] = useMemo(() => {
     if (!posts.length) return [];
 
     return posts.map((p, index) => {
       const delay = index * 8;
-
-      // MUCH slower drift
       const duration = 90 + (index % 5) * 15;
-
-      // Alternate drift direction
       const startFromLeft = index % 2 === 0;
 
       const startX = startFromLeft ? -10 : 110;
       const endX = startFromLeft ? 110 : -10;
 
-      // Wider vertical band for natural floating
       const bandTop = 25;
       const bandBottom = 75;
 
@@ -69,7 +62,6 @@ export default function RevealBoard() {
         bandTop + ((bandBottom - bandTop) / posts.length) * index +
         (index % 3) * 2;
 
-      // Slight diagonal drift
       const endY = startY + (index % 2 === 0 ? 8 : -8);
 
       return {
@@ -85,7 +77,6 @@ export default function RevealBoard() {
     });
   }, [posts]);
 
-  // Generate CSS keyframes
   const keyframesCss = useMemo(() => {
     return driftingLotuses
       .map(
@@ -113,8 +104,8 @@ export default function RevealBoard() {
       {/* Inject drifting animations */}
       <style>{keyframesCss}</style>
 
-      {/* Background video */}
-      <div className="absolute inset-0 -z-20">
+      {/* Background video — now correctly ABOVE the page background */}
+      <div className="absolute inset-0 z-0">
         <video
           src="/videos/ocean-night.mp4"
           autoPlay
@@ -123,12 +114,11 @@ export default function RevealBoard() {
           playsInline
           className="w-full h-full object-cover"
         />
-        {/* LIGHTER overlay so video is visible */}
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Drifting lotuses */}
-      <section className="pointer-events-none relative z-10 h-screen w-full">
+      {/* Drifting lotuses — now ABOVE the video */}
+      <section className="pointer-events-none relative z-20 h-screen w-full">
         {driftingLotuses.map((l, index) => (
           <button
             key={l.id}
@@ -152,9 +142,9 @@ export default function RevealBoard() {
         ))}
       </section>
 
-      {/* Modal */}
+      {/* Modal — highest layer */}
       {selectedPost && (
-        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="relative max-w-md w-[90%] rounded-2xl border border-amber-200/30 bg-black/80 px-6 py-5 text-amber-50">
             <button
               className="absolute right-4 top-3 text-xs uppercase tracking-[0.2em] text-amber-200/70 hover:text-amber-100"
