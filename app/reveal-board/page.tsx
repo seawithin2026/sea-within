@@ -115,7 +115,7 @@ export default function RevealBoard() {
           playsInline
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
       {/* Drifting lotuses */}
