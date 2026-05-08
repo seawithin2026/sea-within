@@ -27,7 +27,6 @@ export default function RevealBook() {
       const { data, error } = await supabase
         .from("wisdom_posts")
         .select("id, content, author, created_at")
-        .eq("type", "wisdom")
         .order("created_at", { ascending: true });
 
       if (!data || error) return;
