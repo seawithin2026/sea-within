@@ -1,0 +1,452 @@
+/* GENERAL */
+.day1 {
+  width: 100%;
+  background: black;
+  color: white;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  height: 110vh;
+  overflow: hidden;
+}
+
+.heroVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transform: translate(-2.5%, 1.5%);
+}
+
+.heroOverlay p,
+.heroOverlay h1 {
+  margin: 0;
+  padding: 0;
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+}
+
+.heroSeason {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1.4;
+}
+
+.heroTagline {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #e2e8f0;
+}
+
+/* INTRO */
+.chamber {
+  padding: 6rem 2rem;
+  position: relative;
+}
+
+.chamberGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%);
+  z-index: 1;
+}
+
+.chamberInner {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.chamberTitle {
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+.chamberSubtitle {
+  margin-top: 0.5rem;
+  color: #cbd5e1;
+}
+
+/* ============================================================
+   UNIVERSAL BLUE-GLOW BUTTON (Play + Enter Sanctuary)
+   ============================================================ */
+
+.narrationButtonWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 3rem 0;
+}
+
+.narrationButton {
+  position: relative;
+  padding: 14px 34px;
+  border-radius: 50px;
+  border: 1px solid rgba(120, 180, 255, 0.45);
+  background: rgba(10, 25, 55, 0.55);
+  color: #dff1ff;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(8px);
+  transition: 0.25s ease;
+  box-shadow:
+    0 0 14px rgba(80, 150, 255, 0.45),
+    0 0 28px rgba(40, 120, 255, 0.35);
+}
+
+.narrationButton:hover {
+  border-color: rgba(180, 220, 255, 0.9);
+  box-shadow:
+    0 0 20px rgba(120, 180, 255, 0.75),
+    0 0 40px rgba(80, 150, 255, 0.55);
+}
+
+.narrationDot {
+  width: 10px;
+  height: 10px;
+  background: #dff1ff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(120, 180, 255, 0.8);
+}
+
+/* ============================================================
+   SHADOWY BLUE STORY — “being written” effect
+   ============================================================ */
+
+.narratorLines--magic {
+  position: relative;
+  color: #cfe8ff;
+  font-weight: 300;
+  letter-spacing: 0.4px;
+  line-height: 1.7;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: storyFadeIn 1.4s ease forwards;
+  text-shadow:
+    0 0 10px rgba(80, 150, 255, 0.45),
+    0 0 20px rgba(40, 120, 255, 0.35),
+    0 0 30px rgba(20, 80, 200, 0.25);
+}
+
+.narratorLines--magic .line {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(14px);
+  transition:
+    opacity 1.2s ease,
+    filter 1.4s ease,
+    transform 1.4s ease;
+}
+
+.narratorLines--magic .line.active {
+  opacity: 1;
+  filter: blur(0px);
+  transform: translateY(0px);
+  text-shadow:
+    0 0 14px rgba(120, 180, 255, 0.75),
+    0 0 26px rgba(80, 150, 255, 0.55),
+    0 0 36px rgba(40, 120, 255, 0.45);
+}
+
+@keyframes storyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ============================================================
+   MASTERPIECE BREATHING CIRCLE — FULL RESTORE
+   ============================================================ */
+
+@keyframes masterpieceBreath {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+    filter: blur(3px);
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+    filter: blur(3px);
+  }
+}
+
+.breatheCircle {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  margin: 0 auto;
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(40, 120, 255, 0.55) 0%,
+    rgba(20, 90, 210, 0.40) 35%,
+    rgba(5, 25, 70, 0.22) 70%,
+    transparent 100%
+  );
+
+  box-shadow:
+    0 0 55px rgba(80, 160, 255, 0.60),
+    0 0 110px rgba(50, 120, 230, 0.40),
+    inset 0 0 40px rgba(120, 190, 255, 0.45);
+
+  animation: masterpieceBreath 14s ease-in-out infinite;
+}
+
+.breatheCircle::after {
+  content: "";
+  position: absolute;
+  inset: -14%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    transparent 45%,
+    rgba(80, 160, 255, 0.25) 65%,
+    transparent 85%
+  );
+  filter: blur(16px);
+  opacity: 0.9;
+}
+
+.breatheText {
+  margin-top: 7rem;
+  letter-spacing: 0.2em;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  opacity: 0.9;
+}
+/* ============================================================
+   FIX: CENTER THE RITUAL SECTION + PUSH CONTENT DOWN
+   ============================================================ */
+
+.ritual {
+  position: relative;
+  min-height: 100vh;
+  padding: 0; /* remove top padding */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* centers vertically */
+  text-align: center;
+}
+
+.ritualContent {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  width: 100%;
+  margin-top: 3rem; /* pushes everything down beautifully */
+}
+
+/* Title "The Descent" spacing */
+.ritualLabel {
+  margin-bottom: 2rem; /* more breathing room */
+  margin-top: 10rem; /* pushes it down from top */
+font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: #dbeafe;
+  text-shadow:
+    0 0 12px rgba(80, 150, 255, 0.45),
+    0 0 22px rgba(40, 120, 255, 0.35);
+}
+
+/* Breathing circle spacing */
+.breathe {
+  margin-top: 6rem;
+  margin-bottom: 6rem; /* pushes text down */
+}
+
+/* Breathing text spacing */
+.breatheText {
+  margin-top: 6rem !important; /* stronger push downward */
+}
+/* ============================================================
+   LUXURY BOOK-STYLE RITUAL TEXT — ELEGANT + BLUISH TINT
+   ============================================================ */
+
+.ritualLines .narratorLines--magic {
+  font-family: "Georgia", "Times New Roman", serif; /* book elegance */
+  font-size: 1.15rem; /* refined reading size */
+  font-weight: 300;
+  line-height: 1.9; /* book spacing */
+  letter-spacing: 0.3px;
+
+  color: #d7e9ff; /* soft bluish ink */
+  text-shadow:
+    0 0 6px rgba(120, 180, 255, 0.35),
+    0 0 14px rgba(80, 150, 255, 0.25);
+
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  opacity: 0;
+  transform: translateY(14px);
+  animation: bookFadeIn 1.6s ease forwards;
+}
+
+/* Each line appears like turning a page */
+.ritualLines .narratorLines--magic .line {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(6px);
+  transition:
+    opacity 1.2s ease,
+    transform 1.2s ease,
+    filter 1.2s ease;
+}
+
+/* Active line glows softly like illuminated ink */
+.ritualLines .narratorLines--magic .line.active {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+  text-shadow:
+    0 0 10px rgba(150, 200, 255, 0.55),
+    0 0 20px rgba(100, 160, 255, 0.35);
+}
+
+/* Soft fade-in of the whole block */
+@keyframes bookFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* ============================================================
+   OVERRIDE: FORCE BLUISH GLOW + BOOK ELEGANCE
+   ============================================================ */
+
+.narratorLines--magic,
+.ritualLines .narratorLines--magic {
+  color: #d7e9ff !important; /* bluish ink */
+  text-shadow:
+    0 0 8px rgba(120, 180, 255, 0.45) !important,
+    0 0 18px rgba(80, 150, 255, 0.35) !important,
+    0 0 28px rgba(40, 120, 255, 0.25) !important;
+
+  font-family: "Georgia", "Times New Roman", serif !important;
+  font-size: 1.15rem !important;
+  line-height: 1.9 !important;
+  letter-spacing: 0.3px !important;
+
+  opacity: 1 !important;
+}
+
+/* Each line — elegant reveal */
+.narratorLines--magic .line {
+  opacity: 0;
+  filter: blur(6px);
+  transform: translateY(12px);
+  transition:
+    opacity 1.2s ease,
+    filter 1.2s ease,
+    transform 1.2s ease;
+}
+
+/* Active line — glowing bluish ink */
+.narratorLines--magic .line.active {
+  opacity: 1 !important;
+  filter: blur(0px) !important;
+  transform: translateY(0px) !important;
+  text-shadow:
+    0 0 12px rgba(150, 200, 255, 0.75) !important,
+    0 0 22px rgba(100, 160, 255, 0.55) !important,
+    0 0 32px rgba(60, 120, 255, 0.45) !important;
+}
+/* ============================================================
+   SEA WITHIN — MASTERPIECE RITUAL TEXT
+   Elegant • Sophisticated • Bluish • Cinematic
+   ============================================================ */
+
+.ritualLines .narratorLines--magic {
+  font-family: "Cormorant Garamond", "Georgia", serif !important;
+  font-size: 1.35rem !important;
+  font-weight: 300 !important;
+  line-height: 2.05 !important;
+  letter-spacing: 0.35px !important;
+
+  color: #e4f1ff !important; /* refined pale blue ink */
+  text-shadow:
+    0 0 12px rgba(120, 180, 255, 0.55) !important,
+    0 0 28px rgba(80, 150, 255, 0.35) !important,
+    0 0 42px rgba(40, 120, 255, 0.25) !important;
+
+  max-width: 720px !important;
+  margin: 0 auto !important;
+  padding: 0 1.5rem !important;
+
+  opacity: 0;
+  transform: translateY(24px);
+  animation: masterpieceFadeIn 1.8s ease forwards;
+}
+
+/* Each line — elegant reveal like ink appearing on a page */
+.ritualLines .narratorLines--magic .line {
+  opacity: 0;
+  transform: translateY(16px);
+  filter: blur(8px);
+  transition:
+    opacity 1.4s ease,
+    transform 1.4s ease,
+    filter 1.4s ease;
+}
+
+/* Active line — illuminated ink, soft underwater glow */
+.ritualLines .narratorLines--magic .line.active {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  filter: blur(0) !important;
+  text-shadow:
+    0 0 18px rgba(160, 210, 255, 0.75) !important,
+    0 0 34px rgba(120, 180, 255, 0.55) !important,
+    0 0 48px rgba(80, 150, 255, 0.45) !important;
+}
+
+/* Soft cinematic fade-in of the entire block */
+@keyframes masterpieceFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

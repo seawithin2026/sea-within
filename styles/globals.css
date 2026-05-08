@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   SEA WITHIN — Global Styles
+   A cinematic sanctuary for inner awakening
+   ============================================ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-sea-deep text-white font-body antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-sea-glow/30 text-white;
+  }
+
+  /* Custom scrollbar — ocean-themed */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-sea-deep;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-sea-mid rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-sea-glow;
+  }
+}
+
+@layer components {
+  /* Cinematic full-screen video section */
+  .video-section {
+    @apply relative w-full h-screen overflow-hidden;
+  }
+
+  .video-section video {
+    @apply absolute inset-0 w-full h-full object-cover;
+  }
+
+  .video-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-sea-deep/30 via-transparent to-sea-deep/60;
+  }
+
+  /* Whisper text — somatic, poetic text reveals */
+  .whisper-text {
+    @apply font-whisper text-white/80 text-2xl md:text-4xl lg:text-5xl
+           tracking-wide leading-relaxed text-center
+           opacity-0 animate-fade-up;
+  }
+
+  /* Sanctuary button */
+  .btn-sanctuary {
+    @apply inline-flex items-center justify-center
+           px-8 py-4 rounded-full
+           bg-sea-glow/20 border border-sea-glow/40
+           text-sea-foam font-body text-lg tracking-wider
+           backdrop-blur-sm
+           transition-all duration-700 ease-out
+           hover:bg-sea-glow/30 hover:border-sea-glow/60
+           hover:shadow-lg hover:shadow-sea-glow/20
+           hover:scale-[1.02]
+           active:scale-[0.98];
+  }
+
+  .btn-sanctuary-gold {
+    @apply inline-flex items-center justify-center
+           px-8 py-4 rounded-full
+           bg-gradient-gold text-sea-deep font-body text-lg
+           tracking-wider font-medium
+           transition-all duration-700 ease-out
+           hover:shadow-lg hover:shadow-sea-gold/30
+           hover:scale-[1.02]
+           active:scale-[0.98];
+  }
+
+  /* Card styles */
+  .card-sanctuary {
+    @apply bg-sea-dark/60 backdrop-blur-md
+           border border-sea-mid/30 rounded-2xl
+           p-6 md:p-8
+           transition-all duration-500
+           hover:border-sea-glow/30 hover:bg-sea-dark/80;
+  }
+
+  /* Input styles */
+  .input-sanctuary {
+    @apply w-full px-5 py-3.5
+           bg-sea-deep/60 border border-sea-mid/40 rounded-xl
+           text-white placeholder-white/30
+           font-body text-base
+           backdrop-blur-sm
+           transition-all duration-300
+           focus:outline-none focus:border-sea-glow/60
+           focus:ring-2 focus:ring-sea-glow/20;
+  }
+
+  /* Divider — wave-like */
+  .divider-wave {
+    @apply w-full h-px bg-gradient-to-r from-transparent via-sea-glow/30 to-transparent my-12;
+  }
+
+  /* Section transitions */
+  .section-transition {
+    @apply relative w-full h-32
+           bg-gradient-to-b from-transparent to-sea-deep;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient-ocean {
+    @apply bg-clip-text text-transparent
+           bg-gradient-to-r from-sea-glow via-sea-foam to-sea-glow;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent
+           bg-gradient-to-r from-sea-gold via-sea-warmGold to-sea-gold;
+  }
+
+  /* Backdrop effects */
+  .glass-effect {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  /* Hide scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+  
