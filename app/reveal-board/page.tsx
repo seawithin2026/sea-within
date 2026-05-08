@@ -7,8 +7,10 @@ import { createClient } from "@supabase/supabase-js";
 type PageEntry = {
   id: string;
   content: string;
-  author: string;
   created_at: string;
+  profiles: {
+    country: string | null;
+  }[] | null; // ⭐ FIX: profiles is an array
 };
 
 const supabase = createClient(
@@ -26,7 +28,15 @@ export default function RevealBook() {
     const loadPages = async () => {
       const { data, error } = await supabase
         .from("wisdom_posts")
-        .select("id, content, author, created_at")
+        .select(`
+          id,
+          content,
+          created_at,
+          profiles:user_id (
+            country
+          )
+        `)
+        .eq("is_approved", true)
         .order("created_at", { ascending: true });
 
       if (!data || error) return;
@@ -53,6 +63,12 @@ export default function RevealBook() {
         minute: "2-digit",
       })
     : "";
+
+  // ⭐ FIX: flatten profiles array safely
+  const country =
+    entry?.profiles && entry.profiles.length > 0
+      ? entry.profiles[0].country
+      : null;
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-black text-amber-50">
@@ -106,9 +122,12 @@ export default function RevealBook() {
                   <p className="text-[10px] uppercase tracking-[0.35em] text-amber-900/85 mb-1 drop-shadow">
                     {formattedDate}
                   </p>
+
                   <p className="text-xs text-amber-900/85 mb-3 drop-shadow">
-                    By {entry.author}
+                    Anonymous
+                    {country ? ` — ${country}` : ""}
                   </p>
+
                   <p className="text-sm leading-relaxed text-amber-900/95 whitespace-pre-line drop-shadow max-w-[95%]">
                     {entry.content}
                   </p>
