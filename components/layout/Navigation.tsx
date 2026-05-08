@@ -4,14 +4,13 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import SignInModal from '../SignInModal'; // <-- FIXED PATH
+import SignInModal from '../SignInModal';
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
   { href: '/sanctuary/journal', label: 'Journal' },
   { href: '/wisdom-board', label: 'Wisdom Board' },
-  { href: '/reveal-board', label: 'Wisdom Board Reveal' },
-  { href: '/billboard', label: 'Wisdom Board Reveal' }, // <-- UPDATED
+  { href: '/reveal-board', label: 'Wisdom Board Reveal' }, // <-- CORRECT ROUTE
   { href: '/community', label: 'Community' },
 ];
 
@@ -64,7 +63,6 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* TEMPORARY: Join opens Sign-In modal */}
             <button
               onClick={() => setIsSignInOpen(true)}
               className="btn-golden text-[11px] px-6 py-2.5"
@@ -104,7 +102,6 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* Mobile Join → opens modal */}
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
