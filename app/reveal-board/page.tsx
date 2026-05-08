@@ -8,9 +8,8 @@ type PageEntry = {
   id: string;
   content: string;
   created_at: string;
-  profiles: {
-    country: string | null;
-  }[] | null; // ⭐ FIX: profiles is an array
+  user_id: string;
+  country: string | null;
 };
 
 const supabase = createClient(
@@ -23,24 +22,41 @@ export default function RevealBook() {
   const [currentPage, setCurrentPage] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Fetch all wisdom posts
+  // ⭐ FETCH POSTS + PROFILES (bulletproof)
   useEffect(() => {
     const loadPages = async () => {
-      const { data, error } = await supabase
+      // 1. Fetch posts
+      const { data: posts, error: postsError } = await supabase
         .from("wisdom_posts")
-        .select(`
-          id,
-          content,
-          created_at,
-          profiles:user_id (
-            country
-          )
-        `)
+        .select("id, content, created_at, user_id")
         .eq("is_approved", true)
         .order("created_at", { ascending: true });
 
-      if (!data || error) return;
-      setPages(data);
+      if (!posts || postsError) {
+        console.error("Posts error:", postsError);
+        return;
+      }
+
+      // 2. Fetch profiles for all user_ids
+      const userIds = posts.map((p) => p.user_id);
+
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, country")
+        .in("id", userIds);
+
+      if (!profiles || profilesError) {
+        console.error("Profiles error:", profilesError);
+      }
+
+      // 3. Merge posts + profiles
+      const merged = posts.map((post) => ({
+        ...post,
+        country:
+          profiles?.find((p) => p.id === post.user_id)?.country || null,
+      }));
+
+      setPages(merged);
     };
 
     loadPages();
@@ -63,12 +79,6 @@ export default function RevealBook() {
         minute: "2-digit",
       })
     : "";
-
-  // ⭐ FIX: flatten profiles array safely
-  const country =
-    entry?.profiles && entry.profiles.length > 0
-      ? entry.profiles[0].country
-      : null;
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-black text-amber-50">
@@ -102,7 +112,7 @@ export default function RevealBook() {
             priority
           />
 
-          {/* TEXT OVERLAY ON OPEN BOOK */}
+          {/* TEXT OVERLAY */}
           {isOpen && entry && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="relative h-[70%] w-[70%] flex">
@@ -125,7 +135,7 @@ export default function RevealBook() {
 
                   <p className="text-xs text-amber-900/85 mb-3 drop-shadow">
                     Anonymous
-                    {country ? ` — ${country}` : ""}
+                    {entry.country ? ` — ${entry.country}` : ""}
                   </p>
 
                   <p className="text-sm leading-relaxed text-amber-900/95 whitespace-pre-line drop-shadow max-w-[95%]">
