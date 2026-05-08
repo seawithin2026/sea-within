@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/sanctuary/journal', label: 'Journal' },
   { href: '/wisdom-board', label: 'Wisdom Board' },
   { href: '/reveal-board', label: 'Wisdom Board Reveal' },
+  { href: '/billboard', label: 'Wisdom Board Reveal' }, // <-- UPDATED
   { href: '/community', label: 'Community' },
 ];
 

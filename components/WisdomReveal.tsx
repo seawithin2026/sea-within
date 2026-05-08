@@ -86,26 +86,5 @@ export default function WisdomReveal() {
       `}</style>
     </div>
   );
-  <style>{`
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-  }
-
-  @keyframes glow {
-    0% { filter: drop-shadow(0 0 10px rgba(255, 180, 80, 0.6)); }
-    50% { filter: drop-shadow(0 0 25px rgba(255, 180, 80, 0.9)); }
-    100% { filter: drop-shadow(0 0 10px rgba(255, 180, 80, 0.6)); }
-  }
-
-  .lotus {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .lotus-glow {
-    animation: glow 4s ease-in-out infinite;
-  }
-`}</style>
-
 }
+
