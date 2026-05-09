@@ -320,13 +320,14 @@ body {
   transform: translateY(0);
   filter: blur(0px);
 }
-.door-base {
-  transform-origin: left;
-  transform-style: preserve-3d;
-  transition: transform 1.2s ease;
-}
-
-/* Door opening tilt */
-.door-open {
-  transform: perspective(1200px) rotateY(-25deg);
+.reveal-ambient {
+  position: absolute;
+  inset: -80px;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 120, 255, 0.12),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
