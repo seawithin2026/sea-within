@@ -320,3 +320,13 @@ body {
   transform: translateY(0);
   filter: blur(0px);
 }
+.door-base {
+  transform-origin: left;
+  transform-style: preserve-3d;
+  transition: transform 1.2s ease;
+}
+
+/* Door opening tilt */
+.door-open {
+  transform: perspective(1200px) rotateY(-25deg);
+}
