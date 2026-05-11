@@ -169,27 +169,17 @@ export default function WisdomBoardPage() {
   </video>
 </section>
 
-
-
-
-      {/* SECTION 3, 4, 5 — your existing code continues below */}
-
 {/* -------------------------------------------------- */}
 {/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
 {/* -------------------------------------------------- */}
 <section className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-slate-950">
-  <div className="max-w-xl w-full text-center">
+  <div className="w-full max-w-4xl mx-auto text-center">
     <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-4">
       Today&apos;s message
     </p>
 
     <div
-      className={[
-        "relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl px-0 py-0 shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden transition-all duration-700",
-        messageOpened
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-6 pointer-events-none",
-      ].join(" ")}
+      className="relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl px-0 py-0 shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden transition-all duration-700 opacity-100 translate-y-0"
     >
       {/* Paper background */}
       <img
@@ -201,17 +191,16 @@ export default function WisdomBoardPage() {
       {/* Message text */}
       <div className="relative px-8 py-10 z-10">
         <p className="sea-worn-ink text-lg mb-6">
-          {dailyMessage.text}
+          {dailyMessage.text || "No message loaded"}
         </p>
 
         <p className="sea-worn-ink text-xs opacity-80">
-          {dailyMessage.attribution}
+          {dailyMessage.attribution || ""}
         </p>
       </div>
     </div>
   </div>
 
-  {/* SEA‑WORN INK STYLE — MUST BE INSIDE THIS COMPONENT */}
   <style jsx>{`
     .sea-worn-ink {
       font-family: "Cormorant Garamond", serif;
@@ -233,8 +222,6 @@ export default function WisdomBoardPage() {
     }
   `}</style>
 </section>
-
-
 
       {/* -------------------------------------------------- */}
       {/* SECTION 4 — SEND A MESSAGE TO THE WORLD */}
