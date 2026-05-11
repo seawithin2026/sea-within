@@ -1,4 +1,3 @@
-// redeploy fix
 "use client";
 
 import { useState, useEffect } from "react";
@@ -28,6 +27,12 @@ export default function WisdomBoardPage() {
     text: "You are more held by life than you realize.",
     attribution: "Anonymous — Japan — May 10, 2026",
   };
+
+  // ⭐ Slow down bottle video to 0.3x
+  useEffect(() => {
+    const bottle = document.getElementById("bottleVideo") as HTMLVideoElement | null;
+    if (bottle) bottle.playbackRate = 0.3;
+  }, []);
 
   useEffect(() => {
     fetchPosts();
@@ -127,63 +132,46 @@ export default function WisdomBoardPage() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* -------------------------------------------------- */}
-{/* SECTION 1 — FULLSCREEN HERO VIDEO (NO TEXT) */}
-{/* -------------------------------------------------- */}
-<section className="relative h-screen w-full overflow-hidden">
-  <video
-    className="absolute inset-0 w-full h-full object-cover"
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    disablePictureInPicture
-    webkit-playsinline="true"
-  >
-    <source src="/videos/ocean-hero.mp4" type="video/mp4" />
-  </video>
+      {/* SECTION 1 */}
+      <section className="relative h-screen w-full overflow-hidden">
+        <video
+          className="absolute inset-0 w-full h-full min-h-screen object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          webkit-playsinline="true"
+        >
+          <source src="/videos/ocean-hero.mp4" type="video/mp4" />
+        </video>
+      </section>
 
-  {/* Soft overlay */}
-  <div className="absolute inset-0 bg-slate-900/30" />
-</section>
+      {/* SECTION 2 */}
+      <section className="relative h-screen w-full overflow-hidden">
+        <video
+          id="bottleVideo"
+          className="absolute inset-0 w-full h-full min-h-screen object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          webkit-playsinline="true"
+        >
+          <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
+        </video>
 
-{/* -------------------------------------------------- */}
-{/* SECTION 2 — BOTTLE VIDEO WITH GLOWING DOT BUTTON */}
-{/* -------------------------------------------------- */}
-<section className="relative h-screen w-full overflow-hidden">
-  <video
-    className="absolute inset-0 w-full h-full object-cover opacity-60"
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    disablePictureInPicture
-    webkit-playsinline="true"
-  >
-    <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
-  </video>
+        <img
+          src="/images/bottle-floating.png"
+          className="relative z-10 mx-auto mt-[28vh] w-40 opacity-90 pointer-events-none"
+          alt="Floating bottle"
+        />
+      </section>
 
-  {/* Dark overlay */}
-  <div className="absolute inset-0 bg-slate-950/50" />
-
-  {/* Bottle */}
-  <img
-    src="/images/bottle-floating.png"
-    className="relative z-10 mx-auto mt-[28vh] w-40 opacity-90 pointer-events-none"
-    alt="Floating bottle"
-  />
-
-  {/* Glowing dot button */}
-  <button
-    onClick={() => setMessageOpened(true)}
-    className="absolute bottom-[22vh] left-1/2 -translate-x-1/2 z-20
-               w-6 h-6 rounded-full bg-sky-300/80
-               shadow-[0_0_20px_6px_rgba(56,189,248,0.6)]
-               animate-pulse hover:scale-110 transition-transform"
-  />
-</section>
+      {/* SECTION 3, 4, 5 — your existing code continues below */}
 
 
       {/* -------------------------------------------------- */}
