@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import Navigation from "@/components/layout/Navigation";
 
 interface WisdomPost {
@@ -20,6 +20,9 @@ export default function WisdomBoardPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
+  const section3Ref = useRef<HTMLElement | null>(null);
+  const section4Ref = useRef<HTMLElement | null>(null);
+
   const dailyMessage = {
     text: "You are more held by life than you realize.",
     attribution: "Anonymous — Japan — May 10, 2026",
@@ -32,6 +35,28 @@ export default function WisdomBoardPage() {
 
   useEffect(() => {
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!section3Ref.current || !section4Ref.current) return;
+
+      const rect3 = section3Ref.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // When Section 3 is mostly above the viewport, fade it out and fade Section 4 in
+      if (rect3.bottom < windowHeight * 0.5) {
+        section3Ref.current.classList.add("scrolled-out");
+        section4Ref.current.classList.add("scrolled-in");
+      } else {
+        section3Ref.current.classList.remove("scrolled-out");
+        section4Ref.current.classList.remove("scrolled-in");
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchPosts = async () => {
@@ -92,11 +117,12 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 2 */}
+      {/* SECTION 2 — BOTTLE (LOWERED MEDIUM) */}
       <section className="relative h-[165vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video
           id="bottleVideo"
           className="w-full h-full object-cover"
+          style={{ objectPosition: "center 70%" }} // medium lower to reveal more bottle
           autoPlay
           loop
           muted
@@ -106,8 +132,11 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — FULL SCREEN PAPER MESSAGE */}
-      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+      {/* SECTION 3 — REVEALED PAGE (TURNING PAGE START) */}
+      <section
+        ref={section3Ref}
+        className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden turning-page-section"
+      >
         <img
           src="/images/paper-texture.png"
           alt="Paper"
@@ -129,16 +158,17 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
+      {/* SECTION 4 — WRITING PAGE (TURNING PAGE END) */}
       <section
-        className="relative min-h-screen w-full flex items-center justify-center px-6 py-24"
+        ref={section4Ref}
+        className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 writing-section"
         style={{
           backgroundImage: "url('/images/sand-texture.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
-        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
+        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden writing-panel">
           <div
             className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
@@ -181,6 +211,25 @@ export default function WisdomBoardPage() {
 
       {/* GLOBAL MERGED STYLES */}
       <style jsx global>{`
+        /* TURNING PAGE TRANSITION */
+        .turning-page-section {
+          opacity: 1;
+          transition: opacity 1.2s ease;
+        }
+
+        .writing-section {
+          opacity: 0;
+          transition: opacity 1.2s ease;
+        }
+
+        .turning-page-section.scrolled-out {
+          opacity: 0;
+        }
+
+        .writing-section.scrolled-in {
+          opacity: 1;
+        }
+
         /* SECTION 3 — PAPER REVEAL */
         .paper-reveal {
           font-family: "Cormorant Garamond", serif;
