@@ -119,23 +119,26 @@ export default function WisdomBoardPage() {
     <source src="/videos/script-unfold.mp4" type="video/mp4" />
   </video>
 
-  {/* Message container */}
-  <div className="relative max-w-3xl mx-auto text-center px-6 py-20 z-10">
+  {/* Parchment + Text */}
+  <div className="relative z-10 max-w-3xl mx-auto px-6 py-20">
 
-    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
+    {/* Title */}
+    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6 text-center">
       Today&apos;s Message
     </p>
 
-    {/* PAPER AS THE CONTAINER */}
-    <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    {/* Parchment container */}
+    <div className="relative w-full rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
 
+      {/* Parchment texture */}
       <img
         src="/images/paper-texture.png"
         alt="Paper"
         className="absolute inset-0 w-full h-full object-cover opacity-95"
       />
 
-      <div className="relative z-10 px-10 py-14">
+      {/* Text written directly on the parchment */}
+      <div className="relative z-10 px-10 py-14 text-center">
         <p className="script-reveal text-xl leading-relaxed mb-6">
           {dailyMessage?.text}
         </p>
@@ -144,7 +147,6 @@ export default function WisdomBoardPage() {
           {dailyMessage?.attribution}
         </p>
       </div>
-
     </div>
   </div>
 
@@ -152,22 +154,14 @@ export default function WisdomBoardPage() {
     .script-reveal {
       font-family: "Cormorant Garamond", serif;
       font-style: italic;
-      color: #2b1a10;
+      color: #3b2414; /* warm ink that blends with parchment */
       opacity: 0;
       animation: scriptFade 4s ease forwards;
-      animation-iteration-count: 1;
       text-shadow:
-        0 0 2px rgba(43, 26, 16, 0.4),
-        0 0 6px rgba(43, 26, 16, 0.25),
-        0 0 10px rgba(43, 26, 16, 0.15);
-      background: radial-gradient(
-        circle at 50% 50%,
-        rgba(43, 26, 16, 0.9),
-        rgba(43, 26, 16, 0.3)
-      );
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: blur(0.3px) brightness(1.1) contrast(0.9);
+        0 0 1px rgba(30, 18, 10, 0.5),
+        0 0 3px rgba(30, 18, 10, 0.35),
+        0 0 6px rgba(30, 18, 10, 0.2);
+      filter: brightness(0.95) contrast(1.05);
     }
 
     @keyframes scriptFade {
@@ -186,6 +180,7 @@ export default function WisdomBoardPage() {
     }
   `}</style>
 </section>
+
 
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
@@ -238,42 +233,35 @@ export default function WisdomBoardPage() {
           </div>
         </div>
 
-        <style jsx>{`
-          .ink-writing {
-            font-family: "Cormorant Garamond", serif;
-            font-style: italic;
-            color: #2b1a10;
-            text-shadow:
-              0 0 1px rgba(43, 26, 16, 0.4),
-              0 0 4px rgba(43, 26, 16, 0.25),
-              0 0 8px rgba(43, 26, 16, 0.15);
-            background: radial-gradient(
-              circle at 50% 50%,
-              rgba(43, 26, 16, 0.9),
-              rgba(43, 26, 16, 0.3)
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: brightness(1.1) contrast(0.9);
-            animation: inkAppear 2s ease forwards;
-            opacity: 0;
-          }
+       <style jsx>{`
+  .ink-writing {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: #3b2414; /* deeper warm ink */
+    text-shadow:
+      0 0 1px rgba(30, 18, 10, 0.5),
+      0 0 3px rgba(30, 18, 10, 0.35),
+      0 0 6px rgba(30, 18, 10, 0.2);
+    filter: brightness(0.95) contrast(1.05);
+    animation: inkAppear 2s ease forwards;
+    opacity: 0;
+  }
 
-          @keyframes inkAppear {
-            0% {
-              opacity: 0;
-              filter: blur(3px);
-            }
-            40% {
-              opacity: 0.4;
-              filter: blur(1.5px);
-            }
-            100% {
-              opacity: 1;
-              filter: blur(0.3px);
-            }
-          }
-        `}</style>
+  @keyframes inkAppear {
+    0% {
+      opacity: 0;
+      filter: blur(3px);
+    }
+    40% {
+      opacity: 0.4;
+      filter: blur(1.5px);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0.3px);
+    }
+  }
+`}</style>
       </section>
     </main>
   );
