@@ -149,8 +149,9 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 */}
-      <section className="relative min-h-screen w-full flex items-center justify-center bg-slate-950 overflow-hidden">
+      {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
+      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+
         <video
           className="absolute inset-0 w-full h-full object-cover opacity-60"
           autoPlay
@@ -160,7 +161,7 @@ export default function WisdomBoardPage() {
           <source src="/videos/script-unfold.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-black/60"></div>
 
         <div className="relative z-10 max-w-3xl mx-auto text-center px-6 py-20">
           <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
@@ -193,8 +194,11 @@ export default function WisdomBoardPage() {
             color: #2b1a10;
             opacity: 0;
             animation: scriptFade 4s ease forwards;
-            text-shadow: 0 0 2px rgba(43, 26, 16, 0.4),
-              0 0 6px rgba(43, 26, 16, 0.25), 0 0 10px rgba(43, 26, 16, 0.15);
+            animation-iteration-count: 1;
+            text-shadow:
+              0 0 2px rgba(43, 26, 16, 0.4),
+              0 0 6px rgba(43, 26, 16, 0.25),
+              0 0 10px rgba(43, 26, 16, 0.15);
             background: radial-gradient(
               circle at 50% 50%,
               rgba(43, 26, 16, 0.9),
@@ -222,22 +226,27 @@ export default function WisdomBoardPage() {
         `}</style>
       </section>
 
-      {/* SECTION 4 */}
-      <section className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 bg-slate-950">
-        <div className="relative w-full max-w-4xl mx-auto rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(15,23,42,0.9)]">
-          <img
-            src="/images/sea-within-book-open.png"
-            alt="Open Book"
-            className="absolute inset-0 w-full h-full object-cover opacity-95 z-0"
+      {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
+      <section className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 bg-black">
+
+        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f7f2e8] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
+
+          <div
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage: "url('/images/paper-texture.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
           />
 
-          <div className="relative z-10 px-10 py-16">
+          <div className="relative z-10 px-10 py-12">
             <form onSubmit={handleSubmit}>
               <textarea
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
-                placeholder="Write a positive gift to the world…"
-                className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-400"
+                placeholder="Write your message as if you were writing inside a sacred book…"
+                className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-400"
               />
 
               <button
@@ -252,7 +261,7 @@ export default function WisdomBoardPage() {
             {feedback && (
               <p
                 className={`mt-4 text-sm ${
-                  feedbackType === "error" ? "text-red-300" : "text-amber-300"
+                  feedbackType === "error" ? "text-red-400" : "text-amber-400"
                 }`}
               >
                 {feedback}
@@ -266,8 +275,10 @@ export default function WisdomBoardPage() {
             font-family: "Cormorant Garamond", serif;
             font-style: italic;
             color: #2b1a10;
-            text-shadow: 0 0 2px rgba(43, 26, 16, 0.4),
-              0 0 6px rgba(43, 26, 16, 0.25), 0 0 10px rgba(43, 26, 16, 0.15);
+            text-shadow:
+              0 0 1px rgba(43, 26, 16, 0.4),
+              0 0 4px rgba(43, 26, 16, 0.25),
+              0 0 8px rgba(43, 26, 16, 0.15);
             background: radial-gradient(
               circle at 50% 50%,
               rgba(43, 26, 16, 0.9),
@@ -275,7 +286,7 @@ export default function WisdomBoardPage() {
             );
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: blur(0.3px) brightness(1.1) contrast(0.9);
+            filter: brightness(1.1) contrast(0.9);
             animation: inkAppear 2s ease forwards;
             opacity: 0;
           }
