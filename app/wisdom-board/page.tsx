@@ -135,7 +135,7 @@ export default function WisdomBoardPage() {
 {/* SECTION 1 — OCEAN HERO */}
 <section className="relative h-[80vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
-    className="w-full h-full object-contain"
+    className="w-full h-full object-cover"
     autoPlay
     loop
     muted
@@ -152,7 +152,7 @@ export default function WisdomBoardPage() {
 {/* SECTION 2 — BOTTLE VIDEO */}
 <section className="relative h-[80vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
-    className="w-full h-full object-contain"
+    className="w-full h-full object-cover"
     autoPlay
     loop
     muted
