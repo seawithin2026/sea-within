@@ -168,7 +168,7 @@ export default function WisdomBoardPage() {
       {/* SECTION 3, 4, 5 — your existing code continues below */}
 
 
-  {/* -------------------------------------------------- */}
+{/* -------------------------------------------------- */}
 {/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
 {/* -------------------------------------------------- */}
 <section className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-slate-950">
@@ -194,16 +194,38 @@ export default function WisdomBoardPage() {
 
       {/* Message text */}
       <div className="relative px-8 py-10">
-        <p className="text-lg text-slate-900 font-serif mb-6">
+        <p className="sea-worn-ink text-lg mb-6">
           {dailyMessage.text}
         </p>
-        <p className="text-xs text-slate-700/80 font-body">
+
+        <p className="sea-worn-ink text-xs opacity-80">
           {dailyMessage.attribution}
         </p>
       </div>
     </div>
   </div>
 </section>
+
+<style jsx>{`
+  .sea-worn-ink {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: #2b1a10;
+    text-shadow:
+      0 0 2px rgba(43, 26, 16, 0.4),
+      0 0 6px rgba(43, 26, 16, 0.25),
+      0 0 10px rgba(43, 26, 16, 0.15);
+    filter: blur(0.35px) brightness(1.1) contrast(0.9);
+    opacity: 0.92;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(43, 26, 16, 0.9),
+      rgba(43, 26, 16, 0.3)
+    );
+  }
+`}</style>
 
 
       {/* -------------------------------------------------- */}
