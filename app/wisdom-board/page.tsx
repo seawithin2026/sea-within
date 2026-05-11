@@ -81,49 +81,6 @@ export default function WisdomBoardPage() {
     }
   };
 
-  const startEditing = (post: WisdomPost) => {
-    setEditingId(post.id);
-    setEditingContent(post.content);
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-
-    await fetch("/api/messages", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: editingId,
-        content: editingContent,
-        type: "wisdom",
-      }),
-    });
-
-    setEditingId(null);
-    setEditingContent("");
-    fetchPosts();
-  };
-
-  const deletePost = async (id: string) => {
-    const confirmDelete = confirm("Delete this reflection?");
-    if (!confirmDelete) return;
-
-    await fetch(`/api/messages?id=${id}&type=wisdom`, {
-      method: "DELETE",
-    });
-
-    fetchPosts();
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-CA", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   return (
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
@@ -153,7 +110,7 @@ export default function WisdomBoardPage() {
       <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
 
         <video
-          className="absolute inset-0 w-full h-full object-cover opacity-60"
+          className="absolute inset-0 w-full h-full object-cover"
           autoPlay
           muted
           playsInline
@@ -161,14 +118,12 @@ export default function WisdomBoardPage() {
           <source src="/videos/script-unfold.mp4" type="video/mp4" />
         </video>
 
-        <div className="absolute inset-0 bg-black/60"></div>
-
         <div className="relative z-10 max-w-3xl mx-auto text-center px-6 py-20">
           <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
             Today&apos;s Message
           </p>
 
-          <div className="relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden">
+          <div className="relative rounded-3xl border border-black bg-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden">
             <img
               src="/images/paper-texture.png"
               alt="Paper"
@@ -227,8 +182,14 @@ export default function WisdomBoardPage() {
       </section>
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
-      <section className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 bg-black">
-
+      <section
+        className="relative min-h-screen w-full flex items-center justify-center px-6 py-24"
+        style={{
+          backgroundImage: "url('/images/sand-texture.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f7f2e8] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
 
           <div
@@ -236,7 +197,7 @@ export default function WisdomBoardPage() {
             style={{
               backgroundImage: "url('/images/paper-texture.png')",
               backgroundSize: "cover",
-              backgroundPosition: "center"
+              backgroundPosition: "center",
             }}
           />
 
