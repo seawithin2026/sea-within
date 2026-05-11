@@ -93,7 +93,7 @@ export default function WisdomBoardPage() {
       </section>
 
       {/* SECTION 2 */}
-      <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
+      <section className="relative h-[165vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video
           id="bottleVideo"
           className="w-full h-full object-cover"
