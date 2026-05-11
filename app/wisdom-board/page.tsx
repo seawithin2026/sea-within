@@ -106,41 +106,67 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
-      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
-        <video
-          className="absolute inset-0 w-full h-full object-cover mix-blend-multiply"
-          autoPlay
-          muted
-          playsInline
-        >
-          <source src="/videos/script-unfold.mp4" type="video/mp4" />
-        </video>
+      {/* SECTION 3 — ELEGANT MESSAGE REVEAL ON PAPER */}
+<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden px-6 py-24">
+  
+  {/* Paper background */}
+  <div className="relative w-full max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+    <img
+      src="/images/paper-texture.png"
+      alt="Paper"
+      className="absolute inset-0 w-full h-full object-cover opacity-95"
+    />
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6 py-20">
-          <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6 text-center">
-            Today&apos;s Message
-          </p>
+    {/* Message content */}
+    <div className="relative z-10 px-10 py-20 text-center">
+      <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-6">
+        Today&apos;s Message
+      </p>
 
-          <div className="relative w-full rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-            <img
-              src="/images/paper-texture.png"
-              alt="Paper"
-              className="absolute inset-0 w-full h-full object-cover opacity-95"
-            />
+      <p className="paper-reveal text-2xl leading-relaxed mb-6">
+        {dailyMessage?.text}
+      </p>
 
-            <div className="relative z-10 px-10 py-14 text-center">
-              <p className="script-reveal text-xl leading-relaxed mb-6">
-                {dailyMessage?.text}
-              </p>
+      <p className="paper-reveal text-sm opacity-80 mt-4">
+        {dailyMessage?.attribution}
+      </p>
+    </div>
+  </div>
 
-              <p className="script-reveal text-sm opacity-80 mt-4">
-                {dailyMessage?.attribution}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+  <style jsx>{`
+    .paper-reveal {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      color: #3b2414;
+      opacity: 0;
+      animation: paperFade 3.5s ease forwards;
+      text-shadow:
+        0 0 1px rgba(30, 18, 10, 0.5),
+        0 0 3px rgba(30, 18, 10, 0.35),
+        0 0 6px rgba(30, 18, 10, 0.2);
+      filter: brightness(0.95) contrast(1.05);
+    }
+
+    @keyframes paperFade {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+        filter: blur(3px);
+      }
+      40% {
+        opacity: 0.4;
+        transform: translateY(4px);
+        filter: blur(1.5px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0.3px);
+      }
+    }
+  `}</style>
+</section>
+
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
       <section
