@@ -106,80 +106,86 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
-      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+     {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
+<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
 
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          playsInline
-        >
-          <source src="/videos/script-unfold.mp4" type="video/mp4" />
-        </video>
+  {/* Background video */}
+  <video
+    className="absolute inset-0 w-full h-full object-cover"
+    autoPlay
+    muted
+    playsInline
+  >
+    <source src="/videos/script-unfold.mp4" type="video/mp4" />
+  </video>
 
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-6 py-20">
-          <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
-            Today&apos;s Message
-          </p>
+  {/* Message container */}
+  <div className="relative z-10 max-w-3xl mx-auto text-center px-6 py-20">
 
-          <div className="relative rounded-3xl border border-black bg-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden">
-            <img
-              src="/images/paper-texture.png"
-              alt="Paper"
-              className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
-            />
+    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
+      Today&apos;s Message
+    </p>
 
-            <div className="relative z-10 px-10 py-14">
-              <p className="script-reveal text-xl leading-relaxed mb-6">
-                {dailyMessage?.text}
-              </p>
+    <div className="relative rounded-3xl border border-black bg-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden">
 
-              <p className="script-reveal text-sm opacity-80 mt-4">
-                {dailyMessage?.attribution}
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* Paper texture */}
+      <img
+        src="/images/paper-texture.png"
+        alt="Paper"
+        className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
+      />
 
-        <style jsx>{`
-          .script-reveal {
-            font-family: "Cormorant Garamond", serif;
-            font-style: italic;
-            color: #2b1a10;
-            opacity: 0;
-            animation: scriptFade 4s ease forwards;
-            animation-iteration-count: 1;
-            text-shadow:
-              0 0 2px rgba(43, 26, 16, 0.4),
-              0 0 6px rgba(43, 26, 16, 0.25),
-              0 0 10px rgba(43, 26, 16, 0.15);
-            background: radial-gradient(
-              circle at 50% 50%,
-              rgba(43, 26, 16, 0.9),
-              rgba(43, 26, 16, 0.3)
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: blur(0.3px) brightness(1.1) contrast(0.9);
-          }
+      {/* Message text */}
+      <div className="relative z-10 px-10 py-14">
+        <p className="script-reveal text-xl leading-relaxed mb-6">
+          {dailyMessage?.text}
+        </p>
 
-          @keyframes scriptFade {
-            0% {
-              opacity: 0;
-              filter: blur(4px);
-            }
-            40% {
-              opacity: 0.4;
-              filter: blur(2px);
-            }
-            100% {
-              opacity: 1;
-              filter: blur(0.3px);
-            }
-          }
-        `}</style>
-      </section>
+        <p className="script-reveal text-sm opacity-80 mt-4">
+          {dailyMessage?.attribution}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <style jsx>{`
+    .script-reveal {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      color: #2b1a10;
+      opacity: 0;
+      animation: scriptFade 4s ease forwards;
+      animation-iteration-count: 1;
+      text-shadow:
+        0 0 2px rgba(43, 26, 16, 0.4),
+        0 0 6px rgba(43, 26, 16, 0.25),
+        0 0 10px rgba(43, 26, 16, 0.15);
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(43, 26, 16, 0.9),
+        rgba(43, 26, 16, 0.3)
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: blur(0.3px) brightness(1.1) contrast(0.9);
+    }
+
+    @keyframes scriptFade {
+      0% {
+        opacity: 0;
+        filter: blur(4px);
+      }
+      40% {
+        opacity: 0.4;
+        filter: blur(2px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0.3px);
+      }
+    }
+  `}</style>
+</section>
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
       <section
