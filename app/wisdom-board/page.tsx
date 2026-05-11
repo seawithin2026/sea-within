@@ -162,7 +162,6 @@ export default function WisdomBoardPage() {
   </video>
 </section>
 
-
 {/* -------------------------------------------------- */}
 {/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
 {/* -------------------------------------------------- */}
@@ -185,11 +184,11 @@ export default function WisdomBoardPage() {
       {/* Message text */}
       <div className="relative px-8 py-10 z-10">
         <p className="sea-worn-ink text-lg mb-6">
-          {dailyMessage.text || "No message loaded"}
+          {dailyMessage?.text || "No message loaded"}
         </p>
 
         <p className="sea-worn-ink text-xs opacity-80">
-          {dailyMessage.attribution || ""}
+          {dailyMessage?.attribution || ""}
         </p>
       </div>
     </div>
