@@ -129,39 +129,6 @@ export default function WisdomBoardPage() {
       {dailyMessage?.attribution}
     </p>
   </div>
-
-  <style jsx global>{`
-    .paper-reveal {
-      font-family: "Cormorant Garamond", serif;
-      font-style: italic;
-      color: #3b2414;
-      opacity: 0;
-      animation: paperFade 3.5s ease forwards;
-      text-shadow:
-        0 0 1px rgba(30, 18, 10, 0.5),
-        0 0 3px rgba(30, 18, 10, 0.35),
-        0 0 6px rgba(30, 18, 10, 0.2);
-      filter: brightness(0.95) contrast(1.05);
-    }
-
-    @keyframes paperFade {
-      0% {
-        opacity: 0;
-        transform: translateY(10px);
-        filter: blur(3px);
-      }
-      40% {
-        opacity: 0.4;
-        transform: translateY(4px);
-        filter: blur(1.5px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0.3px);
-      }
-    }
-  `}</style>
 </section>
 
 
