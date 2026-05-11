@@ -133,7 +133,7 @@ export default function WisdomBoardPage() {
       <Navigation />
 
 {/* SECTION 1 — OCEAN HERO */}
-<section className="relative h-[95vh] w-full bg-black flex items-center justify-center overflow-hidden">
+<section className="relative h-[120vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
     className="w-full h-full object-cover"
     autoPlay
@@ -150,7 +150,7 @@ export default function WisdomBoardPage() {
 
 
 {/* SECTION 2 — BOTTLE VIDEO */}
-<section className="relative h-[95vh] w-full bg-black flex items-center justify-center overflow-hidden">
+<section className="relative h-[120vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
     className="w-full h-full object-cover"
     autoPlay
