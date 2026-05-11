@@ -219,63 +219,63 @@ export default function WisdomBoardPage() {
       </section>
 
       {/* GLOBAL STYLES FOR SECTION 3 + 4 */}
-      <style jsx>{`
-        .script-reveal {
-          font-family: "Cormorant Garamond", serif;
-          font-style: italic;
-          color: #3b2414;
-          opacity: 0;
-          animation: scriptFade 4s ease forwards;
-          text-shadow:
-            0 0 1px rgba(30, 18, 10, 0.5),
-            0 0 3px rgba(30, 18, 10, 0.35),
-            0 0 6px rgba(30, 18, 10, 0.2);
-          filter: brightness(0.95) contrast(1.05);
-        }
+      <style jsx global>{`
+  .script-reveal {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: #3b2414;
+    opacity: 0;
+    animation: scriptFade 4s ease forwards;
+    text-shadow:
+      0 0 1px rgba(30, 18, 10, 0.5),
+      0 0 3px rgba(30, 18, 10, 0.35),
+      0 0 6px rgba(30, 18, 10, 0.2);
+    filter: brightness(0.95) contrast(1.05);
+  }
 
-        @keyframes scriptFade {
-          0% {
-            opacity: 0;
-            filter: blur(4px);
-          }
-          40% {
-            opacity: 0.4;
-            filter: blur(2px);
-          }
-          100% {
-            opacity: 1;
-            filter: blur(0.3px);
-          }
-        }
+  @keyframes scriptFade {
+    0% {
+      opacity: 0;
+      filter: blur(4px);
+    }
+    40% {
+      opacity: 0.4;
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0.3px);
+    }
+  }
 
-        .ink-writing {
-          font-family: "Cormorant Garamond", serif;
-          font-style: italic;
-          color: #3b2414;
-          text-shadow:
-            0 0 1px rgba(30, 18, 10, 0.5),
-            0 0 3px rgba(30, 18, 10, 0.35),
-            0 0 6px rgba(30, 18, 10, 0.2);
-          filter: brightness(0.95) contrast(1.05);
-          animation: inkAppear 2s ease forwards;
-          opacity: 0;
-        }
+  .ink-writing {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    color: #3b2414;
+    text-shadow:
+      0 0 1px rgba(30, 18, 10, 0.5),
+      0 0 3px rgba(30, 18, 10, 0.35),
+      0 0 6px rgba(30, 18, 10, 0.2);
+    filter: brightness(0.95) contrast(1.05);
+    animation: inkAppear 2s ease forwards;
+    opacity: 0;
+  }
 
-        @keyframes inkAppear {
-          0% {
-            opacity: 0;
-            filter: blur(3px);
-          }
-          40% {
-            opacity: 0.4;
-            filter: blur(1.5px);
-          }
-          100% {
-            opacity: 1;
-            filter: blur(0.3px);
-          }
-        }
-      `}</style>
+  @keyframes inkAppear {
+    0% {
+      opacity: 0;
+      filter: blur(3px);
+    }
+    40% {
+      opacity: 0.4;
+      filter: blur(1.5px);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0.3px);
+    }
+  }
+`}</style>
     </main>
   );
 }
