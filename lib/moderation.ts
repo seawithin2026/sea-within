@@ -1,8 +1,11 @@
 /**
- * SEA WITHIN — Gentle Uplifting Moderation + Spam Protection
+ * SEA WITHIN — Gentle Uplifting Moderation + Safety + Emoji Protection
  *
  * ✔ Blocks cruelty, hate, harassment, violence, self‑harm
  * ✔ Blocks heavy negativity + pity‑party dumping
+ * ✔ Blocks sexual emojis + harmful emojis
+ * ✔ Blocks sexual content + inappropriate suggestions
+ * ✔ Blocks personal data (emails, phone numbers, addresses)
  * ✔ Blocks spam, bots, scam links
  * ✔ Allows excitement (!!!), joy, passion, energy
  * ✔ Allows gentle honesty + soft vulnerability
@@ -26,7 +29,7 @@ export function moderateContent(content: string): ModerationResult {
     };
   }
 
-  // 🚫 1. HARD BLOCK — actual harmful content
+  // 🚫 1. HARD BLOCK — harmful or violent content
   const harmful = [
     "kill",
     "hurt you",
@@ -37,6 +40,8 @@ export function moderateContent(content: string): ModerationResult {
     "i want to die",
     "end my life",
     "self harm",
+    "i want to hurt",
+    "i will hurt",
   ];
 
   if (harmful.some((w) => text.includes(w))) {
@@ -57,6 +62,9 @@ export function moderateContent(content: string): ModerationResult {
     "why does this always happen to me",
     "everything sucks",
     "my life is the worst",
+    "i'm so sad",
+    "i feel hopeless",
+    "i feel empty",
   ];
 
   if (pityParty.some((w) => text.includes(w))) {
@@ -68,9 +76,63 @@ export function moderateContent(content: string): ModerationResult {
     };
   }
 
-  // 🚫 3. BLOCK spam / bot patterns (SAFE VERSION)
+  // 🚫 3. BLOCK sexual or harmful emojis
+  const bannedEmojis = [
+    "🍆", "🍑", "💦", "👅", "😏", "😈",
+    "🔪", "💣", "🧨", "🤬", "💀", "🖕",
+    "🐷", "🐍", "🤡"
+  ];
+
+  if (bannedEmojis.some((e) => content.includes(e))) {
+    return {
+      approved: false,
+      reason: "banned_emoji",
+      message:
+        "Some emojis carry meanings that don’t fit the sanctuary. Try using symbols of light, kindness, or encouragement instead.",
+    };
+  }
+
+  // 🚫 4. BLOCK sexual content
+  const sexualKeywords = [
+    "sex",
+    "nude",
+    "naked",
+    "horny",
+    "fetish",
+    "kiss me",
+    "touch me",
+    "send nudes",
+    "i want your body",
+  ];
+
+  if (sexualKeywords.some((w) => text.includes(w))) {
+    return {
+      approved: false,
+      reason: "sexual_content",
+      message:
+        "This sanctuary is not for intimate or personal content. Try offering something gentle and uplifting.",
+    };
+  }
+
+  // 🚫 5. BLOCK personal data
+  const personalDataPatterns = [
+    /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/, // phone numbers
+    /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/i, // emails
+    /\b\d{1,5}\s[A-Za-z]+\s(?:street|st|road|rd|avenue|ave|boulevard|blvd)\b/i, // addresses
+  ];
+
+  if (personalDataPatterns.some((p) => p.test(content))) {
+    return {
+      approved: false,
+      reason: "personal_data",
+      message:
+        "Messages must remain anonymous. Try sharing something universal and uplifting.",
+    };
+  }
+
+  // 🚫 6. BLOCK spam / bot patterns
   const spamPatterns = [
-    /(https?:\/\/\S{20,})/i, // long suspicious links
+    /(https?:\/\/\S{20,})/i,
     /(buy now|click here|promo|discount|free money)/i,
     /\bcrypto\b/i,
     /\bforex\b/i,
@@ -81,11 +143,10 @@ export function moderateContent(content: string): ModerationResult {
     return {
       approved: false,
       reason: "spam",
-      message:
-        "This sanctuary is protected from spam and promotional content.",
+      message: "This sanctuary is protected from spam and promotional content.",
     };
   }
 
-  // ⭐ ALLOW excitement, emojis, sparkles, !!!, <3, passion, joy
+  // ⭐ ALLOW excitement, emojis, sparkles, !!!, <3, joy, passion
   return { approved: true };
 }

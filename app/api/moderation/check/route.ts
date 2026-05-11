@@ -1,11 +1,8 @@
+// /app/api/moderation/check/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
 import { moderateContent } from '@/lib/moderation';
 
-/**
- * POST /api/moderation/check
- * Checks content against the Sea Within moderation system.
- * Used by Wisdom Board and Community Chat before publishing.
- */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -18,10 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Run moderation
     const result = moderateContent(content);
 
-    // Log moderation result for admin review
     console.log(
       `[Moderation] Type: ${type}, Approved: ${result.approved}, Reason: ${result.reason}`
     );
