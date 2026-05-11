@@ -150,26 +150,20 @@ export default function WisdomBoardPage() {
 
       {/* SECTION 2 */}
       <section className="relative h-screen w-full overflow-hidden">
-        <video
-          id="bottleVideo"
-          className="absolute inset-0 w-full h-full min-h-screen object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          webkit-playsinline="true"
-        >
-          <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
-        </video>
-
-        <img
-          src="/images/bottle-floating.png"
-          className="relative z-10 mx-auto mt-[28vh] w-40 opacity-90 pointer-events-none"
-          alt="Floating bottle"
-        />
-      </section>
+  <video
+    id="bottleVideo"
+    className="absolute inset-0 w-full h-full min-h-screen object-cover"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    disablePictureInPicture
+    webkit-playsinline="true"
+  >
+    <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
+  </video>
+</section>
 
       {/* SECTION 3, 4, 5 — your existing code continues below */}
 
