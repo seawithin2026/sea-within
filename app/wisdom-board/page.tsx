@@ -168,28 +168,43 @@ export default function WisdomBoardPage() {
       {/* SECTION 3, 4, 5 — your existing code continues below */}
 
 
-      {/* -------------------------------------------------- */}
-      {/* SECTION 3 — DAILY MESSAGE REVEAL */}
-      {/* -------------------------------------------------- */}
-      <section className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-slate-950">
-        <div className="max-w-xl w-full text-center">
-          <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-4">
-            Today&apos;s message
-          </p>
+  {/* -------------------------------------------------- */}
+{/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
+{/* -------------------------------------------------- */}
+<section className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-slate-950">
+  <div className="max-w-xl w-full text-center">
+    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-4">
+      Today&apos;s message
+    </p>
 
-          <div
-            className={[
-              "rounded-3xl border border-sky-200/15 bg-slate-900/40 backdrop-blur-xl px-8 py-10 shadow-[0_0_60px_rgba(15,23,42,0.9)] transition-all duration-700",
-              messageOpened
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-6 pointer-events-none",
-            ].join(" ")}
-          >
-            <p className="text-lg text-slate-50 mb-6">{dailyMessage.text}</p>
-            <p className="text-xs text-slate-300/80">{dailyMessage.attribution}</p>
-          </div>
-        </div>
-      </section>
+    <div
+      className={[
+        "relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl px-0 py-0 shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden transition-all duration-700",
+        messageOpened
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-6 pointer-events-none",
+      ].join(" ")}
+    >
+      {/* Paper background */}
+      <img
+        src="/images/paper-texture.png"
+        alt="Paper background"
+        className="absolute inset-0 w-full h-full object-cover opacity-90"
+      />
+
+      {/* Message text */}
+      <div className="relative px-8 py-10">
+        <p className="text-lg text-slate-900 font-serif mb-6">
+          {dailyMessage.text}
+        </p>
+        <p className="text-xs text-slate-700/80 font-body">
+          {dailyMessage.attribution}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* -------------------------------------------------- */}
       {/* SECTION 4 — SEND A MESSAGE TO THE WORLD */}
