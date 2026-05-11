@@ -128,67 +128,63 @@ export default function WisdomBoardPage() {
       <Navigation />
 
       {/* -------------------------------------------------- */}
-      {/* SECTION 1 — HERO VIDEO */}
-      {/* -------------------------------------------------- */}
-      <section className="relative h-screen w-full flex items-center justify-center">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="/videos/ocean-hero.mp4" type="video/mp4" />
-        </video>
+{/* SECTION 1 — FULLSCREEN HERO VIDEO (NO TEXT) */}
+{/* -------------------------------------------------- */}
+<section className="relative h-screen w-full overflow-hidden">
+  <video
+    className="absolute inset-0 w-full h-full object-cover"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    disablePictureInPicture
+    webkit-playsinline="true"
+  >
+    <source src="/videos/ocean-hero.mp4" type="video/mp4" />
+  </video>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 to-slate-950" />
+  {/* Soft overlay */}
+  <div className="absolute inset-0 bg-slate-900/30" />
+</section>
 
-        <div className="relative z-10 text-center px-6 max-w-2xl">
-          <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-6">
-            the sea within
-          </p>
-          <h1 className="font-display text-4xl md:text-6xl font-light text-sea-100">
-            There is a sea within every one of us.
-          </h1>
-          <p className="font-body text-white/40 mt-6">
-            Scroll down to discover what the ocean is carrying today.
-          </p>
-        </div>
-      </section>
+{/* -------------------------------------------------- */}
+{/* SECTION 2 — BOTTLE VIDEO WITH GLOWING DOT BUTTON */}
+{/* -------------------------------------------------- */}
+<section className="relative h-screen w-full overflow-hidden">
+  <video
+    className="absolute inset-0 w-full h-full object-cover opacity-60"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    disablePictureInPicture
+    webkit-playsinline="true"
+  >
+    <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
+  </video>
 
-      {/* -------------------------------------------------- */}
-      {/* SECTION 2 — BOTTLE VIDEO */}
-      {/* -------------------------------------------------- */}
-      <section className="relative h-screen w-full flex items-center justify-center bg-slate-950">
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
-        </video>
+  {/* Dark overlay */}
+  <div className="absolute inset-0 bg-slate-950/50" />
 
-        <div className="absolute inset-0 bg-slate-950/60" />
+  {/* Bottle */}
+  <img
+    src="/images/bottle-floating.png"
+    className="relative z-10 mx-auto mt-[28vh] w-40 opacity-90 pointer-events-none"
+    alt="Floating bottle"
+  />
 
-        <div className="relative z-10 flex flex-col items-center gap-6 px-6">
-          <p className="text-sm uppercase tracking-[0.25em] text-sky-200/80">
-            A message is waiting
-          </p>
+  {/* Glowing dot button */}
+  <button
+    onClick={() => setMessageOpened(true)}
+    className="absolute bottom-[22vh] left-1/2 -translate-x-1/2 z-20
+               w-6 h-6 rounded-full bg-sky-300/80
+               shadow-[0_0_20px_6px_rgba(56,189,248,0.6)]
+               animate-pulse hover:scale-110 transition-transform"
+  />
+</section>
 
-          <button
-            type="button"
-            onClick={() => setMessageOpened(true)}
-            className="relative group focus:outline-none"
-          >
-            <img
-              src="/images/bottle-floating.png"
-              className="h-48 drop-shadow-[0_0_40px_rgba(56,189,248,0.45)] transition-transform duration-700 group-hover:-translate-y-2 group-hover:rotate-3"
-            />
-          </button>
-        </div>
-      </section>
 
       {/* -------------------------------------------------- */}
       {/* SECTION 3 — DAILY MESSAGE REVEAL */}
