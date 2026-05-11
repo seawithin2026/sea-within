@@ -105,35 +105,32 @@ export default function WisdomBoardPage() {
           <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
         </video>
       </section>
+{/* SECTION 3 — FULL SCREEN PAPER MESSAGE */}
+<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
 
-      {/* SECTION 3 — ELEGANT MESSAGE REVEAL ON PAPER */}
-<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden px-6 py-24">
-  
-  {/* Paper background */}
-  <div className="relative w-full max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-    <img
-      src="/images/paper-texture.png"
-      alt="Paper"
-      className="absolute inset-0 w-full h-full object-cover opacity-95"
-    />
+  {/* Fullscreen paper background */}
+  <img
+    src="/images/paper-texture.png"
+    alt="Paper"
+    className="absolute inset-0 w-full h-full object-cover opacity-95"
+  />
 
-    {/* Message content */}
-    <div className="relative z-10 px-10 py-20 text-center">
-      <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-6">
-        Today&apos;s Message
-      </p>
+  {/* Message content */}
+  <div className="relative z-10 max-w-4xl mx-auto px-10 py-32 text-center">
+    <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-8">
+      Today&apos;s Message
+    </p>
 
-      <p className="paper-reveal text-2xl leading-relaxed mb-6">
-        {dailyMessage?.text}
-      </p>
+    <p className="paper-reveal text-3xl leading-relaxed mb-10">
+      {dailyMessage?.text}
+    </p>
 
-      <p className="paper-reveal text-sm opacity-80 mt-4">
-        {dailyMessage?.attribution}
-      </p>
-    </div>
+    <p className="paper-reveal text-base opacity-80">
+      {dailyMessage?.attribution}
+    </p>
   </div>
 
-  <style jsx>{`
+  <style jsx global>{`
     .paper-reveal {
       font-family: "Cormorant Garamond", serif;
       font-style: italic;
