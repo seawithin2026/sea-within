@@ -10,7 +10,6 @@ const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
   { href: '/sanctuary/journal', label: 'Journal' },
   { href: '/wisdom-board', label: 'Wisdom Board' },
-  { href: '/reveal-board', label: 'Wisdom Board Reveal' }, // <-- CORRECT ROUTE
   { href: '/community', label: 'Community' },
 ];
 
