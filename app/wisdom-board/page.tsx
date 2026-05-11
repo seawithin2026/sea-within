@@ -106,82 +106,41 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-{/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
-<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+      {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
+      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+        <video
+          className="absolute inset-0 w-full h-full object-cover mix-blend-multiply"
+          autoPlay
+          muted
+          playsInline
+        >
+          <source src="/videos/script-unfold.mp4" type="video/mp4" />
+        </video>
 
-  {/* Background video with green removed */}
-  <video
-    className="absolute inset-0 w-full h-full object-cover mix-blend-multiply"
-    autoPlay
-    muted
-    playsInline
-  >
-    <source src="/videos/script-unfold.mp4" type="video/mp4" />
-  </video>
+        <div className="relative z-10 max-w-3xl mx-auto px-6 py-20">
+          <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6 text-center">
+            Today&apos;s Message
+          </p>
 
-  {/* Parchment + Text */}
-  <div className="relative z-10 max-w-3xl mx-auto px-6 py-20">
+          <div className="relative w-full rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
+            <img
+              src="/images/paper-texture.png"
+              alt="Paper"
+              className="absolute inset-0 w-full h-full object-cover opacity-95"
+            />
 
-    {/* Title */}
-    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6 text-center">
-      Today&apos;s Message
-    </p>
+            <div className="relative z-10 px-10 py-14 text-center">
+              <p className="script-reveal text-xl leading-relaxed mb-6">
+                {dailyMessage?.text}
+              </p>
 
-    {/* Parchment container */}
-    <div className="relative w-full rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
-
-      {/* Parchment texture */}
-      <img
-        src="/images/paper-texture.png"
-        alt="Paper"
-        className="absolute inset-0 w-full h-full object-cover opacity-95"
-      />
-
-      {/* Text written directly on the parchment */}
-      <div className="relative z-10 px-10 py-14 text-center">
-        <p className="script-reveal text-xl leading-relaxed mb-6">
-          {dailyMessage?.text}
-        </p>
-
-        <p className="script-reveal text-sm opacity-80 mt-4">
-          {dailyMessage?.attribution}
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <style jsx>{`
-    .script-reveal {
-      font-family: "Cormorant Garamond", serif;
-      font-style: italic;
-      color: #3b2414; /* warm ink that blends with parchment */
-      opacity: 0;
-      animation: scriptFade 4s ease forwards;
-      text-shadow:
-        0 0 1px rgba(30, 18, 10, 0.5),
-        0 0 3px rgba(30, 18, 10, 0.35),
-        0 0 6px rgba(30, 18, 10, 0.2);
-      filter: brightness(0.95) contrast(1.05);
-    }
-
-    @keyframes scriptFade {
-      0% {
-        opacity: 0;
-        filter: blur(4px);
-      }
-      40% {
-        opacity: 0.4;
-        filter: blur(2px);
-      }
-      100% {
-        opacity: 1;
-        filter: blur(0.3px);
-      }
-    }
-  `}</style>
-</section>
-
-
+              <p className="script-reveal text-sm opacity-80 mt-4">
+                {dailyMessage?.attribution}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
       <section
@@ -192,10 +151,9 @@ export default function WisdomBoardPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f7f2e8] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
-
+        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
           <div
-            className="absolute inset-0 opacity-20 pointer-events-none"
+            className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
               backgroundImage: "url('/images/paper-texture.png')",
               backgroundSize: "cover",
@@ -209,7 +167,7 @@ export default function WisdomBoardPage() {
                 value={newPost}
                 onChange={(e) => setNewPost(e.target.value)}
                 placeholder="Write your message as if you were writing inside a sacred book…"
-                className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-400"
+                className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
               />
 
               <button
@@ -232,37 +190,66 @@ export default function WisdomBoardPage() {
             )}
           </div>
         </div>
-
-       <style jsx>{`
-  .ink-writing {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-    color: #3b2414; /* deeper warm ink */
-    text-shadow:
-      0 0 1px rgba(30, 18, 10, 0.5),
-      0 0 3px rgba(30, 18, 10, 0.35),
-      0 0 6px rgba(30, 18, 10, 0.2);
-    filter: brightness(0.95) contrast(1.05);
-    animation: inkAppear 2s ease forwards;
-    opacity: 0;
-  }
-
-  @keyframes inkAppear {
-    0% {
-      opacity: 0;
-      filter: blur(3px);
-    }
-    40% {
-      opacity: 0.4;
-      filter: blur(1.5px);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0.3px);
-    }
-  }
-`}</style>
       </section>
+
+      {/* GLOBAL STYLES FOR SECTION 3 + 4 */}
+      <style jsx>{`
+        .script-reveal {
+          font-family: "Cormorant Garamond", serif;
+          font-style: italic;
+          color: #3b2414;
+          opacity: 0;
+          animation: scriptFade 4s ease forwards;
+          text-shadow:
+            0 0 1px rgba(30, 18, 10, 0.5),
+            0 0 3px rgba(30, 18, 10, 0.35),
+            0 0 6px rgba(30, 18, 10, 0.2);
+          filter: brightness(0.95) contrast(1.05);
+        }
+
+        @keyframes scriptFade {
+          0% {
+            opacity: 0;
+            filter: blur(4px);
+          }
+          40% {
+            opacity: 0.4;
+            filter: blur(2px);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0.3px);
+          }
+        }
+
+        .ink-writing {
+          font-family: "Cormorant Garamond", serif;
+          font-style: italic;
+          color: #3b2414;
+          text-shadow:
+            0 0 1px rgba(30, 18, 10, 0.5),
+            0 0 3px rgba(30, 18, 10, 0.35),
+            0 0 6px rgba(30, 18, 10, 0.2);
+          filter: brightness(0.95) contrast(1.05);
+          animation: inkAppear 2s ease forwards;
+          opacity: 0;
+        }
+
+        @keyframes inkAppear {
+          0% {
+            opacity: 0;
+            filter: blur(3px);
+          }
+          40% {
+            opacity: 0.4;
+            filter: blur(1.5px);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0.3px);
+          }
+        }
+      `}</style>
     </main>
   );
 }
