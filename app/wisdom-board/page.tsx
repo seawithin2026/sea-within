@@ -105,32 +105,29 @@ export default function WisdomBoardPage() {
           <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
         </video>
       </section>
-{/* SECTION 3 — FULL SCREEN PAPER MESSAGE */}
-<section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
 
-  {/* Fullscreen paper background */}
-  <img
-    src="/images/paper-texture.png"
-    alt="Paper"
-    className="absolute inset-0 w-full h-full object-cover opacity-95"
-  />
+      {/* SECTION 3 — FULL SCREEN PAPER MESSAGE */}
+      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
+        <img
+          src="/images/paper-texture.png"
+          alt="Paper"
+          className="absolute inset-0 w-full h-full object-cover opacity-95"
+        />
 
-  {/* Message content */}
-  <div className="relative z-10 max-w-4xl mx-auto px-10 py-32 text-center">
-    <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-8">
-      Today&apos;s Message
-    </p>
+        <div className="relative z-10 max-w-4xl mx-auto px-10 py-32 text-center">
+          <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-8">
+            Today&apos;s Message
+          </p>
 
-    <p className="paper-reveal text-3xl leading-relaxed mb-10">
-      {dailyMessage?.text}
-    </p>
+          <p className="paper-reveal text-3xl leading-relaxed mb-10">
+            {dailyMessage?.text}
+          </p>
 
-    <p className="paper-reveal text-base opacity-80">
-      {dailyMessage?.attribution}
-    </p>
-  </div>
-</section>
-
+          <p className="paper-reveal text-base opacity-80">
+            {dailyMessage?.attribution}
+          </p>
+        </div>
+      </section>
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
       <section
@@ -182,64 +179,78 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* GLOBAL STYLES FOR SECTION 3 + 4 */}
+      {/* GLOBAL MERGED STYLES */}
       <style jsx global>{`
-  .script-reveal {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-    color: #3b2414;
-    opacity: 0;
-    animation: scriptFade 4s ease forwards;
-    text-shadow:
-      0 0 1px rgba(30, 18, 10, 0.5),
-      0 0 3px rgba(30, 18, 10, 0.35),
-      0 0 6px rgba(30, 18, 10, 0.2);
-    filter: brightness(0.95) contrast(1.05);
-  }
+        /* SECTION 3 — PAPER REVEAL */
+        .paper-reveal {
+          font-family: "Cormorant Garamond", serif;
+          font-style: italic;
+          color: #3b2414;
+          opacity: 0;
+          animation: paperFade 3.5s ease forwards;
+          text-shadow:
+            0 0 1px rgba(30, 18, 10, 0.5),
+            0 0 3px rgba(30, 18, 10, 0.35),
+            0 0 6px rgba(30, 18, 10, 0.2);
+          filter: brightness(0.95) contrast(1.05);
+        }
 
-  @keyframes scriptFade {
-    0% {
-      opacity: 0;
-      filter: blur(4px);
-    }
-    40% {
-      opacity: 0.4;
-      filter: blur(2px);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0.3px);
-    }
-  }
+        @keyframes paperFade {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: blur(3px);
+          }
+          40% {
+            opacity: 0.4;
+            transform: translateY(4px);
+            filter: blur(1.5px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0.3px);
+          }
+        }
 
-  .ink-writing {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-    color: #3b2414;
-    text-shadow:
-      0 0 1px rgba(30, 18, 10, 0.5),
-      0 0 3px rgba(30, 18, 10, 0.35),
-      0 0 6px rgba(30, 18, 10, 0.2);
-    filter: brightness(0.95) contrast(1.05);
-    animation: inkAppear 2s ease forwards;
-    opacity: 0;
-  }
+        /* SECTION 4 — ENHANCED INK WRITING */
+        .ink-writing {
+          font-family: "Cormorant Garamond", serif;
+          font-style: italic;
+          color: #3b2414;
+          opacity: 0;
+          animation: inkReveal 3.2s ease forwards;
+          letter-spacing: 0.3px;
+          text-shadow:
+            0 0 1px rgba(30, 18, 10, 0.5),
+            0 1px 2px rgba(30, 18, 10, 0.35),
+            0 2px 4px rgba(30, 18, 10, 0.25),
+            0 0 12px rgba(30, 18, 10, 0.15);
+          filter: brightness(0.92) contrast(1.08) saturate(0.9);
+        }
 
-  @keyframes inkAppear {
-    0% {
-      opacity: 0;
-      filter: blur(3px);
-    }
-    40% {
-      opacity: 0.4;
-      filter: blur(1.5px);
-    }
-    100% {
-      opacity: 1;
-      filter: blur(0.3px);
-    }
-  }
-`}</style>
+        @keyframes inkReveal {
+          0% {
+            opacity: 0;
+            filter: blur(4px) brightness(0.8);
+            transform: translateY(6px);
+          }
+          35% {
+            opacity: 0.4;
+            filter: blur(2px) brightness(0.9);
+            transform: translateY(3px);
+          }
+          70% {
+            opacity: 0.85;
+            filter: blur(1px) brightness(1);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0.3px) brightness(1.05);
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </main>
   );
 }
