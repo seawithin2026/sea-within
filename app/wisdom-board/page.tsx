@@ -132,11 +132,30 @@ export default function WisdomBoardPage() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* SECTION 1 */}
-     <section className="relative h-[80vh] w-full overflow-hidden bg-black">
+      {/* SECTION 1 — OCEAN HERO */}
+<section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
+  <video
+    className="w-full h-full object-contain"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    disablePictureInPicture
+    webkit-playsinline="true"
+  >
+    <source src="/videos/ocean-hero.mp4" type="video/mp4" />
+  </video>
+</section>
+
+
+
+     {/* SECTION 2 */}
+
+<section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
   <video
     id="bottleVideo"
-    className="absolute inset-0 w-full h-full object-contain"
+    className="w-full h-full object-contain"
     autoPlay
     loop
     muted
@@ -149,23 +168,6 @@ export default function WisdomBoardPage() {
   </video>
 </section>
 
-
-      {/* SECTION 2 */}
-      <section className="relative h-[80vh] w-full overflow-hidden bg-black">
-  <video
-    id="bottleVideo"
-    className="absolute inset-0 w-full h-full object-contain"
-    autoPlay
-    loop
-    muted
-    playsInline
-    preload="auto"
-    disablePictureInPicture
-    webkit-playsinline="true"
-  >
-    <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
-  </video>
-</section>
 
 
       {/* SECTION 3, 4, 5 — your existing code continues below */}
