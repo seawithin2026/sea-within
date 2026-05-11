@@ -28,10 +28,10 @@ export default function WisdomBoardPage() {
     attribution: "Anonymous — Japan — May 10, 2026",
   };
 
-  // ⭐ Slow down bottle video to 0.3x
+  // ⭐ Slow down bottle video to 0.5x
   useEffect(() => {
     const bottle = document.getElementById("bottleVideo") as HTMLVideoElement | null;
-    if (bottle) bottle.playbackRate = 0.3;
+    if (bottle) bottle.playbackRate = 0.5;
   }, []);
 
   useEffect(() => {
