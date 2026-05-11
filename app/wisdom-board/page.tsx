@@ -132,10 +132,10 @@ export default function WisdomBoardPage() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-   {/* SECTION 1 — OCEAN HERO */}
-<section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
+{/* SECTION 1 — OCEAN HERO */}
+<section className="relative w-full bg-black flex items-center justify-center overflow-hidden">
   <video
-    className="w-full h-full object-contain"
+    className="w-full h-auto object-contain"
     autoPlay
     loop
     muted
@@ -151,13 +151,12 @@ export default function WisdomBoardPage() {
 
 
 
-     {/* SECTION 2 */}
 
 {/* SECTION 2 — BOTTLE VIDEO */}
-<section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
+<section className="relative w-full bg-black flex items-center justify-center overflow-hidden">
   <video
     id="bottleVideo"
-    className="w-full h-full object-contain"
+    className="w-full h-auto object-contain"
     autoPlay
     loop
     muted
@@ -169,6 +168,7 @@ export default function WisdomBoardPage() {
     <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
   </video>
 </section>
+
 
 
 
