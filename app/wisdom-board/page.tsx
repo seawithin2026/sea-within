@@ -133,16 +133,13 @@ export default function WisdomBoardPage() {
       <Navigation />
 
 {/* SECTION 1 — OCEAN HERO */}
-<section className="relative w-full bg-black flex items-center justify-center overflow-hidden">
+<section className="relative h-[80vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
-    className="w-full h-auto object-contain"
+    className="w-full h-full object-contain"
     autoPlay
     loop
     muted
     playsInline
-    preload="auto"
-    disablePictureInPicture
-    webkit-playsinline="true"
   >
     <source src="/videos/ocean-hero.mp4" type="video/mp4" />
   </video>
@@ -153,21 +150,18 @@ export default function WisdomBoardPage() {
 
 
 {/* SECTION 2 — BOTTLE VIDEO */}
-<section className="relative w-full bg-black flex items-center justify-center overflow-hidden">
+<section className="relative h-[80vh] w-full bg-black flex items-center justify-center overflow-hidden">
   <video
-    id="bottleVideo"
-    className="w-full h-auto object-contain"
+    className="w-full h-full object-contain"
     autoPlay
     loop
     muted
     playsInline
-    preload="auto"
-    disablePictureInPicture
-    webkit-playsinline="true"
   >
     <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
   </video>
 </section>
+
 
 {/* -------------------------------------------------- */}
 {/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
