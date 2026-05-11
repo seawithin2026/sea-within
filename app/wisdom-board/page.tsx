@@ -132,7 +132,7 @@ export default function WisdomBoardPage() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* SECTION 1 — OCEAN HERO */}
+   {/* SECTION 1 — OCEAN HERO */}
 <section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
   <video
     className="w-full h-full object-contain"
@@ -150,8 +150,10 @@ export default function WisdomBoardPage() {
 
 
 
+
      {/* SECTION 2 */}
 
+{/* SECTION 2 — BOTTLE VIDEO */}
 <section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
   <video
     id="bottleVideo"
@@ -171,7 +173,6 @@ export default function WisdomBoardPage() {
 
 
       {/* SECTION 3, 4, 5 — your existing code continues below */}
-
 
 {/* -------------------------------------------------- */}
 {/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
@@ -194,11 +195,11 @@ export default function WisdomBoardPage() {
       <img
         src="/images/paper-texture.png"
         alt="Paper background"
-        className="absolute inset-0 w-full h-full object-cover opacity-90"
+        className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
       />
 
       {/* Message text */}
-      <div className="relative px-8 py-10">
+      <div className="relative px-8 py-10 z-10">
         <p className="sea-worn-ink text-lg mb-6">
           {dailyMessage.text}
         </p>
@@ -210,7 +211,7 @@ export default function WisdomBoardPage() {
     </div>
   </div>
 
-  {/* SEA‑WORN INK STYLE (LOCAL TO THIS PAGE ONLY) */}
+  {/* SEA‑WORN INK STYLE — MUST BE INSIDE THIS COMPONENT */}
   <style jsx>{`
     .sea-worn-ink {
       font-family: "Cormorant Garamond", serif;
@@ -232,6 +233,7 @@ export default function WisdomBoardPage() {
     }
   `}</style>
 </section>
+
 
 
       {/* -------------------------------------------------- */}
