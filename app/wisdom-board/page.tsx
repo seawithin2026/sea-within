@@ -133,26 +133,10 @@ export default function WisdomBoardPage() {
       <Navigation />
 
       {/* SECTION 1 */}
-      <section className="relative h-screen w-full overflow-hidden">
-        <video
-          className="absolute inset-0 w-full h-full min-h-screen object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          webkit-playsinline="true"
-        >
-          <source src="/videos/ocean-hero.mp4" type="video/mp4" />
-        </video>
-      </section>
-
-      {/* SECTION 2 */}
-      <section className="relative h-screen w-full overflow-hidden">
+     <section className="relative h-[80vh] w-full overflow-hidden bg-black">
   <video
     id="bottleVideo"
-    className="absolute inset-0 w-full h-full min-h-screen object-cover"
+    className="absolute inset-0 w-full h-full object-contain"
     autoPlay
     loop
     muted
@@ -164,6 +148,25 @@ export default function WisdomBoardPage() {
     <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
   </video>
 </section>
+
+
+      {/* SECTION 2 */}
+      <section className="relative h-[80vh] w-full overflow-hidden bg-black">
+  <video
+    id="bottleVideo"
+    className="absolute inset-0 w-full h-full object-contain"
+    autoPlay
+    loop
+    muted
+    playsInline
+    preload="auto"
+    disablePictureInPicture
+    webkit-playsinline="true"
+  >
+    <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
+  </video>
+</section>
+
 
       {/* SECTION 3, 4, 5 — your existing code continues below */}
 
@@ -204,28 +207,29 @@ export default function WisdomBoardPage() {
       </div>
     </div>
   </div>
-</section>
 
-<style jsx>{`
-  .sea-worn-ink {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-    color: #2b1a10;
-    text-shadow:
-      0 0 2px rgba(43, 26, 16, 0.4),
-      0 0 6px rgba(43, 26, 16, 0.25),
-      0 0 10px rgba(43, 26, 16, 0.15);
-    filter: blur(0.35px) brightness(1.1) contrast(0.9);
-    opacity: 0.92;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(43, 26, 16, 0.9),
-      rgba(43, 26, 16, 0.3)
-    );
-  }
-`}</style>
+  {/* SEA‑WORN INK STYLE (LOCAL TO THIS PAGE ONLY) */}
+  <style jsx>{`
+    .sea-worn-ink {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      color: #2b1a10;
+      text-shadow:
+        0 0 2px rgba(43, 26, 16, 0.4),
+        0 0 6px rgba(43, 26, 16, 0.25),
+        0 0 10px rgba(43, 26, 16, 0.15);
+      filter: blur(0.35px) brightness(1.1) contrast(0.9);
+      opacity: 0.92;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(43, 26, 16, 0.9),
+        rgba(43, 26, 16, 0.3)
+      );
+    }
+  `}</style>
+</section>
 
 
       {/* -------------------------------------------------- */}
