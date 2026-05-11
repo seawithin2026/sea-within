@@ -162,55 +162,75 @@ export default function WisdomBoardPage() {
   </video>
 </section>
 {/* -------------------------------------------------- */}
-{/* SECTION 3 — DAILY MESSAGE REVEAL (WITH PAPER BACKGROUND) */}
+{/* SECTION 3 — DAILY MESSAGE REVEAL (FINAL VERSION) */}
 {/* -------------------------------------------------- */}
-<section className="relative min-h-screen flex items-center justify-center px-6 py-24 bg-slate-950">
-  <div className="w-full max-w-4xl mx-auto text-center">
-    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-4">
-      Today&apos;s message
+
+<section className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 bg-slate-950">
+  <div className="w-full max-w-3xl mx-auto text-center">
+
+    {/* Title */}
+    <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
+      Today&apos;s Message
     </p>
 
-    <div
-      className="relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl px-0 py-0 shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden transition-all duration-700 opacity-100 translate-y-0"
-    >
+    {/* Paper container */}
+    <div className="relative rounded-3xl border border-sky-200/15 bg-white/5 backdrop-blur-xl shadow-[0_0_60px_rgba(15,23,42,0.9)] overflow-hidden">
+
       {/* Paper background */}
       <img
         src="/images/paper-texture.png"
         alt="Paper background"
-        className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
+        className="absolute inset-0 w-full h-full object-cover opacity-95 z-0"
       />
 
       {/* Message text */}
-      <div className="relative px-8 py-10 z-10">
-        <p className="sea-worn-ink text-lg mb-6">
-          {dailyMessage.text || "No message loaded"}
+      <div className="relative px-10 py-14 z-10">
+        <p className="ink-reveal text-xl leading-relaxed mb-6">
+          {dailyMessage?.text || "A new message will appear here soon."}
         </p>
 
-        <p className="sea-worn-ink text-xs opacity-80">
-          {dailyMessage.attribution || ""}
+        <p className="ink-reveal text-sm opacity-80 mt-4">
+          {dailyMessage?.attribution || ""}
         </p>
       </div>
     </div>
   </div>
 
+  {/* Styles */}
   <style jsx>{`
-    .sea-worn-ink {
+    .ink-reveal {
       font-family: "Cormorant Garamond", serif;
       font-style: italic;
       color: #2b1a10;
+      opacity: 0;
+      animation: inkFade 3s ease forwards;
       text-shadow:
         0 0 2px rgba(43, 26, 16, 0.4),
         0 0 6px rgba(43, 26, 16, 0.25),
         0 0 10px rgba(43, 26, 16, 0.15);
-      filter: blur(0.35px) brightness(1.1) contrast(0.9);
-      opacity: 0.92;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background: radial-gradient(
         circle at 50% 50%,
         rgba(43, 26, 16, 0.9),
         rgba(43, 26, 16, 0.3)
       );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: blur(0.3px) brightness(1.1) contrast(0.9);
+    }
+
+    @keyframes inkFade {
+      0% {
+        opacity: 0;
+        filter: blur(3px);
+      }
+      40% {
+        opacity: 0.4;
+        filter: blur(1.5px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0.3px);
+      }
     }
   `}</style>
 </section>
