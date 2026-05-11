@@ -106,12 +106,12 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-     {/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
+{/* SECTION 3 — DAILY MESSAGE VIDEO REVEAL */}
 <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
 
-  {/* Background video */}
+  {/* Background video with green removed */}
   <video
-    className="absolute inset-0 w-full h-full object-cover"
+    className="absolute inset-0 w-full h-full object-cover mix-blend-multiply"
     autoPlay
     muted
     playsInline
@@ -120,22 +120,21 @@ export default function WisdomBoardPage() {
   </video>
 
   {/* Message container */}
-  <div className="relative z-10 max-w-3xl mx-auto text-center px-6 py-20">
+  <div className="relative max-w-3xl mx-auto text-center px-6 py-20 z-10">
 
     <p className="text-xs uppercase tracking-[0.25em] text-sky-200/70 mb-6">
       Today&apos;s Message
     </p>
 
-    <div className="relative rounded-3xl border border-black bg-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,0,0,0.8)] overflow-hidden">
+    {/* PAPER AS THE CONTAINER */}
+    <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.8)]">
 
-      {/* Paper texture */}
       <img
         src="/images/paper-texture.png"
         alt="Paper"
-        className="absolute inset-0 w-full h-full object-cover opacity-90 z-0"
+        className="absolute inset-0 w-full h-full object-cover opacity-95"
       />
 
-      {/* Message text */}
       <div className="relative z-10 px-10 py-14">
         <p className="script-reveal text-xl leading-relaxed mb-6">
           {dailyMessage?.text}
@@ -145,6 +144,7 @@ export default function WisdomBoardPage() {
           {dailyMessage?.attribution}
         </p>
       </div>
+
     </div>
   </div>
 
@@ -186,6 +186,7 @@ export default function WisdomBoardPage() {
     }
   `}</style>
 </section>
+
 
       {/* SECTION 4 — WRITE A POSITIVE MESSAGE */}
       <section
