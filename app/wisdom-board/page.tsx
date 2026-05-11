@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import Navigation from "@/components/layout/Navigation";
 
 interface WisdomPost {
@@ -44,7 +44,7 @@ export default function WisdomBoardPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!newPost.trim()) return;
 
