@@ -17,9 +17,6 @@ export default function WisdomBoardPage() {
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingContent, setEditingContent] = useState("");
-
   const dailyMessage = {
     text: "You are more held by life than you realize.",
     attribution: "Anonymous — Japan — May 10, 2026",
@@ -92,12 +89,12 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 2 — BOTTLE (LOWERED MEDIUM) */}
+      {/* SECTION 2 — BOTTLE */}
       <section className="relative h-[165vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video
           id="bottleVideo"
           className="w-full h-full object-cover"
-          style={{ objectPosition: "center 70%" }} // medium lower to reveal more bottle
+          style={{ objectPosition: "center 70%" }}
           autoPlay
           loop
           muted
@@ -107,7 +104,7 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — REVEALED PAGE WITH ENGRAVED INK */}
+      {/* SECTION 3 — DAILY MESSAGE ON PARCHMENT */}
       <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
         <img
           src="/images/paper-texture.png"
@@ -130,13 +127,14 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* SECTION 4 — SPLIT SCREEN: VIDEO LEFT, PARCHMENT INVITATION + WRITING RIGHT */}
-      <section className="relative min-h-screen w-full bg-black flex items-center justify-center px-6 py-24">
-        <div className="relative w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
-          {/* LEFT: PURE VIDEO */}
-          <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)] border border-stone-800">
+      {/* ⭐ SECTION 4 — TRUE FULLSCREEN 50/50 SPLIT */}
+      <section className="relative h-screen w-full overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
+
+          {/* LEFT — FULLSCREEN VIDEO */}
+          <div className="relative h-full w-full">
             <video
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               autoPlay
               loop
               muted
@@ -146,25 +144,28 @@ export default function WisdomBoardPage() {
             </video>
           </div>
 
-          {/* RIGHT: SECTION-3-STYLE PARCHMENT WITH INVITATION + TEXTAREA */}
-          <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 bg-[#f0e6d2]">
+          {/* RIGHT — FULLSCREEN PARCHMENT WITH INVITATION + TEXTAREA */}
+          <div className="relative h-full w-full">
             <img
               src="/images/paper-texture.png"
               alt="Paper"
               className="absolute inset-0 w-full h-full object-cover opacity-100 pointer-events-none"
             />
 
-            <div className="relative z-10 max-w-xl mx-auto px-8 md:px-10 py-10 md:py-12 text-center">
-              <p className="paper-reveal text-3xl leading-relaxed mb-10">
+            <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
+
+              {/* Engraved Invitation */}
+              <p className="paper-reveal text-3xl leading-relaxed mb-10 max-w-md">
                 Send good vibes and light to the community.
               </p>
 
-              <form onSubmit={handleSubmit} className="mt-4">
+              {/* Writing Form */}
+              <form onSubmit={handleSubmit} className="w-full max-w-md">
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
                   placeholder="Write your message as if you were writing inside a sacred book…"
-                  className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
+                  className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
                 />
 
                 <button
@@ -176,6 +177,7 @@ export default function WisdomBoardPage() {
                 </button>
               </form>
 
+              {/* Feedback */}
               {feedback && (
                 <p
                   className={`mt-4 text-sm ${
@@ -186,6 +188,7 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
+              {/* Auto-fill Note */}
               <p className="mt-4 text-xs text-stone-700/85">
                 Your message will be shared anonymously with the community, along with your
                 country and today&apos;s date.
@@ -195,13 +198,12 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* GLOBAL MERGED STYLES */}
+      {/* GLOBAL STYLES */}
       <style jsx global>{`
-        /* SECTION 3 — ENGRAVED PAPER REVEAL */
         .paper-reveal {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
-          color: #4a2e1a; /* warm brown ink */
+          color: #4a2e1a;
           opacity: 0;
           animation: paperFade 3.5s ease forwards;
           text-shadow:
@@ -229,7 +231,6 @@ export default function WisdomBoardPage() {
           }
         }
 
-        /* SECTION 4 — ENHANCED INK WRITING */
         .ink-writing {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
