@@ -164,7 +164,7 @@ export default function WisdomBoardPage() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Write your message and share your wisdom…"
+                 placeholder="Offer a helping hand — your words may be someone’s light today."
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
                 />
 
