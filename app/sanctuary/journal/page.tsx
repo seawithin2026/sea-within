@@ -131,29 +131,30 @@ export default function JournalPage() {
             <div className="relative w-[900px] max-w-[95vw] h-[80%]">
 
               {/* DATE — TRUE UPPER RIGHT OF RIGHT PAGE */}
-              <div className="absolute top-[14%] right-[15%] text-[#4b2e1a] text-sm font-medium">
-                {today}
+             <div className="absolute top-[14%] right-[15%] text-[#4b2e1a] text-sm font-medium">
+              {today}
               </div>
 
-              {/* ENTRY OR TEXTAREA */}
-              {currentIndex !== null && entries[currentIndex] ? (
-                <div
-                  className={`absolute top-[20%] right-[15%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
-                    turnDirection === 'left' ? 'page-turn-left' : ''
-                  } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
-                >
-                  <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed">
-                    {entries[currentIndex]}
-                  </div>
+
+             {/* ENTRY OR TEXTAREA */}
+            {currentIndex !== null && entries[currentIndex] ? (
+               <div
+              className={`absolute top-[20%] right-[15%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
+              turnDirection === 'left' ? 'page-turn-left' : ''
+              } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
+              >
+                <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed">
+              {entries[currentIndex]}
+                </div>
                 </div>
               ) : (
-                <textarea
-                  className="absolute top-[20%] right-[15%] w-[40%] h-[60%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
-                  placeholder="Let the sea within you speak..."
-                  value={draft}
-                  onChange={e => setDraft(e.target.value)}
-                />
-              )}
+               <textarea
+                className="absolute top-[20%] right-[15%] w-[40%] h-[60%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
+               placeholder="Let the sea within you speak..."
+                 value={draft}
+                 onChange={e => setDraft(e.target.value)}
+                 />
+                )}
 
               {/* CONTROLS */}
               <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
