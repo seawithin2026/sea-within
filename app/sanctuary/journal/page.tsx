@@ -63,17 +63,34 @@ export default function JournalPage() {
 
       <div className="relative z-10 flex h-full w-full items-center justify-center">
 
-        {stage === 'closed' && (
-          <div
-            onClick={() => setStage('video')}
-            className="cursor-pointer transition-transform duration-700 hover:scale-105"
-          >
-            <img
-              src="/images/sea-within-book-closed.png"
-              className="h-[340px] w-auto drop-shadow-[0_25px_40px_rgba(0,0,0,0.7)]"
-            />
-          </div>
-        )}
+       {stage === 'closed' && (
+  <>
+    <video
+      className="absolute inset-0 h-full w-full object-cover"
+      src="/videos/deep-water.mp4"
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+    />
+
+    {/* REMOVE the dark overlay completely */}
+    {/* <div className="absolute inset-0 bg-black/40" /> */}
+
+    {/* Book appears immediately with the wave */}
+    <div
+      onClick={() => setStage('video')}
+      className="absolute inset-0 flex items-center justify-center cursor-pointer transition-transform duration-700 hover:scale-105"
+    >
+      <img
+        src="/images/sea-within-book-closed.png"
+        className="h-[340px] w-auto drop-shadow-[0_25px_40px_rgba(0,0,0,0.7)]"
+      />
+    </div>
+  </>
+)}
+
 
         {stage === 'video' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
