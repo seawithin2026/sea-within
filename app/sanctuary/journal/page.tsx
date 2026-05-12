@@ -103,7 +103,7 @@ export default function JournalPage() {
               }`}
               onEnded={() => {
                 setFadeVideo(true);
-                setTimeout(() => setStage('logo'), 1200);
+                setTimeout(() => setStage('logo'), 300);
               }}
             />
           </div>
