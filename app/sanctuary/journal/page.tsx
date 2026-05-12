@@ -151,9 +151,9 @@ export default function JournalPage() {
               <div
   className="absolute"
   style={{
-    left: '58%',
+    left: '45%',
     top: '18%',
-    width: '30%',
+    width: '20%',
     height: '60%',
     background: 'rgba(255, 0, 0, 0.15)', // TEMP: transparent red overlay so you can SEE it
     border: '2px solid rgba(255, 0, 0, 0.4)', // TEMP: outline to confirm placement
