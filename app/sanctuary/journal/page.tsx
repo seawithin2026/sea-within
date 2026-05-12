@@ -104,7 +104,6 @@ export default function JournalPage() {
               className="w-full h-full object-contain mx-auto"
             />
 
-            {/* TAP TO CONTINUE */}
             <button
               type="button"
               onClick={() => setStage('write')}
@@ -121,41 +120,43 @@ export default function JournalPage() {
         {stage === 'write' && (
           <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
 
-            {/* FULLSCREEN PARCHMENT */}
-            <img
-              src="/images/parchment-page.png"
-              className="absolute inset-0 w-full h-full object-contain mx-auto"
-            />
+            {/* RELATIVE CONTAINER THAT SCALES WITH THE IMAGE */}
+            <div className="relative w-full h-full flex items-center justify-center">
 
-            {/* RIGHT-PAGE WRITING AREA */}
-            <div className="relative w-[900px] max-w-[95vw] h-[80%]">
+              {/* PARCHMENT IMAGE */}
+              <img
+                src="/images/parchment-page.png"
+                className="w-full h-full object-contain pointer-events-none select-none"
+              />
 
-            {/* DATE — TRUE UPPER RIGHT OF RIGHT PAGE */}
-<div className="absolute top-[14%] right-[20%] text-[#4b2e1a] text-sm font-medium">
-  {today}
-</div>
+              {/* RIGHT PAGE WRITING AREA — ANCHORED TO IMAGE */}
+              <div className="absolute top-[20%] right-[18%] w-[32%] h-[55%]">
 
-{/* ENTRY OR TEXTAREA */}
-{currentIndex !== null && entries[currentIndex] ? (
-  <div
-    className={`absolute top-[20%] right-[20%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
-      turnDirection === 'left' ? 'page-turn-left' : ''
-    } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
-  >
-    <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-center">
-      {entries[currentIndex]}
-    </div>
-  </div>
-) : (
-  <textarea
-    className="absolute top-[20%] right-[20%] w-[40%] h-[60%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center"
-    placeholder="Let the sea within you speak..."
-    value={draft}
-    onChange={e => setDraft(e.target.value)}
-  />
-)}
+                {/* DATE */}
+                <div className="absolute top-[-8%] right-0 text-[#4b2e1a] text-sm font-medium">
+                  {today}
+                </div>
 
-
+                {/* ENTRY OR TEXTAREA */}
+                {currentIndex !== null && entries[currentIndex] ? (
+                  <div
+                    className={`w-full h-full overflow-auto text-[#3b2414] text-center ${
+                      turnDirection === 'left' ? 'page-turn-left' : ''
+                    } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
+                  >
+                    <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed">
+                      {entries[currentIndex]}
+                    </div>
+                  </div>
+                ) : (
+                  <textarea
+                    className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center"
+                    placeholder="Let the sea within you speak..."
+                    value={draft}
+                    onChange={e => setDraft(e.target.value)}
+                  />
+                )}
+              </div>
 
               {/* CONTROLS */}
               <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
@@ -201,6 +202,7 @@ export default function JournalPage() {
                   Next ▶
                 </button>
               </div>
+
             </div>
           </div>
         )}
