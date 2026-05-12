@@ -1,270 +1,161 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import Navigation from "@/components/layout/Navigation";
-import ScrollReveal from "@/components/ui/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
+import { useState, useMemo } from 'react';
 
-interface JournalEntry {
-  id: string;
-  content: string;
-  created_at: string;
-}
+type Stage = 'closed' | 'opening' | 'logo' | 'write';
 
 export default function JournalPage() {
-  const supabase = createClient();
+  const [stage, setStage] = useState<Stage>('closed');
 
-  const [entry, setEntry] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [user, setUser] = useState<any>(null);
-
-  // Editing state
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingContent, setEditingContent] = useState("");
-
-  // Load user session
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+  const today = useMemo(() => {
+    return new Date().toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   }, []);
 
-  // Load entries once user is known
-  useEffect(() => {
-    if (user) fetchEntries();
-  }, [user]);
-
-  const fetchEntries = async () => {
-    const { data, error } = await supabase
-      .from("journal_entries")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) setEntries(data);
-  };
-
-  const saveEntry = async () => {
-    setSaved(false);
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      alert("You must be logged in to save your journal.");
-      return;
-    }
-
-    const { error } = await supabase.from("journal_entries").insert({
-      user_id: user.id,
-      content: entry,
-    });
-
-    if (!error) {
-      setSaved(true);
-      setEntry("");
-      fetchEntries();
-    }
-  };
-
-  const startEditing = (entry: JournalEntry) => {
-    setEditingId(entry.id);
-    setEditingContent(entry.content);
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-
-    const { error } = await supabase
-      .from("journal_entries")
-      .update({ content: editingContent })
-      .eq("id", editingId);
-
-    if (!error) {
-      setEditingId(null);
-      setEditingContent("");
-      fetchEntries();
-    }
-  };
-
-  const deleteEntry = async (id: string) => {
-    const confirmDelete = confirm("Delete this entry forever?");
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from("journal_entries")
-      .delete()
-      .eq("id", id);
-
-    if (!error) fetchEntries();
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-CA", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
   return (
-    <main className="min-h-screen bg-sanctuary-dark">
-      <Navigation />
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
+      {/* WATER BACKGROUND */}
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src="/videos/deep-water.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-golden-400/4 blur-[120px]" />
-        </div>
+      <div className="absolute inset-0 bg-black/40" />
 
-        <div className="relative z-10 text-center px-6">
-          <ScrollReveal delay={200}>
-            <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-6">
-              inner sanctuary
-            </p>
-          </ScrollReveal>
+      {/* MAIN CONTENT */}
+      <div className="relative z-10 flex h-full w-full items-center justify-center">
 
-          <ScrollReveal delay={400}>
-            <h1 className="font-display text-3xl md:text-5xl font-light text-sea-100">
-              Your Private Journal
-            </h1>
-          </ScrollReveal>
+        {/* CLOSED BOOK */}
+        {stage === 'closed' && (
+          <div
+            onClick={() => setStage('opening')}
+            className="cursor-pointer transition-transform duration-700 hover:scale-105"
+          >
+            <img
+              src="/images/sea-within-book-closed.png"
+              className="h-[340px] w-auto drop-shadow-[0_25px_40px_rgba(0,0,0,0.7)]"
+            />
+          </div>
+        )}
 
-          <ScrollReveal delay={600}>
-            <p className="font-body text-base text-white/30 mt-6 max-w-lg mx-auto leading-relaxed">
-              A quiet space to release, remember, and explore your inner world.
-              Only you can see what is written here.
-            </p>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Journal Form */}
-      <section className="max-w-2xl mx-auto px-6 pb-12">
-        <ScrollReveal>
-          <div className="sanctuary-card p-8">
-            <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-3">
-              Write Your Reflection
-            </label>
-
-            <textarea
-              value={entry}
-              onChange={(e) => setEntry(e.target.value)}
-              placeholder="What is alive in your inner ocean today?"
-              rows={6}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3.5
-                         font-body text-sea-100 placeholder:text-white/20 resize-none
-                         focus:outline-none focus:border-golden-400/40 focus:bg-white/8
-                         transition-all duration-300"
+        {/* OPENING ANIMATION */}
+        {stage === 'opening' && (
+          <div className="relative w-[700px] h-[450px] perspective-1000">
+            {/* LEFT COVER */}
+            <div
+              className="absolute left-0 top-0 h-full w-1/2 origin-right bg-[#1a1a1a] rounded-l-lg shadow-2xl"
+              style={{
+                animation: 'coverOpen 1s forwards ease-out',
+              }}
             />
 
-            <div className="flex justify-between items-center mt-3">
-              <p className="font-body text-[11px] text-white/20">
-                {entry.length} characters
-              </p>
+            {/* PAGE FAN */}
+            {[...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute left-0 top-0 h-full w-1/2 origin-right bg-white rounded-l-lg shadow-xl"
+                style={{
+                  animation: `pageFlip ${0.6 + i * 0.08}s forwards ease-out`,
+                  opacity: 0,
+                }}
+              />
+            ))}
 
-              <button
-                onClick={saveEntry}
-                disabled={!entry.trim()}
-                className="btn-golden text-[11px] px-6 py-2.5 disabled:opacity-40"
-              >
-                Save Entry
-              </button>
-            </div>
+            {/* RIGHT COVER */}
+            <div className="absolute right-0 top-0 h-full w-1/2 bg-[#1a1a1a] rounded-r-lg shadow-2xl" />
 
-            {saved && (
-              <div className="mt-4 p-4 rounded-lg border bg-sea-400/10 border-sea-400/20 text-sea-200 text-sm font-body">
-                Your entry has been saved.
-              </div>
-            )}
+            {/* OPEN BOOK FRAME */}
+            <img
+              src="/images/book-open-frame.png"
+              className="absolute inset-0 w-full h-full opacity-0"
+              style={{
+                animation: 'fadeIn 0.8s forwards ease-out',
+                animationDelay: '1.2s',
+              }}
+              onAnimationEnd={() => setStage('logo')}
+            />
+
+            {/* KEYFRAMES */}
+            <style jsx>{`
+              .perspective-1000 {
+                perspective: 1000px;
+              }
+
+              @keyframes coverOpen {
+                from { transform: rotateY(0deg); }
+                to { transform: rotateY(-180deg); }
+              }
+
+              @keyframes pageFlip {
+                0% { transform: rotateY(0deg); opacity: 0; }
+                40% { opacity: 1; }
+                100% { transform: rotateY(-180deg); opacity: 0; }
+              }
+
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+            `}</style>
           </div>
-        </ScrollReveal>
-      </section>
+        )}
 
-      {/* Entries Grid */}
-      <section className="max-w-4xl mx-auto px-6 pb-24">
-        <div className="columns-1 md:columns-2 gap-6 space-y-6">
-          {entries.map((entry, index) => (
-            <ScrollReveal key={entry.id} delay={100 + index * 50}>
-              <div className="wisdom-card break-inside-avoid">
-
-                {/* EDIT MODE */}
-                {editingId === entry.id ? (
-                  <>
-                    <textarea
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                      rows={5}
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3.5
-                                 font-body text-sea-100 placeholder:text-white/20 resize-none
-                                 focus:outline-none focus:border-golden-400/40 focus:bg-white/8
-                                 transition-all duration-300"
-                    />
-
-                    <div className="flex justify-end gap-4 mt-4">
-                      <button
-                        onClick={() => {
-                          setEditingId(null);
-                          setEditingContent("");
-                        }}
-                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                      >
-                        Cancel
-                      </button>
-
-                      <button
-                        onClick={saveEdit}
-                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* NORMAL VIEW */}
-                    <p className="font-display text-lg font-light text-sea-100/80 leading-relaxed italic whitespace-pre-line">
-                      {entry.content}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-                      <p className="font-body text-[11px] text-white/20">
-                        {formatDate(entry.created_at)}
-                      </p>
-
-                      <div className="flex gap-4">
-                        <button
-                          onClick={() => startEditing(entry)}
-                          className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => deleteEntry(entry.id)}
-                          className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </ScrollReveal>
-          ))}
-
-          {entries.length === 0 && (
-            <div className="col-span-2 text-center py-16">
-              <p className="font-display text-xl text-white/20 font-light">
-                Your journal is waiting.
-              </p>
-              <p className="font-body text-sm text-white/10 mt-3">
-                Begin by writing your first reflection.
-              </p>
+        {/* LOGO PAGE */}
+        {stage === 'logo' && (
+          <div
+            className="relative w-[900px] max-w-[95vw] cursor-pointer"
+            onClick={() => setStage('write')}
+          >
+            <img
+              src="/images/sea-within-logo-page.jpg"
+              className="w-full h-auto rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
+                Tap to begin writing
+              </span>
             </div>
-          )}
-        </div>
-      </section>
-    </main>
+          </div>
+        )}
+
+        {/* WRITING PAGE */}
+        {stage === 'write' && (
+          <div className="relative w-[900px] max-w-[95vw]">
+            <img
+              src="/images/parchment-page.jpg"
+              className="w-full h-auto rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+            />
+
+            <div className="absolute inset-0 px-10 py-8 flex flex-col">
+              {/* DATE */}
+              <div className="text-right text-[#4b2e1a] text-sm font-medium">
+                {today}
+              </div>
+
+              {/* TEXTAREA */}
+              <textarea
+                className="mt-4 h-full w-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
+                placeholder="Let the sea within you speak..."
+              />
+
+              {/* SAVE BUTTON */}
+              <div className="mt-4 flex justify-end">
+                <button className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414] shadow-md shadow-black/30 hover:bg-amber-300">
+                  Save to my book
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
   );
 }
