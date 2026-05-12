@@ -151,7 +151,7 @@ export default function JournalPage() {
               <div
   className="absolute"
   style={{
-    left: '52%',
+    left: '58%',
     top: '18%',
     width: '20%',
     height: '60%',
