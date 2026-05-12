@@ -148,13 +148,16 @@ export default function JournalPage() {
                 - width ~ 30% of width
                 - height ~ 60% of height
               */}
-              <div className="absolute"
-                   style={{
-                     left: '58%',
-                     top: '18%',
-                     width: '30%',
-                     height: '60%',
-                   }}
+              <div
+  className="absolute"
+  style={{
+    left: '58%',
+    top: '18%',
+    width: '30%',
+    height: '60%',
+    background: 'rgba(255, 0, 0, 0.15)', // TEMP: transparent red overlay so you can SEE it
+    border: '2px solid rgba(255, 0, 0, 0.4)', // TEMP: outline to confirm placement
+  }}
               >
                 {/* Date in top-right of the rectangle */}
                 <div
