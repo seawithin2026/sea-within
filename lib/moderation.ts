@@ -2,7 +2,7 @@
  * SEA WITHIN — Gentle Uplifting Moderation + Safety + Emoji Protection
  *
  * ✔ Blocks cruelty, hate, harassment, violence, self‑harm
- * ✔ Blocks heavy negativity + pity‑party dumping
+ * ✔ Blocks negativity, despair, emotional dumping
  * ✔ Blocks sexual emojis + harmful emojis
  * ✔ Blocks sexual content + inappropriate suggestions
  * ✔ Blocks personal data (emails, phone numbers, addresses)
@@ -53,7 +53,7 @@ export function moderateContent(content: string): ModerationResult {
     };
   }
 
-  // 🚫 2. BLOCK pity‑party / heavy dumping energy
+  // 🚫 2. BLOCK negativity / dumping / despair
   const pityParty = [
     "nothing matters",
     "i give up",
@@ -62,9 +62,12 @@ export function moderateContent(content: string): ModerationResult {
     "why does this always happen to me",
     "everything sucks",
     "my life is the worst",
-    "i'm so sad",
     "i feel hopeless",
-    "i feel empty",
+    "i feel empty inside",
+    "i hate my life",
+    "i'm miserable",
+    "i'm depressed",
+    "i feel broken",
   ];
 
   if (pityParty.some((w) => text.includes(w))) {
@@ -72,7 +75,7 @@ export function moderateContent(content: string): ModerationResult {
       approved: false,
       reason: "pity_party",
       message:
-        "This space is for gentle honesty, not heavy emotional dumping. Try sharing the insight or truth underneath the feeling.",
+        "This space welcomes honesty, depth, and vulnerability — but not heavy emotional dumping. Try sharing the light or insight beneath the feeling.",
     };
   }
 
