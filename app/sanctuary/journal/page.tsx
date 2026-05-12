@@ -46,7 +46,8 @@ export default function JournalPage() {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* WATER BACKGROUND */}
+
+      {/* OCEAN BACKGROUND */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
         src="/videos/deep-water.mp4"
@@ -55,13 +56,12 @@ export default function JournalPage() {
         muted
         playsInline
       />
-
       <div className="absolute inset-0 bg-black/40" />
 
       {/* MAIN CONTENT */}
       <div className="relative z-10 flex h-full w-full items-center justify-center">
 
-        {/* CLOSED BOOK */}
+        {/* CLOSED BOOK FLOATING */}
         {stage === 'closed' && (
           <div
             onClick={() => setStage('video')}
@@ -74,14 +74,14 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* VIDEO OPENING WITH FADE OUT */}
+        {/* FULLSCREEN OPENING VIDEO */}
         {stage === 'video' && (
-          <div className="relative w-[900px] max-w-[95vw]">
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
             <video
               src="/videos/book-opening.mp4"
               autoPlay
               playsInline
-              className={`w-full h-auto rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.8)] ${
+              className={`w-full h-full object-cover ${
                 fadeVideo ? 'fade-out-video' : ''
               }`}
               onEnded={() => {
@@ -92,20 +92,12 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* LOGO PAGE → FADE TO PARCHMENT */}
+        {/* FULLSCREEN LOGO PAGE */}
         {stage === 'logo' && (
-          <div className="relative w-[900px] max-w-[95vw] fade-in-book">
-
-            {/* FULL BOOK WITH LOGO */}
+          <div className="absolute inset-0 fade-in-book">
             <img
               src="/images/sea-within-logo-page.png"
-              className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
-            />
-
-            {/* FADE LOGO INTO PARCHMENT */}
-            <img
-              src="/images/parchment-page.png"
-              className="absolute inset-0 w-full h-full object-cover rounded-md animate-logoFade"
+              className="w-full h-full object-contain mx-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
             />
 
             {/* TAP TO CONTINUE */}
@@ -121,103 +113,107 @@ export default function JournalPage() {
           </div>
         )}
 
-{/* WRITING PAGE */}
-{stage === 'write' && (
-  <div className="relative w-[900px] max-w-[95vw] fade-in-book">
+        {/* FULLSCREEN PARCHMENT WRITING PAGE */}
+        {stage === 'write' && (
+          <div className="absolute inset-0 fade-in-book">
 
-    {/* FULL BOOK FRAME (parchment is the book) */}
-    <img
-      src="/images/parchment-page.png"
-      className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
-    />
+            {/* FULLSCREEN PARCHMENT */}
+            <img
+              src="/images/parchment-page.png"
+              className="w-full h-full object-contain mx-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+            />
 
-    {/* TWO-PAGE LAYOUT */}
-    <div className="absolute inset-[6%] flex">
+            {/* WRITING AREA */}
+            <div className="absolute inset-0 flex items-center justify-center">
 
-      {/* LEFT PAGE */}
-      <div className="relative flex-1 mr-[50px]"> {/* 50px = medium fold */}
-        <img
-          src="/images/parchment-page.png"
-          className="absolute inset-0 w-full h-full object-cover rounded-md"
-        />
-      </div>
+              {/* TWO-PAGE LAYOUT */}
+              <div className="relative w-[900px] max-w-[95vw] h-[80%] flex">
 
-      {/* RIGHT PAGE */}
-      <div className="relative flex-1 ml-[50px] px-10 py-8">
+                {/* LEFT PAGE */}
+                <div className="relative flex-1 mr-[50px]">
+                  <img
+                    src="/images/parchment-page.png"
+                    className="absolute inset-0 w-full h-full object-cover opacity-60"
+                  />
+                </div>
 
-        {/* DATE */}
-        <div className="absolute top-6 right-10 text-[#4b2e1a] text-sm font-medium">
-          {today}
-        </div>
+                {/* RIGHT PAGE */}
+                <div className="relative flex-1 ml-[50px] px-10 py-8">
 
-        {/* ENTRY OR TEXTAREA */}
-        {currentIndex !== null && entries[currentIndex] ? (
-          <div
-            className={`absolute top-14 left-10 w-[80%] h-[70%] overflow-auto ${
-              turnDirection === 'left' ? 'page-turn-left' : ''
-            } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
-          >
-            <div className="ink-writing whitespace-pre-wrap">
-              {entries[currentIndex]}
+                  {/* DATE */}
+                  <div className="absolute top-4 right-6 text-[#4b2e1a] text-sm font-medium">
+                    {today}
+                  </div>
+
+                  {/* ENTRY OR TEXTAREA */}
+                  {currentIndex !== null && entries[currentIndex] ? (
+                    <div
+                      className={`absolute top-14 left-10 w-[80%] h-[70%] overflow-auto ${
+                        turnDirection === 'left' ? 'page-turn-left' : ''
+                      } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
+                    >
+                      <div className="ink-writing whitespace-pre-wrap">
+                        {entries[currentIndex]}
+                      </div>
+                    </div>
+                  ) : (
+                    <textarea
+                      className="absolute top-14 left-10 w-[80%] h-[70%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
+                      placeholder="Let the sea within you speak..."
+                      value={draft}
+                      onChange={e => setDraft(e.target.value)}
+                    />
+                  )}
+
+                  {/* CONTROLS */}
+                  <div className="absolute bottom-6 left-10 right-10 flex justify-between">
+                    <button
+                      onClick={() =>
+                        currentIndex !== null
+                          ? goToPage(currentIndex - 1, 'left')
+                          : goToPage(entries.length - 2, 'left')
+                      }
+                      disabled={entries.length <= 1 || currentIndex === 0 || currentIndex === null}
+                      className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                    >
+                      ◀ Previous
+                    </button>
+
+                    <button
+                      onClick={showNewPage}
+                      className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
+                    >
+                      New Page
+                    </button>
+
+                    <button
+                      onClick={handleSave}
+                      className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        currentIndex !== null
+                          ? goToPage(currentIndex + 1, 'right')
+                          : undefined
+                      }
+                      disabled={
+                        currentIndex === null ||
+                        currentIndex === entries.length - 1 ||
+                        entries.length === 0
+                      }
+                      className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                    >
+                      Next ▶
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        ) : (
-          <textarea
-            className="absolute top-14 left-10 w-[80%] h-[70%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
-            placeholder="Let the sea within you speak..."
-            value={draft}
-            onChange={e => setDraft(e.target.value)}
-          />
         )}
-
-        {/* CONTROLS */}
-        <div className="absolute bottom-6 left-10 right-10 flex justify-between">
-          <button
-            onClick={() =>
-              currentIndex !== null
-                ? goToPage(currentIndex - 1, 'left')
-                : goToPage(entries.length - 2, 'left')
-            }
-            disabled={entries.length <= 1 || currentIndex === 0 || currentIndex === null}
-            className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
-          >
-            ◀ Previous
-          </button>
-
-          <button
-            onClick={showNewPage}
-            className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
-          >
-            New Page
-          </button>
-
-          <button
-            onClick={handleSave}
-            className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
-          >
-            Save
-          </button>
-
-          <button
-            onClick={() =>
-              currentIndex !== null
-                ? goToPage(currentIndex + 1, 'right')
-                : undefined
-            }
-            disabled={
-              currentIndex === null ||
-              currentIndex === entries.length - 1 ||
-              entries.length === 0
-            }
-            className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
-          >
-            Next ▶
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
 
       </div>
 
@@ -237,14 +233,6 @@ export default function JournalPage() {
         }
         .fade-in-book {
           animation: fadeInBook 1.2s ease-out forwards;
-        }
-
-        @keyframes logoFade {
-          0% { opacity: 1; }
-          100% { opacity: 0; }
-        }
-        .animate-logoFade {
-          animation: logoFade 2.5s ease-out forwards;
         }
 
         @keyframes inkWrite {
