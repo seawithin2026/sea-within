@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import Navigation from "@/components/layout/Navigation";
 
 interface WisdomPost {
@@ -20,9 +20,6 @@ export default function WisdomBoardPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
-  const section3Ref = useRef<HTMLElement | null>(null);
-  const section4Ref = useRef<HTMLElement | null>(null);
-
   const dailyMessage = {
     text: "You are more held by life than you realize.",
     attribution: "Anonymous — Japan — May 10, 2026",
@@ -35,28 +32,6 @@ export default function WisdomBoardPage() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!section3Ref.current || !section4Ref.current) return;
-
-      const rect3 = section3Ref.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      // When Section 3 is mostly above the viewport, fade it out and fade Section 4 in
-      if (rect3.bottom < windowHeight * 0.5) {
-        section3Ref.current.classList.add("scrolled-out");
-        section4Ref.current.classList.add("scrolled-in");
-      } else {
-        section3Ref.current.classList.remove("scrolled-out");
-        section4Ref.current.classList.remove("scrolled-in");
-      }
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchPosts = async () => {
@@ -132,15 +107,12 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — REVEALED PAGE (TURNING PAGE START) */}
-      <section
-        ref={section3Ref}
-        className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden turning-page-section"
-      >
+      {/* SECTION 3 — REVEALED PAGE WITH ENGRAVED INK */}
+      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
         <img
           src="/images/paper-texture.png"
           alt="Paper"
-          className="absolute inset-0 w-full h-full object-cover opacity-95"
+          className="absolute inset-0 w-full h-full object-cover opacity-100"
         />
 
         <div className="relative z-10 max-w-4xl mx-auto px-10 py-32 text-center">
@@ -158,111 +130,118 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* SECTION 4 — WRITING PAGE (TURNING PAGE END) */}
-      <section
-        ref={section4Ref}
-        className="relative min-h-screen w-full flex items-center justify-center px-6 py-24 writing-section"
-        style={{
-          backgroundImage: "url('/images/sand-texture.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="relative w-full max-w-3xl mx-auto rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden writing-panel">
-          <div
-            className="absolute inset-0 opacity-30 pointer-events-none"
-            style={{
-              backgroundImage: "url('/images/paper-texture.png')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
+      {/* SECTION 4 — SPLIT SCREEN: VIDEO LEFT, WRITING RIGHT */}
+      <section className="relative min-h-screen w-full bg-black flex items-center justify-center px-6 py-24">
+        <div className="relative w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+          {/* LEFT: VIDEO WITH MESSAGE */}
+          <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)] border border-stone-800">
+            <video
+              className="w-full h-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              <source src="/videos/ocean-wisdom.mp4" type="video/mp4" />
+            </video>
 
-          <div className="relative z-10 px-10 py-12">
-            <form onSubmit={handleSubmit}>
-              <textarea
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                placeholder="Write your message as if you were writing inside a sacred book…"
-                className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
-              />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none" />
 
-              <button
-                type="submit"
-                disabled={isSubmitting || !newPost.trim()}
-                className="mt-6 px-8 py-3 bg-amber-600/80 hover:bg-amber-500 text-white rounded-full transition-all disabled:opacity-40"
-              >
-                {isSubmitting ? "Sending..." : "Send Message"}
-              </button>
-            </form>
-
-            {feedback && (
-              <p
-                className={`mt-4 text-sm ${
-                  feedbackType === "error" ? "text-red-400" : "text-amber-400"
-                }`}
-              >
-                {feedback}
+            <div className="absolute inset-0 flex items-center justify-center px-8 text-center">
+              <p className="text-lg md:text-2xl leading-relaxed text-amber-100/90 font-light">
+                Lend a hand to someone in need and send a positive message of light to the
+                community.
               </p>
-            )}
+            </div>
+          </div>
+
+          {/* RIGHT: WRITING AREA (SAME EXPERIENCE AS BEFORE) */}
+          <div className="relative rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
+            <div
+              className="absolute inset-0 opacity-30 pointer-events-none"
+              style={{
+                backgroundImage: "url('/images/paper-texture.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+
+            <div className="relative z-10 px-8 md:px-10 py-10 md:py-12">
+              <p className="text-xs uppercase tracking-[0.25em] text-stone-600/80 mb-6">
+                Your Message of Light
+              </p>
+
+              <form onSubmit={handleSubmit}>
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  placeholder="Write your message as if you were writing inside a sacred book…"
+                  className="w-full h-64 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
+                />
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !newPost.trim()}
+                  className="mt-6 px-8 py-3 bg-amber-600/80 hover:bg-amber-500 text-white rounded-full transition-all disabled:opacity-40"
+                >
+                  {isSubmitting ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+
+              {feedback && (
+                <p
+                  className={`mt-4 text-sm ${
+                    feedbackType === "error" ? "text-red-400" : "text-amber-600"
+                  }`}
+                >
+                  {feedback}
+                </p>
+              )}
+
+              <p className="mt-4 text-xs text-stone-600/80">
+                Your message will be shared anonymously with the community, along with your
+                country and today&apos;s date.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* GLOBAL MERGED STYLES */}
       <style jsx global>{`
-        /* TURNING PAGE TRANSITION */
-        .turning-page-section {
-          opacity: 1;
-          transition: opacity 1.2s ease;
-        }
-
-        .writing-section {
-          opacity: 0;
-          transition: opacity 1.2s ease;
-        }
-
-        .turning-page-section.scrolled-out {
-          opacity: 0;
-        }
-
-        .writing-section.scrolled-in {
-          opacity: 1;
-        }
-
-        /* SECTION 3 — PAPER REVEAL */
+        /* SECTION 3 — ENGRAVED PAPER REVEAL */
         .paper-reveal {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
-          color: #3b2414;
+          color: #4a2e1a; /* warm brown ink */
           opacity: 0;
           animation: paperFade 3.5s ease forwards;
           text-shadow:
-            0 0 1px rgba(30, 18, 10, 0.5),
-            0 0 3px rgba(30, 18, 10, 0.35),
-            0 0 6px rgba(30, 18, 10, 0.2);
-          filter: brightness(0.95) contrast(1.05);
+            0 1px 0 rgba(0, 0, 0, 0.12),
+            0 2px 1px rgba(0, 0, 0, 0.1),
+            0 0 8px rgba(0, 0, 0, 0.08);
+          filter: brightness(0.9) contrast(1.12) saturate(0.85);
         }
 
         @keyframes paperFade {
           0% {
             opacity: 0;
-            transform: translateY(10px);
-            filter: blur(3px);
+            transform: translateY(6px);
+            filter: blur(3px) brightness(0.85);
           }
           40% {
-            opacity: 0.4;
-            transform: translateY(4px);
-            filter: blur(1.5px);
+            opacity: 0.45;
+            transform: translateY(2px);
+            filter: blur(1.5px) brightness(0.92);
           }
           100% {
             opacity: 1;
             transform: translateY(0);
-            filter: blur(0.3px);
+            filter: blur(0.4px) brightness(1);
           }
         }
 
-        /* SECTION 4 — ENHANCED INK WRITING */
+        /* SECTION 4 — ENHANCED INK WRITING (SAME FEELING) */
         .ink-writing {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
