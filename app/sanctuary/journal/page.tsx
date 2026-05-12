@@ -92,59 +92,49 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* LOGO PAGE WITH FADE TO PARCHMENT */}
+        {/* LOGO PAGE → FADE TO PARCHMENT */}
         {stage === 'logo' && (
           <div className="relative w-[900px] max-w-[95vw] fade-in-book">
+
+            {/* FULL BOOK WITH LOGO */}
             <img
-              src="/images/book-open-frame.png"
+              src="/images/sea-within-logo-page.png"
               className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
             />
 
-            <div className="absolute inset-[7%] flex">
-              {/* LEFT PAGE */}
-              <div className="relative flex-1 mr-4">
-                <img
-                  src="/images/parchment-page.png"
-                  className="absolute inset-0 w-full h-full object-cover rounded-md"
-                />
-                <img
-                  src="/images/sea-within-logo-page.png"
-                  className="absolute inset-0 w-full h-full object-cover rounded-md animate-logoFade"
-                />
-              </div>
+            {/* FADE LOGO INTO PARCHMENT */}
+            <img
+              src="/images/parchment-page.png"
+              className="absolute inset-0 w-full h-full object-cover rounded-md animate-logoFade"
+            />
 
-              {/* RIGHT PAGE */}
-              <div className="relative flex-1 ml-4">
-                <button
-                  type="button"
-                  onClick={() => setStage('write')}
-                  className="relative h-full w-full"
-                >
-                  <img
-                    src="/images/parchment-page.png"
-                    className="absolute inset-0 w-full h-full object-cover rounded-md"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
-                      Tap to begin writing
-                    </span>
-                  </div>
-                </button>
-              </div>
-            </div>
+            {/* TAP TO CONTINUE */}
+            <button
+              type="button"
+              onClick={() => setStage('write')}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
+                Tap to begin writing
+              </span>
+            </button>
           </div>
         )}
 
         {/* WRITING PAGE */}
         {stage === 'write' && (
           <div className="relative w-[900px] max-w-[95vw] fade-in-book">
+
+            {/* FULL BOOK FRAME = PARCHMENT */}
             <img
-              src="/images/book-open-frame.png"
+              src="/images/parchment-page.png"
               className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
             />
 
+            {/* RIGHT PAGE WRITING AREA */}
             <div className="absolute inset-[7%] flex">
-              {/* LEFT PAGE */}
+
+              {/* LEFT PAGE (EMPTY PARCHMENT) */}
               <div className="relative flex-1 mr-4">
                 <img
                   src="/images/parchment-page.png"
@@ -154,6 +144,7 @@ export default function JournalPage() {
 
               {/* RIGHT PAGE */}
               <div className="relative flex-1 ml-4 px-10 py-8">
+
                 {/* DATE */}
                 <div className="absolute top-6 right-10 text-[#4b2e1a] text-sm font-medium">
                   {today}
