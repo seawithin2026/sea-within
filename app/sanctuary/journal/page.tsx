@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 
-type Stage = 'closed' | 'opening' | 'logo' | 'write';
+type Stage = 'closed' | 'video' | 'logo' | 'write';
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('closed');
@@ -10,6 +10,7 @@ export default function JournalPage() {
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState('');
   const [turnDirection, setTurnDirection] = useState<'left' | 'right' | null>(null);
+  const [fadeVideo, setFadeVideo] = useState(false);
 
   const today = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
@@ -63,7 +64,7 @@ export default function JournalPage() {
         {/* CLOSED BOOK */}
         {stage === 'closed' && (
           <div
-            onClick={() => setStage('opening')}
+            onClick={() => setStage('video')}
             className="cursor-pointer transition-transform duration-700 hover:scale-105"
           >
             <img
@@ -73,57 +74,34 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* OPENING ANIMATION */}
-        {stage === 'opening' && (
-          <div className="relative w-[700px] h-[450px] perspective-1000">
-            {/* LEFT COVER */}
-            <div
-              className="absolute left-0 top-0 h-full w-1/2 origin-right bg-[#1a1a1a] rounded-l-lg shadow-2xl"
-              style={{
-                animation: 'coverOpen 1s forwards ease-out',
+        {/* VIDEO OPENING WITH FADE OUT */}
+        {stage === 'video' && (
+          <div className="relative w-[900px] max-w-[95vw]">
+            <video
+              src="/videos/book-opening.mp4"
+              autoPlay
+              playsInline
+              className={`w-full h-auto rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.8)] ${
+                fadeVideo ? 'fade-out-video' : ''
+              }`}
+              onEnded={() => {
+                setFadeVideo(true);
+                setTimeout(() => setStage('logo'), 1200);
               }}
-            />
-
-            {/* PAGE FAN */}
-            {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute left-0 top-0 h-full w-1/2 origin-right bg-white rounded-l-lg shadow-xl"
-                style={{
-                  animation: `pageFlip ${0.6 + i * 0.08}s forwards ease-out`,
-                  opacity: 0,
-                }}
-              />
-            ))}
-
-            {/* RIGHT COVER */}
-            <div className="absolute right-0 top-0 h-full w-1/2 bg-[#1a1a1a] rounded-r-lg shadow-2xl" />
-
-            {/* OPEN BOOK FRAME */}
-            <img
-              src="/images/book-open-frame.png"
-              className="absolute inset-0 w-full h-full opacity-0"
-              style={{
-                animation: 'fadeIn 0.8s forwards ease-out',
-                animationDelay: '1.2s',
-              }}
-              onAnimationEnd={() => setStage('logo')}
             />
           </div>
         )}
 
         {/* LOGO PAGE WITH FADE TO PARCHMENT */}
         {stage === 'logo' && (
-          <div className="relative w-[900px] max-w-[95vw]">
-            {/* OPEN BOOK FRAME */}
+          <div className="relative w-[900px] max-w-[95vw] fade-in-book">
             <img
               src="/images/book-open-frame.png"
               className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
             />
 
-            {/* INNER PAGES */}
             <div className="absolute inset-[7%] flex">
-              {/* LEFT PAGE: LOGO FADES TO PARCHMENT */}
+              {/* LEFT PAGE */}
               <div className="relative flex-1 mr-4">
                 <img
                   src="/images/parchment-page.png"
@@ -135,7 +113,7 @@ export default function JournalPage() {
                 />
               </div>
 
-              {/* RIGHT PAGE: TAP TO BEGIN WRITING */}
+              {/* RIGHT PAGE */}
               <div className="relative flex-1 ml-4">
                 <button
                   type="button"
@@ -157,59 +135,79 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* WRITING PAGE WITH INK + PAGE TURNING */}
+        {/* WRITING PAGE */}
         {stage === 'write' && (
-          <div className="relative w-[900px] max-w-[95vw]">
+          <div className="relative w-[900px] max-w-[95vw] fade-in-book">
             <img
-              src="/images/parchment-page.png"
-              className="w-full h-auto rounded-lg shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+              src="/images/book-open-frame.png"
+              className="w-full h-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
             />
 
-            <div className="absolute inset-0 px-10 py-8 flex flex-col">
-              {/* DATE */}
-              <div className="text-right text-[#4b2e1a] text-sm font-medium">
-                {today}
+            <div className="absolute inset-[7%] flex">
+              {/* LEFT PAGE */}
+              <div className="relative flex-1 mr-4">
+                <img
+                  src="/images/parchment-page.png"
+                  className="absolute inset-0 w-full h-full object-cover rounded-md"
+                />
               </div>
 
-              {/* PAGE CONTENT AREA */}
-              <div className="mt-4 flex-1 overflow-hidden">
+              {/* RIGHT PAGE */}
+              <div className="relative flex-1 ml-4 px-10 py-8">
+                {/* DATE */}
+                <div className="absolute top-6 right-10 text-[#4b2e1a] text-sm font-medium">
+                  {today}
+                </div>
+
+                {/* ENTRY OR TEXTAREA */}
                 {currentIndex !== null && entries[currentIndex] ? (
                   <div
-                    className={`h-full w-full ${turnDirection === 'left' ? 'page-turn-left' : ''} ${
-                      turnDirection === 'right' ? 'page-turn-right' : ''
-                    }`}
+                    className={`absolute top-14 left-10 w-[80%] h-[70%] overflow-auto ${
+                      turnDirection === 'left' ? 'page-turn-left' : ''
+                    } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
                   >
-                    <div className="ink-writing whitespace-pre-wrap pr-2 h-full overflow-auto">
+                    <div className="ink-writing whitespace-pre-wrap">
                       {entries[currentIndex]}
                     </div>
                   </div>
                 ) : (
                   <textarea
-                    className="mt-1 h-full w-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
+                    className="absolute top-14 left-10 w-[80%] h-[70%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
                     placeholder="Let the sea within you speak..."
                     value={draft}
                     onChange={e => setDraft(e.target.value)}
                   />
                 )}
-              </div>
 
-              {/* CONTROLS */}
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <div className="flex gap-2">
+                {/* CONTROLS */}
+                <div className="absolute bottom-6 left-10 right-10 flex justify-between">
                   <button
-                    type="button"
                     onClick={() =>
                       currentIndex !== null
                         ? goToPage(currentIndex - 1, 'left')
                         : goToPage(entries.length - 2, 'left')
                     }
                     disabled={entries.length <= 1 || currentIndex === 0 || currentIndex === null}
-                    className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] shadow-sm shadow-black/20 disabled:opacity-40"
+                    className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
                   >
-                    ◀ Previous page
+                    ◀ Previous
                   </button>
+
                   <button
-                    type="button"
+                    onClick={showNewPage}
+                    className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
+                  >
+                    New Page
+                  </button>
+
+                  <button
+                    onClick={handleSave}
+                    className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
+                  >
+                    Save
+                  </button>
+
+                  <button
                     onClick={() =>
                       currentIndex !== null
                         ? goToPage(currentIndex + 1, 'right')
@@ -220,26 +218,9 @@ export default function JournalPage() {
                       currentIndex === entries.length - 1 ||
                       entries.length === 0
                     }
-                    className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] shadow-sm shadow-black/20 disabled:opacity-40"
+                    className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
                   >
-                    Next page ▶
-                  </button>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={showNewPage}
-                    className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414] shadow-sm shadow-black/20"
-                  >
-                    Write new page
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414] shadow-md shadow-black/30 hover:bg-amber-300"
-                  >
-                    Save to my book
+                    Next ▶
                   </button>
                 </div>
               </div>
@@ -251,122 +232,48 @@ export default function JournalPage() {
 
       {/* GLOBAL ANIMATIONS */}
       <style jsx global>{`
-        .perspective-1000 {
-          perspective: 1000px;
+        @keyframes fadeOutVideo {
+          0% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        .fade-out-video {
+          animation: fadeOutVideo 1.2s ease-out forwards;
         }
 
-        @keyframes coverOpen {
-          from {
-            transform: rotateY(0deg);
-          }
-          to {
-            transform: rotateY(-180deg);
-          }
+        @keyframes fadeInBook {
+          0% { opacity: 0; transform: scale(0.97); }
+          100% { opacity: 1; transform: scale(1); }
         }
-
-        @keyframes pageFlip {
-          0% {
-            transform: rotateY(0deg);
-            opacity: 0;
-          }
-          40% {
-            opacity: 1;
-          }
-          100% {
-            transform: rotateY(-180deg);
-            opacity: 0;
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+        .fade-in-book {
+          animation: fadeInBook 1.2s ease-out forwards;
         }
 
         @keyframes logoFade {
-          0% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-          }
+          0% { opacity: 1; }
+          100% { opacity: 0; }
         }
-
         .animate-logoFade {
           animation: logoFade 2.5s ease-out forwards;
-          animation-delay: 0.6s;
         }
 
         @keyframes inkWrite {
-          0% {
-            opacity: 0;
-            filter: blur(3px) brightness(0.7);
-            transform: translateY(4px);
-          }
-          40% {
-            opacity: 0.4;
-            filter: blur(2px) brightness(0.85);
-          }
-          100% {
-            opacity: 1;
-            filter: blur(0px) brightness(1);
-            transform: translateY(0);
-          }
+          0% { opacity: 0; filter: blur(3px); transform: translateY(4px); }
+          100% { opacity: 1; filter: blur(0); transform: translateY(0); }
         }
-
         .ink-writing {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          color: #3b2414;
-          letter-spacing: 0.4px;
-          opacity: 0;
-          animation: inkWrite 2.8s ease-out forwards;
-          animation-delay: 0.4s;
-          text-shadow:
-            0 0 1px rgba(30, 18, 10, 0.5),
-            0 1px 2px rgba(30, 18, 10, 0.35),
-            0 2px 4px rgba(30, 18, 10, 0.25),
-            0 0 12px rgba(30, 18, 10, 0.15);
-          filter: brightness(0.92) contrast(1.08) saturate(0.9);
+          animation: inkWrite 2.4s ease-out forwards;
         }
 
         @keyframes pageTurnLeft {
-          0% {
-            transform-origin: left center;
-            transform: rotateY(0deg);
-            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-          }
-          100% {
-            transform-origin: left center;
-            transform: rotateY(-14deg);
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.45);
-          }
+          0% { transform-origin: left center; transform: rotateY(0deg); }
+          100% { transform-origin: left center; transform: rotateY(-14deg); }
         }
-
         @keyframes pageTurnRight {
-          0% {
-            transform-origin: right center;
-            transform: rotateY(0deg);
-            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-          }
-          100% {
-            transform-origin: right center;
-            transform: rotateY(14deg);
-            box-shadow: 0 18px 35px rgba(0, 0, 0, 0.45);
-          }
+          0% { transform-origin: right center; transform: rotateY(0deg); }
+          100% { transform-origin: right center; transform: rotateY(14deg); }
         }
-
-        .page-turn-left {
-          animation: pageTurnLeft 0.26s ease-out;
-        }
-
-        .page-turn-right {
-          animation: pageTurnRight 0.26s ease-out;
-        }
+        .page-turn-left { animation: pageTurnLeft 0.26s ease-out; }
+        .page-turn-right { animation: pageTurnRight 0.26s ease-out; }
       `}</style>
     </div>
   );
