@@ -47,7 +47,6 @@ export default function JournalPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
-      {/* OCEAN BACKGROUND (ONLY FOR CLOSED BOOK) */}
       {stage === 'closed' && (
         <>
           <video
@@ -62,10 +61,8 @@ export default function JournalPage() {
         </>
       )}
 
-      {/* MAIN CONTENT */}
       <div className="relative z-10 flex h-full w-full items-center justify-center">
 
-        {/* CLOSED BOOK FLOATING */}
         {stage === 'closed' && (
           <div
             onClick={() => setStage('video')}
@@ -78,7 +75,6 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* FULLSCREEN OPENING VIDEO */}
         {stage === 'video' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
             <video
@@ -96,7 +92,6 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* FULLSCREEN LOGO PAGE */}
         {stage === 'logo' && (
           <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
             <img
@@ -116,28 +111,24 @@ export default function JournalPage() {
           </div>
         )}
 
-        {/* FULLSCREEN PARCHMENT WRITING PAGE */}
         {stage === 'write' && (
           <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
 
-            {/* RELATIVE CONTAINER THAT SCALES WITH THE IMAGE */}
             <div className="relative w-full h-full flex items-center justify-center">
 
-              {/* PARCHMENT IMAGE */}
               <img
                 src="/images/parchment-page.png"
                 className="w-full h-full object-contain pointer-events-none select-none"
               />
 
-              {/* RIGHT PAGE WRITING AREA — ANCHORED TO IMAGE */}
-              <div className="absolute top-[20%] right-[18%] w-[32%] h-[55%]">
+              {/* RIGHT PAGE WRITING AREA */}
+              <div className="absolute top-[20%] right-[17%] w-[32%] h-[55%]">
 
                 {/* DATE */}
                 <div className="absolute top-[-8%] right-0 text-[#4b2e1a] text-sm font-medium">
                   {today}
                 </div>
 
-                {/* ENTRY OR TEXTAREA */}
                 {currentIndex !== null && entries[currentIndex] ? (
                   <div
                     className={`w-full h-full overflow-auto text-[#3b2414] text-center ${
@@ -158,7 +149,6 @@ export default function JournalPage() {
                 )}
               </div>
 
-              {/* CONTROLS */}
               <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
                 <button
                   onClick={() =>
@@ -209,7 +199,6 @@ export default function JournalPage() {
 
       </div>
 
-      {/* GLOBAL ANIMATIONS */}
       <style jsx global>{`
         @keyframes fadeOutVideo {
           0% { opacity: 1; }
