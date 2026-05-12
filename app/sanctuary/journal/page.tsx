@@ -114,21 +114,43 @@ export default function JournalPage() {
         {stage === 'write' && (
           <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
 
+            {/* Container that scales with the parchment */}
             <div className="relative w-full h-full flex items-center justify-center">
 
+              {/* Parchment image */}
               <img
                 src="/images/parchment-page.png"
                 className="w-full h-full object-contain pointer-events-none select-none"
               />
 
-              {/* RIGHT PAGE WRITING AREA */}
-              <div className="absolute top-[20%] right-[17%] w-[32%] h-[55%]">
-
-                {/* DATE */}
-                <div className="absolute top-[-8%] right-0 text-[#4b2e1a] text-sm font-medium">
+              {/*
+                Right-page writing area
+                Ratios based on 1536x1024:
+                - left ~ 58% of width
+                - top ~ 18% of height
+                - width ~ 30% of width
+                - height ~ 60% of height
+              */}
+              <div className="absolute"
+                   style={{
+                     left: '58%',
+                     top: '18%',
+                     width: '30%',
+                     height: '60%',
+                   }}
+              >
+                {/* Date in top-right of the rectangle */}
+                <div
+                  className="absolute text-[#4b2e1a] text-sm font-medium"
+                  style={{
+                    top: '-8%',
+                    right: '0%',
+                  }}
+                >
                   {today}
                 </div>
 
+                {/* Entry or textarea */}
                 {currentIndex !== null && entries[currentIndex] ? (
                   <div
                     className={`w-full h-full overflow-auto text-[#3b2414] text-center ${
@@ -149,6 +171,7 @@ export default function JournalPage() {
                 )}
               </div>
 
+              {/* Controls */}
               <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
                 <button
                   onClick={() =>
