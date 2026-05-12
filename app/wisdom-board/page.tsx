@@ -130,10 +130,10 @@ export default function WisdomBoardPage() {
         </div>
       </section>
 
-      {/* SECTION 4 — SPLIT SCREEN: VIDEO LEFT, WRITING RIGHT */}
+      {/* SECTION 4 — SPLIT SCREEN: VIDEO LEFT, PARCHMENT INVITATION + WRITING RIGHT */}
       <section className="relative min-h-screen w-full bg-black flex items-center justify-center px-6 py-24">
         <div className="relative w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
-          {/* LEFT: VIDEO WITH MESSAGE */}
+          {/* LEFT: PURE VIDEO */}
           <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.7)] border border-stone-800">
             <video
               className="w-full h-full object-cover"
@@ -144,34 +144,22 @@ export default function WisdomBoardPage() {
             >
               <source src="/videos/ocean-wisdom.mp4" type="video/mp4" />
             </video>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent pointer-events-none" />
-
-            <div className="absolute inset-0 flex items-center justify-center px-8 text-center">
-              <p className="text-lg md:text-2xl leading-relaxed text-amber-100/90 font-light">
-                Lend a hand to someone in need and send a positive message of light to the
-                community.
-              </p>
-            </div>
           </div>
 
-          {/* RIGHT: WRITING AREA (SAME EXPERIENCE AS BEFORE) */}
-          <div className="relative rounded-3xl bg-[#f0e6d2] shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 overflow-hidden">
-            <div
-              className="absolute inset-0 opacity-30 pointer-events-none"
-              style={{
-                backgroundImage: "url('/images/paper-texture.png')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
+          {/* RIGHT: SECTION-3-STYLE PARCHMENT WITH INVITATION + TEXTAREA */}
+          <div className="relative rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.6)] border border-stone-300 bg-[#f0e6d2]">
+            <img
+              src="/images/paper-texture.png"
+              alt="Paper"
+              className="absolute inset-0 w-full h-full object-cover opacity-100 pointer-events-none"
             />
 
-            <div className="relative z-10 px-8 md:px-10 py-10 md:py-12">
-              <p className="text-xs uppercase tracking-[0.25em] text-stone-600/80 mb-6">
-                Your Message of Light
+            <div className="relative z-10 max-w-xl mx-auto px-8 md:px-10 py-10 md:py-12 text-center">
+              <p className="paper-reveal text-3xl leading-relaxed mb-10">
+                Send good vibes and light to the community.
               </p>
 
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="mt-4">
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
@@ -198,7 +186,7 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
-              <p className="mt-4 text-xs text-stone-600/80">
+              <p className="mt-4 text-xs text-stone-700/85">
                 Your message will be shared anonymously with the community, along with your
                 country and today&apos;s date.
               </p>
@@ -241,7 +229,7 @@ export default function WisdomBoardPage() {
           }
         }
 
-        /* SECTION 4 — ENHANCED INK WRITING (SAME FEELING) */
+        /* SECTION 4 — ENHANCED INK WRITING */
         .ink-writing {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
