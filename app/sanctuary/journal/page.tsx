@@ -4,13 +4,20 @@ import { useState, useMemo } from 'react';
 
 type Stage = 'closed' | 'video' | 'logo' | 'write';
 
+type Entry = {
+  text: string;
+  date: string;
+};
+
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('closed');
-  const [entries, setEntries] = useState<string[]>([]);
+  const [entries, setEntries] = useState<Entry[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [draft, setDraft] = useState('');
-  const [turnDirection, setTurnDirection] = useState<'left' | 'right' | null>(null);
+  const [turnDirection] = useState<'left' | 'right' | null>(null);
   const [fadeVideo, setFadeVideo] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const today = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
@@ -20,19 +27,29 @@ export default function JournalPage() {
     });
   }, []);
 
+  const currentDate =
+    currentIndex !== null && entries[currentIndex]
+      ? entries[currentIndex].date
+      : today;
+
   /* -------------------------------------------------------
      SAVE — always switch to the saved page immediately
   ------------------------------------------------------- */
   const handleSave = () => {
     if (!draft.trim()) return;
 
+    const newEntry: Entry = {
+      text: draft.trim(),
+      date: today,
+    };
+
     setEntries(prev => {
-      const next = [...prev, draft.trim()];
-      setCurrentIndex(next.length - 1); // show saved page instantly
+      const next = [...prev, newEntry];
+      setCurrentIndex(next.length - 1);
       return next;
     });
 
-    setDraft(''); // clear textarea AFTER switching
+    setDraft('');
   };
 
   /* -------------------------------------------------------
@@ -41,6 +58,25 @@ export default function JournalPage() {
   const showNewPage = () => {
     setCurrentIndex(null);
     setDraft('');
+  };
+
+  /* -------------------------------------------------------
+     DELETE ENTRY — safe, goes to previous or blank
+  ------------------------------------------------------- */
+  const deleteEntry = (index: number) => {
+    setEntries(prev => {
+      const next = prev.filter((_, i) => i !== index);
+
+      if (next.length === 0) {
+        setCurrentIndex(null);
+        return next;
+      }
+
+      const newIndex = Math.max(0, index - 1);
+      setCurrentIndex(newIndex);
+
+      return next;
+    });
   };
 
   /* -------------------------------------------------------
@@ -64,6 +100,22 @@ export default function JournalPage() {
     }
   };
 
+  /* -------------------------------------------------------
+     GROUP ENTRIES BY MONTH/YEAR FOR CALENDAR
+  ------------------------------------------------------- */
+  const groupedEntries = entries.reduce(
+    (acc, entry, index) => {
+      const month = new Date(entry.date).toLocaleString('default', {
+        month: 'long',
+        year: 'numeric',
+      });
+      if (!acc[month]) acc[month] = [];
+      acc[month].push({ ...entry, index });
+      return acc;
+    },
+    {} as Record<string, { text: string; date: string; index: number }[]>
+  );
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
@@ -80,7 +132,6 @@ export default function JournalPage() {
             preload="auto"
           />
 
-          {/* Book appears immediately with the wave */}
           <div
             onClick={() => setStage('video')}
             className="absolute inset-0 flex items-center justify-center cursor-pointer transition-transform duration-700 hover:scale-105"
@@ -153,7 +204,7 @@ export default function JournalPage() {
                 height: '60%',
               }}
             >
-              {/* DATE */}
+              {/* DATE (entry date or today) */}
               <div
                 className="absolute text-[#4b2e1a] text-sm font-medium"
                 style={{
@@ -161,7 +212,7 @@ export default function JournalPage() {
                   right: '0%',
                 }}
               >
-                {today}
+                {currentDate}
               </div>
 
               {/* ENTRY OR TEXTAREA */}
@@ -172,7 +223,7 @@ export default function JournalPage() {
                   } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
                 >
                   <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed">
-                    {entries[currentIndex]}
+                    {entries[currentIndex].text}
                   </div>
                 </div>
               ) : (
@@ -185,35 +236,113 @@ export default function JournalPage() {
               )}
             </div>
 
+            {/* CALENDAR PANEL */}
+            {showCalendar && (
+              <div className="absolute top-[10%] right-[10%] bg-[#fdf7e6] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
+                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+
+                {Object.entries(groupedEntries).map(([month, items]) => (
+                  <div key={month} className="mb-4">
+                    <h3 className="font-semibold text-[#3b2414] mb-1">{month}</h3>
+                    {items.map(item => (
+                      <button
+                        key={item.index}
+                        onClick={() => {
+                          setCurrentIndex(item.index);
+                          setShowCalendar(false);
+                        }}
+                        className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+                      >
+                        {item.date}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => setShowCalendar(false)}
+                  className="sea-btn w-full mt-2"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+
+            {/* DELETE CONFIRM MODAL */}
+            {showDeleteConfirm && currentIndex !== null && (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
+                  <p className="text-[#3b2414] mb-4">
+                    Are you sure you want to delete this entry?
+                  </p>
+
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={() => {
+                        deleteEntry(currentIndex);
+                        setShowDeleteConfirm(false);
+                      }}
+                      className="sea-btn bg-red-300/80 hover:bg-red-400/80"
+                    >
+                      Delete
+                    </button>
+
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="sea-btn"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* CONTROLS */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
+            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
 
               <button
                 onClick={goToPrevious}
                 disabled={entries.length === 0}
-                className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                className={`sea-btn ${entries.length === 0 ? 'disabled' : ''}`}
               >
                 ◀ Previous
               </button>
 
               <button
                 onClick={showNewPage}
-                className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
+                className="sea-btn"
               >
                 New Page
               </button>
 
               <button
                 onClick={handleSave}
-                className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
+                className="sea-btn"
               >
                 Save
+              </button>
+
+              {currentIndex !== null && (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="sea-btn bg-red-200/80 hover:bg-red-300/90"
+                >
+                  Delete
+                </button>
+              )}
+
+              <button
+                onClick={() => setShowCalendar(true)}
+                className="sea-btn"
+              >
+                📅 Calendar
               </button>
 
               <button
                 onClick={goToNext}
                 disabled={entries.length === 0}
-                className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                className={`sea-btn ${entries.length === 0 ? 'disabled' : ''}`}
               >
                 Next ▶
               </button>
@@ -224,7 +353,7 @@ export default function JournalPage() {
         </div>
       )}
 
-      {/* GLOBAL ANIMATIONS */}
+      {/* GLOBAL ANIMATIONS + BUTTON STYLE */}
       <style jsx global>{`
         @keyframes fadeOutVideo {
           0% { opacity: 1; }
@@ -260,6 +389,30 @@ export default function JournalPage() {
         }
         .page-turn-left { animation: pageTurnLeft 0.26s ease-out; }
         .page-turn-right { animation: pageTurnRight 0.26s ease-out; }
+
+        .sea-btn {
+          background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
+          color: #3b2414;
+          padding: 8px 18px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+          transition: all 0.3s ease;
+          border: none;
+        }
+        .sea-btn:hover {
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+          background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
+        }
+        .sea-btn:active {
+          transform: scale(0.97);
+        }
+        .sea-btn.disabled {
+          opacity: 0.4;
+          pointer-events: none;
+        }
       `}</style>
     </div>
   );
