@@ -138,7 +138,7 @@ export default function JournalPage() {
               {/* ENTRY OR TEXTAREA */}
               {currentIndex !== null && entries[currentIndex] ? (
                 <div
-                  className={`absolute top-[20%] right-[10%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
+                  className={`absolute top-[20%] right-[12%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
                     turnDirection === 'left' ? 'page-turn-left' : ''
                   } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
                 >
