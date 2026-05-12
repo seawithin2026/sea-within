@@ -47,16 +47,20 @@ export default function JournalPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
-      {/* OCEAN BACKGROUND */}
-      <video
-        className="absolute inset-0 h-full w-full object-cover"
-        src="/videos/deep-water.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
-      <div className="absolute inset-0 bg-black/40" />
+      {/* OCEAN BACKGROUND (ONLY FOR CLOSED BOOK) */}
+      {stage === 'closed' && (
+        <>
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/videos/deep-water.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="absolute inset-0 bg-black/40" />
+        </>
+      )}
 
       {/* MAIN CONTENT */}
       <div className="relative z-10 flex h-full w-full items-center justify-center">
@@ -94,10 +98,10 @@ export default function JournalPage() {
 
         {/* FULLSCREEN LOGO PAGE */}
         {stage === 'logo' && (
-          <div className="absolute inset-0 fade-in-book">
+          <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
             <img
               src="/images/sea-within-logo-page.png"
-              className="w-full h-full object-contain mx-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+              className="w-full h-full object-contain mx-auto"
             />
 
             {/* TAP TO CONTINUE */}
@@ -115,101 +119,85 @@ export default function JournalPage() {
 
         {/* FULLSCREEN PARCHMENT WRITING PAGE */}
         {stage === 'write' && (
-          <div className="absolute inset-0 fade-in-book">
+          <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
 
             {/* FULLSCREEN PARCHMENT */}
             <img
               src="/images/parchment-page.png"
-              className="w-full h-full object-contain mx-auto drop-shadow-[0_30px_60px_rgba(0,0,0,0.8)]"
+              className="absolute inset-0 w-full h-full object-contain mx-auto"
             />
 
-            {/* WRITING AREA */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            {/* RIGHT-PAGE WRITING AREA */}
+            <div className="relative w-[900px] max-w-[95vw] h-[80%]">
 
-              {/* TWO-PAGE LAYOUT */}
-              <div className="relative w-[900px] max-w-[95vw] h-[80%] flex">
+              {/* DATE — TRUE UPPER RIGHT OF RIGHT PAGE */}
+              <div className="absolute top-[14%] right-[12%] text-[#4b2e1a] text-sm font-medium">
+                {today}
+              </div>
 
-                {/* LEFT PAGE */}
-                <div className="relative flex-1 mr-[50px]">
-                  <img
-                    src="/images/parchment-page.png"
-                    className="absolute inset-0 w-full h-full object-cover opacity-60"
-                  />
-                </div>
-
-                {/* RIGHT PAGE */}
-                <div className="relative flex-1 ml-[50px] px-10 py-8">
-
-                  {/* DATE */}
-                  <div className="absolute top-4 right-6 text-[#4b2e1a] text-sm font-medium">
-                    {today}
-                  </div>
-
-                  {/* ENTRY OR TEXTAREA */}
-                  {currentIndex !== null && entries[currentIndex] ? (
-                    <div
-                      className={`absolute top-14 left-10 w-[80%] h-[70%] overflow-auto ${
-                        turnDirection === 'left' ? 'page-turn-left' : ''
-                      } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
-                    >
-                      <div className="ink-writing whitespace-pre-wrap">
-                        {entries[currentIndex]}
-                      </div>
-                    </div>
-                  ) : (
-                    <textarea
-                      className="absolute top-14 left-10 w-[80%] h-[70%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
-                      placeholder="Let the sea within you speak..."
-                      value={draft}
-                      onChange={e => setDraft(e.target.value)}
-                    />
-                  )}
-
-                  {/* CONTROLS */}
-                  <div className="absolute bottom-6 left-10 right-10 flex justify-between">
-                    <button
-                      onClick={() =>
-                        currentIndex !== null
-                          ? goToPage(currentIndex - 1, 'left')
-                          : goToPage(entries.length - 2, 'left')
-                      }
-                      disabled={entries.length <= 1 || currentIndex === 0 || currentIndex === null}
-                      className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
-                    >
-                      ◀ Previous
-                    </button>
-
-                    <button
-                      onClick={showNewPage}
-                      className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
-                    >
-                      New Page
-                    </button>
-
-                    <button
-                      onClick={handleSave}
-                      className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
-                    >
-                      Save
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        currentIndex !== null
-                          ? goToPage(currentIndex + 1, 'right')
-                          : undefined
-                      }
-                      disabled={
-                        currentIndex === null ||
-                        currentIndex === entries.length - 1 ||
-                        entries.length === 0
-                      }
-                      className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
-                    >
-                      Next ▶
-                    </button>
+              {/* ENTRY OR TEXTAREA */}
+              {currentIndex !== null && entries[currentIndex] ? (
+                <div
+                  className={`absolute top-[20%] right-[10%] w-[40%] h-[60%] overflow-auto text-[#3b2414] ${
+                    turnDirection === 'left' ? 'page-turn-left' : ''
+                  } ${turnDirection === 'right' ? 'page-turn-right' : ''}`}
+                >
+                  <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed">
+                    {entries[currentIndex]}
                   </div>
                 </div>
+              ) : (
+                <textarea
+                  className="absolute top-[20%] right-[10%] w-[40%] h-[60%] bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none"
+                  placeholder="Let the sea within you speak..."
+                  value={draft}
+                  onChange={e => setDraft(e.target.value)}
+                />
+              )}
+
+              {/* CONTROLS */}
+              <div className="absolute bottom-[10%] left-0 right-0 flex justify-center gap-6">
+                <button
+                  onClick={() =>
+                    currentIndex !== null
+                      ? goToPage(currentIndex - 1, 'left')
+                      : goToPage(entries.length - 2, 'left')
+                  }
+                  disabled={entries.length <= 1 || currentIndex === 0 || currentIndex === null}
+                  className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                >
+                  ◀ Previous
+                </button>
+
+                <button
+                  onClick={showNewPage}
+                  className="rounded-full bg-amber-100/80 px-4 py-1 text-xs font-semibold text-[#3b2414]"
+                >
+                  New Page
+                </button>
+
+                <button
+                  onClick={handleSave}
+                  className="rounded-full bg-amber-200/80 px-5 py-2 text-sm font-semibold text-[#3b2414]"
+                >
+                  Save
+                </button>
+
+                <button
+                  onClick={() =>
+                    currentIndex !== null
+                      ? goToPage(currentIndex + 1, 'right')
+                      : undefined
+                  }
+                  disabled={
+                    currentIndex === null ||
+                    currentIndex === entries.length - 1 ||
+                    entries.length === 0
+                  }
+                  className="rounded-full bg-amber-200/70 px-4 py-1 text-xs font-semibold text-[#3b2414] disabled:opacity-40"
+                >
+                  Next ▶
+                </button>
               </div>
             </div>
           </div>
