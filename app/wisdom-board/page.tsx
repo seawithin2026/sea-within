@@ -16,10 +16,8 @@ export default function WisdomBoardPage() {
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
-  const dailyMessage = {
-    text: "You are more held by life than you realize.",
-    attribution: "Anonymous — Japan — May 10, 2026",
-  };
+  // DAILY MESSAGE STATE (replaces hardcoded object)
+  const [dailyMessage, setDailyMessage] = useState<any>(null);
 
   useEffect(() => {
     const bottle = document.getElementById("bottleVideo") as HTMLVideoElement | null;
@@ -28,7 +26,18 @@ export default function WisdomBoardPage() {
 
   useEffect(() => {
     fetchPosts();
+    fetchDailyMessage();
   }, []);
+
+  const fetchDailyMessage = async () => {
+    try {
+      const res = await fetch("/api/daily-affirmation");
+      const data = await res.json();
+      setDailyMessage(data);
+    } catch (err) {
+      console.error("Failed to fetch daily message", err);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -117,20 +126,18 @@ export default function WisdomBoardPage() {
           </p>
 
           <p className="paper-reveal text-3xl leading-relaxed mb-10">
-            {dailyMessage?.text}
+            {dailyMessage?.message || "Loading..."}
           </p>
 
           <p className="paper-reveal text-base opacity-80">
-            {dailyMessage?.attribution}
+            {dailyMessage?.attribution || ""}
           </p>
         </div>
       </section>
 
-      {/* ⭐ SECTION 4 — TRUE FULLSCREEN 50/50 SPLIT */}
+      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-
-          {/* LEFT — FULLSCREEN VIDEO */}
           <div className="relative h-full w-full">
             <video
               className="absolute inset-0 w-full h-full object-cover"
@@ -143,7 +150,6 @@ export default function WisdomBoardPage() {
             </video>
           </div>
 
-          {/* RIGHT — FULLSCREEN PARCHMENT WITH INVITATION + TEXTAREA */}
           <div className="relative h-full w-full">
             <img
               src="/images/paper-texture.png"
@@ -152,18 +158,15 @@ export default function WisdomBoardPage() {
             />
 
             <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
-
-              {/* Engraved Invitation */}
               <p className="paper-reveal text-3xl leading-relaxed mb-10 max-w-md">
                 Send good vibes and light to the community.
               </p>
 
-              {/* Writing Form */}
               <form onSubmit={handleSubmit} className="w-full max-w-md">
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                 placeholder="Offer a helping hand — your words may be someone’s light today."
+                  placeholder="Offer a helping hand — your words may be someone’s light today."
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-500"
                 />
 
@@ -176,7 +179,6 @@ export default function WisdomBoardPage() {
                 </button>
               </form>
 
-              {/* Feedback */}
               {feedback && (
                 <p
                   className={`mt-4 text-sm ${
@@ -187,7 +189,6 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
-              {/* Auto-fill Note */}
               <p className="mt-4 text-xs text-stone-700/85">
                 Your message will be shared anonymously with the community, along with your
                 country and today&apos;s date.
