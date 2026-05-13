@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import type { Session } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 type Stage = 'video' | 'logo' | 'write';
 
@@ -36,16 +40,16 @@ const inkStyle: React.CSSProperties = {
 };
 
 export default function JournalPage() {
-  const supabase = createClientComponentClient();
   const [stage, setStage] = useState<Stage>('video');
 
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<any>(null);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentText, setCurrentText] = useState('');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
 
   // Load session
   useEffect(() => {
