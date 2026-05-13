@@ -6,7 +6,6 @@ import Navigation from "@/components/layout/Navigation";
 interface WisdomPost {
   id: string;
   content: string;
-  author: string;
   created_at: string;
 }
 
