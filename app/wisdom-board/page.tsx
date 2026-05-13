@@ -16,7 +16,7 @@ export default function WisdomBoardPage() {
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
-  // DAILY MESSAGE STATE (replaces hardcoded object)
+  // DAILY MESSAGE STATE
   const [dailyMessage, setDailyMessage] = useState<any>(null);
 
   useEffect(() => {
@@ -112,32 +112,11 @@ export default function WisdomBoardPage() {
         </video>
       </section>
 
-      {/* SECTION 3 — DAILY MESSAGE ON PARCHMENT */}
-      <section className="relative min-h-screen w-full flex items-center justify-center bg-black overflow-hidden">
-        <img
-          src="/images/paper-texture.png"
-          alt="Paper"
-          className="absolute inset-0 w-full h-full object-cover opacity-100"
-        />
-
-        <div className="relative z-10 max-w-4xl mx-auto px-10 py-32 text-center">
-          <p className="text-xs uppercase tracking-[0.25em] text-stone-600/70 mb-8">
-            Today&apos;s Message
-          </p>
-
-          <p className="paper-reveal text-3xl leading-relaxed mb-10">
-            {dailyMessage?.message || "Loading..."}
-          </p>
-
-          <p className="paper-reveal text-base opacity-80">
-            {dailyMessage?.attribution || ""}
-          </p>
-        </div>
-      </section>
-
-      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT */}
+      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT WITH DAILY AFFIRMATION */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
+
+          {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
               className="absolute inset-0 w-full h-full object-cover"
@@ -150,6 +129,7 @@ export default function WisdomBoardPage() {
             </video>
           </div>
 
+          {/* RIGHT — PARCHMENT WITH DAILY AFFIRMATION + TEXTAREA */}
           <div className="relative h-full w-full">
             <img
               src="/images/paper-texture.png"
@@ -158,10 +138,17 @@ export default function WisdomBoardPage() {
             />
 
             <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
-              <p className="paper-reveal text-3xl leading-relaxed mb-10 max-w-md">
-                Send good vibes and light to the community.
+
+              {/* DAILY AFFIRMATION */}
+              <p className="paper-reveal text-3xl leading-relaxed mb-6 max-w-md">
+                {dailyMessage?.message || "Loading..."}
               </p>
 
+              <p className="paper-reveal text-base opacity-80 mb-10">
+                {dailyMessage?.attribution || ""}
+              </p>
+
+              {/* WRITING FORM */}
               <form onSubmit={handleSubmit} className="w-full max-w-md">
                 <textarea
                   value={newPost}
@@ -179,6 +166,7 @@ export default function WisdomBoardPage() {
                 </button>
               </form>
 
+              {/* FEEDBACK */}
               {feedback && (
                 <p
                   className={`mt-4 text-sm ${
