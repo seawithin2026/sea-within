@@ -50,21 +50,30 @@ export default function JournalPage() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-
-  // Load session
+  // NEW SESSION LOADING — FIXED
   useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session ?? null);
-    };
-    getSession();
-  }, [supabase]);
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // Load entries
+      if (user) {
+        setSession({ user });
+      } else {
+        setSession(null);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  // LOAD ENTRIES — FIXED
   useEffect(() => {
     if (!session) return;
+
     const loadEntries = async () => {
       setLoading(true);
+
       const { data, error } = await supabase
         .from('journal_entries')
         .select('*')
@@ -72,24 +81,26 @@ export default function JournalPage() {
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        setEntries(data as JournalEntry[]);
+        setEntries(data);
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
           setCurrentText(last.content ?? '');
         }
       }
+
       setLoading(false);
     };
+
     loadEntries();
-  }, [session, supabase]);
+  }, [session]);
 
   const selectedEntry = useMemo(
     () => entries.find((e) => e.id === selectedEntryId) ?? null,
     [entries, selectedEntryId]
   );
 
-  // Auto-advance stages
+  // AUTO-ADVANCE STAGES
   useEffect(() => {
     if (stage === 'video') {
       const t = setTimeout(() => setStage('logo'), 4000);
@@ -110,7 +121,7 @@ export default function JournalPage() {
     });
   };
 
-  // SAVE ENTRY — FIXED & COMPLETE
+  // SAVE ENTRY — FIXED
   const handleSave = async () => {
     if (!session) return;
     if (!currentText.trim()) return;
@@ -195,229 +206,68 @@ export default function JournalPage() {
 
         {/* WRITE STAGE */}
         {stage === 'write' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#0b1720]">
-            <div className="relative w-[80%] h-[80%]">
-              <img
-                src="/parchment-page.png"
-                alt="Sea Within Journal"
-                className="w-full h-full object-contain"
+          <div className="absolute inset-0 flex">
+            {/* LEFT SIDEBAR */}
+            <div className="w-1/4 bg-[#f5ecdd] p-6 overflow-y-auto border-r border-[#d2bfa0]">
+              <button
+                style={paperButtonStyle}
+                onClick={() => {
+                  setSelectedEntryId(null);
+                  setCurrentText('');
+                }}
+              >
+                + New Entry
+              </button>
+
+              <div className="mt-6 space-y-4">
+                {entries.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className={`p-3 rounded-lg cursor-pointer transition ${
+                      selectedEntryId === entry.id
+                        ? 'bg-[#e8d8bd]'
+                        : 'bg-[#f9f1e3]'
+                    }`}
+                    onClick={() => {
+                      setSelectedEntryId(entry.id);
+                      setCurrentText(entry.content);
+                    }}
+                  >
+                    <p style={inkStyle} className="text-sm opacity-70">
+                      {formatDate(entry.created_at)}
+                    </p>
+                    <p style={inkStyle} className="truncate">
+                      {entry.content || 'Empty entry'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* WRITING AREA */}
+            <div className="flex-1 relative bg-[#f5ecdd] p-10">
+              <textarea
+                value={currentText}
+                onChange={(e) => setCurrentText(e.target.value)}
+                className="w-full h-full bg-transparent outline-none resize-none text-lg"
+                style={inkStyle}
               />
 
-              {/* WRITING AREA */}
-              <div
-                className="absolute"
+              <button
                 style={{
-                  left: '53%',
-                  top: '18%',
-                  width: '20%',
-                  height: '60%',
+                  ...paperButtonStyle,
+                  position: 'absolute',
+                  bottom: 20,
+                  right: 20,
                 }}
+                onClick={handleSave}
+                disabled={saving}
               >
-                <div className="relative w-full h-full">
-                  <div className="flex items-center justify-between mb-2">
-                    <div
-                      style={{
-                        ...inkStyle,
-                        fontSize: '0.85rem',
-                        opacity: 0.85,
-                      }}
-                    >
-                      {selectedEntry ? formatDate(selectedEntry.created_at) : 'New entry'}
-                    </div>
-                  </div>
-
-                  <textarea
-                    value={currentText}
-                    onChange={(e) => setCurrentText(e.target.value)}
-                    className="w-full h-[85%] bg-transparent outline-none resize-none"
-                    style={{
-                      ...inkStyle,
-                      fontSize: '1rem',
-                      lineHeight: 1.6,
-                    }}
-                    placeholder="Let your thoughts flow…"
-                  />
-
-                  <div className="flex items-center justify-between mt-2">
-                    {selectedEntry && (
-                      <button
-                        style={paperButtonStyle}
-                        onClick={() => setDeletingId(selectedEntry.id)}
-                        disabled={saving}
-                      >
-                        Delete
-                      </button>
-                    )}
-                    <button
-                      style={paperButtonStyle}
-                      onClick={handleSave}
-                      disabled={saving || !currentText.trim()}
-                    >
-                      {saving ? 'Saving…' : 'Save'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* SIDEBAR */}
-              <div
-                className="absolute"
-                style={{
-                  left: '10%',
-                  top: '18%',
-                  width: '20%',
-                  height: '60%',
-                }}
-              >
-                <div className="w-full h-full flex flex-col">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2
-                      style={{
-                        ...inkStyle,
-                        fontSize: '1.1rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Entries
-                    </h2>
-                    <button
-                      style={paperButtonStyle}
-                      onClick={() => {
-                        setSelectedEntryId(null);
-                        setCurrentText('');
-                      }}
-                    >
-                      New
-                    </button>
-                  </div>
-
-                  <div className="flex-1 overflow-y-auto pr-1">
-                    {loading && (
-                      <p
-                        style={{
-                          ...inkStyle,
-                          fontSize: '0.9rem',
-                          opacity: 0.8,
-                        }}
-                      >
-                        Loading…
-                      </p>
-                    )}
-
-                    {!loading &&
-                      entries.map((entry) => (
-                        <button
-                          key={entry.id}
-                          onClick={() => {
-                            setSelectedEntryId(entry.id);
-                            setCurrentText(entry.content ?? '');
-                          }}
-                          className="w-full text-left mb-2 px-2 py-1 rounded-lg transition-colors"
-                          style={{
-                            backgroundColor:
-                              selectedEntryId === entry.id
-                                ? '#e4d1af'
-                                : 'transparent',
-                          }}
-                        >
-                          <div
-                            style={{
-                              ...inkStyle,
-                              fontSize: '0.8rem',
-                              opacity: 0.8,
-                            }}
-                          >
-                            {formatDate(entry.created_at)}
-                          </div>
-                          <div
-                            style={{
-                              ...inkStyle,
-                              fontSize: '0.85rem',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                            }}
-                          >
-                            {entry.content || 'Untitled'}
-                          </div>
-                        </button>
-                      ))}
-                  </div>
-                </div>
-              </div>
+                {saving ? 'Saving...' : 'Save'}
+              </button>
             </div>
           </div>
         )}
-
-        {/* DELETE MODAL */}
-        {deletingId && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-[#f3e4c8] rounded-2xl shadow-2xl border border-[#d2bfa0] px-6 py-5 max-w-sm w-full">
-              <h3
-                style={{
-                  ...inkStyle,
-                  fontSize: '1.1rem',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Delete this entry?
-              </h3>
-              <p
-                style={{
-                  ...inkStyle,
-                  fontSize: '0.95rem',
-                  opacity: 0.85,
-                  marginBottom: '1rem',
-                }}
-              >
-                This action cannot be undone.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  style={paperButtonStyle}
-                  onClick={() => setDeletingId(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  style={{
-                    ...paperButtonStyle,
-                    background: '#e3c1b8',
-                    borderColor: '#c29a8f',
-                  }}
-                  onClick={async () => {
-                    const id = deletingId;
-                    setDeletingId(null);
-
-                    const { error } = await supabase
-                      .from('journal_entries')
-                      .delete()
-                      .eq('id', id);
-
-                    if (!error) {
-                      setEntries((prev) => prev.filter((e) => e.id !== id));
-
-                      if (selectedEntryId === id) {
-                        const remaining = entries.filter((e) => e.id !== id);
-                        if (remaining.length > 0) {
-                          const last = remaining[remaining.length - 1];
-                          setSelectedEntryId(last.id);
-                          setCurrentText(last.content ?? '');
-                        } else {
-                          setSelectedEntryId(null);
-                          setCurrentText('');
-                        }
-                      }
-                    }
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
       </div>
     </div>
   );
