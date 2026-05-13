@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import affirmations from "@/data/affirmations"; // ⬅️ your backup file
 
 export async function GET() {
   const supabase = createServerSupabaseClient();
@@ -19,23 +20,29 @@ export async function GET() {
     });
   }
 
-  // 2. Get the next affirmation from the pool
-  const { data: next } = await supabase
+  // 2. Pull the next affirmation from the pool
+  let { data: pool } = await supabase
     .from("affirmation_pool")
     .select("*")
-    .order("id", { ascending: true })
-    .limit(1);
+    .order("id", { ascending: true });
 
-  if (!next || next.length === 0) {
-    return NextResponse.json({
-      message: "No affirmations available.",
-      attribution: "System",
-    });
+  // 3. If pool is empty → refill from backup file
+  if (!pool || pool.length === 0) {
+    await supabase.from("affirmation_pool").insert(affirmations);
+
+    // Fetch again after refill
+    const refreshed = await supabase
+      .from("affirmation_pool")
+      .select("*")
+      .order("id", { ascending: true });
+
+    pool = refreshed.data || [];
   }
 
-  const affirmation = next[0];
+  // 4. Select the first affirmation in the pool
+  const affirmation = pool[0];
 
-  // 3. Insert today's affirmation
+  // 5. Insert today's affirmation
   const { data: inserted } = await supabase
     .from("daily_affirmations")
     .insert({
@@ -46,9 +53,10 @@ export async function GET() {
     .select()
     .single();
 
-  // 4. Remove it from the pool
+  // 6. Remove it from the pool
   await supabase.from("affirmation_pool").delete().eq("id", affirmation.id);
 
+  // 7. Return the final message
   return NextResponse.json({
     message: inserted.message,
     attribution: inserted.attribution,
