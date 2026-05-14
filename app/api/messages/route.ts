@@ -101,9 +101,16 @@ export async function POST(req: Request) {
   };
 
   if (type === 'wisdom') {
-    table = 'wisdom_posts';
-    payload.content = content;
-  }
+  table = 'wisdom_posts';
+  payload.content = content;
+
+  // 🌱 Dual‑write: also add to affirmation_pool
+  await supabase.from("affirmation_pool").insert({
+    message: content,
+    attribution: "Anonymous — Viewer Submission",
+  });
+}
+
 
   if (type === 'journal') {
     table = 'journal_entries';
