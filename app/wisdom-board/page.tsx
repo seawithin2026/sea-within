@@ -164,7 +164,7 @@ export default function WisdomBoardPage() {
               )}
 
              {/* SPACING BETWEEN DAILY MESSAGE + WRITE SECTION */}
-            <div className="mt-22"></div>
+            <div className="mt-14"></div>
 
               {/* WRITING FORM BELOW DAILY MESSAGE */}
 <             form onSubmit={handleSubmit} className="w-full max-w-md">
