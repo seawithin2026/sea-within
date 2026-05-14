@@ -101,8 +101,8 @@ export default function JournalPage() {
 
     if (!error && data) {
       setEntries(prev => [...prev, data]);
-      setSelectedEntryId(data.id);
-      setCurrentText(''); // textarea only for new pages
+     setSelectedEntryId(data.id);
+setCurrentText(data.content);
     }
 
     setSaving(false);
