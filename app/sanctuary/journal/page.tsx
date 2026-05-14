@@ -163,11 +163,11 @@ export default function JournalPage() {
       playsInline
       className="w-full h-full object-cover"
       onEnded={() => {
-  // Add a cinematic pause before showing the logo
   setTimeout(() => {
     setStage('logo');
-  }, 1500); // 1.5 seconds — adjust as you like
+  }, 450); // perfect cinematic shadow
 }}
+
 
     />
   </div>
