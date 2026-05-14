@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import affirmations from "@/data/affirmations";
 
 export async function GET() {
-const supabase = createServerSupabaseClient();
+ const supabase = createServerSupabaseClient();
   const today = new Date().toISOString().split("T")[0];
 
   // 1. Check if today's affirmation already exists
@@ -12,7 +12,7 @@ const supabase = createServerSupabaseClient();
     .from("daily_affirmations")
     .select("*")
     .eq("date", today)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     return NextResponse.json({
@@ -51,7 +51,7 @@ const supabase = createServerSupabaseClient();
       date: today,
     })
     .select()
-    .single();
+    .maybeSingle();
 
   // 6. Remove it from the pool
   await supabase.from("affirmation_pool").delete().eq("id", affirmation.id);
