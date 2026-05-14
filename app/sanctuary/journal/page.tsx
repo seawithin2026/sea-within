@@ -76,6 +76,18 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
+  // AUTO‑ADVANCE STAGES — MUST BE ABOVE ANY RETURN
+  useEffect(() => {
+    if (stage === 'video') {
+      const t = setTimeout(() => setStage('logo'), 4000);
+      return () => clearTimeout(t);
+    }
+    if (stage === 'logo') {
+      const t = setTimeout(() => setStage('write'), 2500);
+      return () => clearTimeout(t);
+    }
+  }, [stage]);
+
   // SAVE ENTRY
   const handleSave = async () => {
     if (!session?.user?.id) return;
