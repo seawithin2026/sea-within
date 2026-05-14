@@ -21,11 +21,16 @@ export async function GET() {
     });
   }
 
-  // 2. Pull the next affirmation from the pool
-  let { data: pool } = await supabase
-    .from("affirmation_pool")
-    .select("*")
-    .order("id", { ascending: true });
+// 2. Pull the next affirmation from the pool
+let { data: pool, error: poolError } = await supabase
+  .from("affirmation_pool")
+  .select("*")
+  .order("id", { ascending: true });
+
+// DEBUG — this is the correct place
+console.log("POOL RESULT:", pool, "ERROR:", poolError);
+
+
 
   // 3. If pool is empty → refill from backup file
   if (!pool || pool.length === 0) {
