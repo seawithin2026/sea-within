@@ -38,10 +38,10 @@ export default function WisdomBoardPage() {
     const res = await fetch("/api/daily-affirmation");
     const data = await res.json();
 
-    setDailyMessage({
-      message: data.affirmation,
-      attribution: data.attribution || ""
-    });
+  setDailyMessage({
+  message: data.message,
+  attribution: data.attribution || ""
+});
   } catch (err) {
     console.error("Failed to fetch daily message", err);
     setDailyMessage({
