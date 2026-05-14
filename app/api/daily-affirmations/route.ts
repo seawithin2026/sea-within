@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import affirmations from "@/data/affirmations";
 
 export async function GET() {
- const supabase = createServerSupabaseClient();
+  // Use service role for server-side logic (no cookies, no session)
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   const today = new Date().toISOString().split("T")[0];
 
   // 1. Check if today's affirmation already exists
@@ -21,11 +25,11 @@ export async function GET() {
     });
   }
 
-// 2. Pull the next affirmation from the pool
-let { data: pool, error: poolError } = await supabase
-  .from("affirmation_pool")
-  .select("*")
-  .order("id", { ascending: true });
+  // 2. Pull the next affirmation from the pool
+  let { data: pool } = await supabase
+    .from("affirmation_pool")
+    .select("*")
+    .order("id", { ascending: true });
 
   // 3. If pool is empty → refill from backup file
   if (!pool || pool.length === 0) {
