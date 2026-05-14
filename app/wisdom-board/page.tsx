@@ -34,18 +34,23 @@ export default function WisdomBoardPage() {
   }, []);
 
   const fetchDailyMessage = async () => {
-    try {
-      const res = await fetch("/api/daily-affirmation");
-      const data = await res.json();
-      setDailyMessage(data || null);
-    } catch (err) {
-      console.error("Failed to fetch daily message", err);
-      setDailyMessage({
-        message: "A new message will arrive soon.",
-        attribution: "",
-      });
-    }
-  };
+  try {
+    const res = await fetch("/api/daily-affirmation");
+    const data = await res.json();
+
+    setDailyMessage({
+      message: data.affirmation,
+      attribution: data.attribution || ""
+    });
+  } catch (err) {
+    console.error("Failed to fetch daily message", err);
+    setDailyMessage({
+      message: "A new message will arrive soon.",
+      attribution: "",
+    });
+  }
+};
+
 
   const fetchPosts = async () => {
     try {
