@@ -14,6 +14,18 @@ type JournalEntry = {
   created_at: string;
 };
 
+// Memoized write stage wrapper to prevent re-mount flicker
+const WriteStage = React.memo(function WriteStage({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      key="write-stage"
+      className="absolute inset-0 fade-in-book bg-black flex items-center justify-center"
+    >
+      {children}
+    </div>
+  );
+});
+
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
 
@@ -153,26 +165,22 @@ export default function JournalPage() {
   // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-
-     {/* VIDEO STAGE */}
-{stage === 'video' && (
-  <div className="absolute inset-0 flex items-center justify-center bg-black">
-    <video
-      src="/videos/book-opening.mp4"
-      autoPlay
-      playsInline
-      className="w-full h-full object-cover"
-      onEnded={() => {
-  setTimeout(() => {
-    setStage('logo');
-  }, 450); // perfect cinematic shadow
-}}
-
-
-    />
-  </div>
-)}
-
+      {/* VIDEO STAGE */}
+      {stage === 'video' && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <video
+            src="/videos/book-opening.mp4"
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+            onEnded={() => {
+              setTimeout(() => {
+                setStage('logo');
+              }, 450); // tuned cinematic pause
+            }}
+          />
+        </div>
+      )}
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (
@@ -193,14 +201,11 @@ export default function JournalPage() {
           </button>
         </div>
       )}
-{/* WRITE STAGE */}
-{stage === 'write' && (
-  <div
-    key="write-stage"
-    className="absolute inset-0 fade-in-book bg-black flex items-center justify-center"
-  >
-    <div className="relative w-full h-full flex items-center justify-center">
 
+      {/* WRITE STAGE */}
+      {stage === 'write' && (
+        <WriteStage>
+          <div className="relative w-full h-full flex items-center justify-center">
             {/* Parchment */}
             <img
               src="/images/parchment-page.png"
@@ -309,7 +314,6 @@ export default function JournalPage() {
 
             {/* CONTROLS */}
             <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
-
               {/* PREVIOUS */}
               <button
                 onClick={() => {
@@ -387,77 +391,75 @@ export default function JournalPage() {
               >
                 Next ▶
               </button>
-
             </div>
           </div>
-        </div>
+        </WriteStage>
       )}
 
-{/* GLOBAL STYLES */}
-<style jsx global>{`
-  .sea-btn {
-    background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
-    color: #3b2414;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-    transition: all 0.3s ease;
-    border: none;
-  }
-  .sea-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-    background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
-  }
-  .sea-btn:active {
-    transform: scale(0.97);
-  }
+      {/* GLOBAL STYLES */}
+      <style jsx global>{`
+        .sea-btn {
+          background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
+          color: #3b2414;
+          padding: 8px 18px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+          transition: all 0.3s ease;
+          border: none;
+        }
+        .sea-btn:hover {
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+          background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
+        }
+        .sea-btn:active {
+          transform: scale(0.97);
+        }
 
-  /* Smooth cinematic fade-in for the parchment page */
-  .fade-in-book {
-    animation: fadeInBook 1.2s ease-out forwards;
-  }
+        /* Smooth cinematic fade-in for the parchment page */
+        .fade-in-book {
+          animation: fadeInBook 1.2s ease-out forwards;
+        }
 
-  @keyframes fadeInBook {
-    0% {
-      opacity: 0;
-      transform: translateY(10px) scale(0.98);
-      filter: blur(4px);
-    }
-    60% {
-      opacity: 0.6;
-      transform: translateY(4px) scale(0.995);
-      filter: blur(1px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
+        @keyframes fadeInBook {
+          0% {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+            filter: blur(4px);
+          }
+          60% {
+            opacity: 0.6;
+            transform: translateY(4px) scale(0.995);
+            filter: blur(1px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
 
-  /* Custom brown scrollbar to match the writing aesthetic */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
+        /* Custom brown scrollbar to match the writing aesthetic */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
 
-  ::-webkit-scrollbar-track {
-    background: #e8d8b0; /* parchment beige */
-  }
+        ::-webkit-scrollbar-track {
+          background: #e8d8b0; /* parchment beige */
+        }
 
-  ::-webkit-scrollbar-thumb {
-    background: #3b2414; /* warm brown ink */
-    border-radius: 10px;
-    border: 2px solid #e8d8b0; /* carved parchment edge */
-  }
+        ::-webkit-scrollbar-thumb {
+          background: #3b2414; /* warm brown ink */
+          border-radius: 10px;
+          border: 2px solid #e8d8b0; /* carved parchment edge */
+        }
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #2a180d; /* darker brown on hover */
-  }
-`}</style>
-
+        ::-webkit-scrollbar-thumb:hover {
+          background: #2a180d; /* darker brown on hover */
+        }
+      `}</style>
     </div>
   );
 }
