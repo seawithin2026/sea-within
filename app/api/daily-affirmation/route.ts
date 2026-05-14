@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import affirmations from "@/data/affirmations"; // ⬅️ your backup file
+import affirmations from "@/data/affirmations";
 
 export async function GET() {
-  const supabase = createServerSupabaseClient();
+const supabase = createServerSupabaseClient();
   const today = new Date().toISOString().split("T")[0];
 
   // 1. Check if today's affirmation already exists
@@ -30,7 +31,6 @@ export async function GET() {
   if (!pool || pool.length === 0) {
     await supabase.from("affirmation_pool").insert(affirmations);
 
-    // Fetch again after refill
     const refreshed = await supabase
       .from("affirmation_pool")
       .select("*")
