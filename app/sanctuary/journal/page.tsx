@@ -11,7 +11,8 @@ type JournalEntry = {
   id: string;
   user_id: string;
   content: string;
-  date: string; // your pretty date
+  date?: string | null;
+  created_at?: string;
 };
 
 export default function JournalPage() {
@@ -39,29 +40,34 @@ export default function JournalPage() {
   // LOAD USER
   useEffect(() => {
     const loadUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setSession(user ? { user } : null);
+      const { data, error } = await supabase.auth.getUser();
+      if (!error && data.user) {
+        setSession({ user: data.user });
+      } else {
+        setSession(null);
+      }
     };
     loadUser();
   }, []);
 
   // LOAD ENTRIES
   useEffect(() => {
-    if (!session) return;
+    if (!session?.user?.id) return;
 
     const loadEntries = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('journal_entries')
-        .select('*')
+        .select('id,user_id,content,date,created_at')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: true });
 
-      if (data) {
-        setEntries(data);
-        if (data.length > 0) {
-          const last = data[data.length - 1];
+      if (!error && data) {
+        const typed = data as JournalEntry[];
+        setEntries(typed);
+        if (typed.length > 0) {
+          const last = typed[typed.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText(last.content);
+          setCurrentText(''); // textarea is only for new pages
         }
       }
     };
@@ -83,45 +89,30 @@ export default function JournalPage() {
     }
   }, [stage]);
 
-  // SAVE ENTRY (Supabase)
+  // SAVE ENTRY (always INSERT — unlimited entries per day)
   const handleSave = async () => {
-    if (!session) return;
+    if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
     const prettyDate = todayPretty;
 
-    if (selectedEntryId) {
-      // UPDATE
-      const { error } = await supabase
-        .from('journal_entries')
-        .update({ content: currentText })
-        .eq('id', selectedEntryId);
+    const { data, error } = await supabase
+      .from('journal_entries')
+      .insert({
+        user_id: session.user.id,
+        content: currentText,
+        date: prettyDate,
+      })
+      .select()
+      .single();
 
-      if (!error) {
-        setEntries(prev =>
-          prev.map(e =>
-            e.id === selectedEntryId ? { ...e, content: currentText } : e
-          )
-        );
-      }
-    } else {
-      // INSERT NEW
-      const { data, error } = await supabase
-        .from('journal_entries')
-        .insert({
-          user_id: session.user.id,
-          content: currentText,
-          date: prettyDate, // store your pretty date
-        })
-        .select()
-        .single();
-
-      if (!error && data) {
-        setEntries(prev => [...prev, data]);
-        setSelectedEntryId(data.id);
-      }
+    if (!error && data) {
+      const newEntry = data as JournalEntry;
+      setEntries(prev => [...prev, newEntry]);
+      setSelectedEntryId(newEntry.id);
+      setCurrentText('');
     }
 
     setSaving(false);
@@ -136,18 +127,22 @@ export default function JournalPage() {
       .delete()
       .eq('id', selectedEntryId);
 
-    setEntries(prev => prev.filter(e => e.id !== selectedEntryId));
+    setEntries(prev => {
+      const idx = prev.findIndex(e => e.id === selectedEntryId);
+      const filtered = prev.filter(e => e.id !== selectedEntryId);
 
-    if (entries.length > 1) {
-      const idx = entries.findIndex(e => e.id === selectedEntryId);
-      const newIndex = Math.max(0, idx - 1);
-      const newEntry = entries[newIndex];
-      setSelectedEntryId(newEntry.id);
-      setCurrentText(newEntry.content);
-    } else {
-      setSelectedEntryId(null);
-      setCurrentText('');
-    }
+      if (filtered.length > 0 && idx !== -1) {
+        const newIndex = Math.max(0, idx - 1);
+        const newEntry = filtered[newIndex];
+        setSelectedEntryId(newEntry.id);
+        setCurrentText('');
+      } else {
+        setSelectedEntryId(null);
+        setCurrentText('');
+      }
+
+      return filtered;
+    });
 
     setShowDeleteConfirm(false);
   };
@@ -254,12 +249,12 @@ export default function JournalPage() {
                     key={entry.id}
                     onClick={() => {
                       setSelectedEntryId(entry.id);
-                      setCurrentText(entry.content);
+                      setCurrentText('');
                       setShowCalendar(false);
                     }}
                     className="block w-full text-left text-sm text-[#3b2414] hover:underline"
                   >
-                    {entry.date}
+                    {entry.date || todayPretty}
                   </button>
                 ))}
 
@@ -304,11 +299,12 @@ export default function JournalPage() {
 
               <button
                 onClick={() => {
+                  if (!selectedEntryId) return;
                   const idx = entries.findIndex(e => e.id === selectedEntryId);
                   if (idx > 0) {
                     const prev = entries[idx - 1];
                     setSelectedEntryId(prev.id);
-                    setCurrentText(prev.content);
+                    setCurrentText('');
                   }
                 }}
                 className="sea-btn"
@@ -329,7 +325,7 @@ export default function JournalPage() {
               <button
                 onClick={handleSave}
                 className="sea-btn"
-                disabled={saving}
+                disabled={saving || !!selectedEntry}
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -352,11 +348,12 @@ export default function JournalPage() {
 
               <button
                 onClick={() => {
+                  if (!selectedEntryId) return;
                   const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx < entries.length - 1) {
+                  if (idx < entries.length - 1 && idx !== -1) {
                     const next = entries[idx + 1];
                     setSelectedEntryId(next.id);
-                    setCurrentText(next.content);
+                    setCurrentText('');
                   }
                 }}
                 className="sea-btn"
