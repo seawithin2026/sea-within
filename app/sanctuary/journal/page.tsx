@@ -28,7 +28,7 @@ const WriteStage = React.memo(function WriteStage({ children }: { children: Reac
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
-
+const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
   const [session, setSession] = useState<any>(null);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentText, setCurrentText] = useState('');
@@ -165,22 +165,43 @@ export default function JournalPage() {
   // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* VIDEO STAGE */}
-      {stage === 'video' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <video
-            src="/videos/book-opening.mp4"
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onEnded={() => {
-              setTimeout(() => {
-                setStage('logo');
-              }, 450); // tuned cinematic pause
-            }}
-          />
-        </div>
-      )}
+    {/* VIDEO STAGE */}
+{stage === 'video' && (
+  <div className="absolute inset-0 flex items-center justify-center bg-black">
+    <video
+      src="/videos/book-opening.mp4"
+      autoPlay
+      playsInline
+      className="w-full h-full object-cover"
+      onTimeUpdate={(e) => {
+        const video = e.target as HTMLVideoElement;
+
+        // Safety: duration can be NaN before metadata is loaded
+        if (!video.duration || Number.isNaN(video.duration)) return;
+
+        // Trigger transition 0.25s before the actual end, only once
+        if (
+          !hasTriggeredVideoEnd &&
+          video.duration - video.currentTime < 0.25
+        ) {
+          setHasTriggeredVideoEnd(true);
+
+          setTimeout(() => {
+            setStage('logo');
+          }, 450); // cinematic shadow
+        }
+      }}
+      onEnded={() => {
+        // Fallback: if for some reason timeupdate didn't fire near the end
+        if (!hasTriggeredVideoEnd) {
+          setStage('logo');
+        }
+      }}
+    />
+  </div>
+)}
+
+
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (
