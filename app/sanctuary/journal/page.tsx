@@ -11,8 +11,7 @@ type JournalEntry = {
   id: string;
   user_id: string;
   content: string;
-  date?: string | null;
-  created_at?: string;
+  created_at: string;
 };
 
 export default function JournalPage() {
@@ -28,7 +27,7 @@ export default function JournalPage() {
 
   const [saving, setSaving] = useState(false);
 
-  // TODAY'S PRETTY DATE
+  // TODAY'S PRETTY DATE (for new pages only)
   const todayPretty = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
       year: 'numeric',
@@ -40,12 +39,8 @@ export default function JournalPage() {
   // LOAD USER
   useEffect(() => {
     const loadUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (!error && data.user) {
-        setSession({ user: data.user });
-      } else {
-        setSession(null);
-      }
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setSession({ user: data.user });
     };
     loadUser();
   }, []);
@@ -57,17 +52,16 @@ export default function JournalPage() {
     const loadEntries = async () => {
       const { data, error } = await supabase
         .from('journal_entries')
-        .select('id,user_id,content,date,created_at')
+        .select('id,user_id,content,created_at')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: true });
 
       if (!error && data) {
-        const typed = data as JournalEntry[];
-        setEntries(typed);
-        if (typed.length > 0) {
-          const last = typed[typed.length - 1];
+        setEntries(data);
+        if (data.length > 0) {
+          const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText(''); // textarea is only for new pages
+          setCurrentText('');
         }
       }
     };
@@ -89,30 +83,26 @@ export default function JournalPage() {
     }
   }, [stage]);
 
-  // SAVE ENTRY (always INSERT — unlimited entries per day)
+  // SAVE ENTRY — ALWAYS INSERT (unlimited entries per day)
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
-    const prettyDate = todayPretty;
-
     const { data, error } = await supabase
       .from('journal_entries')
       .insert({
         user_id: session.user.id,
         content: currentText,
-        date: prettyDate,
       })
       .select()
       .single();
 
     if (!error && data) {
-      const newEntry = data as JournalEntry;
-      setEntries(prev => [...prev, newEntry]);
-      setSelectedEntryId(newEntry.id);
-      setCurrentText('');
+      setEntries(prev => [...prev, data]);
+      setSelectedEntryId(data.id);
+      setCurrentText(''); // textarea only for new pages
     }
 
     setSaving(false);
@@ -219,7 +209,13 @@ export default function JournalPage() {
                 className="absolute text-[#4b2e1a] text-sm font-medium"
                 style={{ top: '-8%', right: '0%' }}
               >
-                {selectedEntry?.date || todayPretty}
+                {selectedEntry
+                  ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })
+                  : todayPretty}
               </div>
 
               {/* ENTRY OR TEXTAREA */}
@@ -254,7 +250,11 @@ export default function JournalPage() {
                     }}
                     className="block w-full text-left text-sm text-[#3b2414] hover:underline"
                   >
-                    {entry.date || todayPretty}
+                    {new Date(entry.created_at).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
                   </button>
                 ))}
 
@@ -325,7 +325,7 @@ export default function JournalPage() {
               <button
                 onClick={handleSave}
                 className="sea-btn"
-                disabled={saving || !!selectedEntry}
+                disabled={saving}
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>
