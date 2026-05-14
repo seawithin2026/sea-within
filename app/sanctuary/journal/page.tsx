@@ -297,20 +297,32 @@ setCurrentText(data.content);
             {/* CONTROLS */}
             <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
 
-              <button
-                onClick={() => {
-                  if (!selectedEntryId) return;
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx > 0) {
-                    const prev = entries[idx - 1];
-                    setSelectedEntryId(prev.id);
-                    setCurrentText('');
-                  }
-                }}
-                className="sea-btn"
-              >
-                ◀ Previous
-              </button>
+             <button
+  onClick={() => {
+    if (entries.length === 0) return;
+
+    // If on a new page (no selected entry), go to last entry
+    if (!selectedEntryId) {
+      const last = entries[entries.length - 1];
+      setSelectedEntryId(last.id);
+      setCurrentText(last.content);
+      return;
+    }
+
+    // Otherwise go to previous entry
+    const idx = entries.findIndex(e => e.id === selectedEntryId);
+    if (idx > 0) {
+      const prev = entries[idx - 1];
+      setSelectedEntryId(prev.id);
+      setCurrentText(prev.content);
+    }
+  }}
+  className="sea-btn"
+>
+  ◀ Previous
+</button>
+
+
 
               <button
                 onClick={() => {
