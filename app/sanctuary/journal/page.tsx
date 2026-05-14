@@ -76,18 +76,6 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // AUTO‑ADVANCE STAGES — FIXED TIMING
-  useEffect(() => {
-    if (stage === 'video') {
-      const t = setTimeout(() => setStage('logo'), 6500); // slower transition
-      return () => clearTimeout(t);
-    }
-    if (stage === 'logo') {
-      const t = setTimeout(() => setStage('write'), 3000); // longer logo display
-      return () => clearTimeout(t);
-    }
-  }, [stage]);
-
   // SAVE ENTRY
   const handleSave = async () => {
     if (!session?.user?.id) return;
@@ -166,17 +154,22 @@ export default function JournalPage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
-      {/* VIDEO STAGE */}
-      {stage === 'video' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <video
-            src="/videos/book-opening.mp4"
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+     {/* VIDEO STAGE */}
+{stage === 'video' && (
+  <div className="absolute inset-0 flex items-center justify-center bg-black">
+    <video
+      src="/videos/book-opening.mp4"
+      autoPlay
+      playsInline
+      className="w-full h-full object-cover"
+      onEnded={() => {
+        // brief shadow moment before logo
+        setStage('logo');
+      }}
+    />
+  </div>
+)}
+
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (
