@@ -27,11 +27,6 @@ let { data: pool, error: poolError } = await supabase
   .select("*")
   .order("id", { ascending: true });
 
-// DEBUG — this is the correct place
-console.log("POOL RESULT:", pool, "ERROR:", poolError);
-
-
-
   // 3. If pool is empty → refill from backup file
   if (!pool || pool.length === 0) {
     await supabase.from("affirmation_pool").insert(affirmations);
