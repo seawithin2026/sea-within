@@ -61,7 +61,7 @@ export default function JournalPage() {
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText('');
+         setCurrentText(last.content);
         }
       }
     };
@@ -239,24 +239,24 @@ setCurrentText(data.content);
             {showCalendar && (
               <div className="absolute top-[10%] right-[10%] bg-[#fdf7e6] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
                 <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+{entries.map(entry => (
+  <button
+    key={entry.id}
+    onClick={() => {
+      setSelectedEntryId(entry.id);
+      setCurrentText('');
+      setShowCalendar(false);
+    }}
+    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+  >
+    {new Date(entry.created_at).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })}
+  </button>
+))}
 
-                {entries.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => {
-                      setSelectedEntryId(entry.id);
-                      setCurrentText('');
-                      setShowCalendar(false);
-                    }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-                  >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </button>
-                ))}
 
                 <button
                   onClick={() => setShowCalendar(false)}
