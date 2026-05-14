@@ -76,14 +76,14 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // AUTO‑ADVANCE STAGES — ONLY HERE, ABOVE RETURNS
+  // AUTO‑ADVANCE STAGES — FIXED TIMING
   useEffect(() => {
     if (stage === 'video') {
-      const t = setTimeout(() => setStage('logo'), 4000);
+      const t = setTimeout(() => setStage('logo'), 6500); // slower transition
       return () => clearTimeout(t);
     }
     if (stage === 'logo') {
-      const t = setTimeout(() => setStage('write'), 2500);
+      const t = setTimeout(() => setStage('write'), 3000); // longer logo display
       return () => clearTimeout(t);
     }
   }, [stage]);
@@ -162,7 +162,7 @@ export default function JournalPage() {
 
   const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
 
-  // MAIN RETURN — ONLY ONE
+  // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
@@ -174,7 +174,6 @@ export default function JournalPage() {
             autoPlay
             playsInline
             className="w-full h-full object-cover"
-            onEnded={() => setStage('logo')}
           />
         </div>
       )}
