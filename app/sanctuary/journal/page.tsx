@@ -444,24 +444,24 @@ export default function JournalPage() {
   }
 
   /* Custom brown scrollbar to match the writing aesthetic */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
+::-webkit-scrollbar {
+  width: 10px;
+}
 
-  ::-webkit-scrollbar-track {
-   background: #b8a27f; /* deeper, aged parchment */
+::-webkit-scrollbar-track {
+  background: #a47a3b; /* light parchment brown */
+}
 
-  }
+::-webkit-scrollbar-thumb {
+  background: #3b2414; /* warm brown ink */
+  border-radius: 10px;
+  border: 2px solid #a47a3b; /* light brown carved edge */
+}
 
-  ::-webkit-scrollbar-thumb {
-    background: #3b2414; /* warm brown ink */
-    border-radius: 10px;
-   border: 2px solid #b8a27f; /* matches the parchment mid-tone */
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: #2a180d; /* darker brown on hover */
+}
 
-  ::-webkit-scrollbar-thumb:hover {
-    background: #2a180d; /* darker brown on hover */
-  }
 
   /* Smooth fade-in for writing text */
   .text-fade-in {
