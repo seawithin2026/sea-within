@@ -393,28 +393,51 @@ export default function JournalPage() {
         </div>
       )}
 
-      {/* GLOBAL STYLES */}
-      <style jsx global>{`
-        .sea-btn {
-          background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
-          color: #3b2414;
-          padding: 8px 18px;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-          transition: all 0.3s ease;
-          border: none;
-        }
-        .sea-btn:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-          background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
-        }
-        .sea-btn:active {
-          transform: scale(0.97);
-        }
-      `}</style>
+     {/* GLOBAL STYLES */}
+<style jsx global>{`
+  .sea-btn {
+    background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
+    color: #3b2414;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    transition: all 0.3s ease;
+    border: none;
+  }
+  .sea-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
+  }
+  .sea-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Smooth cinematic fade-in for the parchment page */
+  .fade-in-book {
+    animation: fadeInBook 1.2s ease-out forwards;
+  }
+
+  @keyframes fadeInBook {
+    0% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      filter: blur(4px);
+    }
+    60% {
+      opacity: 0.6;
+      transform: translateY(4px) scale(0.995);
+      filter: blur(1px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+`}</style>
     </div>
   );
 }
