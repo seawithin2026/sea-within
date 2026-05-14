@@ -163,14 +163,18 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
+             {/* SPACING BETWEEN DAILY MESSAGE + WRITE SECTION */}
+            <div className="mt-16"></div>
+
               {/* WRITING FORM BELOW DAILY MESSAGE */}
-              <form onSubmit={handleSubmit} className="w-full max-w-md">
-                <textarea
-                  value={newPost}
-                  onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
-                  className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
+<             form onSubmit={handleSubmit} className="w-full max-w-md">
+               <textarea
+                value={newPost}
+                onChange={(e) => setNewPost(e.target.value)}
+                placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
+               className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
+
 
                 <button
                   type="submit"
