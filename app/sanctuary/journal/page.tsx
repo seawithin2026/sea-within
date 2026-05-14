@@ -393,7 +393,7 @@ export default function JournalPage() {
         </div>
       )}
 
-     {/* GLOBAL STYLES */}
+{/* GLOBAL STYLES */}
 <style jsx global>{`
   .sea-btn {
     background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
@@ -437,7 +437,27 @@ export default function JournalPage() {
       filter: blur(0);
     }
   }
+
+  /* Custom brown scrollbar to match the writing aesthetic */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #e8d8b0; /* parchment beige */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #3b2414; /* warm brown ink */
+    border-radius: 10px;
+    border: 2px solid #e8d8b0; /* carved parchment edge */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a180d; /* darker brown on hover */
+  }
 `}</style>
+
     </div>
   );
 }
