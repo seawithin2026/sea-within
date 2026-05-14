@@ -193,11 +193,13 @@ export default function JournalPage() {
           </button>
         </div>
       )}
-
-      {/* WRITE STAGE */}
-      {stage === 'write' && (
-        <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
-          <div className="relative w-full h-full flex items-center justify-center">
+{/* WRITE STAGE */}
+{stage === 'write' && (
+  <div
+    key="write-stage"
+    className="absolute inset-0 fade-in-book bg-black flex items-center justify-center"
+  >
+    <div className="relative w-full h-full flex items-center justify-center">
 
             {/* Parchment */}
             <img
