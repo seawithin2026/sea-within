@@ -449,13 +449,14 @@ export default function JournalPage() {
   }
 
   ::-webkit-scrollbar-track {
-    background: #cbb894; /* refined parchment tone */
+   background: #b8a27f; /* deeper, aged parchment */
+
   }
 
   ::-webkit-scrollbar-thumb {
     background: #3b2414; /* warm brown ink */
     border-radius: 10px;
-    border: 2px solid #cbb894; /* carved parchment edge */
+   border: 2px solid #b8a27f; /* matches the parchment mid-tone */
   }
 
   ::-webkit-scrollbar-thumb:hover {
