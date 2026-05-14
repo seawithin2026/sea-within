@@ -76,7 +76,7 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // AUTO‑ADVANCE STAGES — MUST BE ABOVE ANY RETURN
+  // AUTO‑ADVANCE STAGES — ONLY HERE, ABOVE RETURNS
   useEffect(() => {
     if (stage === 'video') {
       const t = setTimeout(() => setStage('logo'), 4000);
@@ -161,18 +161,6 @@ export default function JournalPage() {
   }
 
   const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
-
-  // AUTO‑ADVANCE STAGES
-  useEffect(() => {
-    if (stage === 'video') {
-      const t = setTimeout(() => setStage('logo'), 4000);
-      return () => clearTimeout(t);
-    }
-    if (stage === 'logo') {
-      const t = setTimeout(() => setStage('write'), 2500);
-      return () => clearTimeout(t);
-    }
-  }, [stage]);
 
   // MAIN RETURN — ONLY ONE
   return (
