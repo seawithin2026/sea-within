@@ -26,8 +26,9 @@ export default function JournalPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [saving, setSaving] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(true);
 
-  // TODAY'S PRETTY DATE (for new pages only)
+  // TODAY'S PRETTY DATE
   const todayPretty = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
       year: 'numeric',
@@ -40,8 +41,14 @@ export default function JournalPage() {
   useEffect(() => {
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-      if (data?.user) setSession({ user: data.user });
+
+      if (data?.user) {
+        setSession({ user: data.user });
+      }
+
+      setLoadingUser(false);
     };
+
     loadUser();
   }, []);
 
@@ -61,7 +68,7 @@ export default function JournalPage() {
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-         setCurrentText(last.content);
+          setCurrentText(last.content);
         }
       }
     };
@@ -69,21 +76,7 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
-
-  // AUTO‑ADVANCE STAGES
-  useEffect(() => {
-    if (stage === 'video') {
-      const t = setTimeout(() => setStage('logo'), 4000);
-      return () => clearTimeout(t);
-    }
-    if (stage === 'logo') {
-      const t = setTimeout(() => setStage('write'), 2500);
-      return () => clearTimeout(t);
-    }
-  }, [stage]);
-
-  // SAVE ENTRY — ALWAYS INSERT (unlimited entries per day)
+  // SAVE ENTRY
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
@@ -101,8 +94,8 @@ export default function JournalPage() {
 
     if (!error && data) {
       setEntries(prev => [...prev, data]);
-     setSelectedEntryId(data.id);
-setCurrentText(data.content);
+      setSelectedEntryId(data.id);
+      setCurrentText(data.content);
     }
 
     setSaving(false);
@@ -137,6 +130,14 @@ setCurrentText(data.content);
     setShowDeleteConfirm(false);
   };
 
+  // Prevent yellow flash
+  if (loadingUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black" />
+    );
+  }
+
+  // Sign-in screen
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
@@ -147,6 +148,21 @@ setCurrentText(data.content);
     );
   }
 
+  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
+
+  // AUTO‑ADVANCE STAGES
+  useEffect(() => {
+    if (stage === 'video') {
+      const t = setTimeout(() => setStage('logo'), 4000);
+      return () => clearTimeout(t);
+    }
+    if (stage === 'logo') {
+      const t = setTimeout(() => setStage('write'), 2500);
+      return () => clearTimeout(t);
+    }
+  }, [stage]);
+
+  // MAIN RETURN — ONLY ONE
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
 
@@ -239,24 +255,24 @@ setCurrentText(data.content);
             {showCalendar && (
               <div className="absolute top-[10%] right-[10%] bg-[#fdf7e6] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
                 <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
-{entries.map(entry => (
-  <button
-    key={entry.id}
-    onClick={() => {
-      setSelectedEntryId(entry.id);
-      setCurrentText('');
-      setShowCalendar(false);
-    }}
-    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-  >
-    {new Date(entry.created_at).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })}
-  </button>
-))}
 
+                {entries.map(entry => (
+                  <button
+                    key={entry.id}
+                    onClick={() => {
+                      setSelectedEntryId(entry.id);
+                      setCurrentText('');
+                      setShowCalendar(false);
+                    }}
+                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+                  >
+                    {new Date(entry.created_at).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </button>
+                ))}
 
                 <button
                   onClick={() => setShowCalendar(false)}
@@ -297,33 +313,31 @@ setCurrentText(data.content);
             {/* CONTROLS */}
             <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
 
-             <button
-  onClick={() => {
-    if (entries.length === 0) return;
+              {/* PREVIOUS */}
+              <button
+                onClick={() => {
+                  if (entries.length === 0) return;
 
-    // If on a new page (no selected entry), go to last entry
-    if (!selectedEntryId) {
-      const last = entries[entries.length - 1];
-      setSelectedEntryId(last.id);
-      setCurrentText(last.content);
-      return;
-    }
+                  if (!selectedEntryId) {
+                    const last = entries[entries.length - 1];
+                    setSelectedEntryId(last.id);
+                    setCurrentText(last.content);
+                    return;
+                  }
 
-    // Otherwise go to previous entry
-    const idx = entries.findIndex(e => e.id === selectedEntryId);
-    if (idx > 0) {
-      const prev = entries[idx - 1];
-      setSelectedEntryId(prev.id);
-      setCurrentText(prev.content);
-    }
-  }}
-  className="sea-btn"
->
-  ◀ Previous
-</button>
+                  const idx = entries.findIndex(e => e.id === selectedEntryId);
+                  if (idx > 0) {
+                    const prev = entries[idx - 1];
+                    setSelectedEntryId(prev.id);
+                    setCurrentText(prev.content);
+                  }
+                }}
+                className="sea-btn"
+              >
+                ◀ Previous
+              </button>
 
-
-
+              {/* NEW PAGE */}
               <button
                 onClick={() => {
                   setSelectedEntryId(null);
@@ -334,6 +348,7 @@ setCurrentText(data.content);
                 New Page
               </button>
 
+              {/* SAVE */}
               <button
                 onClick={handleSave}
                 className="sea-btn"
@@ -342,6 +357,7 @@ setCurrentText(data.content);
                 {saving ? 'Saving...' : 'Save'}
               </button>
 
+              {/* DELETE */}
               {selectedEntry && (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
@@ -351,6 +367,7 @@ setCurrentText(data.content);
                 </button>
               )}
 
+              {/* CALENDAR */}
               <button
                 onClick={() => setShowCalendar(true)}
                 className="sea-btn"
@@ -358,6 +375,7 @@ setCurrentText(data.content);
                 📅 Calendar
               </button>
 
+              {/* NEXT */}
               <button
                 onClick={() => {
                   if (!selectedEntryId) return;
