@@ -446,9 +446,9 @@ export default function JournalPage() {
           width: 10px;
         }
 
-        ::-webkit-scrollbar-track {
-          background: #e8d8b0; /* parchment beige */
-        }
+       ::-webkit-scrollbar-track {
+  background: #cbb894; /* closest match to your parchment page */
+}
 
         ::-webkit-scrollbar-thumb {
           background: #3b2414; /* warm brown ink */
