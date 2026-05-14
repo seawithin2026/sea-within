@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 // Fetch today's affirmation or generate a new one
@@ -10,32 +10,30 @@ export async function getTodayAffirmation() {
   const today = new Date().toISOString().split('T')[0];
 
   // 1. Check if today's message already exists
-  const { data: existing, error: existingError } = await supabase
+  const { data: existing } = await supabase
     .from('daily_affirmations')
     .select('*')
     .eq('date', today)
-    .single();
+    .maybeSingle();
 
   if (existing) {
     return existing;
   }
 
   // 2. Get a random message from the pool
-  const { data: pool, error: poolError } = await supabase
+  let { data: pool } = await supabase
     .from('affirmation_pool')
     .select('*');
 
   if (!pool || pool.length === 0) {
-    // 3. If pool is empty, refill it from your static file
     const { default: refillMessages } = await import('../data/affirmations');
     await supabase.from('affirmation_pool').insert(refillMessages);
-    
-    // Fetch again after refill
-    const { data: newPool } = await supabase
+
+    const refreshed = await supabase
       .from('affirmation_pool')
       .select('*');
 
-    return await generateNewAffirmation(newPool, today);
+    pool = refreshed.data || [];
   }
 
   return await generateNewAffirmation(pool, today);
