@@ -407,14 +407,15 @@ body {
   video.w-full.h-full.object-cover {
     height: 60vh !important;
     object-fit: cover !important;
-    object-position: center 20% !important; /* ← lowers the video slightly */
+    object-position: center 20% !important; /* lowered slightly */
   }
 
   /* LOGO STAGE — scale logo */
   img[src*="sea-within-logo-page"] {
-    width: 100% !important;
+    width: 80% !important;
     height: auto !important;
-    padding: 2rem !important;
+    padding: 1.5rem !important;
+    margin: 0 auto !important;
   }
 
   /* PARCHMENT — scale to mobile width */
@@ -422,31 +423,31 @@ body {
     width: 100% !important;
     height: auto !important;
     object-fit: contain !important;
-    padding: 1rem !important;
+    padding: 0.5rem !important;
   }
 
   /* WRITING AREA — centered + readable */
   .writing-area {
     left: 50% !important;
-    top: 22% !important;
-    width: 70% !important;
-    height: 55% !important;
+    top: 20% !important;
+    width: 78% !important;      /* slightly wider */
+    height: 50% !important;     /* slightly shorter */
     transform: translateX(-50%) !important;
   }
 
   /* DATE POSITION — smaller + higher */
   .journal-date {
-    top: -12% !important;
+    top: -10% !important;
     right: 0 !important;
-    font-size: 0.75rem !important;
+    font-size: 0.7rem !important;
   }
 
   /* ENTRY TEXT + TEXTAREA — readable on phones */
   .writing-area textarea,
   .writing-area .ink-writing {
-    font-size: 1rem !important;
-    line-height: 1.4 !important;
-    padding: 0.5rem !important;
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    padding: 0.4rem !important;
   }
 
   /* CALENDAR PANEL — centered + narrower */
@@ -467,21 +468,25 @@ body {
     padding: 1.25rem !important;
   }
 
-  /* CONTROL BAR — stack vertically */
+  /* CONTROL BAR — stack vertically but NOT full width */
   .controls,
   .controls-container {
     bottom: 4% !important;
     flex-direction: column !important;
-    gap: 0.75rem !important;
+    gap: 0.65rem !important;
     padding: 0 1rem !important;
+    width: 100% !important;
+    align-items: center !important;
   }
 
-  /* BUTTONS — full width for thumbs */
+  /* BUTTONS — NOT full width anymore */
   .sea-btn {
-    width: 100% !important;
+    width: 70% !important;          /* ← no more full-screen buttons */
+    max-width: 260px !important;    /* ← keeps them elegant */
     text-align: center !important;
     padding: 10px 16px !important;
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 9999px !important;
   }
 }
 
