@@ -209,7 +209,7 @@ export default function JournalPage() {
               const timeLeft = video.duration - video.currentTime;
 
               // Fade shadow in slightly before the end
-              if (timeLeft < 0.35 && !showShadow) {
+              if (timeLeft < 0.08 && !showShadow) {
                 setShowShadow(true);
               }
 
@@ -230,11 +230,13 @@ export default function JournalPage() {
           />
 
           {/* Shadow overlay */}
-          <div
-            className={`absolute inset-0 bg-black transition-opacity duration-500 pointer-events-none ${
-              showShadow ? 'opacity-40' : 'opacity-0'
-            }`}
-          />
+          {/* Shadow overlay */}
+<div
+  className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
+    showShadow ? 'opacity-40' : 'opacity-0'
+  }`}
+/>
+
         </div>
       )}
 
