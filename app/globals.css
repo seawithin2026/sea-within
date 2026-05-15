@@ -401,3 +401,195 @@ body {
     font-size: 1.1rem !important;
   }
 }
+/* ————————————————————————————————
+   JOURNAL — MOBILE FIXES ONLY
+   Desktop remains 100% unchanged
+——————————————————————————————— */
+@media (max-width: 640px) {
+
+  /* ROOT CONTAINER — allow scrolling on phones */
+  div.relative.h-screen.w-screen {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+  }
+
+  /* VIDEO STAGE — reduce height */
+  video.w-full.h-full.object-cover {
+    height: 60vh !important;
+    object-fit: cover !important;
+  }
+
+  /* LOGO STAGE — scale logo */
+  img[src*="sea-within-logo-page"] {
+    width: 100% !important;
+    height: auto !important;
+    padding: 2rem !important;
+  }
+
+  /* PARchMENT — scale to mobile width */
+  img[src*="parchment-page"] {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    padding: 1rem !important;
+  }
+
+  /* WRITING AREA — centered + readable */
+  .writing-area {
+    left: 50% !important;
+    top: 22% !important;
+    width: 70% !important;
+    height: 55% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  /* DATE POSITION — smaller + higher */
+  .journal-date {
+    top: -12% !important;
+    right: 0 !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* ENTRY TEXT + TEXTAREA — readable on phones */
+  .writing-area textarea,
+  .writing-area .ink-writing {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+    padding: 0.5rem !important;
+  }
+
+  /* CALENDAR PANEL — centered + narrower */
+  .calendar-panel,
+  div.bg-
+
+\[\#ccb072\]
+
+.rounded-xl {
+    top: 5% !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    width: 85% !important;
+    max-height: 60vh !important;
+    padding: 1rem !important;
+  }
+
+  /* DELETE CONFIRM MODAL — fit screen */
+  .delete-modal,
+  div.bg-
+
+\[\#fdf7e6\]
+
+.rounded-xl {
+    width: 85% !important;
+    padding: 1.25rem !important;
+  }
+
+  /* CONTROL BAR — stack vertically */
+  .controls,
+  div.absolute.bottom-
+
+\[10\%\]
+
+ {
+    bottom: 4% !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    padding: 0 1rem !important;
+  }
+
+  /* BUTTONS — full width for thumbs */
+  .sea-btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 10px 16px !important;
+    font-size: 0.8rem !important;
+  }
+}
+/* ————————————————————————————————
+   WISDOM BOARD — MOBILE FIXES ONLY
+   Desktop remains unchanged
+——————————————————————————————— */
+@media (max-width: 640px) {
+
+  /* SECTION 1 + 2 — reduce extreme heights */
+  main.bg-sanctuary-dark > section:nth-of-type(1),
+  main.bg-sanctuary-dark > section:nth-of-type(2) {
+    height: 80vh !important;
+  }
+
+  /* SECTION 3 (wisdom split) — allow natural scroll */
+  main.bg-sanctuary-dark > section:nth-of-type(3) {
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  /* Split becomes vertical on mobile */
+  main.bg-sanctuary-dark > section:nth-of-type(3) .grid {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+
+  /* LEFT video block — fixed height */
+  main.bg-sanctuary-dark > section:nth-of-type(3) .grid > div:first-child {
+    height: 40vh !important;
+  }
+
+  /* RIGHT parchment block — grows with content */
+  main.bg-sanctuary-dark > section:nth-of-type(3) .grid > div:last-child {
+    min-height: 60vh !important;
+  }
+
+  /* Parchment inner content — less side padding, start from top */
+  main.bg-sanctuary-dark > section:nth-of-type(3)
+    .relative.z-10.h-full.w-full.flex.flex-col.items-center.justify-center.px-10.text-center {
+    padding: 2.5rem 1.5rem !important;
+    justify-content: flex-start !important;
+    row-gap: 1.25rem !important;
+  }
+
+  /* Daily affirmation text — smaller, full width */
+  .paper-reveal {
+    font-size: 1.5rem !important;
+    line-height: 1.5 !important;
+    max-width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  /* Attribution — tighter spacing */
+  .paper-reveal + p {
+    margin-bottom: 1.5rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Spacer between daily message and form — smaller on mobile */
+  main.bg-sanctuary-dark > section:nth-of-type(3) .mt-14 {
+    margin-top: 1.75rem !important;
+  }
+
+  /* Textarea — comfortable mobile size */
+  textarea.ink-writing {
+    height: 9rem !important;
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Send button — full width, thumb‑friendly */
+  button.mt-6.px-8.py-3.bg-amber-600\/80 {
+    width: 100% !important;
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Feedback text — avoid edge collisions */
+  p.mt-4.text-sm {
+    padding: 0 0.5rem !important;
+  }
+
+  /* Anonymity note — smaller, padded */
+  p.mt-4.text-xs.text-stone-700\/85 {
+    padding: 0 0.75rem 1.5rem !important;
+    font-size: 0.7rem !important;
+  }
+}
