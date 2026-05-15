@@ -29,7 +29,8 @@ const WriteStage = React.memo(function WriteStage({ children }: { children: Reac
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
 const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
-  const [session, setSession] = useState<any>(null);
+ const [showShadow, setShowShadow] = useState(false);
+const [session, setSession] = useState<any>(null);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentText, setCurrentText] = useState('');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -165,9 +166,9 @@ const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
   // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-    {/* VIDEO STAGE */}
+  {/* VIDEO STAGE */}
 {stage === 'video' && (
-  <div className="absolute inset-0 flex items-center justify-center bg-black">
+  <div className="absolute inset-0 flex items-center justify-center bg-black relative">
     <video
       src="/videos/book-opening.mp4"
       autoPlay
@@ -176,30 +177,40 @@ const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
       onTimeUpdate={(e) => {
         const video = e.target as HTMLVideoElement;
 
-        // Safety: duration can be NaN before metadata is loaded
         if (!video.duration || Number.isNaN(video.duration)) return;
 
-        // Trigger transition 0.25s before the actual end, only once
-        if (
-          !hasTriggeredVideoEnd &&
-          video.duration - video.currentTime < 0.25
-        ) {
+        const timeLeft = video.duration - video.currentTime;
+
+        // Fade shadow in slightly before the end
+        if (timeLeft < 0.35 && !showShadow) {
+          setShowShadow(true);
+        }
+
+        // Trigger transition 0.25s before the end
+        if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
           setHasTriggeredVideoEnd(true);
 
           setTimeout(() => {
             setStage('logo');
-          }, 450); // cinematic shadow
+          }, 450); // cinematic pause
         }
       }}
       onEnded={() => {
-        // Fallback: if for some reason timeupdate didn't fire near the end
         if (!hasTriggeredVideoEnd) {
           setStage('logo');
         }
       }}
     />
+
+    {/* Shadow overlay */}
+    <div
+      className={`absolute inset-0 bg-black transition-opacity duration-500 pointer-events-none ${
+        showShadow ? 'opacity-40' : 'opacity-0'
+      }`}
+    />
   </div>
 )}
+
 
 
 
