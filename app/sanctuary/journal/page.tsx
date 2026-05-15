@@ -491,7 +491,7 @@ export default function JournalPage() {
       {/* GLOBAL STYLES */}
       <style jsx global>{`
         .sea-btn {
-          background: linear-gradient(135deg, #bd8e28 0%, #bd8e28 100%);
+          background: linear-gradient(135deg, #e9a614 0%,  #e9a614 100%);
           color: #3b2414;
           padding: 8px 18px;
           border-radius: 9999px;
@@ -504,7 +504,7 @@ export default function JournalPage() {
         .sea-btn:hover {
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg, #bd8e28 0%, #bd8e28 100%);
+          background: linear-gradient(135deg,  #e9a614 0%,  #e9a614 100%);
         }
         .sea-btn:active {
           transform: scale(0.97);
