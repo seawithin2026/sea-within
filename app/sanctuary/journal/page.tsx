@@ -316,7 +316,7 @@ export default function JournalPage() {
 
             {/* CALENDAR */}
             {showCalendar && (
-              <div className="absolute top-[10%] right-[10%] bg-[#fdf7e6] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
+              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
                 <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
 
                 {entries.map(entry => (
@@ -491,7 +491,7 @@ export default function JournalPage() {
       {/* GLOBAL STYLES */}
       <style jsx global>{`
         .sea-btn {
-          background: linear-gradient(135deg, #e9a614 0%,  #e9a614 100%);
+          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
           color: #3b2414;
           padding: 8px 18px;
           border-radius: 9999px;
@@ -504,7 +504,7 @@ export default function JournalPage() {
         .sea-btn:hover {
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg,  #e9a614 0%,  #e9a614 100%);
+          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
         }
         .sea-btn:active {
           transform: scale(0.97);
