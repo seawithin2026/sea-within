@@ -331,3 +331,73 @@ body {
   pointer-events: none;
   z-index: -1;
 }
+/* ————————————————————————————————
+   SANCTUARY — MOBILE FIXES ONLY
+   Desktop remains 100% unchanged
+——————————————————————————————— */
+@media (max-width: 640px) {
+
+  /* HERO VIDEO HEIGHT FIX */
+  section.relative.w-full.h-
+
+\[130vh\]
+
+ {
+    height: 80vh !important;
+  }
+
+  /* HERO TEXT POSITION FIX */
+  section.relative.w-full.h-
+
+\[130vh\]
+
+ > div.absolute {
+    padding-bottom: 18rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  /* HERO TEXT SIZE FIX */
+  section.relative.w-full.h-
+
+\[130vh\]
+
+ h1 {
+    font-size: 1.8rem !important;
+    line-height: 1.3 !important;
+    max-width: 90% !important;
+  }
+
+  section.relative.w-full.h-
+
+\[130vh\]
+
+ p {
+    font-size: 0.9rem !important;
+  }
+
+  /* GRID SECTION FIX */
+  .grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  /* VIDEO CARDS FIX */
+  .group.relative {
+    height: 260px !important;
+  }
+
+  .group.relative video {
+    object-fit: cover !important;
+  }
+
+  /* CARD TEXT FIX */
+  .group.relative .absolute.bottom-6 {
+    bottom: 1rem !important;
+    left: 1rem !important;
+  }
+
+  .group.relative .absolute.bottom-6 p.text-lg {
+    font-size: 1.1rem !important;
+  }
+}
