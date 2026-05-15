@@ -28,9 +28,10 @@ const WriteStage = React.memo(function WriteStage({ children }: { children: Reac
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
-const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
- const [showShadow, setShowShadow] = useState(false);
-const [session, setSession] = useState<any>(null);
+  const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
+  const [showShadow, setShowShadow] = useState(false);
+
+  const [session, setSession] = useState<any>(null);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentText, setCurrentText] = useState('');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -40,6 +41,8 @@ const [session, setSession] = useState<any>(null);
 
   const [saving, setSaving] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  const [isEditing, setIsEditing] = useState(false);
 
   // TODAY'S PRETTY DATE
   const todayPretty = useMemo(() => {
@@ -81,7 +84,7 @@ const [session, setSession] = useState<any>(null);
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText(last.content);
+          setCurrentText(''); // view mode uses selectedEntry.content
         }
       }
     };
@@ -89,13 +92,35 @@ const [session, setSession] = useState<any>(null);
     loadEntries();
   }, [session]);
 
-  // SAVE ENTRY
+  // SAVE ENTRY (create or update)
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
+    // UPDATE existing entry when editing
+    if (isEditing && selectedEntryId) {
+      const { error } = await supabase
+        .from('journal_entries')
+        .update({ content: currentText })
+        .eq('id', selectedEntryId);
+
+      if (!error) {
+        setEntries(prev =>
+          prev.map(e =>
+            e.id === selectedEntryId ? { ...e, content: currentText } : e
+          )
+        );
+        setIsEditing(false);
+        setCurrentText('');
+      }
+
+      setSaving(false);
+      return;
+    }
+
+    // CREATE new entry
     const { data, error } = await supabase
       .from('journal_entries')
       .insert({
@@ -108,7 +133,8 @@ const [session, setSession] = useState<any>(null);
     if (!error && data) {
       setEntries(prev => [...prev, data]);
       setSelectedEntryId(data.id);
-      setCurrentText(data.content);
+      setCurrentText('');
+      setIsEditing(false);
     }
 
     setSaving(false);
@@ -140,6 +166,7 @@ const [session, setSession] = useState<any>(null);
       return filtered;
     });
 
+    setIsEditing(false);
     setShowDeleteConfirm(false);
   };
 
@@ -166,53 +193,50 @@ const [session, setSession] = useState<any>(null);
   // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-  {/* VIDEO STAGE */}
-{stage === 'video' && (
-  <div className="absolute inset-0 flex items-center justify-center bg-black relative">
-    <video
-      src="/videos/book-opening.mp4"
-      autoPlay
-      playsInline
-      className="w-full h-full object-cover"
-      onTimeUpdate={(e) => {
-        const video = e.target as HTMLVideoElement;
+      {/* VIDEO STAGE */}
+      {stage === 'video' && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black relative">
+          <video
+            src="/videos/book-opening.mp4"
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+            onTimeUpdate={e => {
+              const video = e.target as HTMLVideoElement;
 
-        if (!video.duration || Number.isNaN(video.duration)) return;
+              if (!video.duration || Number.isNaN(video.duration)) return;
 
-        const timeLeft = video.duration - video.currentTime;
+              const timeLeft = video.duration - video.currentTime;
 
-        // Fade shadow in slightly before the end
-        if (timeLeft < 0.35 && !showShadow) {
-          setShowShadow(true);
-        }
+              // Fade shadow in slightly before the end
+              if (timeLeft < 0.35 && !showShadow) {
+                setShowShadow(true);
+              }
 
-        // Trigger transition 0.25s before the end
-        if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
-          setHasTriggeredVideoEnd(true);
+              // Trigger transition 0.25s before the end
+              if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
+                setHasTriggeredVideoEnd(true);
 
-          setTimeout(() => {
-            setStage('logo');
-          }, 450); // cinematic pause
-        }
-      }}
-      onEnded={() => {
-        if (!hasTriggeredVideoEnd) {
-          setStage('logo');
-        }
-      }}
-    />
+                setTimeout(() => {
+                  setStage('logo');
+                }, 450); // cinematic pause
+              }
+            }}
+            onEnded={() => {
+              if (!hasTriggeredVideoEnd) {
+                setStage('logo');
+              }
+            }}
+          />
 
-    {/* Shadow overlay */}
-    <div
-      className={`absolute inset-0 bg-black transition-opacity duration-500 pointer-events-none ${
-        showShadow ? 'opacity-40' : 'opacity-0'
-      }`}
-    />
-  </div>
-)}
-
-
-
+          {/* Shadow overlay */}
+          <div
+            className={`absolute inset-0 bg-black transition-opacity duration-500 pointer-events-none ${
+              showShadow ? 'opacity-40' : 'opacity-0'
+            }`}
+          />
+        </div>
+      )}
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (
@@ -260,26 +284,27 @@ const [session, setSession] = useState<any>(null);
                 style={{ top: '-8%', right: '0%' }}
               >
                 {selectedEntry
-                  ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
+                  ? new Date(selectedEntry.created_at).toLocaleDateString(
+                      undefined,
+                      {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    )
                   : todayPretty}
               </div>
 
               {/* ENTRY OR TEXTAREA */}
-              {selectedEntry ? (
+              {selectedEntry && !isEditing ? (
                 <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
                   <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
-
                     {selectedEntry.content}
                   </div>
                 </div>
               ) : (
                 <textarea
-  className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
-
+                  className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
                   placeholder="Let the sea within you speak..."
                   value={currentText}
                   onChange={e => setCurrentText(e.target.value)}
@@ -298,6 +323,7 @@ const [session, setSession] = useState<any>(null);
                     onClick={() => {
                       setSelectedEntryId(entry.id);
                       setCurrentText('');
+                      setIsEditing(false);
                       setShowCalendar(false);
                     }}
                     className="block w-full text-left text-sm text-[#3b2414] hover:underline"
@@ -356,7 +382,8 @@ const [session, setSession] = useState<any>(null);
                   if (!selectedEntryId) {
                     const last = entries[entries.length - 1];
                     setSelectedEntryId(last.id);
-                    setCurrentText(last.content);
+                    setCurrentText('');
+                    setIsEditing(false);
                     return;
                   }
 
@@ -364,7 +391,8 @@ const [session, setSession] = useState<any>(null);
                   if (idx > 0) {
                     const prev = entries[idx - 1];
                     setSelectedEntryId(prev.id);
-                    setCurrentText(prev.content);
+                    setCurrentText('');
+                    setIsEditing(false);
                   }
                 }}
                 className="sea-btn"
@@ -377,11 +405,38 @@ const [session, setSession] = useState<any>(null);
                 onClick={() => {
                   setSelectedEntryId(null);
                   setCurrentText('');
+                  setIsEditing(false);
                 }}
                 className="sea-btn"
               >
                 New Page
               </button>
+
+              {/* EDIT (only when viewing an existing entry) */}
+              {selectedEntry && !isEditing && (
+                <button
+                  onClick={() => {
+                    setIsEditing(true);
+                    setCurrentText(selectedEntry.content);
+                  }}
+                  className="sea-btn"
+                >
+                  Edit
+                </button>
+              )}
+
+              {/* CANCEL EDIT */}
+              {isEditing && (
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setCurrentText('');
+                  }}
+                  className="sea-btn"
+                >
+                  Cancel Edit
+                </button>
+              )}
 
               {/* SAVE */}
               <button
@@ -419,6 +474,7 @@ const [session, setSession] = useState<any>(null);
                     const next = entries[idx + 1];
                     setSelectedEntryId(next.id);
                     setCurrentText('');
+                    setIsEditing(false);
                   }
                 }}
                 className="sea-btn"
@@ -430,88 +486,84 @@ const [session, setSession] = useState<any>(null);
         </WriteStage>
       )}
 
-     {/* GLOBAL STYLES */}
-<style jsx global>{`
-  .sea-btn {
-    background: linear-gradient(135deg, #f7e7c1 0%, #e6c48a 100%);
-    color: #3b2414;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
-    border: none;
-  }
-  .sea-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-    background: linear-gradient(135deg, #fff2d6 0%, #f0d9a8 100%);
-  }
-  .sea-btn:active {
-    transform: scale(0.97);
-  }
+      {/* GLOBAL STYLES */}
+      <style jsx global>{`
+        .sea-btn {
+          background: linear-gradient(135deg, #bd8e28 0%, #bd8e28 100%);
+          color: #3b2414;
+          padding: 8px 18px;
+          border-radius: 9999px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+          transition: all 0.3s ease;
+          border: none;
+        }
+        .sea-btn:hover {
+          transform: translateY(-2px) scale(1.05);
+          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+          background: linear-gradient(135deg, #bd8e28 0%, #bd8e28 100%);
+        }
+        .sea-btn:active {
+          transform: scale(0.97);
+        }
 
-  /* Smooth cinematic fade-in for the parchment page */
-  .fade-in-book {
-    animation: fadeInBook 1.2s ease-out forwards;
-  }
+        .fade-in-book {
+          animation: fadeInBook 1.2s ease-out forwards;
+        }
 
-  @keyframes fadeInBook {
-    0% {
-      opacity: 0;
-      transform: translateY(10px) scale(0.98);
-      filter: blur(4px);
-    }
-    60% {
-      opacity: 0.6;
-      transform: translateY(4px) scale(0.995);
-      filter: blur(1px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
+        @keyframes fadeInBook {
+          0% {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+            filter: blur(4px);
+          }
+          60% {
+            opacity: 0.6;
+            transform: translateY(4px) scale(0.995);
+            filter: blur(1px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+          }
+        }
 
-  /* Custom brown scrollbar to match the writing aesthetic */
-::-webkit-scrollbar {
-  width: 10px;
-}
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
 
-::-webkit-scrollbar-track {
-  background: #a47a3b; /* light parchment brown */
-}
+        ::-webkit-scrollbar-track {
+          background: #a47a3b;
+        }
 
-::-webkit-scrollbar-thumb {
-  background: #3b2414; /* warm brown ink */
-  border-radius: 10px;
-  border: 2px solid #a47a3b; /* light brown carved edge */
-}
+        ::-webkit-scrollbar-thumb {
+          background: #3b2414;
+          border-radius: 10px;
+          border: 2px solid #a47a3b;
+        }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #2a180d; /* darker brown on hover */
-}
+        ::-webkit-scrollbar-thumb:hover {
+          background: #2a180d;
+        }
 
+        .text-fade-in {
+          opacity: 0;
+          animation: textFadeIn 0.8s ease-out 0.2s forwards;
+        }
 
-  /* Smooth fade-in for writing text */
-  .text-fade-in {
-    opacity: 0;
-    animation: textFadeIn 0.8s ease-out 0.2s forwards;
-  }
-
-  @keyframes textFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(2px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`}</style>
+        @keyframes textFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(2px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
