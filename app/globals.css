@@ -450,7 +450,7 @@ body {
   display: flex;
 
   /* Parchment base */
-  background: radial-gradient(circle at 50% 0%, #fdf5e4 0%, #e3cda0 45%, #c29b6a 100%);
+  background: radial-gradient(circle at 50% 0%, #f3cd7a 0%, #e7be6c 45%, #c29b6a 100%);
 }
 
 .journal-page {
@@ -471,7 +471,7 @@ body {
     ),
     radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.4), transparent 55%),
     radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.25), transparent 55%),
-    linear-gradient(135deg, #fdf5e4, #e7cf9f);
+    linear-gradient(135deg, #e7c16f, #deb055);
 }
 
 .journal-page-left {
