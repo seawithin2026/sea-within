@@ -389,7 +389,6 @@ body {
     transform: translateX(-50%) !important;
   }
 }
-
 /* ————————————————————————————————
    JOURNAL — MOBILE FIXES ONLY
    Desktop remains 100% unchanged
@@ -468,13 +467,16 @@ body {
     padding: 1.25rem !important;
   }
 
-  /* CONTROL BAR — move below parchment, no overlap */
-  .controls,
-  .controls-container {
+  /* ————————————————————————————————
+     JOURNAL CONTROLS — FIX ABSOLUTE POSITIONING
+  ———————————————————————————————— */
+  .controls {
     position: relative !important;
     bottom: auto !important;
     top: auto !important;
-    margin-top: 1.5rem !important;
+    left: auto !important;
+    right: auto !important;
+    margin-top: 2rem !important;
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
@@ -482,9 +484,14 @@ body {
     gap: 0.75rem !important;
     padding: 0 1rem !important;
     z-index: 5 !important;
+    flex-wrap: nowrap !important;
   }
 
-  /* BUTTONS — elegant, not full-screen */
+  .controls.absolute {
+    position: relative !important;
+  }
+
+  /* Buttons */
   .sea-btn {
     width: 70% !important;
     max-width: 260px !important;
@@ -500,35 +507,29 @@ body {
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  /* SECTION 1 + 2 — reduce extreme heights */
   main.bg-sanctuary-dark > section:nth-of-type(1),
   main.bg-sanctuary-dark > section:nth-of-type(2) {
     height: 80vh !important;
   }
 
-  /* SECTION 3 (wisdom split) — allow natural scroll */
   main.bg-sanctuary-dark > section:nth-of-type(3) {
     height: auto !important;
     min-height: 100vh !important;
   }
 
-  /* Split becomes vertical on mobile */
   main.bg-sanctuary-dark > section:nth-of-type(3) .grid {
     grid-template-columns: 1fr !important;
     height: auto !important;
   }
 
-  /* LEFT video block — fixed height */
   main.bg-sanctuary-dark > section:nth-of-type(3) .grid > div:first-child {
     height: 40vh !important;
   }
 
-  /* RIGHT parchment block — grows with content */
   main.bg-sanctuary-dark > section:nth-of-type(3) .grid > div:last-child {
     min-height: 60vh !important;
   }
 
-  /* Parchment inner content */
   main.bg-sanctuary-dark > section:nth-of-type(3)
     .relative.z-10.h-full.w-full.flex.flex-col.items-center.justify-center.px-10.text-center {
     padding: 2.5rem 1.5rem !important;
@@ -536,7 +537,6 @@ body {
     row-gap: 1.25rem !important;
   }
 
-  /* Daily affirmation text */
   .paper-reveal {
     font-size: 1.5rem !important;
     line-height: 1.5 !important;
@@ -544,25 +544,21 @@ body {
     margin-bottom: 1rem !important;
   }
 
-  /* Attribution */
   .paper-reveal + p {
     margin-bottom: 1.5rem !important;
     font-size: 0.9rem !important;
   }
 
-  /* Spacer */
   main.bg-sanctuary-dark > section:nth-of-type(3) .mt-14 {
     margin-top: 1.75rem !important;
   }
 
-  /* Textarea */
   textarea.ink-writing {
     height: 9rem !important;
     font-size: 1rem !important;
     line-height: 1.4 !important;
   }
 
-  /* Send button */
   button.mt-6.px-8.py-3.bg-amber-600\/80 {
     width: 100% !important;
     padding-top: 0.75rem !important;
@@ -570,12 +566,10 @@ body {
     font-size: 0.9rem !important;
   }
 
-  /* Feedback text */
   p.mt-4.text-sm {
     padding: 0 0.5rem !important;
   }
 
-  /* Anonymity note */
   p.mt-4.text-xs.text-stone-700\/85 {
     padding: 0 0.75rem 1.5rem !important;
     font-size: 0.7rem !important;
