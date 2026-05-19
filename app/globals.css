@@ -388,20 +388,66 @@ body {
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
+}/* ————————————————————————————————
+   JOURNAL — DESKTOP BASE LAYOUT
+——————————————————————————————— */
+
+.journal-parchment {
+  max-width: 900px;
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
 }
+
+.writing-area {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 55%;
+}
+
+.journal-date {
+  position: absolute;
+  top: -8%;
+  right: 6%;
+  font-size: 0.85rem;
+  color: #4b2e1a;
+}
+
+.controls {
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.calendar-panel {
+  position: absolute;
+  top: 18%;
+  right: 10%;
+}
+
 /* ————————————————————————————————
    JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  /* ROOT CONTAINER — allow scroll but keep full height */
+  /* ROOT CONTAINER — allow scroll */
   div.relative.h-screen.w-screen {
     height: auto !important;
     min-height: 100vh !important;
     overflow-y: auto !important;
   }
 
-  /* LOGO STAGE — bigger, centered */
+  /* LOGO STAGE — centered */
   img[src*="sea-within-logo-page"] {
     width: 70% !important;
     max-width: 340px !important;
@@ -410,7 +456,7 @@ body {
     padding: 1rem !important;
   }
 
-  /* PARCHMENT — full width, centered, no cutoff */
+  /* PARCHMENT — full width */
   .journal-parchment {
     width: 100% !important;
     max-width: 520px !important;
@@ -419,7 +465,7 @@ body {
     margin: 0 auto !important;
   }
 
-  /* WRITING AREA — centered inside book */
+  /* WRITING AREA — centered + resized */
   .writing-area {
     left: 50% !important;
     top: 20% !important;
@@ -428,11 +474,13 @@ body {
     transform: translateX(-50%) !important;
   }
 
-  /* DATE — smaller, slightly higher */
+  /* DATE — centered above text */
   .journal-date {
     top: -10% !important;
-    right: 0 !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
     font-size: 0.7rem !important;
+    text-align: center !important;
   }
 
   /* ENTRY TEXT + TEXTAREA — readable */
@@ -443,7 +491,7 @@ body {
     padding: 0.4rem !important;
   }
 
-  /* CALENDAR PANEL — centered, narrower */
+  /* CALENDAR PANEL — centered modal */
   .calendar-panel {
     top: 8% !important;
     right: 50% !important;
@@ -453,14 +501,14 @@ body {
     padding: 1rem !important;
   }
 
-  /* DELETE CONFIRM MODAL — fit screen */
+  /* DELETE CONFIRM MODAL */
   .delete-modal {
     width: 90% !important;
     max-width: 360px !important;
     padding: 1.25rem !important;
   }
 
-  /* CONTROLS — visible, centered, stacked */
+  /* CONTROLS — stacked + centered */
   .controls {
     position: relative !important;
     bottom: auto !important;
