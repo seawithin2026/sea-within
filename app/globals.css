@@ -407,7 +407,7 @@ body {
   video.w-full.h-full.object-cover {
     height: 60vh !important;
     object-fit: cover !important;
-    object-position: center 20% !important; /* lowered slightly */
+    object-position: center 20% !important;
   }
 
   /* LOGO STAGE — scale logo */
@@ -430,8 +430,8 @@ body {
   .writing-area {
     left: 50% !important;
     top: 20% !important;
-    width: 78% !important;      /* slightly wider */
-    height: 50% !important;     /* slightly shorter */
+    width: 78% !important;
+    height: 50% !important;
     transform: translateX(-50%) !important;
   }
 
@@ -468,31 +468,35 @@ body {
     padding: 1.25rem !important;
   }
 
-  /* CONTROL BAR — stack vertically but NOT full width */
+  /* CONTROL BAR — move below parchment, no overlap */
   .controls,
   .controls-container {
-    bottom: 4% !important;
-    flex-direction: column !important;
-    gap: 0.65rem !important;
-    padding: 0 1rem !important;
+    position: relative !important;
+    bottom: auto !important;
+    top: auto !important;
+    margin-top: 1.5rem !important;
     width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0 1rem !important;
+    z-index: 5 !important;
   }
 
-  /* BUTTONS — NOT full width anymore */
+  /* BUTTONS — elegant, not full-screen */
   .sea-btn {
-    width: 70% !important;          /* ← no more full-screen buttons */
-    max-width: 260px !important;    /* ← keeps them elegant */
-    text-align: center !important;
+    width: 70% !important;
+    max-width: 260px !important;
     padding: 10px 16px !important;
     font-size: 0.85rem !important;
     border-radius: 9999px !important;
+    text-align: center !important;
   }
 }
 
 /* ————————————————————————————————
    WISDOM BOARD — MOBILE FIXES ONLY
-   Desktop remains unchanged
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
@@ -524,7 +528,7 @@ body {
     min-height: 60vh !important;
   }
 
-  /* Parchment inner content — less side padding, start from top */
+  /* Parchment inner content */
   main.bg-sanctuary-dark > section:nth-of-type(3)
     .relative.z-10.h-full.w-full.flex.flex-col.items-center.justify-center.px-10.text-center {
     padding: 2.5rem 1.5rem !important;
@@ -532,7 +536,7 @@ body {
     row-gap: 1.25rem !important;
   }
 
-  /* Daily affirmation text — smaller, full width */
+  /* Daily affirmation text */
   .paper-reveal {
     font-size: 1.5rem !important;
     line-height: 1.5 !important;
@@ -540,25 +544,25 @@ body {
     margin-bottom: 1rem !important;
   }
 
-  /* Attribution — tighter spacing */
+  /* Attribution */
   .paper-reveal + p {
     margin-bottom: 1.5rem !important;
     font-size: 0.9rem !important;
   }
 
-  /* Spacer between daily message and form — smaller on mobile */
+  /* Spacer */
   main.bg-sanctuary-dark > section:nth-of-type(3) .mt-14 {
     margin-top: 1.75rem !important;
   }
 
-  /* Textarea — comfortable mobile size */
+  /* Textarea */
   textarea.ink-writing {
     height: 9rem !important;
     font-size: 1rem !important;
     line-height: 1.4 !important;
   }
 
-  /* Send button — full width, thumb‑friendly */
+  /* Send button */
   button.mt-6.px-8.py-3.bg-amber-600\/80 {
     width: 100% !important;
     padding-top: 0.75rem !important;
@@ -566,12 +570,12 @@ body {
     font-size: 0.9rem !important;
   }
 
-  /* Feedback text — avoid edge collisions */
+  /* Feedback text */
   p.mt-4.text-sm {
     padding: 0 0.5rem !important;
   }
 
-  /* Anonymity note — smaller, padded */
+  /* Anonymity note */
   p.mt-4.text-xs.text-stone-700\/85 {
     padding: 0 0.75rem 1.5rem !important;
     font-size: 0.7rem !important;
