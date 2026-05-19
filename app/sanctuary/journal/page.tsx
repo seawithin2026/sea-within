@@ -375,7 +375,7 @@ export default function JournalPage() {
             )}
 
             {/* CONTROLS */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
+            <div className="controls absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
               {/* PREVIOUS */}
               <button
                 onClick={() => {
