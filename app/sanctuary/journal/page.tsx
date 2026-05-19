@@ -225,94 +225,110 @@ export default function JournalPage() {
       {/* WRITE STAGE */}
       {stage === 'write' && (
         <WriteStage>
-          <div className="journal-wrapper">
 
-            {/* BOOK IMAGE */}
-            <img src="/images/parchment-page.png" className="journal-book" />
+          <div className="journal-root">
 
-            {/* WRITING FRAME */}
-            <div className="journal-writing-frame">
+            <div className="journal-wrapper">
 
-              {/* DATE */}
-              <div className="journal-date">
-                {selectedEntry
-                  ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })
-                  : todayPretty}
-              </div>
+              {/* FULL-FRAME BOOK */}
+              <img
+                src="/images/parchment-page.png"
+                alt="Sea Within Journal Book"
+                className="journal-book"
+              />
 
-              {/* ENTRY OR TEXTAREA */}
-              {selectedEntry && !isEditing ? (
-                <div className="journal-text ink-writing whitespace-pre-wrap">
-                  {selectedEntry.content}
+              {/* RIGHT PAGE WRITING FRAME */}
+              <div className="journal-writing-frame">
+
+                {/* DATE */}
+                <div className="journal-date">
+                  {selectedEntry
+                    ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : todayPretty}
                 </div>
-              ) : (
-                <textarea
-                  className="journal-textarea"
-                  placeholder="Let the sea within you speak..."
-                  value={currentText}
-                  onChange={e => setCurrentText(e.target.value)}
-                />
-              )}
-            </div>
 
-            {/* CALENDAR */}
-            {showCalendar && (
-              <div className="calendar-panel bg-[#ccb072] shadow-xl rounded-xl p-4 border border-[#d8c9a3]">
-                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
-
-                {entries.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => {
-                      setSelectedEntryId(entry.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                      setShowCalendar(false);
-                    }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-                  >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </button>
-                ))}
-
-                <button onClick={() => setShowCalendar(false)} className="sea-btn w-full mt-2">
-                  Close
-                </button>
+                {/* ENTRY OR TEXTAREA */}
+                {selectedEntry && !isEditing ? (
+                  <div className="journal-text ink-writing whitespace-pre-wrap">
+                    {selectedEntry.content}
+                  </div>
+                ) : (
+                  <textarea
+                    className="journal-textarea"
+                    placeholder="Let the sea within you speak..."
+                    value={currentText}
+                    onChange={e => setCurrentText(e.target.value)}
+                  />
+                )}
               </div>
-            )}
 
-            {/* DELETE CONFIRM */}
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="delete-modal bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl text-center">
-                  <p className="text-[#3b2414] mb-4">Are you sure you want to delete this entry?</p>
+              {/* CALENDAR */}
+              {showCalendar && (
+                <div className="calendar-panel bg-[#ccb072] shadow-xl rounded-xl p-4 border border-[#d8c9a3]">
+                  <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
 
-                  <div className="flex justify-center gap-4">
-                    <button onClick={deleteEntry} className="sea-btn bg-red-300/80 hover:bg-red-400/80">
-                      Delete
+                  {entries.map(entry => (
+                    <button
+                      key={entry.id}
+                      onClick={() => {
+                        setSelectedEntryId(entry.id);
+                        setCurrentText('');
+                        setIsEditing(false);
+                        setShowCalendar(false);
+                      }}
+                      className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+                    >
+                      {new Date(entry.created_at).toLocaleDateString(undefined, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
                     </button>
+                  ))}
 
-                    <button onClick={() => setShowDeleteConfirm(false)} className="sea-btn">
-                      Cancel
-                    </button>
+                  <button onClick={() => setShowCalendar(false)} className="sea-btn w-full mt-2">
+                    Close
+                  </button>
+                </div>
+              )}
+
+              {/* DELETE CONFIRM */}
+              {showDeleteConfirm && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <div className="delete-modal bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl text-center">
+                    <p className="text-[#3b2414] mb-4">Are you sure you want to delete this entry?</p>
+
+                    <div className="flex justify-center gap-4">
+                      <button
+                        onClick={deleteEntry}
+                        className="sea-btn bg-red-300/80 hover:bg-red-400/80"
+                      >
+                        Delete
+                      </button>
+
+                      <button
+                        onClick={() => setShowDeleteConfirm(false)}
+                        className="sea-btn"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+
+            </div>
 
             {/* CONTROLS */}
             <div className="controls">
 
               {/* PREVIOUS */}
               <button
+                className="sea-btn"
                 onClick={() => {
                   if (entries.length === 0) return;
 
@@ -332,19 +348,18 @@ export default function JournalPage() {
                     setIsEditing(false);
                   }
                 }}
-                className="sea-btn"
               >
                 ◀ Previous
               </button>
 
               {/* NEW PAGE */}
               <button
+                className="sea-btn"
                 onClick={() => {
                   setSelectedEntryId(null);
                   setCurrentText('');
                   setIsEditing(false);
                 }}
-                className="sea-btn"
               >
                 New Page
               </button>
@@ -352,11 +367,11 @@ export default function JournalPage() {
               {/* EDIT */}
               {selectedEntry && !isEditing && (
                 <button
+                  className="sea-btn"
                   onClick={() => {
                     setIsEditing(true);
                     setCurrentText(selectedEntry.content);
                   }}
-                  className="sea-btn"
                 >
                   Edit
                 </button>
@@ -365,38 +380,39 @@ export default function JournalPage() {
               {/* CANCEL EDIT */}
               {isEditing && (
                 <button
+                  className="sea-btn"
                   onClick={() => {
                     setIsEditing(false);
                     setCurrentText('');
                   }}
-                  className="sea-btn"
                 >
                   Cancel Edit
                 </button>
               )}
 
               {/* SAVE */}
-              <button onClick={handleSave} className="sea-btn" disabled={saving}>
+              <button className="sea-btn" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving...' : 'Save'}
               </button>
 
               {/* DELETE */}
               {selectedEntry && (
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
                   className="sea-btn bg-red-200/80 hover:bg-red-300/90"
+                  onClick={() => setShowDeleteConfirm(true)}
                 >
                   Delete
                 </button>
               )}
 
               {/* CALENDAR */}
-              <button onClick={() => setShowCalendar(true)} className="sea-btn">
+              <button className="sea-btn" onClick={() => setShowCalendar(true)}>
                 📅 Calendar
               </button>
 
               {/* NEXT */}
               <button
+                className="sea-btn"
                 onClick={() => {
                   if (!selectedEntryId) return;
                   const idx = entries.findIndex(e => e.id === selectedEntryId);
@@ -407,183 +423,17 @@ export default function JournalPage() {
                     setIsEditing(false);
                   }
                 }}
-                className="sea-btn"
               >
                 Next ▶
               </button>
+
             </div>
+
           </div>
+
         </WriteStage>
       )}
 
-      {/* GLOBAL STYLES */}
-      <style jsx global>{`
-        /* BUTTONS */
-        .sea-btn {
-          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-          color: #3b2414;
-          padding: 8px 18px;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-          transition: all 0.3s ease;
-          border: none;
-        }
-        .sea-btn:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-        }
-        .sea-btn:active {
-          transform: scale(0.97);
-        }
-
-        /* BOOK FADE */
-        .fade-in-book {
-          animation: fadeInBook 1.2s ease-out forwards;
-        }
-        @keyframes fadeInBook {
-          0% {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-            filter: blur(4px);
-          }
-          60% {
-            opacity: 0.6;
-            transform: translateY(4px) scale(0.995);
-            filter: blur(1px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0);
-          }
-        }
-
-        /* ————————————————————————————————
-           JOURNAL — DESKTOP BASE LAYOUT
-        ———————————————————————————————— */
-        .journal-wrapper {
-          position: relative;
-          width: 900px;
-          max-width: 90vw;
-          margin: 0 auto;
-        }
-
-        .journal-book {
-          width: 100%;
-          height: auto;
-          display: block;
-        }
-
-        .journal-writing-frame {
-          position: absolute;
-          top: 18%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60%;
-          height: 55%;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .journal-date {
-          font-size: 0.9rem;
-          color: #4b2e1a;
-          text-align: right;
-          margin-bottom: 0.5rem;
-        }
-
-        .journal-text,
-        .journal-textarea {
-          flex: 1;
-          width: 100%;
-          color: #3b2414;
-          font-size: 1.1rem;
-          line-height: 1.5;
-          background: transparent;
-          border: none;
-          outline: none;
-          resize: none;
-          text-align: center;
-        }
-
-        .controls {
-          position: absolute;
-          bottom: 8%;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          max-width: 900px;
-          margin: 0 auto;
-        }
-
-        .calendar-panel {
-          position: absolute;
-          top: 18%;
-          right: 10%;
-        }
-
-        /* ————————————————————————————————
-           JOURNAL — MOBILE OVERRIDES
-        ———————————————————————————————— */
-        @media (max-width: 640px) {
-          .journal-wrapper {
-            width: 100%;
-            max-width: 100%;
-            padding: 0 1rem;
-          }
-
-          .journal-writing-frame {
-            top: 22%;
-            width: 78%;
-            height: 50%;
-          }
-
-          .journal-date {
-            font-size: 0.75rem;
-            text-align: center;
-          }
-
-          .journal-text,
-          .journal-textarea {
-            font-size: 0.95rem;
-            line-height: 1.35;
-          }
-
-          .calendar-panel {
-            top: 8%;
-            right: 50%;
-            transform: translateX(50%);
-            width: 90%;
-            max-height: 60vh;
-            padding: 1rem;
-          }
-
-          .controls {
-            position: relative;
-            bottom: auto;
-            left: auto;
-            right: auto;
-            margin-top: 1.75rem;
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 0 1rem 2rem;
-            z-index: 5;
-          }
-
-          .sea-btn {
-            width: 70%;
-            max-width: 260px;
-            text-align: center;
-          }
-        }
-      `}</style>
     </div>
   );
 }
