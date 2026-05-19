@@ -390,48 +390,36 @@ body {
   }
 }
 /* ————————————————————————————————
-   JOURNAL — MOBILE FIXES ONLY
-   Desktop remains 100% unchanged
+   JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  /* ROOT CONTAINER — allow scrolling on phones */
+  /* ROOT CONTAINER — allow scroll but keep full height */
   div.relative.h-screen.w-screen {
     height: auto !important;
     min-height: 100vh !important;
     overflow-y: auto !important;
   }
-/* VIDEO STAGE — TRUE FULLSCREEN ON MOBILE */
-video.w-full.h-full.object-cover {
-  width: 100vw !important;
-  height: 100dvh !important; /* iOS + Android fullscreen */
-  object-fit: cover !important;
-  object-position: center !important;
-}
 
-
-/* LOGO — larger, readable, centered */
-img[src*="sea-within-logo-page"] {
-  width: 65% !important;               /* bigger than before */
-  max-width: 320px !important;         /* prevents it from being too big */
-  height: auto !important;
-  margin: 0 auto !important;
-  padding: 1rem !important;
-
+  /* LOGO STAGE — bigger, centered */
+  img[src*="sea-within-logo-page"] {
+    width: 70% !important;
+    max-width: 340px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 1rem !important;
   }
 
-/* PARCHMENT — full width, centered, no cutoff */
-img[src*="parchment-page"] {
-  width: 115% !important;              /* slightly larger than screen */
-  max-width: none !important;
-  height: auto !important;
-  object-fit: contain !important;
-  transform: translateX(-7%) !important; /* gentle center shift */
-  padding: 0 !important;
-}
+  /* PARCHMENT — full width, centered, no cutoff */
+  .journal-parchment {
+    width: 100% !important;
+    max-width: 520px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+  }
 
-
-  /* WRITING AREA — centered + readable */
+  /* WRITING AREA — centered inside book */
   .writing-area {
     left: 50% !important;
     top: 20% !important;
@@ -440,14 +428,14 @@ img[src*="parchment-page"] {
     transform: translateX(-50%) !important;
   }
 
-  /* DATE POSITION — smaller + higher */
+  /* DATE — smaller, slightly higher */
   .journal-date {
     top: -10% !important;
     right: 0 !important;
     font-size: 0.7rem !important;
   }
 
-  /* ENTRY TEXT + TEXTAREA — readable on phones */
+  /* ENTRY TEXT + TEXTAREA — readable */
   .writing-area textarea,
   .writing-area .ink-writing {
     font-size: 0.95rem !important;
@@ -455,58 +443,46 @@ img[src*="parchment-page"] {
     padding: 0.4rem !important;
   }
 
-  /* CALENDAR PANEL — centered + narrower */
-  .calendar-panel,
-  .calendar-panel-container {
-    top: 5% !important;
+  /* CALENDAR PANEL — centered, narrower */
+  .calendar-panel {
+    top: 8% !important;
     right: 50% !important;
     transform: translateX(50%) !important;
-    width: 85% !important;
+    width: 90% !important;
     max-height: 60vh !important;
     padding: 1rem !important;
   }
 
   /* DELETE CONFIRM MODAL — fit screen */
-  .delete-modal,
-  .delete-modal-container {
-    width: 85% !important;
+  .delete-modal {
+    width: 90% !important;
+    max-width: 360px !important;
     padding: 1.25rem !important;
   }
 
-  /* ————————————————————————————————
-     JOURNAL CONTROLS — FIX ABSOLUTE POSITIONING
-  ———————————————————————————————— */
+  /* CONTROLS — visible, centered, stacked */
   .controls {
     position: relative !important;
     bottom: auto !important;
-    top: auto !important;
     left: auto !important;
     right: auto !important;
-    margin-top: 2rem !important;
+    margin-top: 1.75rem !important;
     width: 100% !important;
     display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
     gap: 0.75rem !important;
-    padding: 0 1rem !important;
+    padding: 0 1rem 2rem !important;
     z-index: 5 !important;
-    flex-wrap: nowrap !important;
   }
 
-  .controls.absolute {
-    position: relative !important;
-  }
-
-  /* Buttons */
   .sea-btn {
     width: 70% !important;
     max-width: 260px !important;
-    padding: 10px 16px !important;
-    font-size: 0.85rem !important;
-    border-radius: 9999px !important;
     text-align: center !important;
   }
 }
+
 
 /* ————————————————————————————————
    WISDOM BOARD — MOBILE FIXES ONLY
