@@ -420,10 +420,10 @@ video.w-full.h-full.object-cover {
 
 /* PARCHMENT — larger, centered, cinematic */
 img[src*="parchment-page"] {
-  width: 125% !important;          /* bigger than screen for cinematic feel */
+  width: 140% !important;          /* bigger than screen for cinematic feel */
   max-width: none !important;
   height: auto !important;
-  transform: translateX(-10%) !important; /* recenters the oversized parchment */
+  transform: translateX(-15%) !important; /* recenters the oversized parchment */
   object-fit: contain !important;
   padding: 0 !important;
 }
