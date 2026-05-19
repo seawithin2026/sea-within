@@ -130,7 +130,7 @@ export default function RevealPage() {
     If something in you is leaning forward — if something in you is quietly
     whispering yes — the sanctuary is open. Membership is available as{' '}
     <span className="text-golden-400">$77/month</span> or{' '}
-    <span className="text-golden-400">$770/year (Save 2 Months)</span>, 
+    <span className="text-golden-400">$777/year (Save 2 Months)</span>, 
     cancel anytime, enter immediately. This is your doorway.
   </p>
 
@@ -149,7 +149,7 @@ export default function RevealPage() {
     disabled={loading}
     className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50 mt-4"
   >
-    {loading ? 'Opening the door…' : 'Enter the Sanctuary — $770/year (Save 2 Months)'}
+    {loading ? 'Opening the door…' : 'Enter the Sanctuary — $777/year (Save 2 Months)'}
   </button>
 </ScrollReveal>
 
