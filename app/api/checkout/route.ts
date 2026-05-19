@@ -35,6 +35,9 @@ export async function POST(req: NextRequest) {
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
 
+    // ⭐ LOG THE SESSION URL SO WE CAN SEE IF STRIPE IS WORKING
+    console.log("SESSION URL:", session.url);
+
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error("Stripe Checkout Error:", error);
