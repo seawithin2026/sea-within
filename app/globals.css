@@ -386,13 +386,15 @@ body {
 
 /* ————————————————————————————————
    JOURNAL — DESKTOP BASE LAYOUT
+   (FULL-FRAME BOOK + RIGHT PAGE WRITING)
 ——————————————————————————————— */
 
 .journal-wrapper {
   position: relative;
-  width: 900px;
-  max-width: 90vw;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
+  padding-bottom: 2rem;
 }
 
 .journal-book {
@@ -404,9 +406,9 @@ body {
 .journal-writing-frame {
   position: absolute;
   top: 18%;
-  left: 50%;
+  left: 75%;
   transform: translateX(-50%);
-  width: 60%;
+  width: 38%;
   height: 55%;
   display: flex;
   flex-direction: column;
@@ -435,24 +437,25 @@ body {
 
 .controls {
   position: absolute;
-  bottom: 8%;
+  bottom: 6%;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
   gap: 1rem;
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .calendar-panel {
   position: absolute;
   top: 18%;
-  right: 10%;
+  right: 8%;
 }
 
 /* ————————————————————————————————
-   JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
+   JOURNAL — MOBILE LAYOUT
+   (RIGHT PAGE ONLY, RESPONSIVE)
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
@@ -473,13 +476,15 @@ body {
   .journal-wrapper {
     width: 100%;
     max-width: 100%;
-    padding: 0 1rem;
+    padding: 0 1rem 2rem;
   }
 
   .journal-writing-frame {
     top: 22%;
-    width: 78%;
+    left: 75%;
+    width: 60%;
     height: 50%;
+    transform: translateX(-50%);
   }
 
   .journal-date {
