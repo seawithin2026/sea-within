@@ -430,7 +430,7 @@ body {
 }
 
 /* ————————————————————————————————
-   CODED BOOK — DESKTOP
+   JOURNAL — CODED BOOK (DESKTOP)
 ——————————————————————————————— */
 .journal-shell {
   position: relative;
@@ -442,7 +442,7 @@ body {
 .journal-book-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 1536 / 1024; /* matches your screenshot proportions */
+  aspect-ratio: 1536 / 1024;
   margin: 0 auto;
   border-radius: 18px;
   overflow: hidden;
@@ -532,7 +532,7 @@ body {
 }
 
 /* ————————————————————————————————
-   MOBILE OVERRIDES
+   JOURNAL — MOBILE OVERRIDES
 ——————————————————————————————— */
 @media (max-width: 640px) {
   .journal-shell {
@@ -541,7 +541,7 @@ body {
   }
 
   .journal-book-frame {
-    aspect-ratio: 3 / 4; /* taller book on mobile */
+    aspect-ratio: 3 / 4;
     border-radius: 14px;
   }
 
@@ -586,6 +586,7 @@ body {
     background: black;
   }
 }
+
 
 
 /* ————————————————————————————————
