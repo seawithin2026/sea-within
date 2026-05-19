@@ -193,52 +193,50 @@ export default function JournalPage() {
   // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* VIDEO STAGE */}
-      {stage === 'video' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black relative">
-          <video
-            src="/videos/book-opening.mp4"
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onTimeUpdate={e => {
-              const video = e.target as HTMLVideoElement;
+{/* VIDEO STAGE */}
+{stage === 'video' && (
+  <div className="absolute inset-0 bg-black overflow-hidden">
+    <video
+      src="/videos/book-opening.mp4"
+      autoPlay
+      playsInline
+      muted
+      className="absolute inset-0 w-full h-full object-cover"
+      onTimeUpdate={e => {
+        const video = e.target as HTMLVideoElement;
 
-              if (!video.duration || Number.isNaN(video.duration)) return;
+        if (!video.duration || Number.isNaN(video.duration)) return;
 
-              const timeLeft = video.duration - video.currentTime;
+        const timeLeft = video.duration - video.currentTime;
 
-              // Fade shadow in slightly before the end
-              if (timeLeft < 0.08 && !showShadow) {
-                setShowShadow(true);
-              }
+        if (timeLeft < 0.08 && !showShadow) {
+          setShowShadow(true);
+        }
 
-              // Trigger transition 0.25s before the end
-              if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
-                setHasTriggeredVideoEnd(true);
+        if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
+          setHasTriggeredVideoEnd(true);
 
-                setTimeout(() => {
-                  setStage('logo');
-                }, 450); // cinematic pause
-              }
-            }}
-            onEnded={() => {
-              if (!hasTriggeredVideoEnd) {
-                setStage('logo');
-              }
-            }}
-          />
+          setTimeout(() => {
+            setStage('logo');
+          }, 450);
+        }
+      }}
+      onEnded={() => {
+        if (!hasTriggeredVideoEnd) {
+          setStage('logo');
+        }
+      }}
+    />
 
-          {/* Shadow overlay */}
-          {/* Shadow overlay */}
-<div
-  className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-    showShadow ? 'opacity-40' : 'opacity-0'
-  }`}
-/>
+    {/* Shadow overlay */}
+    <div
+      className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
+        showShadow ? 'opacity-40' : 'opacity-0'
+      }`}
+    />
+  </div>
+)}
 
-        </div>
-      )}
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (

@@ -401,13 +401,14 @@ body {
     min-height: 100vh !important;
     overflow-y: auto !important;
   }
+/* VIDEO STAGE — TRUE FULLSCREEN ON MOBILE */
+video.w-full.h-full.object-cover {
+  width: 100vw !important;
+  height: 100dvh !important; /* iOS + Android fullscreen */
+  object-fit: cover !important;
+  object-position: center !important;
+}
 
-  /* VIDEO STAGE — reduce height + lower visible frame */
-  video.w-full.h-full.object-cover {
-    height: 60vh !important;
-    object-fit: cover !important;
-    object-position: center 20% !important;
-  }
 
   /* LOGO STAGE — scale logo */
   img[src*="sea-within-logo-page"] {
