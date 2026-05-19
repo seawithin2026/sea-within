@@ -385,41 +385,48 @@ body {
 }
 
 /* ————————————————————————————————
-   JOURNAL — DESKTOP FULL-FRAME SEA WITHIN
+   JOURNAL — FULL-FRAME (ALL SCREENS)
+   USING CURRENT JOURNAL BOOK IMAGE
 ——————————————————————————————— */
 
 .journal-wrapper {
   position: relative;
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
-  padding-bottom: 2rem;
+  background: #000;
+  padding-bottom: 1rem;
 }
 
+/* FULL-WIDTH BOOK — ALWAYS VISIBLE */
 .journal-book {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: contain;
+  background: #000;
+  margin: 0 auto;
 }
 
 /* RIGHT PAGE WRITING FRAME — DESKTOP */
 .journal-writing-frame {
   position: absolute;
-  top: 18%;
+  top: 16%;
   left: 75%;
   transform: translateX(-50%);
-  width: 38%;
-  height: 55%;
+  width: 34%;
+  height: 62%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  pointer-events: none;
 }
 
 .journal-date {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #4b2e1a;
   text-align: right;
   margin-bottom: 0.5rem;
+  pointer-events: auto;
 }
 
 .journal-text,
@@ -427,32 +434,30 @@ body {
   flex: 1;
   width: 100%;
   color: #3b2414;
-  font-size: 1.1rem;
-  line-height: 1.5;
+  font-size: 1.15rem;
+  line-height: 1.55;
   background: transparent;
   border: none;
   outline: none;
   resize: none;
   text-align: center;
+  pointer-events: auto;
 }
 
 /* CONTROL BAR */
 .controls {
-  position: absolute;
-  bottom: 6%;
-  left: 0;
-  right: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   gap: 1rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin-top: 0.75rem;
+  z-index: 10;
 }
 
 /* CALENDAR PANEL */
 .calendar-panel {
   position: absolute;
-  top: 18%;
+  top: 16%;
   right: 8%;
 }
 
@@ -461,36 +466,22 @@ body {
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  div.relative.h-screen.w-screen {
-    height: auto !important;
-    min-height: 100vh !important;
-    overflow-y: auto !important;
-  }
-
-  img[src*="sea-within-logo-page"] {
-    width: 70% !important;
-    max-width: 340px !important;
-    height: auto !important;
-    margin: 0 auto !important;
-    padding: 1rem !important;
-  }
-
-  .journal-wrapper {
+  .journal-book {
     width: 100%;
-    max-width: 100%;
-    padding: 0 1rem 2rem;
+    height: auto;
+    object-fit: contain;
   }
 
   .journal-writing-frame {
-    top: 22%;
+    top: 20%;
     left: 75%;
-    width: 60%;
-    height: 50%;
+    width: 55%;
+    height: 55%;
     transform: translateX(-50%);
   }
 
   .journal-date {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     text-align: center;
   }
 
@@ -509,25 +500,10 @@ body {
     padding: 1rem;
   }
 
-  .delete-modal {
-    width: 90% !important;
-    max-width: 360px !important;
-    padding: 1.25rem !important;
-  }
-
   .controls {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    right: auto;
-    margin-top: 1.75rem;
-    width: 100%;
-    display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0 1rem 2rem;
-    z-index: 5;
+    gap: 0.6rem;
+    padding: 0 1rem;
   }
 
   .sea-btn {
