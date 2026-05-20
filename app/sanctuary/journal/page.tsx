@@ -628,9 +628,15 @@ width: auto !important;
       /* mobile-only changes go here */
     }
 
-    .sea-btn {
-      /* mobile-only changes go here */
-    }
+   /* TASK 3 — Make buttons smaller on mobile */
+.sea-btn {
+  padding: 6px 14px !important;   /* smaller padding */
+  font-size: 0.75rem !important;  /* smaller text */
+  min-width: 100px !important;    /* narrower buttons */
+  border-radius: 9999px !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25) !important;
+}
+
   }
 `}</style>
 
