@@ -1,650 +1,253 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useEffect, useRef, useState } from "react";
 
-const supabase = createClient();
+export default function JournalMirrorPage() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-type Stage = 'video' | 'logo' | 'write';
+  const [messages, setMessages] = useState<string[]>([]);
+  const [mode, setMode] = useState<"inactive" | "active_support">("inactive");
+  const [listening, setListening] = useState(false);
 
-type JournalEntry = {
-  id: string;
-  user_id: string;
-  content: string;
-  created_at: string;
-};
+  const [themes, setThemes] = useState<{ theme: string; createdAt: string }[]>([]);
 
-// Memoized write stage wrapper to prevent re-mount flicker
-const WriteStage = React.memo(function WriteStage({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      key="write-stage"
-      className="journal-write-stage absolute inset-0 fade-in-book bg-black flex items-center justify-center"
-    >
-      {children}
-    </div>
-  );
-});
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
+  useEffect(scrollToBottom, [messages]);
 
-export default function JournalPage() {
-  const [stage, setStage] = useState<Stage>('video');
-  const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
-  const [showShadow, setShowShadow] = useState(false);
-
-  const [session, setSession] = useState<any>(null);
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [currentText, setCurrentText] = useState('');
-  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
-
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
-  const [saving, setSaving] = useState(false);
-  const [loadingUser, setLoadingUser] = useState(true);
-
-  const [isEditing, setIsEditing] = useState(false);
-
-  // TODAY'S PRETTY DATE
-  const todayPretty = useMemo(() => {
-    return new Date().toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }, []);
-
-  // LOAD USER
   useEffect(() => {
-    const loadUser = async () => {
-      const { data } = await supabase.auth.getUser();
-
-      if (data?.user) {
-        setSession({ user: data.user });
-      }
-
-      setLoadingUser(false);
-    };
-
-    loadUser();
-  }, []);
-
-  // LOAD ENTRIES
-  useEffect(() => {
-    if (!session?.user?.id) return;
-
-    const loadEntries = async () => {
-      const { data, error } = await supabase
-        .from('journal_entries')
-        .select('id,user_id,content,created_at')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: true });
-
-      if (!error && data) {
-        setEntries(data);
-        if (data.length > 0) {
-          const last = data[data.length - 1];
-          setSelectedEntryId(last.id);
-          setCurrentText(''); // view mode uses selectedEntry.content
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
         }
+      } catch (err) {
+        addMessage("Unable to access camera. Please allow permissions.");
       }
-    };
+    }
+    startCamera();
+  }, []);
 
-    loadEntries();
-  }, [session]);
+  const addMessage = (text: string) => {
+    setMessages((prev) => [...prev, text]);
+  };
 
-  // SAVE ENTRY (create or update)
-  const handleSave = async () => {
-    if (!session?.user?.id) return;
-    if (!currentText.trim()) return;
+  const logTheme = (theme: string) => {
+    setThemes((prev) => [
+      ...prev,
+      { theme, createdAt: new Date().toISOString() },
+    ]);
+  };
 
-    setSaving(true);
+  const containsActivationPhrase = (text: string) => {
+    const phrases = [
+      "i need support",
+      "i need guidance",
+      "i need comfort",
+      "talk to me",
+      "i need you",
+    ];
+    return phrases.some((p) => text.includes(p));
+  };
 
-    // UPDATE existing entry when editing
-    if (isEditing && selectedEntryId) {
-      const { error } = await supabase
-        .from('journal_entries')
-        .update({ content: currentText })
-        .eq('id', selectedEntryId);
+  const detectCrisis = (text: string) => {
+    const crisisKeywords = [
+      "kill myself",
+      "end my life",
+      "don't want to live",
+      "dont want to live",
+      "hurt myself",
+    ];
+    return crisisKeywords.some((k) => text.includes(k));
+  };
 
-      if (!error) {
-        setEntries(prev =>
-          prev.map(e =>
-            e.id === selectedEntryId ? { ...e, content: currentText } : e
-          )
-        );
-        setIsEditing(false);
-        setCurrentText('');
-      }
+  const crisisResponse = () => {
+    return (
+      "I’m really glad you shared this. You deserve support from someone who can be with you in a real, human way. " +
+      "If you can, consider reaching out to someone you trust or a trained listener in your area."
+    );
+  };
 
-      setSaving(false);
+  const detectTone = (text: string) => {
+    if (text.includes("tired") || text.includes("overwhelmed")) {
+      logTheme("stress");
+      return "stressed";
+    }
+    if (text.includes("sad") || text.includes("lonely")) {
+      logTheme("sadness");
+      return "sad";
+    }
+    if (text.includes("proud") || text.includes("accomplished")) {
+      logTheme("pride");
+      return "proud";
+    }
+    if (text.includes("happy") || text.includes("grateful")) {
+      logTheme("joy");
+      return "joyful";
+    }
+    if (text.includes("not good enough") || text.includes("worthless")) {
+      logTheme("self_doubt");
+      return "self_doubt";
+    }
+    return "neutral";
+  };
+
+  const supportiveLine = (tone: string) => {
+    switch (tone) {
+      case "sad":
+        return "I’m here with you. You’re not alone in this moment.";
+      case "stressed":
+        return "You’ve been carrying a lot. It’s okay to pause.";
+      case "joyful":
+        return "I’m glad you’re feeling lighter today.";
+      case "self_doubt":
+        return "You deserve kindness, especially from yourself.";
+      case "proud":
+        return "You’ve worked hard for this. Let yourself feel it.";
+      default:
+        return "Take your time. You don’t have to rush anything here.";
+    }
+  };
+
+  const handleTranscript = (raw: string) => {
+    if (!raw) return;
+    const text = raw.toLowerCase().trim();
+    if (!text) return;
+
+    if (containsActivationPhrase(text)) {
+      setMode("active_support");
+      addMessage("Hello beautiful soul. I’m here with you.");
       return;
     }
 
-    // CREATE new entry
-    const { data, error } = await supabase
-      .from('journal_entries')
-      .insert({
-        user_id: session.user.id,
-        content: currentText,
-      })
-      .select()
-      .single();
-
-    if (!error && data) {
-      setEntries(prev => [...prev, data]);
-      setSelectedEntryId(data.id);
-      setCurrentText('');
-      setIsEditing(false);
+    if (detectCrisis(text)) {
+      addMessage(crisisResponse());
+      return;
     }
 
-    setSaving(false);
+    const tone = detectTone(text);
+
+    if (mode !== "active_support") return;
+
+    addMessage(supportiveLine(tone));
   };
 
-  // DELETE ENTRY
-  const deleteEntry = async () => {
-    if (!selectedEntryId) return;
+  // --- FREE SPEECH-TO-TEXT (WEB SPEECH API) ---
+  const SpeechRecognition =
+    typeof window !== "undefined"
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
 
-    await supabase
-      .from('journal_entries')
-      .delete()
-      .eq('id', selectedEntryId);
+  const recognitionRef = useRef<any>(null);
 
-    setEntries(prev => {
-      const idx = prev.findIndex(e => e.id === selectedEntryId);
-      const filtered = prev.filter(e => e.id !== selectedEntryId);
+  const startSpeechRecognition = () => {
+    if (!SpeechRecognition) {
+      addMessage("Speech recognition is not supported in this browser.");
+      return;
+    }
 
-      if (filtered.length > 0 && idx !== -1) {
-        const newIndex = Math.max(0, idx - 1);
-        const newEntry = filtered[newIndex];
-        setSelectedEntryId(newEntry.id);
-        setCurrentText('');
-      } else {
-        setSelectedEntryId(null);
-        setCurrentText('');
-      }
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
 
-      return filtered;
-    });
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[event.results.length - 1][0].transcript;
+      handleTranscript(transcript);
+    };
 
-    setIsEditing(false);
-    setShowDeleteConfirm(false);
+    recognition.onerror = () => {
+      addMessage("Voice recognition error. Try again when you're ready.");
+    };
+
+    recognition.onend = () => {
+      if (listening) recognition.start();
+    };
+
+    recognition.start();
+    return recognition;
   };
 
-  // Prevent yellow flash
-  if (loadingUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black" />
-    );
-  }
+  const toggleListening = () => {
+    if (!listening) {
+      setListening(true);
+      recognitionRef.current = startSpeechRecognition();
+    } else {
+      setListening(false);
+      recognitionRef.current?.stop();
+    }
+  };
 
-  // Sign-in screen
-  if (!session) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
-        <p className="text-[#3b2414] font-family['Cormorant Garamond']">
-          Please sign in to access your journal.
-        </p>
-      </div>
-    );
-  }
+  const handleDebugInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const value = (e.target as HTMLInputElement).value;
+      (e.target as HTMLInputElement).value = "";
+      handleTranscript(value);
+    }
+  };
 
-  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
-
-  // MAIN RETURN
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* VIDEO STAGE */}
-      {stage === 'video' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black relative">
-          <video
-            src="/videos/book-opening.mp4"
-            autoPlay
-            playsInline
-            className="w-full h-full object-cover"
-            onTimeUpdate={e => {
-              const video = e.target as HTMLVideoElement;
-
-              if (!video.duration || Number.isNaN(video.duration)) return;
-
-              const timeLeft = video.duration - video.currentTime;
-
-              // Fade shadow in slightly before the end
-              if (timeLeft < 0.08 && !showShadow) {
-                setShowShadow(true);
-              }
-
-              // Trigger transition 0.25s before the end
-              if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
-                setHasTriggeredVideoEnd(true);
-
-                setTimeout(() => {
-                  setStage('logo');
-                }, 450); // cinematic pause
-              }
-            }}
-            onEnded={() => {
-              if (!hasTriggeredVideoEnd) {
-                setStage('logo');
-              }
-            }}
-          />
-
-          {/* Shadow overlay */}
-          {/* Shadow overlay */}
-<div
-  className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-    showShadow ? 'opacity-40' : 'opacity-0'
-  }`}
-/>
-
+    <div className="w-screen h-screen flex flex-col bg-[#050608] text-[#f7f5f2]">
+      <header className="h-14 flex items-center px-6 border-b border-white/10">
+        <div className="tracking-widest uppercase text-sm opacity-80">
+          Sea Within
         </div>
-      )}
+      </header>
 
-      {/* LOGO STAGE */}
-      {stage === 'logo' && (
-        <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
-          <img
-            src="/images/sea-within-logo-page.png"
-            className="w-full h-full object-contain mx-auto"
-          />
+      <main className="flex flex-1 overflow-hidden">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          className="flex-1 object-cover transform -scale-x-100 brightness-[1.05] contrast-[1.02]"
+        />
+
+        <aside className="w-[28%] max-w-[420px] min-w-[260px] p-8 bg-gradient-to-b from-[#14151b] to-[#050608] border-l border-white/10 flex flex-col">
+          <div className="uppercase tracking-widest text-xs opacity-70">
+            Sea Within Mirror
+          </div>
+
+          <div className="flex-1 overflow-y-auto mt-4 space-y-3 pr-2">
+            {messages.map((m, i) => (
+              <div key={i} className="text-sm leading-relaxed opacity-90">
+                {m}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
 
           <button
-            type="button"
-            onClick={() => setStage('write')}
-            className="absolute inset-0 flex items-center justify-center"
+            onClick={toggleListening}
+            className={`mt-4 py-2 px-4 rounded-full border text-sm transition ${
+              listening
+                ? "bg-white/10 border-white/40"
+                : "bg-transparent border-white/20"
+            }`}
           >
-            <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
-              Tap to begin writing
-            </span>
+            {listening ? "Listening..." : "Start Listening"}
           </button>
-        </div>
-      )}
 
-{/* WRITE STAGE */}
-{stage === 'write' && (
-  <WriteStage>
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Parchment */}
-      <img
-        src="/images/parchment-page.png"
-        className="journal-parchment pointer-events-none select-none"
-      />
+          <p className="text-xs opacity-60 mt-3">
+            Speak freely. When you’re ready for guidance, say your activation phrase.
+          </p>
 
-      {/* WRITING AREA */}
-      <div
-        className="absolute"
-        style={{
-          left: '53%',
-          top: '18%',
-          width: '20%',
-          height: '60%',
-        }}
-            >
-              {/* DATE */}
-              <div
-                className="absolute text-[#4b2e1a] text-sm font-medium"
-                style={{ top: '-8%', right: '0%' }}
-              >
-                {selectedEntry
-                  ? new Date(selectedEntry.created_at).toLocaleDateString(
-                      undefined,
-                      {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      }
-                    )
-                  : todayPretty}
-              </div>
-
-              {/* ENTRY OR TEXTAREA */}
-              {selectedEntry && !isEditing ? (
-                <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
-                  <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
-                    {selectedEntry.content}
-                  </div>
-                </div>
-              ) : (
-                <textarea
-                  className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
-                  placeholder="Let the sea within you speak..."
-                  value={currentText}
-                  onChange={e => setCurrentText(e.target.value)}
-                />
-              )}
-            </div>
-
-            {/* CALENDAR */}
-            {showCalendar && (
-              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
-                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
-
-                {entries.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => {
-                      setSelectedEntryId(entry.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                      setShowCalendar(false);
-                    }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-                  >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setShowCalendar(false)}
-                  className="sea-btn w-full mt-2"
-                >
-                  Close
-                </button>
-              </div>
-            )}
-
-            {/* DELETE CONFIRM */}
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
-                  <p className="text-[#3b2414] mb-4">
-                    Are you sure you want to delete this entry?
-                  </p>
-
-                  <div className="flex justify-center gap-4">
-                    <button
-                      onClick={deleteEntry}
-                      className="sea-btn bg-red-300/80 hover:bg-red-400/80"
-                    >
-                      Delete
-                    </button>
-
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="sea-btn"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CONTROLS */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
-              {/* PREVIOUS */}
-              <button
-                onClick={() => {
-                  if (entries.length === 0) return;
-
-                  if (!selectedEntryId) {
-                    const last = entries[entries.length - 1];
-                    setSelectedEntryId(last.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                    return;
-                  }
-
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx > 0) {
-                    const prev = entries[idx - 1];
-                    setSelectedEntryId(prev.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                ◀ Previous
-              </button>
-
-              {/* NEW PAGE */}
-              <button
-                onClick={() => {
-                  setSelectedEntryId(null);
-                  setCurrentText('');
-                  setIsEditing(false);
-                }}
-                className="sea-btn"
-              >
-                New Page
-              </button>
-
-              {/* EDIT (only when viewing an existing entry) */}
-              {selectedEntry && !isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(true);
-                    setCurrentText(selectedEntry.content);
-                  }}
-                  className="sea-btn"
-                >
-                  Edit
-                </button>
-              )}
-
-              {/* CANCEL EDIT */}
-              {isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setCurrentText('');
-                  }}
-                  className="sea-btn"
-                >
-                  Cancel Edit
-                </button>
-              )}
-
-              {/* SAVE */}
-              <button
-                onClick={handleSave}
-                className="sea-btn"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-
-              {/* DELETE */}
-              {selectedEntry && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="sea-btn bg-red-200/80 hover:bg-red-300/90"
-                >
-                  Delete
-                </button>
-              )}
-
-              {/* CALENDAR */}
-              <button
-                onClick={() => setShowCalendar(true)}
-                className="sea-btn"
-              >
-                📅 Calendar
-              </button>
-
-              {/* NEXT */}
-              <button
-                onClick={() => {
-                  if (!selectedEntryId) return;
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx < entries.length - 1 && idx !== -1) {
-                    const next = entries[idx + 1];
-                    setSelectedEntryId(next.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                Next ▶
-              </button>
-            </div>
+          <div className="mt-4 text-xs opacity-70">
+            Dev test: type text as if spoken, press Enter.
+            <input
+              onKeyDown={handleDebugInput}
+              className="w-full mt-1 p-2 rounded bg-[#0a0b0e] border border-white/10 text-xs"
+              placeholder="Simulated speech…"
+            />
           </div>
-        </WriteStage>
-      )}
-
-   {/* GLOBAL STYLES */}
-<style jsx global>{`
-  /* ————————————————————————————————
-     DESKTOP FIREWALL — PROTECT DESKTOP FOREVER
-  ———————————————————————————————— */
-  .journal-fixed-wrapper,
-  .journal-fixed-canvas {
-    min-width: 900px !important;
-  }
-
-  /* ————————————————————————————————
-     BUTTON STYLES
-  ———————————————————————————————— */
-  .sea-btn {
-    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-    color: #3b2414;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
-    border: none;
-  }
-
-  .sea-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-  }
-
-  .sea-btn:active {
-    transform: scale(0.97);
-  }
-
-  /* ————————————————————————————————
-     BOOK FADE‑IN ANIMATION
-  ———————————————————————————————— */
-  .fade-in-book {
-    animation: fadeInBook 1.2s ease-out forwards;
-  }
-
-  @keyframes fadeInBook {
-    0% {
-      opacity: 0;
-      transform: translateY(10px) scale(0.98);
-      filter: blur(4px);
-    }
-    60% {
-      opacity: 0.6;
-      transform: translateY(4px) scale(0.995);
-      filter: blur(1px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
-
-  /* ————————————————————————————————
-     SCROLLBAR
-  ———————————————————————————————— */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #a47a3b;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #3b2414;
-    border-radius: 10px;
-    border: 2px solid #a47a3b;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #2a180d;
-  }
-
-  /* ————————————————————————————————
-     TEXT FADE‑IN
-  ———————————————————————————————— */
-  .text-fade-in {
-    opacity: 0;
-    animation: textFadeIn 0.8s ease-out 0.2s forwards;
-  }
-
-  @keyframes textFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(2px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ————————————————————————————————
-     MOBILE‑ONLY SANDBOX — DESKTOP UNTOUCHABLE
-  ———————————————————————————————— */
-  @media (max-width: 640px) {
-    .journal-fixed-wrapper {
-      /* mobile-only changes go here */
-    }
-
-    .journal-fixed-canvas {
-      /* mobile-only changes go here */
-    }
-
-    /* Stop WriteStage from locking fullscreen flex on mobile */
-    .journal-write-stage {
-      position: relative !important;
-      inset: unset !important;
-      display: block !important;
-      background: transparent !important;
-      height: auto !important;
-    }
-
-    /* Book fills screen height with ~1 inch bottom space */
-    .journal-parchment {
-      width: auto !important;
-      height: calc(100vh - 48px) !important;
-      max-height: calc(100vh - 48px) !important;
-      object-fit: contain !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      transform: translateX(20px) !important;
-    }
-
-    .writing-area {
-      /* mobile-only changes go here */
-    }
-
-    .controls {
-      /* mobile-only changes go here */
-    }
-
-    .calendar-panel {
-      /* mobile-only changes go here */
-    }
-
-    /* Smaller buttons on mobile */
-    .sea-btn {
-      padding: 4px 10px !important;
-      font-size: 0.68rem !important;
-      min-width: 85px !important;
-      border-radius: 9999px !important;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
-    }
-  }
-`}</style>
-
-
+        </aside>
+      </main>
     </div>
   );
 }
