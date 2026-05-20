@@ -14,9 +14,13 @@ type JournalEntry = {
   created_at: string;
 };
 
+// Memoized write stage wrapper to prevent re-mount flicker
 const WriteStage = React.memo(function WriteStage({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
+    <div
+      key="write-stage"
+      className="absolute inset-0 fade-in-book bg-black flex items-center justify-center"
+    >
       {children}
     </div>
   );
@@ -40,6 +44,7 @@ export default function JournalPage() {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  // TODAY'S PRETTY DATE
   const todayPretty = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
       year: 'numeric',
@@ -52,9 +57,14 @@ export default function JournalPage() {
   useEffect(() => {
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-      if (data?.user) setSession({ user: data.user });
+
+      if (data?.user) {
+        setSession({ user: data.user });
+      }
+
       setLoadingUser(false);
     };
+
     loadUser();
   }, []);
 
@@ -63,18 +73,18 @@ export default function JournalPage() {
     if (!session?.user?.id) return;
 
     const loadEntries = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('journal_entries')
         .select('id,user_id,content,created_at')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: true });
 
-      if (data) {
+      if (!error && data) {
         setEntries(data);
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText('');
+          setCurrentText(''); // view mode uses selectedEntry.content
         }
       }
     };
@@ -82,13 +92,14 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // SAVE ENTRY
+  // SAVE ENTRY (create or update)
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
+    // UPDATE existing entry when editing
     if (isEditing && selectedEntryId) {
       const { error } = await supabase
         .from('journal_entries')
@@ -97,7 +108,9 @@ export default function JournalPage() {
 
       if (!error) {
         setEntries(prev =>
-          prev.map(e => (e.id === selectedEntryId ? { ...e, content: currentText } : e))
+          prev.map(e =>
+            e.id === selectedEntryId ? { ...e, content: currentText } : e
+          )
         );
         setIsEditing(false);
         setCurrentText('');
@@ -107,7 +120,8 @@ export default function JournalPage() {
       return;
     }
 
-    const { data } = await supabase
+    // CREATE new entry
+    const { data, error } = await supabase
       .from('journal_entries')
       .insert({
         user_id: session.user.id,
@@ -116,7 +130,7 @@ export default function JournalPage() {
       .select()
       .single();
 
-    if (data) {
+    if (!error && data) {
       setEntries(prev => [...prev, data]);
       setSelectedEntryId(data.id);
       setCurrentText('');
@@ -130,7 +144,10 @@ export default function JournalPage() {
   const deleteEntry = async () => {
     if (!selectedEntryId) return;
 
-    await supabase.from('journal_entries').delete().eq('id', selectedEntryId);
+    await supabase
+      .from('journal_entries')
+      .delete()
+      .eq('id', selectedEntryId);
 
     setEntries(prev => {
       const idx = prev.findIndex(e => e.id === selectedEntryId);
@@ -153,273 +170,315 @@ export default function JournalPage() {
     setShowDeleteConfirm(false);
   };
 
+  // Prevent yellow flash
   if (loadingUser) {
-    return <div className="flex items-center justify-center min-h-screen bg-black" />;
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black" />
+    );
   }
 
+  // Sign-in screen
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
-        <p className="text-[#3b2414]">Please sign in to access your journal.</p>
+        <p className="text-[#3b2414] font-family['Cormorant Garamond']">
+          Please sign in to access your journal.
+        </p>
       </div>
     );
   }
 
   const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
 
+  // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
-      {/* VIDEO STAGE */}
-      {stage === 'video' && (
-        <div className="absolute inset-0 bg-black overflow-hidden">
-          <video
-            src="/videos/book-opening.mp4"
-            autoPlay
-            playsInline
-            muted
-            className="absolute inset-0 w-full h-full object-cover book-opening-video"
-            onTimeUpdate={e => {
-              const video = e.target as HTMLVideoElement;
-              if (!video.duration || Number.isNaN(video.duration)) return;
+{/* VIDEO STAGE */}
+{stage === 'video' && (
+  <div className="absolute inset-0 bg-black overflow-hidden">
+    <video
+      src="/videos/book-opening.mp4"
+      autoPlay
+      playsInline
+      muted
+      className="absolute inset-0 w-full h-full object-cover"
+      onTimeUpdate={e => {
+        const video = e.target as HTMLVideoElement;
 
-              const timeLeft = video.duration - video.currentTime;
+        if (!video.duration || Number.isNaN(video.duration)) return;
 
-              if (timeLeft < 0.08 && !showShadow) setShowShadow(true);
+        const timeLeft = video.duration - video.currentTime;
 
-              if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
-                setHasTriggeredVideoEnd(true);
-                setTimeout(() => setStage('logo'), 450);
-              }
-            }}
-            onEnded={() => {
-              if (!hasTriggeredVideoEnd) setStage('logo');
-            }}
-          />
+        if (timeLeft < 0.08 && !showShadow) {
+          setShowShadow(true);
+        }
 
-          <div
-            className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-              showShadow ? 'opacity-40' : 'opacity-0'
-            }`}
-          />
+        if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
+          setHasTriggeredVideoEnd(true);
+
+          setTimeout(() => {
+            setStage('logo');
+          }, 450);
+        }
+      }}
+      onEnded={() => {
+        if (!hasTriggeredVideoEnd) {
+          setStage('logo');
+        }
+      }}
+    />
+
+    {/* Shadow overlay */}
+    <div
+      className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
+        showShadow ? 'opacity-40' : 'opacity-0'
+      }`}
+    />
+  </div>
+)}
+
+{/* LOGO STAGE */}
+{stage === 'logo' && (
+  <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
+    <img
+      src="/images/sea-within-logo-page.png"
+      className="logo-book object-contain mx-auto"
+    />
+
+    <button
+      type="button"
+      onClick={() => setStage('write')}
+      className="absolute inset-0 flex items-center justify-center"
+    >
+      <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
+        Tap to begin writing
+      </span>
+    </button>
+  </div>
+)}
+
+{/* WRITE STAGE */}
+{stage === 'write' && (
+  <WriteStage>
+    <div className="relative w-full h-full flex items-center justify-center">
+
+      {/* Parchment */}
+      <img
+        src="/images/parchment-page.png"
+        className="journal-parchment pointer-events-none select-none"
+      />
+
+      {/* WRITING AREA */}
+      <div className="writing-area absolute">
+        {/* DATE */}
+        <div className="journal-date absolute text-[#4b2e1a] text-sm font-medium">
+          {selectedEntry
+            ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            : todayPretty}
         </div>
-      )}
 
-      {/* LOGO STAGE */}
-      {stage === 'logo' && (
-        <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
-          <img src="/images/sea-within-logo-page.png" className="logo-book object-contain mx-auto" />
+        {/* ENTRY OR TEXTAREA */}
+        {selectedEntry && !isEditing ? (
+          <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
+            <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
+              {selectedEntry.content}
+            </div>
+          </div>
+        ) : (
+          <textarea
+            className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
+            placeholder="Let the sea within you speak..."
+            value={currentText}
+            onChange={e => setCurrentText(e.target.value)}
+          />
+        )}
+      </div>
+
+      {/* CALENDAR */}
+      {showCalendar && (
+        <div className="calendar-panel absolute bg-[#ccb072] shadow-xl rounded-xl p-4 border border-[#d8c9a3]">
+          <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+
+          {entries.map(entry => (
+            <button
+              key={entry.id}
+              onClick={() => {
+                setSelectedEntryId(entry.id);
+                setCurrentText('');
+                setIsEditing(false);
+                setShowCalendar(false);
+              }}
+              className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+            >
+              {new Date(entry.created_at).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </button>
+          ))}
 
           <button
-            type="button"
-            onClick={() => setStage('write')}
-            className="absolute inset-0 flex items-center justify-center"
+            onClick={() => setShowCalendar(false)}
+            className="sea-btn w-full mt-2"
           >
-            <span className="rounded-full bg-black/40 px-4 py-2 text-sm text-amber-100">
-              Tap to begin writing
-            </span>
+            Close
           </button>
         </div>
       )}
 
-      {/* WRITE STAGE */}
-      {stage === 'write' && (
-        <WriteStage>
-          <div className="journal-shell">
-            {/* CODED BOOK FRAME */}
-            <div className="journal-book-frame">
-              {/* LEFT PAGE (visual only for now) */}
-              <div className="journal-page journal-page-left">
-                {/* You can add a quote or leave it empty */}
-              </div>
+      {/* DELETE CONFIRM */}
+      {showDeleteConfirm && (
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+          <div className="delete-modal bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl text-center">
+            <p className="text-[#3b2414] mb-4">
+              Are you sure you want to delete this entry?
+            </p>
 
-              {/* RIGHT PAGE — WRITING AREA */}
-              <div className="journal-page journal-page-right">
-                <div className="journal-date">
-                  {selectedEntry
-                    ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })
-                    : todayPretty}
-                </div>
-
-                {selectedEntry && !isEditing ? (
-                  <div className="journal-text ink-writing whitespace-pre-wrap">
-                    {selectedEntry.content}
-                  </div>
-                ) : (
-                  <textarea
-                    className="journal-textarea"
-                    placeholder="Let the sea within you speak..."
-                    value={currentText}
-                    onChange={e => setCurrentText(e.target.value)}
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* CALENDAR */}
-            {showCalendar && (
-              <div className="calendar-panel bg-[#ccb072] shadow-xl rounded-xl p-4 border border-[#d8c9a3]">
-                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
-
-                {entries.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => {
-                      setSelectedEntryId(entry.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                      setShowCalendar(false);
-                    }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-                  >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </button>
-                ))}
-
-                <button onClick={() => setShowCalendar(false)} className="sea-btn w-full mt-2">
-                  Close
-                </button>
-              </div>
-            )}
-
-            {/* DELETE CONFIRM */}
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="delete-modal bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl text-center">
-                  <p className="text-[#3b2414] mb-4">Are you sure you want to delete this entry?</p>
-
-                  <div className="flex justify-center gap-4">
-                    <button onClick={deleteEntry} className="sea-btn bg-red-300/80 hover:bg-red-400/80">
-                      Delete
-                    </button>
-
-                    <button onClick={() => setShowDeleteConfirm(false)} className="sea-btn">
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* CONTROLS */}
-            <div className="controls">
-              {/* PREVIOUS */}
+            <div className="flex justify-center gap-4">
               <button
-                onClick={() => {
-                  if (entries.length === 0) return;
+                onClick={deleteEntry}
+                className="sea-btn bg-red-300/80 hover:bg-red-400/80"
+              >
+                Delete
+              </button>
 
-                  if (!selectedEntryId) {
-                    const last = entries[entries.length - 1];
-                    setSelectedEntryId(last.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                    return;
-                  }
-
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx > 0) {
-                    const prev = entries[idx - 1];
-                    setSelectedEntryId(prev.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
                 className="sea-btn"
               >
-                ◀ Previous
-              </button>
-
-              {/* NEW PAGE */}
-              <button
-                onClick={() => {
-                  setSelectedEntryId(null);
-                  setCurrentText('');
-                  setIsEditing(false);
-                }}
-                className="sea-btn"
-              >
-                New Page
-              </button>
-
-              {/* EDIT */}
-              {selectedEntry && !isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(true);
-                    setCurrentText(selectedEntry.content);
-                  }}
-                  className="sea-btn"
-                >
-                  Edit
-                </button>
-              )}
-
-              {/* CANCEL EDIT */}
-              {isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setCurrentText('');
-                  }}
-                  className="sea-btn"
-                >
-                  Cancel Edit
-                </button>
-              )}
-
-              {/* SAVE */}
-              <button onClick={handleSave} className="sea-btn" disabled={saving}>
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-
-              {/* DELETE */}
-              {selectedEntry && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="sea-btn bg-red-200/80 hover:bg-red-300/90"
-                >
-                  Delete
-                </button>
-              )}
-
-              {/* CALENDAR */}
-              <button onClick={() => setShowCalendar(true)} className="sea-btn">
-                📅 Calendar
-              </button>
-
-              {/* NEXT */}
-              <button
-                onClick={() => {
-                  if (!selectedEntryId) return;
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx < entries.length - 1 && idx !== -1) {
-                    const next = entries[idx + 1];
-                    setSelectedEntryId(next.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                Next ▶
+                Cancel
               </button>
             </div>
           </div>
-        </WriteStage>
+        </div>
       )}
+
+      {/* CONTROLS */}
+      <div className="controls absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
+
+        {/* PREVIOUS */}
+        <button
+          onClick={() => {
+            if (entries.length === 0) return;
+
+            if (!selectedEntryId) {
+              const last = entries[entries.length - 1];
+              setSelectedEntryId(last.id);
+              setCurrentText('');
+              setIsEditing(false);
+              return;
+            }
+
+            const idx = entries.findIndex(e => e.id === selectedEntryId);
+            if (idx > 0) {
+              const prev = entries[idx - 1];
+              setSelectedEntryId(prev.id);
+              setCurrentText('');
+              setIsEditing(false);
+            }
+          }}
+          className="sea-btn"
+        >
+          ◀ Previous
+        </button>
+
+        {/* NEW PAGE */}
+        <button
+          onClick={() => {
+            setSelectedEntryId(null);
+            setCurrentText('');
+            setIsEditing(false);
+          }}
+          className="sea-btn"
+        >
+          New Page
+        </button>
+
+        {/* EDIT */}
+        {selectedEntry && !isEditing && (
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setCurrentText(selectedEntry.content);
+            }}
+            className="sea-btn"
+          >
+            Edit
+          </button>
+        )}
+
+        {/* CANCEL EDIT */}
+        {isEditing && (
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setCurrentText('');
+            }}
+            className="sea-btn"
+          >
+            Cancel Edit
+          </button>
+        )}
+
+        {/* SAVE */}
+        <button
+          onClick={handleSave}
+          className="sea-btn"
+          disabled={saving}
+        >
+          {saving ? 'Saving...' : 'Save'}
+        </button>
+
+        {/* DELETE */}
+        {selectedEntry && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="sea-btn bg-red-200/80 hover:bg-red-300/90"
+          >
+            Delete
+          </button>
+        )}
+
+        {/* CALENDAR */}
+        <button
+          onClick={() => setShowCalendar(true)}
+          className="sea-btn"
+        >
+          📅 Calendar
+        </button>
+
+        {/* NEXT */}
+        <button
+          onClick={() => {
+            if (!selectedEntryId) return;
+            const idx = entries.findIndex(e => e.id === selectedEntryId);
+            if (idx < entries.length - 1 && idx !== -1) {
+              const next = entries[idx + 1];
+              setSelectedEntryId(next.id);
+              setCurrentText('');
+              setIsEditing(false);
+            }
+          }}
+          className="sea-btn"
+        >
+          Next ▶
+        </button>
+
+      </div>
+
+    </div>
+  </WriteStage>
+)}
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
-        /* BUTTONS */
         .sea-btn {
-          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
+          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
           color: #3b2414;
           padding: 8px 18px;
           border-radius: 9999px;
@@ -432,15 +491,16 @@ export default function JournalPage() {
         .sea-btn:hover {
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
         }
         .sea-btn:active {
           transform: scale(0.97);
         }
 
-        /* BOOK FADE */
         .fade-in-book {
           animation: fadeInBook 1.2s ease-out forwards;
         }
+
         @keyframes fadeInBook {
           0% {
             opacity: 0;
@@ -459,148 +519,37 @@ export default function JournalPage() {
           }
         }
 
-        /* JOURNAL — CODED BOOK LAYOUT (DESKTOP BASE) */
-        .journal-shell {
-          position: relative;
-          width: min(1400px, 100vw);
-          margin: 0 auto;
-          padding: 0 1.5rem 3.5rem;
+        ::-webkit-scrollbar {
+          width: 10px;
         }
 
-        .journal-book-frame {
-          position: relative;
-          width: 100%;
-          /* Match your 1536x1024 reference ratio */
-          aspect-ratio: 1536 / 1024;
-          margin: 0 auto;
-          border-radius: 18px;
-          overflow: hidden;
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-          display: flex;
-          background: radial-gradient(circle at 50% 0%, #fdf5e4 0%, #e3cda0 45%, #c29b6a 100%);
+        ::-webkit-scrollbar-track {
+          background: #a47a3b;
         }
 
-        .journal-page {
-          flex: 1;
-          padding: clamp(1.5rem, 3vw, 3rem);
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          position: relative;
-          background: repeating-linear-gradient(
-              to bottom,
-              rgba(255, 255, 255, 0.08),
-              rgba(255, 255, 255, 0.08) 1px,
-              transparent 1px,
-              transparent 22px
-            ),
-            radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.4), transparent 55%),
-            radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.25), transparent 55%),
-            linear-gradient(135deg, #fdf5e4, #e7cf9f);
+        ::-webkit-scrollbar-thumb {
+          background: #3b2414;
+          border-radius: 10px;
+          border: 2px solid #a47a3b;
         }
 
-        .journal-page-left {
-          border-right: 2px solid rgba(120, 80, 40, 0.45);
+        ::-webkit-scrollbar-thumb:hover {
+          background: #2a180d;
         }
 
-        .journal-page-right {
-          border-left: 2px solid rgba(120, 80, 40, 0.45);
+        .text-fade-in {
+          opacity: 0;
+          animation: textFadeIn 0.8s ease-out 0.2s forwards;
         }
 
-        .journal-date {
-          font-size: 0.9rem;
-          color: #4b2e1a;
-          text-align: right;
-          margin-bottom: 0.75rem;
-          opacity: 0.9;
-        }
-
-        .journal-text,
-        .journal-textarea {
-          flex: 1;
-          width: 100%;
-          color: #3b2414;
-          font-size: 1.1rem;
-          line-height: 1.5;
-          background: transparent;
-          border: none;
-          outline: none;
-          resize: none;
-          text-align: center;
-        }
-
-        .journal-textarea::placeholder {
-          color: rgba(59, 36, 20, 0.45);
-        }
-
-        .controls {
-          margin: 1.5rem auto 0 auto;
-          max-width: 900px;
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          flex-wrap: wrap;
-        }
-
-        .calendar-panel {
-          position: absolute;
-          top: 10%;
-          right: 6%;
-          max-width: 260px;
-          z-index: 10;
-        }
-
-        /* MOBILE OVERRIDES */
-        @media (max-width: 640px) {
-          .journal-shell {
-            width: 100%;
-            padding: 1.5rem 1rem 2.5rem;
+        @keyframes textFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(2px);
           }
-
-          .journal-book-frame {
-            aspect-ratio: 3 / 4;
-            border-radius: 14px;
-          }
-
-          .journal-page {
-            padding: 1.25rem;
-          }
-
-          .journal-date {
-            font-size: 0.8rem;
-            text-align: center;
-          }
-
-          .journal-text,
-          .journal-textarea {
-            font-size: 0.95rem;
-            line-height: 1.35;
-          }
-
-          .calendar-panel {
-            position: static;
-            margin: 1rem auto 0 auto;
-            width: 100%;
-            max-width: 360px;
-          }
-
-          .controls {
-            margin-top: 1.75rem;
-            width: 100%;
-            padding: 0 0.5rem 0;
-            gap: 0.75rem;
-          }
-
-          .sea-btn {
-            width: 70%;
-            max-width: 260px;
-            text-align: center;
-          }
-
-          /* Less zoomed video on mobile */
-          .book-opening-video {
-            object-fit: contain !important;
-            background: black;
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
       `}</style>

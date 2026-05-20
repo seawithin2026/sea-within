@@ -384,242 +384,148 @@ body {
   }
 }
 /* ————————————————————————————————
-   BUTTONS
-——————————————————————————————— */
-.sea-btn {
-  background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-  color: #3b2414;
-  padding: 8px 18px;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  transition: all 0.3s ease;
-  border: none;
-}
-.sea-btn:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-}
-.sea-btn:active {
-  transform: scale(0.97);
-}
-
-/* ————————————————————————————————
-   BOOK FADE-IN
-——————————————————————————————— */
-.fade-in-book {
-  animation: fadeInBook 1.2s ease-out forwards;
-}
-@keyframes fadeInBook {
-  0% {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-    filter: blur(4px);
-  }
-  60% {
-    opacity: 0.6;
-    transform: translateY(4px) scale(0.995);
-    filter: blur(1px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-/* ————————————————————————————————
-   JOURNAL — REALISTIC ANTIQUE BOOK
+   JOURNAL — DESKTOP BASE LAYOUT
 ——————————————————————————————— */
 
-.journal-shell {
-  position: relative;
-  width: min(1400px, 100vw);
-  margin: 3rem auto 0 auto; /* lowered */
-  padding: 0 1.5rem 3.5rem;
-}
-
-.journal-book-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1536 / 1024;
+.journal-parchment {
+  max-width: 900px;
+  width: 90%;
+  height: auto;
   margin: 0 auto;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-
-  /* MATCHES YOUR REAL BOOK */
-  background:
-    /* darker edges */
-    radial-gradient(circle at 0% 50%, rgba(60,40,20,0.35), transparent 55%),
-    radial-gradient(circle at 100% 50%, rgba(60,40,20,0.35), transparent 55%),
-
-    /* center spine shadow */
-    linear-gradient(to right,
-      rgba(0,0,0,0.25) 0%,
-      rgba(0,0,0,0.15) 2%,
-      rgba(0,0,0,0.05) 8%,
-      rgba(0,0,0,0) 50%,
-      rgba(0,0,0,0.05) 92%,
-      rgba(0,0,0,0.15) 98%,
-      rgba(0,0,0,0.25) 100%
-    ),
-
-    /* aged parchment base */
-    linear-gradient(135deg, #d7c29a, #b89a6e);
+  display: block;
 }
 
-.journal-page {
-  flex: 1;
-  padding: clamp(1.5rem, 3vw, 3rem);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-
-  /* REALISTIC TEXTURE */
-  background:
-    /* stains */
-    radial-gradient(circle at 20% 30%, rgba(120,90,50,0.15), transparent 60%),
-    radial-gradient(circle at 80% 70%, rgba(120,90,50,0.12), transparent 60%),
-
-    /* grain */
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.03),
-      rgba(255,255,255,0.03) 1px,
-      transparent 1px,
-      transparent 18px
-    ),
-
-    /* parchment base */
-    linear-gradient(135deg, #f3e4c3, #d9c29a);
-}
-
-.journal-page-left {
-  border-right: 2px solid rgba(90, 60, 30, 0.35);
-}
-
-.journal-page-right {
-  border-left: 2px solid rgba(90, 60, 30, 0.35);
+.writing-area {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 55%;
 }
 
 .journal-date {
-  font-size: 0.9rem;
+  position: absolute;
+  top: -8%;
+  right: 6%;
+  font-size: 0.85rem;
   color: #4b2e1a;
-  text-align: right;
-  margin-bottom: 0.75rem;
-  opacity: 0.9;
 }
 
-.journal-text,
-.journal-textarea {
-  flex: 1;
-  width: 100%;
-  color: #3b2414;
-  font-size: 1.1rem;
-  line-height: 1.5;
-  background: transparent;
-  border: none;
-  outline: none;
-  resize: none;
-  text-align: center;
-}
-
-.journal-textarea::placeholder {
-  color: rgba(59, 36, 20, 0.45);
-}
-
-/* CONTROLS */
 .controls {
-  margin: 1.75rem auto 0 auto;
-  max-width: 900px;
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   gap: 1rem;
-  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-/* CALENDAR */
 .calendar-panel {
   position: absolute;
-  top: 12%;
-  right: 6%;
-  max-width: 260px;
-  z-index: 10;
+  top: 18%;
+  right: 10%;
 }
 
 /* ————————————————————————————————
-   MOBILE — REALISTIC BOOK
+   JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  .journal-shell {
-    margin-top: 2rem;
-    padding: 1.5rem 1rem 2.5rem;
+  /* ROOT CONTAINER — allow scroll */
+  div.relative.h-screen.w-screen {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-y: auto !important;
   }
 
-  .journal-book-frame {
-    aspect-ratio: 3 / 4;
-    border-radius: 12px;
-
-    background:
-      radial-gradient(circle at 0% 50%, rgba(60,40,20,0.35), transparent 55%),
-      radial-gradient(circle at 100% 50%, rgba(60,40,20,0.35), transparent 55%),
-      linear-gradient(to right,
-        rgba(0,0,0,0.25) 0%,
-        rgba(0,0,0,0.15) 2%,
-        rgba(0,0,0,0.05) 8%,
-        rgba(0,0,0,0) 50%,
-        rgba(0,0,0,0.05) 92%,
-        rgba(0,0,0,0.15) 98%,
-        rgba(0,0,0,0.25) 100%
-      ),
-      linear-gradient(135deg, #d7c29a, #b89a6e);
+  /* LOGO STAGE — centered */
+  img[src*="sea-within-logo-page"] {
+    width: 70% !important;
+    max-width: 340px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 1rem !important;
   }
 
-  .journal-page {
-    padding: 1.25rem;
+  /* PARCHMENT — full width */
+  .journal-parchment {
+    width: 100% !important;
+    max-width: 520px !important;
+    height: auto !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
   }
 
+  /* WRITING AREA — centered + resized */
+  .writing-area {
+    left: 50% !important;
+    top: 20% !important;
+    width: 78% !important;
+    height: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  /* DATE — centered above text */
   .journal-date {
-    font-size: 0.8rem;
-    text-align: center;
+    top: -10% !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    font-size: 0.7rem !important;
+    text-align: center !important;
   }
 
-  .journal-text,
-  .journal-textarea {
-    font-size: 0.95rem;
-    line-height: 1.35;
+  /* ENTRY TEXT + TEXTAREA — readable */
+  .writing-area textarea,
+  .writing-area .ink-writing {
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    padding: 0.4rem !important;
   }
 
+  /* CALENDAR PANEL — centered modal */
   .calendar-panel {
-    position: static;
-    margin: 1rem auto 0 auto;
-    width: 100%;
-    max-width: 360px;
+    top: 8% !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    width: 90% !important;
+    max-height: 60vh !important;
+    padding: 1rem !important;
   }
 
+  /* DELETE CONFIRM MODAL */
+  .delete-modal {
+    width: 90% !important;
+    max-width: 360px !important;
+    padding: 1.25rem !important;
+  }
+
+  /* CONTROLS — stacked + centered */
   .controls {
-    margin-top: 1.75rem;
-    width: 100%;
-    padding: 0 0.5rem 0;
-    gap: 0.75rem;
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    margin-top: 1.75rem !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    padding: 0 1rem 2rem !important;
+    z-index: 5 !important;
   }
 
   .sea-btn {
-    width: 70%;
-    max-width: 260px;
-    text-align: center;
-  }
-
-  .book-opening-video {
-    object-fit: contain !important;
-    background: black;
+    width: 70% !important;
+    max-width: 260px !important;
+    text-align: center !important;
   }
 }
+
 
 /* ————————————————————————————————
    WISDOM BOARD — MOBILE FIXES ONLY
