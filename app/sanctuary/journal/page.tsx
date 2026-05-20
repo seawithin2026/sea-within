@@ -603,19 +603,24 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-    .journal-parchment {
-width: auto !important;
-  height: calc(100vh - 40x) !important; /* fills screen but leaves room */
+   /* TASK 4 — Make the book fill almost the full screen height on mobile */
+.journal-parchment {
+  width: auto !important;
+
+  /* FULL SCREEN HEIGHT — minus a tiny space for buttons */
+  height: calc(100vh - 40px) !important;
   max-height: calc(100vh - 40px) !important;
+
   object-fit: contain !important;
 
   /* Center horizontally */
   margin-left: auto !important;
   margin-right: auto !important;
 
-  /* Slight shift toward the right (from Task 1) */
+  /* Keep slight right shift from Task 1 */
   transform: translateX(20px) !important;
 }
+
     .writing-area {
       /* mobile-only changes go here */
     }
@@ -628,13 +633,13 @@ width: auto !important;
       /* mobile-only changes go here */
     }
 
-   /* TASK 3 — Make buttons smaller on mobile */
+  /* TASK 3 — Make buttons even smaller on mobile */
 .sea-btn {
-  padding: 6px 14px !important;   /* smaller padding */
-  font-size: 0.75rem !important;  /* smaller text */
-  min-width: 100px !important;    /* narrower buttons */
+  padding: 4px 10px !important;     /* smaller padding */
+  font-size: 0.68rem !important;    /* smaller text */
+  min-width: 85px !important;       /* narrower buttons */
   border-radius: 9999px !important;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25) !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.22) !important;
 }
 
   }
