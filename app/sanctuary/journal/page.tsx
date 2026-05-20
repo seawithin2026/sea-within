@@ -515,7 +515,7 @@ export default function JournalPage() {
   .journal-fixed-canvas {
     width: auto !important;
     height: auto !important;
-     margin-left: 40px !important; /* move book to the right */
+     margin-left: 80px !important; /* move book to the right */
     display: flex !important;
     justify-content: center !important;
   }
