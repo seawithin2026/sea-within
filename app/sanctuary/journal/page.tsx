@@ -19,12 +19,13 @@ const WriteStage = React.memo(function WriteStage({ children }: { children: Reac
   return (
     <div
       key="write-stage"
-      className="absolute inset-0 fade-in-book bg-black flex items-center justify-center"
+      className="journal-write-stage absolute inset-0 fade-in-book bg-black flex items-center justify-center"
     >
       {children}
     </div>
   );
 });
+
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
@@ -263,7 +264,7 @@ export default function JournalPage() {
 {/* WRITE STAGE */}
 {stage === 'write' && (
   <WriteStage>
-    <div className="journal-write-stage relative w-full flex items-center justify-center">
+    <div className="relative w-full h-full flex items-center justify-center">
       {/* Parchment */}
       <img
         src="/images/parchment-page.png"
@@ -488,11 +489,10 @@ export default function JournalPage() {
         </WriteStage>
       )}
 
-    {/* GLOBAL STYLES */}
+   {/* GLOBAL STYLES */}
 <style jsx global>{`
   /* ————————————————————————————————
      DESKTOP FIREWALL — PROTECT DESKTOP FOREVER
-     Prevents desktop from ever entering mobile mode
   ———————————————————————————————— */
   .journal-fixed-wrapper,
   .journal-fixed-canvas {
@@ -591,10 +591,8 @@ export default function JournalPage() {
 
   /* ————————————————————————————————
      MOBILE‑ONLY SANDBOX — DESKTOP UNTOUCHABLE
-     All mobile overrides go here
   ———————————————————————————————— */
   @media (max-width: 640px) {
-
     .journal-fixed-wrapper {
       /* mobile-only changes go here */
     }
@@ -603,26 +601,20 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-  @media (max-width: 640px) {
-
-    .journal-fixed-wrapper {
-      /* mobile-only changes go here */
-    }
-
-    .journal-fixed-canvas {
-      /* mobile-only changes go here */
-    }
-
-    /* NEW: container that controls the book height on mobile */
+    /* Stop WriteStage from locking fullscreen flex on mobile */
     .journal-write-stage {
-      height: calc(100vh - 48px) !important; /* ~1 inch at bottom */
+      position: relative !important;
+      inset: unset !important;
+      display: block !important;
+      background: transparent !important;
+      height: auto !important;
     }
 
-    /* TASK 4 — Book fills screen height with ~1 inch bottom space */
+    /* Book fills screen height with ~1 inch bottom space */
     .journal-parchment {
       width: auto !important;
-      height: 100% !important;
-      max-height: 100% !important;
+      height: calc(100vh - 48px) !important;
+      max-height: calc(100vh - 48px) !important;
       object-fit: contain !important;
       margin-left: auto !important;
       margin-right: auto !important;
@@ -641,16 +633,17 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-    /* TASK 3 — Make buttons even smaller on mobile */
+    /* Smaller buttons on mobile */
     .sea-btn {
       padding: 4px 10px !important;
       font-size: 0.68rem !important;
       min-width: 85px !important;
       border-radius: 9999px !important;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.22) !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
     }
   }
 `}</style>
+
 
     </div>
   );
