@@ -488,84 +488,143 @@ export default function JournalPage() {
         </WriteStage>
       )}
 
-      {/* GLOBAL STYLES */}
-      <style jsx global>{`
-        .sea-btn {
-          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
-          color: #3b2414;
-          padding: 8px 18px;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-          transition: all 0.3s ease;
-          border: none;
-        }
-        .sea-btn:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
-        }
-        .sea-btn:active {
-          transform: scale(0.97);
-        }
+    {/* GLOBAL STYLES */}
+<style jsx global>{`
+  /* ————————————————————————————————
+     DESKTOP FIREWALL — PROTECT DESKTOP FOREVER
+     Prevents desktop from ever entering mobile mode
+  ———————————————————————————————— */
+  .journal-fixed-wrapper,
+  .journal-fixed-canvas {
+    min-width: 900px !important;
+  }
 
-        .fade-in-book {
-          animation: fadeInBook 1.2s ease-out forwards;
-        }
+  /* ————————————————————————————————
+     BUTTON STYLES
+  ———————————————————————————————— */
+  .sea-btn {
+    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
+    color: #3b2414;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+    border: none;
+  }
 
-        @keyframes fadeInBook {
-          0% {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-            filter: blur(4px);
-          }
-          60% {
-            opacity: 0.6;
-            transform: translateY(4px) scale(0.995);
-            filter: blur(1px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0);
-          }
-        }
+  .sea-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
+  }
 
-        ::-webkit-scrollbar {
-          width: 10px;
-        }
+  .sea-btn:active {
+    transform: scale(0.97);
+  }
 
-        ::-webkit-scrollbar-track {
-          background: #a47a3b;
-        }
+  /* ————————————————————————————————
+     BOOK FADE‑IN ANIMATION
+  ———————————————————————————————— */
+  .fade-in-book {
+    animation: fadeInBook 1.2s ease-out forwards;
+  }
 
-        ::-webkit-scrollbar-thumb {
-          background: #3b2414;
-          border-radius: 10px;
-          border: 2px solid #a47a3b;
-        }
+  @keyframes fadeInBook {
+    0% {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      filter: blur(4px);
+    }
+    60% {
+      opacity: 0.6;
+      transform: translateY(4px) scale(0.995);
+      filter: blur(1px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
 
-        ::-webkit-scrollbar-thumb:hover {
-          background: #2a180d;
-        }
+  /* ————————————————————————————————
+     SCROLLBAR
+  ———————————————————————————————— */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
 
-        .text-fade-in {
-          opacity: 0;
-          animation: textFadeIn 0.8s ease-out 0.2s forwards;
-        }
+  ::-webkit-scrollbar-track {
+    background: #a47a3b;
+  }
 
-        @keyframes textFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(2px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+  ::-webkit-scrollbar-thumb {
+    background: #3b2414;
+    border-radius: 10px;
+    border: 2px solid #a47a3b;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2a180d;
+  }
+
+  /* ————————————————————————————————
+     TEXT FADE‑IN
+  ———————————————————————————————— */
+  .text-fade-in {
+    opacity: 0;
+    animation: textFadeIn 0.8s ease-out 0.2s forwards;
+  }
+
+  @keyframes textFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(2px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ————————————————————————————————
+     MOBILE‑ONLY SANDBOX — DESKTOP UNTOUCHABLE
+     All mobile overrides go here
+  ———————————————————————————————— */
+  @media (max-width: 640px) {
+
+    .journal-fixed-wrapper {
+      /* mobile-only changes go here */
+    }
+
+    .journal-fixed-canvas {
+      /* mobile-only changes go here */
+    }
+
+    .journal-parchment {
+      /* mobile-only changes go here */
+    }
+
+    .writing-area {
+      /* mobile-only changes go here */
+    }
+
+    .controls {
+      /* mobile-only changes go here */
+    }
+
+    .calendar-panel {
+      /* mobile-only changes go here */
+    }
+
+    .sea-btn {
+      /* mobile-only changes go here */
+    }
+  }
+`}</style>
+
     </div>
   );
 }
