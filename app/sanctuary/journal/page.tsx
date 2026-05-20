@@ -260,16 +260,16 @@ export default function JournalPage() {
         </div>
       )}
 
-      {/* WRITE STAGE */}
-      {stage === 'write' && (
-        <WriteStage>
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Parchment */}
-            <img
-  src="/images/parchment-page.png"
-  className="journal-parchment pointer-events-none select-none"
-/>
-
+    {/* WRITE STAGE */}
+{stage === 'write' && (
+  <WriteStage>
+    <div className="write-stage-container relative w-full flex items-center justify-center">
+      
+      {/* Parchment */}
+      <img
+        src="/images/parchment-page.png"
+        className="journal-parchment pointer-events-none select-none"
+      />
 
             {/* WRITING AREA */}
             <div
