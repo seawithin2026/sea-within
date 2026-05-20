@@ -260,26 +260,25 @@ export default function JournalPage() {
         </div>
       )}
 
-    {/* WRITE STAGE */}
+{/* WRITE STAGE */}
 {stage === 'write' && (
   <WriteStage>
-    <div className="write-stage-container relative w-full flex items-center justify-center">
-      
+    <div className="journal-write-stage relative w-full flex items-center justify-center">
       {/* Parchment */}
       <img
         src="/images/parchment-page.png"
         className="journal-parchment pointer-events-none select-none"
       />
 
-            {/* WRITING AREA */}
-            <div
-              className="absolute"
-              style={{
-                left: '53%',
-                top: '18%',
-                width: '20%',
-                height: '60%',
-              }}
+      {/* WRITING AREA */}
+      <div
+        className="absolute"
+        style={{
+          left: '53%',
+          top: '18%',
+          width: '20%',
+          height: '60%',
+        }}
             >
               {/* DATE */}
               <div
@@ -604,23 +603,31 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-/* TASK 4 — Book fills screen height with ~1 inch bottom space */
-.journal-parchment {
-  width: auto !important;
+  @media (max-width: 640px) {
 
-  /* Full height minus ~1 inch (48px) */
-  height: calc(100vh - 48px) !important;
-  max-height: calc(100vh - 48px) !important;
+    .journal-fixed-wrapper {
+      /* mobile-only changes go here */
+    }
 
-  object-fit: contain !important;
+    .journal-fixed-canvas {
+      /* mobile-only changes go here */
+    }
 
-  /* Center horizontally */
-  margin-left: auto !important;
-  margin-right: auto !important;
+    /* NEW: container that controls the book height on mobile */
+    .journal-write-stage {
+      height: calc(100vh - 48px) !important; /* ~1 inch at bottom */
+    }
 
-  /* Slight right shift from Task 1 */
-  transform: translateX(20px) !important;
-}
+    /* TASK 4 — Book fills screen height with ~1 inch bottom space */
+    .journal-parchment {
+      width: auto !important;
+      height: 100% !important;
+      max-height: 100% !important;
+      object-fit: contain !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      transform: translateX(20px) !important;
+    }
 
     .writing-area {
       /* mobile-only changes go here */
@@ -634,15 +641,14 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-  /* TASK 3 — Make buttons even smaller on mobile */
-.sea-btn {
-  padding: 4px 10px !important;     /* smaller padding */
-  font-size: 0.68rem !important;    /* smaller text */
-  min-width: 85px !important;       /* narrower buttons */
-  border-radius: 9999px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.22) !important;
-}
-
+    /* TASK 3 — Make buttons even smaller on mobile */
+    .sea-btn {
+      padding: 4px 10px !important;
+      font-size: 0.68rem !important;
+      min-width: 85px !important;
+      border-radius: 9999px !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.22) !important;
+    }
   }
 `}</style>
 
