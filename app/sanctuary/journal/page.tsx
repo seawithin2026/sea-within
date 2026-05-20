@@ -605,7 +605,7 @@ export default function JournalPage() {
 
     .journal-parchment {
 width: auto !important;
-  height: calc(120vh - 120px) !important; /* fills screen but leaves room */
+  height: calc(100vh - 120px) !important; /* fills screen but leaves room */
   max-height: calc(120vh - 120px) !important;
   object-fit: contain !important;
 
