@@ -10,14 +10,12 @@ export default function JournalMirrorPage() {
   const [mode, setMode] = useState<"inactive" | "active_support">("inactive");
   const [listening, setListening] = useState(false);
 
-  const [themes, setThemes] = useState<{ theme: string; createdAt: string }[]>([]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
   useEffect(scrollToBottom, [messages]);
 
+  // CAMERA
   useEffect(() => {
     async function startCamera() {
       try {
@@ -25,121 +23,126 @@ export default function JournalMirrorPage() {
           video: true,
           audio: false,
         });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (err) {
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch {
         addMessage("Unable to access camera. Please allow permissions.");
       }
     }
     startCamera();
   }, []);
 
+  // ADD MESSAGE
   const addMessage = (text: string) => {
     setMessages((prev) => [...prev, text]);
   };
 
-  const logTheme = (theme: string) => {
-    setThemes((prev) => [
-      ...prev,
-      { theme, createdAt: new Date().toISOString() },
-    ]);
-  };
-
-  const containsActivationPhrase = (text: string) => {
-    const phrases = [
-      "i need support",
-      "i need guidance",
-      "i need comfort",
-      "talk to me",
-      "i need you",
-    ];
-    return phrases.some((p) => text.includes(p));
-  };
-
+  // CRISIS DETECTION
   const detectCrisis = (text: string) => {
-    const crisisKeywords = [
+    const crisis = [
       "kill myself",
       "end my life",
       "don't want to live",
-      "dont want to live",
       "hurt myself",
     ];
-    return crisisKeywords.some((k) => text.includes(k));
+    return crisis.some((k) => text.includes(k));
   };
 
-  const crisisResponse = () => {
+  const crisisResponse = () =>
+    "I’m really glad you shared this. You deserve support from someone who can be with you in a real, human way. If you can, consider reaching out to someone you trust or a trained listener in your area.";
+
+  // INTERACTION MODE — gentle acknowledgments
+  const interactionResponses = [
+    "You’re noticing something real in yourself.",
+    "You’re meeting yourself honestly in this moment.",
+    "You’re giving space to what you’re feeling.",
+    "You’re seeing yourself with clarity.",
+    "You’re acknowledging your truth.",
+    "You’re showing up for yourself right now.",
+    "You’re letting yourself be seen.",
+  ];
+
+  const getInteractionResponse = () =>
+    interactionResponses[Math.floor(Math.random() * interactionResponses.length)];
+
+  // KNOWLEDGE MODE — detect “how do I / what is / steps to”
+  const isKnowledgeQuestion = (text: string) => {
     return (
-      "I’m really glad you shared this. You deserve support from someone who can be with you in a real, human way. " +
-      "If you can, consider reaching out to someone you trust or a trained listener in your area."
+      text.startsWith("how do i") ||
+      text.startsWith("what is") ||
+      text.startsWith("steps to") ||
+      text.startsWith("how can i") ||
+      text.startsWith("explain") ||
+      text.startsWith("teach me") ||
+      text.startsWith("show me how")
     );
   };
 
-  const detectTone = (text: string) => {
-    if (text.includes("tired") || text.includes("overwhelmed")) {
-      logTheme("stress");
-      return "stressed";
+  // KNOWLEDGE ENGINE — safe, factual, non‑advice explanations
+  const knowledgeEngine = (text: string) => {
+    if (text.includes("better myself")) {
+      return (
+        "Here are some ways people work on bettering themselves:\n" +
+        "• Understanding their values\n" +
+        "• Building small consistent habits\n" +
+        "• Practicing self-awareness\n" +
+        "• Learning new skills\n" +
+        "• Taking care of their physical and emotional health\n" +
+        "• Reflecting on what matters to them\n" +
+        "These are general approaches anyone can explore."
+      );
     }
-    if (text.includes("sad") || text.includes("lonely")) {
-      logTheme("sadness");
-      return "sad";
+
+    if (text.includes("find my qualities") || text.includes("my qualities")) {
+      return (
+        "People identify their qualities by:\n" +
+        "• Noticing what comes naturally to them\n" +
+        "• Observing how they act under stress or pressure\n" +
+        "• Recognizing what others appreciate about them\n" +
+        "• Reflecting on moments they felt proud or aligned\n" +
+        "• Understanding what they value and why\n" +
+        "Qualities are patterns in how you show up, not perfection."
+      );
     }
-    if (text.includes("proud") || text.includes("accomplished")) {
-      logTheme("pride");
-      return "proud";
+
+    if (text.includes("confidence")) {
+      return (
+        "Confidence often grows from:\n" +
+        "• Keeping small promises to yourself\n" +
+        "• Practicing skills repeatedly\n" +
+        "• Understanding your strengths\n" +
+        "• Allowing yourself to try without perfection\n" +
+        "• Building trust in your own actions\n" +
+        "It’s a gradual process, not a fixed trait."
+      );
     }
-    if (text.includes("happy") || text.includes("grateful")) {
-      logTheme("joy");
-      return "joyful";
-    }
-    if (text.includes("not good enough") || text.includes("worthless")) {
-      logTheme("self_doubt");
-      return "self_doubt";
-    }
-    return "neutral";
+
+    return "I hear your question. Here’s what I found: people often explore this by learning, observing themselves, and taking small steps toward clarity.";
   };
 
-  const supportiveLine = (tone: string) => {
-    switch (tone) {
-      case "sad":
-        return "I’m here with you. You’re not alone in this moment.";
-      case "stressed":
-        return "You’ve been carrying a lot. It’s okay to pause.";
-      case "joyful":
-        return "I’m glad you’re feeling lighter today.";
-      case "self_doubt":
-        return "You deserve kindness, especially from yourself.";
-      case "proud":
-        return "You’ve worked hard for this. Let yourself feel it.";
-      default:
-        return "Take your time. You don’t have to rush anything here.";
-    }
-  };
-
+  // HANDLE TRANSCRIPT
   const handleTranscript = (raw: string) => {
     if (!raw) return;
     const text = raw.toLowerCase().trim();
     if (!text) return;
 
-    if (containsActivationPhrase(text)) {
-      setMode("active_support");
-      addMessage("Hello beautiful soul. I’m here with you.");
-      return;
-    }
-
+    // CRISIS
     if (detectCrisis(text)) {
       addMessage(crisisResponse());
       return;
     }
 
-    const tone = detectTone(text);
+    // KNOWLEDGE MODE
+    if (isKnowledgeQuestion(text)) {
+      addMessage("I hear your question.");
+      addMessage(knowledgeEngine(text));
+      return;
+    }
 
-    if (mode !== "active_support") return;
-
-    addMessage(supportiveLine(tone));
+    // INTERACTION MODE
+    addMessage(getInteractionResponse());
   };
 
-  // --- FREE SPEECH-TO-TEXT (WEB SPEECH API) ---
+  // SPEECH-TO-TEXT
   const SpeechRecognition =
     typeof window !== "undefined"
       ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
@@ -164,7 +167,7 @@ export default function JournalMirrorPage() {
     };
 
     recognition.onerror = () => {
-      addMessage("Voice recognition error. Try again when you're ready.");
+      addMessage("Voice recognition error. You can try again.");
     };
 
     recognition.onend = () => {
@@ -185,6 +188,7 @@ export default function JournalMirrorPage() {
     }
   };
 
+  // DEBUG INPUT
   const handleDebugInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const value = (e.target as HTMLInputElement).value;
@@ -196,12 +200,10 @@ export default function JournalMirrorPage() {
   return (
     <div className="w-screen h-screen flex flex-col bg-[#050608] text-[#f7f5f2]">
       <header className="h-14 flex items-center px-6 border-b border-white/10">
-        <div className="tracking-widest uppercase text-sm opacity-80">
-          Sea Within
-        </div>
+        <div className="tracking-widest uppercase text-sm opacity-80">Sea Within</div>
       </header>
 
-      <main className="flex flex-1 overflow-hidden">
+      <main className="flex flex-1 overflow-hidden flex-col md:flex-row">
         <video
           ref={videoRef}
           autoPlay
@@ -209,16 +211,13 @@ export default function JournalMirrorPage() {
           className="flex-1 object-cover transform -scale-x-100 brightness-[1.05] contrast-[1.02]"
         />
 
-        <aside className="w-[28%] max-w-[420px] min-w-[260px] p-8 bg-gradient-to-b from-[#14151b] to-[#050608] border-l border-white/10 flex flex-col">
-          <div className="uppercase tracking-widest text-xs opacity-70">
-            Sea Within Mirror
-          </div>
+        {/* Desktop Panel */}
+        <aside className="hidden md:flex w-[28%] max-w-[420px] min-w-[260px] p-8 bg-gradient-to-b from-[#14151b] to-[#050608] border-l border-white/10 flex-col">
+          <div className="uppercase tracking-widest text-xs opacity-70">Sea Within Mirror</div>
 
           <div className="flex-1 overflow-y-auto mt-4 space-y-3 pr-2">
             {messages.map((m, i) => (
-              <div key={i} className="text-sm leading-relaxed opacity-90">
-                {m}
-              </div>
+              <div key={i} className="text-sm leading-relaxed opacity-90">{m}</div>
             ))}
             <div ref={messagesEndRef} />
           </div>
@@ -226,17 +225,11 @@ export default function JournalMirrorPage() {
           <button
             onClick={toggleListening}
             className={`mt-4 py-2 px-4 rounded-full border text-sm transition ${
-              listening
-                ? "bg-white/10 border-white/40"
-                : "bg-transparent border-white/20"
+              listening ? "bg-white/10 border-white/40" : "bg-transparent border-white/20"
             }`}
           >
             {listening ? "Listening..." : "Start Listening"}
           </button>
-
-          <p className="text-xs opacity-60 mt-3">
-            Speak freely. When you’re ready for guidance, say your activation phrase.
-          </p>
 
           <div className="mt-4 text-xs opacity-70">
             Dev test: type text as if spoken, press Enter.
@@ -247,6 +240,25 @@ export default function JournalMirrorPage() {
             />
           </div>
         </aside>
+
+        {/* Mobile Drawer */}
+        <div className="md:hidden absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#050608] to-[#14151b] p-4 border-t border-white/10">
+          <div className="max-h-[40vh] overflow-y-auto space-y-3 mb-3">
+            {messages.map((m, i) => (
+              <div key={i} className="text-sm leading-relaxed opacity-90">{m}</div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <button
+            onClick={toggleListening}
+            className={`w-full py-2 px-4 rounded-full border text-sm transition ${
+              listening ? "bg-white/10 border-white/40" : "bg-transparent border-white/20"
+            }`}
+          >
+            {listening ? "Listening..." : "Start Listening"}
+          </button>
+        </div>
       </main>
     </div>
   );
