@@ -604,7 +604,17 @@ export default function JournalPage() {
     }
 
     .journal-parchment {
-      /* mobile-only changes go here */
+       width: auto !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  object-fit: contain !important;
+
+  /* Center horizontally */
+  margin-left: auto !important;
+  margin-right: auto !important;
+
+  /* Shift slightly toward the right */
+  transform: translateX(20px) !important;
     }
 
     .writing-area {
