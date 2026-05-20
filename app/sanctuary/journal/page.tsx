@@ -515,7 +515,7 @@ export default function JournalPage() {
   .journal-fixed-canvas {
     width: auto !important;
     height: auto !important;
-    margin: 0 auto !important;
+     margin-left: 40px !important; /* move book to the right */
     display: flex !important;
     justify-content: center !important;
   }
@@ -526,7 +526,7 @@ export default function JournalPage() {
     height: 100vh !important;     /* FULL HEIGHT */
     max-height: 100vh !important;
     object-fit: contain !important;
-    margin: 0 auto !important;
+     margin-left: 40px !important;
   }
 
   /* WRITING AREA — temporary mobile alignment */
