@@ -604,19 +604,18 @@ export default function JournalPage() {
     }
 
     .journal-parchment {
-       width: auto !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
+width: auto !important;
+  height: calc(100vh - 120px) !important; /* fills screen but leaves room */
+  max-height: calc(100vh - 120px) !important;
   object-fit: contain !important;
 
   /* Center horizontally */
   margin-left: auto !important;
   margin-right: auto !important;
 
-  /* Shift slightly toward the right */
+  /* Slight shift toward the right (from Task 1) */
   transform: translateX(20px) !important;
-    }
-
+}
     .writing-area {
       /* mobile-only changes go here */
     }
