@@ -431,7 +431,7 @@ export default function JournalPage() {
       {/* GLOBAL STYLES */}
       <style jsx global>{`
 /* ————————————————————————————————
-   FIXED DESKTOP SIZE WRAPPER
+   FIXED DESKTOP SIZE WRAPPER  (RESTORED)
 ——————————————————————————————— */
 .journal-fixed-wrapper {
   width: 100vw;
@@ -453,7 +453,7 @@ export default function JournalPage() {
 }
 
 /* ————————————————————————————————
-   JOURNAL — DESKTOP BASE LAYOUT
+   JOURNAL — DESKTOP BASE LAYOUT (RESTORED)
 ——————————————————————————————— */
 .journal-parchment {
   max-width: 900px;
@@ -499,7 +499,7 @@ export default function JournalPage() {
 }
 
 /* ————————————————————————————————
-   JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
+   JOURNAL — MOBILE LAYOUT (ONLY MOBILE)
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
@@ -511,22 +511,22 @@ export default function JournalPage() {
     padding-top: 10px !important;
   }
 
-  /* CANVAS — allow scaling */
+  /* CANVAS — allow scaling + move right */
   .journal-fixed-canvas {
     width: auto !important;
     height: auto !important;
-     margin-left: 80px !important; /* move book to the right */
+    margin-left: 80px !important; /* move book to the right */
     display: flex !important;
     justify-content: center !important;
   }
 
-  /* BOOK — FULL HEIGHT, centered */
+  /* BOOK — FULL HEIGHT, centered, shifted */
   .journal-parchment {
     width: auto !important;
-    height: 100vh !important;     /* FULL HEIGHT */
+    height: 100vh !important;
     max-height: 100vh !important;
     object-fit: contain !important;
-     margin-left: 40px !important;
+    margin-left: 40px !important; /* shift book right */
   }
 
   /* WRITING AREA — temporary mobile alignment */
@@ -570,7 +570,9 @@ export default function JournalPage() {
     padding: 1.25rem !important;
   }
 
-  /* CONTROLS — horizontal under book */
+  /* ————————————————————————————————
+     CONTROLS — horizontal under book (FIXED)
+  ———————————————————————————————— */
   .controls {
     position: relative !important;
     bottom: auto !important;
