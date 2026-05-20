@@ -266,9 +266,10 @@ export default function JournalPage() {
           <div className="relative w-full h-full flex items-center justify-center">
             {/* Parchment */}
             <img
-              src="/images/parchment-page.png"
-              className="w-full h-full object-contain pointer-events-none select-none"
-            />
+  src="/images/parchment-page.png"
+  className="journal-parchment pointer-events-none select-none"
+/>
+
 
             {/* WRITING AREA */}
             <div
@@ -603,13 +604,13 @@ export default function JournalPage() {
       /* mobile-only changes go here */
     }
 
-   /* TASK 4 — Make the book fill almost the full screen height on mobile */
+/* TASK 4 — Book fills screen height with ~1 inch bottom space */
 .journal-parchment {
   width: auto !important;
 
-  /* FULL SCREEN HEIGHT — minus a tiny space for buttons */
-  height: calc(100vh - 40px) !important;
-  max-height: calc(100vh - 40px) !important;
+  /* Full height minus ~1 inch (48px) */
+  height: calc(100vh - 48px) !important;
+  max-height: calc(100vh - 48px) !important;
 
   object-fit: contain !important;
 
@@ -617,7 +618,7 @@ export default function JournalPage() {
   margin-left: auto !important;
   margin-right: auto !important;
 
-  /* Keep slight right shift from Task 1 */
+  /* Slight right shift from Task 1 */
   transform: translateX(20px) !important;
 }
 
