@@ -5,31 +5,48 @@ import { useEffect, useRef, useState } from "react";
 export default function JournalMirrorPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const [messages, setMessages] = useState<string[]>([]);
-  const [mode, setMode] = useState<"inactive" | "active_support">("inactive");
   const [listening, setListening] = useState(false);
+  const [cameraOn, setCameraOn] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
   useEffect(scrollToBottom, [messages]);
 
-  // CAMERA
-  useEffect(() => {
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false,
-        });
-        if (videoRef.current) videoRef.current.srcObject = stream;
-      } catch {
-        addMessage("Unable to access camera. Please allow permissions.");
-      }
+  // CAMERA CONTROL
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch {
+      addMessage("Camera permission denied or unavailable.");
     }
-    startCamera();
-  }, []);
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) videoRef.current.srcObject = null;
+  };
+
+  const toggleCamera = () => {
+    if (!cameraOn) {
+      setCameraOn(true);
+      startCamera();
+    } else {
+      setCameraOn(false);
+      stopCamera();
+    }
+  };
 
   // ADD MESSAGE
   const addMessage = (text: string) => {
@@ -50,7 +67,7 @@ export default function JournalMirrorPage() {
   const crisisResponse = () =>
     "I’m really glad you shared this. You deserve support from someone who can be with you in a real, human way. If you can, consider reaching out to someone you trust or a trained listener in your area.";
 
-  // INTERACTION MODE — gentle acknowledgments
+  // INTERACTION MODE
   const interactionResponses = [
     "You’re noticing something real in yourself.",
     "You’re meeting yourself honestly in this moment.",
@@ -64,7 +81,7 @@ export default function JournalMirrorPage() {
   const getInteractionResponse = () =>
     interactionResponses[Math.floor(Math.random() * interactionResponses.length)];
 
-  // KNOWLEDGE MODE — detect “how do I / what is / steps to”
+  // KNOWLEDGE MODE
   const isKnowledgeQuestion = (text: string) => {
     return (
       text.startsWith("how do i") ||
@@ -77,7 +94,6 @@ export default function JournalMirrorPage() {
     );
   };
 
-  // KNOWLEDGE ENGINE — safe, factual, non‑advice explanations
   const knowledgeEngine = (text: string) => {
     if (text.includes("better myself")) {
       return (
@@ -119,29 +135,6 @@ export default function JournalMirrorPage() {
     return "I hear your question. Here’s what I found: people often explore this by learning, observing themselves, and taking small steps toward clarity.";
   };
 
-  // HANDLE TRANSCRIPT
-  const handleTranscript = (raw: string) => {
-    if (!raw) return;
-    const text = raw.toLowerCase().trim();
-    if (!text) return;
-
-    // CRISIS
-    if (detectCrisis(text)) {
-      addMessage(crisisResponse());
-      return;
-    }
-
-    // KNOWLEDGE MODE
-    if (isKnowledgeQuestion(text)) {
-      addMessage("I hear your question.");
-      addMessage(knowledgeEngine(text));
-      return;
-    }
-
-    // INTERACTION MODE
-    addMessage(getInteractionResponse());
-  };
-
   // SPEECH-TO-TEXT
   const SpeechRecognition =
     typeof window !== "undefined"
@@ -150,7 +143,7 @@ export default function JournalMirrorPage() {
 
   const recognitionRef = useRef<any>(null);
 
-  const startSpeechRecognition = () => {
+  const startListening = () => {
     if (!SpeechRecognition) {
       addMessage("Speech recognition is not supported in this browser.");
       return;
@@ -167,7 +160,8 @@ export default function JournalMirrorPage() {
     };
 
     recognition.onerror = () => {
-      addMessage("Voice recognition error. You can try again.");
+      addMessage("Voice recognition error.");
+      setListening(false);
     };
 
     recognition.onend = () => {
@@ -175,17 +169,42 @@ export default function JournalMirrorPage() {
     };
 
     recognition.start();
-    return recognition;
+    recognitionRef.current = recognition;
+  };
+
+  const stopListening = () => {
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
   };
 
   const toggleListening = () => {
     if (!listening) {
       setListening(true);
-      recognitionRef.current = startSpeechRecognition();
+      startListening();
     } else {
       setListening(false);
-      recognitionRef.current?.stop();
+      stopListening();
     }
+  };
+
+  // HANDLE TRANSCRIPT
+  const handleTranscript = (raw: string) => {
+    if (!raw) return;
+    const text = raw.toLowerCase().trim();
+    if (!text) return;
+
+    if (detectCrisis(text)) {
+      addMessage(crisisResponse());
+      return;
+    }
+
+    if (isKnowledgeQuestion(text)) {
+      addMessage("I hear your question.");
+      addMessage(knowledgeEngine(text));
+      return;
+    }
+
+    addMessage(getInteractionResponse());
   };
 
   // DEBUG INPUT
@@ -199,37 +218,60 @@ export default function JournalMirrorPage() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-[#050608] text-[#f7f5f2]">
-      <header className="h-14 flex items-center px-6 border-b border-white/10">
-        <div className="tracking-widest uppercase text-sm opacity-80">Sea Within</div>
+
+      {/* HEADER WITH CAMERA + MIC BUTTONS */}
+      <header className="h-14 flex items-center px-4 border-b border-white/10 gap-3">
+
+        {/* CAMERA BUTTON */}
+        <button
+          onClick={toggleCamera}
+          className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition hover:bg-white/10"
+        >
+          <span
+            className={`transition-opacity ${
+              cameraOn ? "opacity-100" : "opacity-40"
+            }`}
+          >
+            📷
+          </span>
+        </button>
+
+        {/* MIC BUTTON */}
+        <button
+          onClick={toggleListening}
+          className="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center transition hover:bg-white/10"
+        >
+          <span
+            className={`transition-opacity ${
+              listening ? "opacity-100" : "opacity-40"
+            }`}
+          >
+            🎤
+          </span>
+        </button>
+
       </header>
 
       <main className="flex flex-1 overflow-hidden flex-col md:flex-row">
+
+        {/* MIRROR */}
         <video
           ref={videoRef}
           autoPlay
           playsInline
-          className="flex-1 object-cover transform -scale-x-100 brightness-[1.05] contrast-[1.02]"
+          className={`flex-1 object-cover transform -scale-x-100 brightness-[1.05] contrast-[1.02] ${
+            cameraOn ? "opacity-100" : "opacity-0"
+          } transition-opacity duration-300`}
         />
 
-        {/* Desktop Panel */}
+        {/* DESKTOP PANEL */}
         <aside className="hidden md:flex w-[28%] max-w-[420px] min-w-[260px] p-8 bg-gradient-to-b from-[#14151b] to-[#050608] border-l border-white/10 flex-col">
-          <div className="uppercase tracking-widest text-xs opacity-70">Sea Within Mirror</div>
-
-          <div className="flex-1 overflow-y-auto mt-4 space-y-3 pr-2">
+          <div className="flex-1 overflow-y-auto mt-2 space-y-3 pr-2 min-h-[200px]">
             {messages.map((m, i) => (
               <div key={i} className="text-sm leading-relaxed opacity-90">{m}</div>
             ))}
             <div ref={messagesEndRef} />
           </div>
-
-          <button
-            onClick={toggleListening}
-            className={`mt-4 py-2 px-4 rounded-full border text-sm transition ${
-              listening ? "bg-white/10 border-white/40" : "bg-transparent border-white/20"
-            }`}
-          >
-            {listening ? "Listening..." : "Start Listening"}
-          </button>
 
           <div className="mt-4 text-xs opacity-70">
             Dev test: type text as if spoken, press Enter.
@@ -241,24 +283,16 @@ export default function JournalMirrorPage() {
           </div>
         </aside>
 
-        {/* Mobile Drawer */}
+        {/* MOBILE DRAWER */}
         <div className="md:hidden absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#050608] to-[#14151b] p-4 border-t border-white/10">
-          <div className="max-h-[40vh] overflow-y-auto space-y-3 mb-3">
+          <div className="max-h-[40vh] overflow-y-auto space-y-3 mb-3 min-h-[120px]">
             {messages.map((m, i) => (
               <div key={i} className="text-sm leading-relaxed opacity-90">{m}</div>
             ))}
             <div ref={messagesEndRef} />
           </div>
-
-          <button
-            onClick={toggleListening}
-            className={`w-full py-2 px-4 rounded-full border text-sm transition ${
-              listening ? "bg-white/10 border-white/40" : "bg-transparent border-white/20"
-            }`}
-          >
-            {listening ? "Listening..." : "Start Listening"}
-          </button>
         </div>
+
       </main>
     </div>
   );
