@@ -439,7 +439,7 @@ export default function JournalPage() {
   overflow: auto;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* keep book visible */
+  align-items: flex-start;
   padding-top: 20px;
   padding-bottom: 40px;
 }
@@ -449,7 +449,7 @@ export default function JournalPage() {
   height: 600px;
   position: relative;
   flex-shrink: 0;
-  margin: 0 auto; /* center the book */
+  margin: 0 auto;
 }
 
 /* ————————————————————————————————
@@ -503,7 +503,7 @@ export default function JournalPage() {
 ——————————————————————————————— */
 @media (max-width: 640px) {
 
-  /* WRAPPER — allow full scroll + center */
+  /* WRAPPER — center book + allow scroll */
   .journal-fixed-wrapper {
     overflow-y: scroll !important;
     justify-content: center !important;
@@ -511,17 +511,16 @@ export default function JournalPage() {
     padding-top: 20px !important;
   }
 
-  /* CANVAS — keep full desktop size */
+  /* CANVAS — allow scaling */
   .journal-fixed-canvas {
-    width: 900px !important;
-    height: 600px !important;
-    transform: none !important;
+    width: 100% !important;
+    height: auto !important;
     margin: 0 auto !important;
   }
 
-  /* BOOK — fill screen height, stay centered */
+  /* BOOK — fit width, keep height */
   .journal-parchment {
-    width: auto !important;
+    width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     max-height: 100vh !important;
@@ -529,7 +528,7 @@ export default function JournalPage() {
     margin: 0 auto !important;
   }
 
-  /* WRITING AREA — temporary mobile alignment (we fix text after) */
+  /* WRITING AREA — temporary mobile alignment */
   .writing-area {
     left: 50% !important;
     top: 20% !important;
@@ -570,7 +569,7 @@ export default function JournalPage() {
     padding: 1.25rem !important;
   }
 
-  /* CONTROLS — FIXED FOR YOU (HORIZONTAL UNDER BOOK) */
+  /* CONTROLS — horizontal under book */
   .controls {
     position: relative !important;
     bottom: auto !important;
@@ -675,6 +674,7 @@ export default function JournalPage() {
     transform: translateY(0);
   }
 }
+
 
       `}</style>
     </div>
