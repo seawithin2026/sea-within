@@ -430,233 +430,252 @@ export default function JournalPage() {
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
-        /* ————————————————————————————————
-           FIXED DESKTOP SIZE WRAPPER
-        ———————————————————————————————— */
-        .journal-fixed-wrapper {
-          width: 100vw;
-          height: 100vh;
-          overflow: auto;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+/* ————————————————————————————————
+   FIXED DESKTOP SIZE WRAPPER
+——————————————————————————————— */
+.journal-fixed-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* keep book visible */
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
 
-        .journal-fixed-canvas {
-          width: 900px;
-          height: 600px;
-          position: relative;
-          flex-shrink: 0;
-        }
+.journal-fixed-canvas {
+  width: 900px;
+  height: 600px;
+  position: relative;
+  flex-shrink: 0;
+  margin: 0 auto; /* center the book */
+}
 
-        /* ————————————————————————————————
-           JOURNAL — DESKTOP BASE LAYOUT
-        ———————————————————————————————— */
-        .journal-parchment {
-          max-width: 900px;
-          width: 90%;
-          height: auto;
-          margin: 0 auto;
-          display: block;
-        }
+/* ————————————————————————————————
+   JOURNAL — DESKTOP BASE LAYOUT
+——————————————————————————————— */
+.journal-parchment {
+  max-width: 900px;
+  width: 90%;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+}
 
-        .writing-area {
-          position: absolute;
-          top: 18%;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 60%;
-          height: 55%;
-        }
+.writing-area {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 55%;
+}
 
-        .journal-date {
-          position: absolute;
-          top: -8%;
-          right: 6%;
-          font-size: 0.85rem;
-          color: #4b2e1a;
-        }
+.journal-date {
+  position: absolute;
+  top: -8%;
+  right: 6%;
+  font-size: 0.85rem;
+  color: #4b2e1a;
+}
 
-        .controls {
-          position: absolute;
-          bottom: 8%;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          max-width: 900px;
-          margin: 0 auto;
-        }
+.controls {
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-        .calendar-panel {
-          position: absolute;
-          top: 18%;
-          right: 10%;
-        }
+.calendar-panel {
+  position: absolute;
+  top: 18%;
+  right: 10%;
+}
 
-        /* ————————————————————————————————
-           JOURNAL — MOBILE LAYOUT
-        ———————————————————————————————— */
-        @media (max-width: 640px) {
-          .journal-fixed-wrapper {
-            overflow-y: scroll !important;
-          }
+/* ————————————————————————————————
+   JOURNAL — MOBILE LAYOUT (CLEAN + STABLE)
+——————————————————————————————— */
+@media (max-width: 640px) {
 
-          .journal-fixed-canvas {
-            width: 900px !important;
-            height: 600px !important;
-            transform: none !important;
-          }
+  /* WRAPPER — allow full scroll + center */
+  .journal-fixed-wrapper {
+    overflow-y: scroll !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    padding-top: 20px !important;
+  }
 
-          .journal-parchment {
-            width: 100% !important;
-            max-width: 520px !important;
-            height: auto !important;
-            object-fit: contain !important;
-            margin: 0 auto !important;
-          }
+  /* CANVAS — keep full desktop size */
+  .journal-fixed-canvas {
+    width: 900px !important;
+    height: 600px !important;
+    transform: none !important;
+    margin: 0 auto !important;
+  }
 
-          .writing-area {
-            left: 50% !important;
-            top: 20% !important;
-            width: 78% !important;
-            height: 50% !important;
-            transform: translateX(-50%) !important;
-          }
+  /* BOOK — fill screen height, stay centered */
+  .journal-parchment {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 100vh !important;
+    object-fit: contain !important;
+    margin: 0 auto !important;
+  }
 
-          .journal-date {
-            top: -10% !important;
-            right: 50% !important;
-            transform: translateX(50%) !important;
-            font-size: 0.7rem !important;
-            text-align: center !important;
-          }
+  /* WRITING AREA — temporary mobile alignment (we fix text after) */
+  .writing-area {
+    left: 50% !important;
+    top: 20% !important;
+    width: 78% !important;
+    height: 50% !important;
+    transform: translateX(-50%) !important;
+  }
 
-          .writing-area textarea,
-          .writing-area .ink-writing {
-            font-size: 0.95rem !important;
-            line-height: 1.35 !important;
-            padding: 0.4rem !important;
-          }
+  .journal-date {
+    top: -10% !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    font-size: 0.7rem !important;
+    text-align: center !important;
+  }
 
-          .calendar-panel {
-            top: 8% !important;
-            right: 50% !important;
-            transform: translateX(50%) !important;
-            width: 90% !important;
-            max-height: 60vh !important;
-            padding: 1rem !important;
-          }
+  .writing-area textarea,
+  .writing-area .ink-writing {
+    font-size: 0.95rem !important;
+    line-height: 1.35 !important;
+    padding: 0.4rem !important;
+  }
 
-          .delete-modal {
-            width: 90% !important;
-            max-width: 360px !important;
-            padding: 1.25rem !important;
-          }
+  /* CALENDAR PANEL */
+  .calendar-panel {
+    top: 8% !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    width: 90% !important;
+    max-height: 60vh !important;
+    padding: 1rem !important;
+  }
 
-          .controls {
-            position: relative !important;
-            bottom: auto !important;
-            left: auto !important;
-            right: auto !important;
-            margin-top: 1.75rem !important;
-            width: 100% !important;
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: center !important;
-            gap: 0.75rem !important;
-            padding: 0 1rem 2rem !important;
-            z-index: 5 !important;
-          }
+  /* DELETE MODAL */
+  .delete-modal {
+    width: 90% !important;
+    max-width: 360px !important;
+    padding: 1.25rem !important;
+  }
 
-          .sea-btn {
-            width: 70% !important;
-            max-width: 260px !important;
-            text-align: center !important;
-          }
-        }
+  /* CONTROLS — FIXED FOR YOU (HORIZONTAL UNDER BOOK) */
+  .controls {
+    position: relative !important;
+    bottom: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 1.5rem auto 0 auto !important;
+    width: 100% !important;
+    max-width: 520px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+    padding-bottom: 2rem !important;
+    z-index: 5 !important;
+  }
 
-        /* ————————————————————————————————
-           BUTTONS + ANIMATIONS (unchanged)
-        ———————————————————————————————— */
-        .sea-btn {
-          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-          color: #3b2414;
-          padding: 8px 18px;
-          border-radius: 9999px;
-          font-weight: 600;
-          font-size: 0.85rem;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-          transition:          all 0.3s ease;
-          border: none;
-        }
+  .sea-btn {
+    width: auto !important;
+    min-width: 120px !important;
+    text-align: center !important;
+  }
+}
 
-        .sea-btn:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-        }
+/* ————————————————————————————————
+   BUTTONS + ANIMATIONS (unchanged)
+——————————————————————————————— */
+.sea-btn {
+  background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
+  color: #3b2414;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  border: none;
+}
 
-        .sea-btn:active {
-          transform: scale(0.97);
-        }
+.sea-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
+}
 
-        .fade-in-book {
-          animation: fadeInBook 1.2s ease-out forwards;
-        }
+.sea-btn:active {
+  transform: scale(0.97);
+}
 
-        @keyframes fadeInBook {
-          0% {
-            opacity: 0;
-            transform: translateY(10px) scale(0.98);
-            filter: blur(4px);
-          }
-          60% {
-            opacity: 0.6;
-            transform: translateY(4px) scale(0.995);
-            filter: blur(1px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            filter: blur(0);
-          }
-        }
+.fade-in-book {
+  animation: fadeInBook 1.2s ease-out forwards;
+}
 
-        ::-webkit-scrollbar {
-          width: 10px;
-        }
+@keyframes fadeInBook {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.6;
+    transform: translateY(4px) scale(0.995);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
 
-        ::-webkit-scrollbar-track {
-          background: #a47a3b;
-        }
+::-webkit-scrollbar {
+  width: 10px;
+}
 
-        ::-webkit-scrollbar-thumb {
-          background: #3b2414;
-          border-radius: 10px;
-          border: 2px solid #a47a3b;
-        }
+::-webkit-scrollbar-track {
+  background: #a47a3b;
+}
 
-        ::-webkit-scrollbar-thumb:hover {
-          background: #2a180d;
-        }
+::-webkit-scrollbar-thumb {
+  background: #3b2414;
+  border-radius: 10px;
+  border: 2px solid #a47a3b;
+}
 
-        .text-fade-in {
-          opacity: 0;
-          animation: textFadeIn 0.8s ease-out 0.2s forwards;
-        }
+::-webkit-scrollbar-thumb:hover {
+  background: #2a180d;
+}
 
-        @keyframes textFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(2px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+.text-fade-in {
+  opacity: 0;
+  animation: textFadeIn 0.8s ease-out 0.2s forwards;
+}
+
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
       `}</style>
     </div>
   );
