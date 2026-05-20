@@ -508,21 +508,22 @@ export default function JournalPage() {
     overflow-y: scroll !important;
     justify-content: center !important;
     align-items: flex-start !important;
-    padding-top: 20px !important;
+    padding-top: 10px !important;
   }
 
   /* CANVAS — allow scaling */
   .journal-fixed-canvas {
-    width: 100% !important;
+    width: auto !important;
     height: auto !important;
     margin: 0 auto !important;
+    display: flex !important;
+    justify-content: center !important;
   }
 
-  /* BOOK — fit width, keep height */
+  /* BOOK — FULL HEIGHT, centered */
   .journal-parchment {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
+    width: auto !important;
+    height: 100vh !important;     /* FULL HEIGHT */
     max-height: 100vh !important;
     object-fit: contain !important;
     margin: 0 auto !important;
@@ -674,6 +675,7 @@ export default function JournalPage() {
     transform: translateY(0);
   }
 }
+
 
 
       `}</style>
