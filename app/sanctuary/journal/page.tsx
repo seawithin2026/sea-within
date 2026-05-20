@@ -14,7 +14,6 @@ type JournalEntry = {
   created_at: string;
 };
 
-// Memoized write stage wrapper to prevent re-mount flicker
 const WriteStage = React.memo(function WriteStage({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -44,7 +43,6 @@ export default function JournalPage() {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  // TODAY'S PRETTY DATE
   const todayPretty = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
       year: 'numeric',
@@ -53,38 +51,31 @@ export default function JournalPage() {
     });
   }, []);
 
-  // LOAD USER
   useEffect(() => {
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-
-      if (data?.user) {
-        setSession({ user: data.user });
-      }
-
+      if (data?.user) setSession({ user: data.user });
       setLoadingUser(false);
     };
-
     loadUser();
   }, []);
 
-  // LOAD ENTRIES
   useEffect(() => {
     if (!session?.user?.id) return;
 
     const loadEntries = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('journal_entries')
         .select('id,user_id,content,created_at')
         .eq('user_id', session.user.id)
         .order('created_at', { ascending: true });
 
-      if (!error && data) {
+      if (data) {
         setEntries(data);
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText(''); // view mode uses selectedEntry.content
+          setCurrentText('');
         }
       }
     };
@@ -92,14 +83,12 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // SAVE ENTRY (create or update)
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
-    // UPDATE existing entry when editing
     if (isEditing && selectedEntryId) {
       const { error } = await supabase
         .from('journal_entries')
@@ -108,9 +97,7 @@ export default function JournalPage() {
 
       if (!error) {
         setEntries(prev =>
-          prev.map(e =>
-            e.id === selectedEntryId ? { ...e, content: currentText } : e
-          )
+          prev.map(e => (e.id === selectedEntryId ? { ...e, content: currentText } : e))
         );
         setIsEditing(false);
         setCurrentText('');
@@ -120,8 +107,7 @@ export default function JournalPage() {
       return;
     }
 
-    // CREATE new entry
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('journal_entries')
       .insert({
         user_id: session.user.id,
@@ -130,7 +116,7 @@ export default function JournalPage() {
       .select()
       .single();
 
-    if (!error && data) {
+    if (data) {
       setEntries(prev => [...prev, data]);
       setSelectedEntryId(data.id);
       setCurrentText('');
@@ -140,14 +126,10 @@ export default function JournalPage() {
     setSaving(false);
   };
 
-  // DELETE ENTRY
   const deleteEntry = async () => {
     if (!selectedEntryId) return;
 
-    await supabase
-      .from('journal_entries')
-      .delete()
-      .eq('id', selectedEntryId);
+    await supabase.from('journal_entries').delete().eq('id', selectedEntryId);
 
     setEntries(prev => {
       const idx = prev.findIndex(e => e.id === selectedEntryId);
@@ -170,14 +152,10 @@ export default function JournalPage() {
     setShowDeleteConfirm(false);
   };
 
-  // Prevent yellow flash
   if (loadingUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black" />
-    );
+    return <div className="flex items-center justify-center min-h-screen bg-black" />;
   }
 
-  // Sign-in screen
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
@@ -190,9 +168,9 @@ export default function JournalPage() {
 
   const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
 
-  // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
+
       {/* VIDEO STAGE */}
       {stage === 'video' && (
         <div className="absolute inset-0 flex items-center justify-center bg-black relative">
@@ -203,40 +181,27 @@ export default function JournalPage() {
             className="w-full h-full object-cover"
             onTimeUpdate={e => {
               const video = e.target as HTMLVideoElement;
-
               if (!video.duration || Number.isNaN(video.duration)) return;
 
               const timeLeft = video.duration - video.currentTime;
 
-              // Fade shadow in slightly before the end
-              if (timeLeft < 0.08 && !showShadow) {
-                setShowShadow(true);
-              }
+              if (timeLeft < 0.08 && !showShadow) setShowShadow(true);
 
-              // Trigger transition 0.25s before the end
               if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
                 setHasTriggeredVideoEnd(true);
-
-                setTimeout(() => {
-                  setStage('logo');
-                }, 450); // cinematic pause
+                setTimeout(() => setStage('logo'), 450);
               }
             }}
             onEnded={() => {
-              if (!hasTriggeredVideoEnd) {
-                setStage('logo');
-              }
+              if (!hasTriggeredVideoEnd) setStage('logo');
             }}
           />
 
-          {/* Shadow overlay */}
-          {/* Shadow overlay */}
-<div
-  className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-    showShadow ? 'opacity-40' : 'opacity-0'
-  }`}
-/>
-
+          <div
+            className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
+              showShadow ? 'opacity-40' : 'opacity-0'
+            }`}
+          />
         </div>
       )}
 
@@ -263,226 +228,201 @@ export default function JournalPage() {
       {/* WRITE STAGE */}
       {stage === 'write' && (
         <WriteStage>
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Parchment */}
-            <img
-              src="/images/parchment-page.png"
-              className="w-full h-full object-contain pointer-events-none select-none"
-            />
 
-            {/* WRITING AREA */}
-            <div
-              className="absolute"
-              style={{
-                left: '53%',
-                top: '18%',
-                width: '20%',
-                height: '60%',
-              }}
-            >
-              {/* DATE */}
-              <div
-                className="absolute text-[#4b2e1a] text-sm font-medium"
-                style={{ top: '-8%', right: '0%' }}
-              >
-                {selectedEntry
-                  ? new Date(selectedEntry.created_at).toLocaleDateString(
-                      undefined,
-                      {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      }
-                    )
-                  : todayPretty}
-              </div>
+          {/* ⭐ FIXED DESKTOP SIZE WRAPPER ⭐ */}
+          <div className="journal-fixed-wrapper">
+            <div className="journal-fixed-canvas">
 
-              {/* ENTRY OR TEXTAREA */}
-              {selectedEntry && !isEditing ? (
-                <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
-                  <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
-                    {selectedEntry.content}
-                  </div>
-                </div>
-              ) : (
-                <textarea
-                  className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
-                  placeholder="Let the sea within you speak..."
-                  value={currentText}
-                  onChange={e => setCurrentText(e.target.value)}
+              <div className="relative w-full h-full flex items-center justify-center">
+
+                {/* PARCHMENT */}
+                <img
+                  src="/images/parchment-page.png"
+                  className="journal-parchment pointer-events-none select-none"
                 />
-              )}
-            </div>
 
-            {/* CALENDAR */}
-            {showCalendar && (
-              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
-                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+                {/* WRITING AREA */}
+                <div className="writing-area">
 
-                {entries.map(entry => (
+                  {/* DATE */}
+                  <div className="journal-date">
+                    {selectedEntry
+                      ? new Date(selectedEntry.created_at).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })
+                      : todayPretty}
+                  </div>
+
+                  {/* ENTRY OR TEXTAREA */}
+                  {selectedEntry && !isEditing ? (
+                    <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
+                      <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
+                        {selectedEntry.content}
+                      </div>
+                    </div>
+                  ) : (
+                    <textarea
+                      className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
+                      placeholder="Let the sea within you speak..."
+                      value={currentText}
+                      onChange={e => setCurrentText(e.target.value)}
+                    />
+                  )}
+                </div>
+
+                {/* CALENDAR */}
+                {showCalendar && (
+                  <div className="calendar-panel bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
+                    <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+
+                    {entries.map(entry => (
+                      <button
+                        key={entry.id}
+                        onClick={() => {
+                          setSelectedEntryId(entry.id);
+                          setCurrentText('');
+                          setIsEditing(false);
+                          setShowCalendar(false);
+                        }}
+                        className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+                      >
+                        {new Date(entry.created_at).toLocaleDateString(undefined, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </button>
+                    ))}
+
+                    <button onClick={() => setShowCalendar(false)} className="sea-btn w-full mt-2">
+                      Close
+                    </button>
+                  </div>
+                )}
+
+                {/* DELETE CONFIRM */}
+                {showDeleteConfirm && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="delete-modal bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
+                      <p className="text-[#3b2414] mb-4">
+                        Are you sure you want to delete this entry?
+                      </p>
+
+                      <div className="flex justify-center gap-4">
+                        <button
+                          onClick={deleteEntry}
+                          className="sea-btn bg-red-300/80 hover:bg-red-400/80"
+                        >
+                          Delete
+                        </button>
+
+                        <button onClick={() => setShowDeleteConfirm(false)} className="sea-btn">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* CONTROLS */}
+                <div className="controls">
+
                   <button
-                    key={entry.id}
                     onClick={() => {
-                      setSelectedEntryId(entry.id);
+                      if (entries.length === 0) return;
+
+                      if (!selectedEntryId) {
+                        const last = entries[entries.length - 1];
+                        setSelectedEntryId(last.id);
+                        setCurrentText('');
+                        setIsEditing(false);
+                        return;
+                      }
+
+                      const idx = entries.findIndex(e => e.id === selectedEntryId);
+                      if (idx > 0) {
+                        const prev = entries[idx - 1];
+                        setSelectedEntryId(prev.id);
+                        setCurrentText('');
+                        setIsEditing(false);
+                      }
+                    }}
+                    className="sea-btn"
+                  >
+                    ◀ Previous
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSelectedEntryId(null);
                       setCurrentText('');
                       setIsEditing(false);
-                      setShowCalendar(false);
                     }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
+                    className="sea-btn"
                   >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    New Page
                   </button>
-                ))}
 
-                <button
-                  onClick={() => setShowCalendar(false)}
-                  className="sea-btn w-full mt-2"
-                >
-                  Close
-                </button>
-              </div>
-            )}
-
-            {/* DELETE CONFIRM */}
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
-                  <p className="text-[#3b2414] mb-4">
-                    Are you sure you want to delete this entry?
-                  </p>
-
-                  <div className="flex justify-center gap-4">
+                  {selectedEntry && !isEditing && (
                     <button
-                      onClick={deleteEntry}
-                      className="sea-btn bg-red-300/80 hover:bg-red-400/80"
+                      onClick={() => {
+                        setIsEditing(true);
+                        setCurrentText(selectedEntry.content);
+                      }}
+                      className="sea-btn"
+                    >
+                      Edit
+                    </button>
+                  )}
+
+                  {isEditing && (
+                    <button
+                      onClick={() => {
+                        setIsEditing(false);
+                        setCurrentText('');
+                      }}
+                      className="sea-btn"
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+
+                  <button onClick={handleSave} className="sea-btn" disabled={saving}>
+                    {saving ? 'Saving...' : 'Save'}
+                  </button>
+
+                  {selectedEntry && (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="sea-btn bg-red-200/80 hover:bg-red-300/90"
                     >
                       Delete
                     </button>
+                  )}
 
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="sea-btn"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  <button onClick={() => setShowCalendar(true)} className="sea-btn">
+                    📅 Calendar
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (!selectedEntryId) return;
+                      const idx = entries.findIndex(e => e.id === selectedEntryId);
+                      if (idx < entries.length - 1 && idx !== -1) {
+                        const next = entries[idx + 1];
+                        setSelectedEntryId(next.id);
+                        setCurrentText('');
+                        setIsEditing(false);
+                      }
+                    }}
+                    className="sea-btn"
+                  >
+                    Next ▶
+                  </button>
                 </div>
               </div>
-            )}
-
-            {/* CONTROLS */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
-              {/* PREVIOUS */}
-              <button
-                onClick={() => {
-                  if (entries.length === 0) return;
-
-                  if (!selectedEntryId) {
-                    const last = entries[entries.length - 1];
-                    setSelectedEntryId(last.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                    return;
-                  }
-
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx > 0) {
-                    const prev = entries[idx - 1];
-                    setSelectedEntryId(prev.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                ◀ Previous
-              </button>
-
-              {/* NEW PAGE */}
-              <button
-                onClick={() => {
-                  setSelectedEntryId(null);
-                  setCurrentText('');
-                  setIsEditing(false);
-                }}
-                className="sea-btn"
-              >
-                New Page
-              </button>
-
-              {/* EDIT (only when viewing an existing entry) */}
-              {selectedEntry && !isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(true);
-                    setCurrentText(selectedEntry.content);
-                  }}
-                  className="sea-btn"
-                >
-                  Edit
-                </button>
-              )}
-
-              {/* CANCEL EDIT */}
-              {isEditing && (
-                <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setCurrentText('');
-                  }}
-                  className="sea-btn"
-                >
-                  Cancel Edit
-                </button>
-              )}
-
-              {/* SAVE */}
-              <button
-                onClick={handleSave}
-                className="sea-btn"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-
-              {/* DELETE */}
-              {selectedEntry && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="sea-btn bg-red-200/80 hover:bg-red-300/90"
-                >
-                  Delete
-                </button>
-              )}
-
-              {/* CALENDAR */}
-              <button
-                onClick={() => setShowCalendar(true)}
-                className="sea-btn"
-              >
-                📅 Calendar
-              </button>
-
-              {/* NEXT */}
-              <button
-                onClick={() => {
-                  if (!selectedEntryId) return;
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx < entries.length - 1 && idx !== -1) {
-                    const next = entries[idx + 1];
-                    setSelectedEntryId(next.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                Next ▶
-              </button>
             </div>
           </div>
         </WriteStage>
@@ -490,22 +430,174 @@ export default function JournalPage() {
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
+        /* ————————————————————————————————
+           FIXED DESKTOP SIZE WRAPPER
+        ———————————————————————————————— */
+        .journal-fixed-wrapper {
+          width: 100vw;
+          height: 100vh;
+          overflow: auto;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .journal-fixed-canvas {
+          width: 900px;
+          height: 600px;
+          position: relative;
+          flex-shrink: 0;
+        }
+
+        /* ————————————————————————————————
+           JOURNAL — DESKTOP BASE LAYOUT
+        ———————————————————————————————— */
+        .journal-parchment {
+          max-width: 900px;
+          width: 90%;
+          height: auto;
+          margin: 0 auto;
+          display: block;
+        }
+
+        .writing-area {
+          position: absolute;
+          top: 18%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 60%;
+          height: 55%;
+        }
+
+        .journal-date {
+          position: absolute;
+          top: -8%;
+          right: 6%;
+          font-size: 0.85rem;
+          color: #4b2e1a;
+        }
+
+        .controls {
+          position: absolute;
+          bottom: 8%;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+          max-width: 900px;
+          margin: 0 auto;
+        }
+
+        .calendar-panel {
+          position: absolute;
+          top: 18%;
+          right: 10%;
+        }
+
+        /* ————————————————————————————————
+           JOURNAL — MOBILE LAYOUT
+        ———————————————————————————————— */
+        @media (max-width: 640px) {
+          .journal-fixed-wrapper {
+            overflow-y: scroll !important;
+          }
+
+          .journal-fixed-canvas {
+            width: 900px !important;
+            height: 600px !important;
+            transform: none !important;
+          }
+
+          .journal-parchment {
+            width: 100% !important;
+            max-width: 520px !important;
+            height: auto !important;
+            object-fit: contain !important;
+            margin: 0 auto !important;
+          }
+
+          .writing-area {
+            left: 50% !important;
+            top: 20% !important;
+            width: 78% !important;
+            height: 50% !important;
+            transform: translateX(-50%) !important;
+          }
+
+          .journal-date {
+            top: -10% !important;
+            right: 50% !important;
+            transform: translateX(50%) !important;
+            font-size: 0.7rem !important;
+            text-align: center !important;
+          }
+
+          .writing-area textarea,
+          .writing-area .ink-writing {
+            font-size: 0.95rem !important;
+            line-height: 1.35 !important;
+            padding: 0.4rem !important;
+          }
+
+          .calendar-panel {
+            top: 8% !important;
+            right: 50% !important;
+            transform: translateX(50%) !important;
+            width: 90% !important;
+            max-height: 60vh !important;
+            padding: 1rem !important;
+          }
+
+          .delete-modal {
+            width: 90% !important;
+            max-width: 360px !important;
+            padding: 1.25rem !important;
+          }
+
+          .controls {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            right: auto !important;
+            margin-top: 1.75rem !important;
+            width: 100% !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            gap: 0.75rem !important;
+            padding: 0 1rem 2rem !important;
+            z-index: 5 !important;
+          }
+
+          .sea-btn {
+            width: 70% !important;
+            max-width: 260px !important;
+            text-align: center !important;
+          }
+        }
+
+        /* ————————————————————————————————
+           BUTTONS + ANIMATIONS (unchanged)
+        ———————————————————————————————— */
         .sea-btn {
-          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
+          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
           color: #3b2414;
           padding: 8px 18px;
           border-radius: 9999px;
           font-weight: 600;
           font-size: 0.85rem;
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-          transition: all 0.3s ease;
+          transition:          all 0.3s ease;
           border: none;
         }
+
         .sea-btn:hover {
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg,  #e9a107 0%,  #e9a107 100%);
+          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
         }
+
         .sea-btn:active {
           transform: scale(0.97);
         }
