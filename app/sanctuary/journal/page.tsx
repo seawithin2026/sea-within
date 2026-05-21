@@ -16,7 +16,7 @@ export default function JournalMirrorPage() {
   };
   useEffect(scrollToBottom, [messages]);
 
-  // CAMERA CONTROL
+  // CAMERA CONTROL — FIXED
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -69,13 +69,13 @@ export default function JournalMirrorPage() {
 
   // INTERACTION MODE
   const interactionResponses = [
-    "You’re noticing something real in yourself.",
-    "You’re meeting yourself honestly in this moment.",
-    "You’re giving space to what you’re feeling.",
-    "You’re seeing yourself with clarity.",
-    "You’re acknowledging your truth.",
-    "You’re showing up for yourself right now.",
-    "You’re letting yourself be seen.",
+    "I hear what you're saying.",
+    "You're expressing something clearly.",
+    "You're thinking through something real.",
+    "You're noticing what's happening for you.",
+    "You're putting words to something important.",
+    "You're staying present with yourself.",
+    "You're giving this moment your attention.",
   ];
 
   const getInteractionResponse = () =>
@@ -97,26 +97,24 @@ export default function JournalMirrorPage() {
   const knowledgeEngine = (text: string) => {
     if (text.includes("better myself")) {
       return (
-        "Here are some ways people work on bettering themselves:\n" +
+        "People usually improve themselves by:\n" +
         "• Understanding their values\n" +
         "• Building small consistent habits\n" +
         "• Practicing self-awareness\n" +
         "• Learning new skills\n" +
         "• Taking care of their physical and emotional health\n" +
-        "• Reflecting on what matters to them\n" +
-        "These are general approaches anyone can explore."
+        "• Reflecting on what matters to them"
       );
     }
 
     if (text.includes("find my qualities") || text.includes("my qualities")) {
       return (
         "People identify their qualities by:\n" +
-        "• Noticing what comes naturally to them\n" +
-        "• Observing how they act under stress or pressure\n" +
-        "• Recognizing what others appreciate about them\n" +
-        "• Reflecting on moments they felt proud or aligned\n" +
-        "• Understanding what they value and why\n" +
-        "Qualities are patterns in how you show up, not perfection."
+        "• Noticing what comes naturally\n" +
+        "• Observing how they act under pressure\n" +
+        "• Recognizing what others appreciate\n" +
+        "• Reflecting on moments they felt aligned\n" +
+        "• Understanding what they value"
       );
     }
 
@@ -127,15 +125,14 @@ export default function JournalMirrorPage() {
         "• Practicing skills repeatedly\n" +
         "• Understanding your strengths\n" +
         "• Allowing yourself to try without perfection\n" +
-        "• Building trust in your own actions\n" +
-        "It’s a gradual process, not a fixed trait."
+        "• Building trust in your own actions"
       );
     }
 
-    return "I hear your question. Here’s what I found: people often explore this by learning, observing themselves, and taking small steps toward clarity.";
+    return "Here’s what people usually explore when they ask this: learning, observing themselves, and taking small steps toward clarity.";
   };
 
-  // SPEECH-TO-TEXT
+  // SPEECH-TO-TEXT — FIXED
   const SpeechRecognition =
     typeof window !== "undefined"
       ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
@@ -187,7 +184,7 @@ export default function JournalMirrorPage() {
     }
   };
 
-  // HANDLE TRANSCRIPT
+  // HANDLE TRANSCRIPT — UPDATED TONE
   const handleTranscript = (raw: string) => {
     if (!raw) return;
     const text = raw.toLowerCase().trim();
@@ -199,7 +196,6 @@ export default function JournalMirrorPage() {
     }
 
     if (isKnowledgeQuestion(text)) {
-      addMessage("I hear your question.");
       addMessage(knowledgeEngine(text));
       return;
     }
