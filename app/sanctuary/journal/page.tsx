@@ -17,8 +17,7 @@ interface JournalEntry {
 // Prevents remount flicker when switching into the writing stage
 const WriteStage = React.memo(({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="journal-write-stage absolute inset-0 fade-in-book bg-black flex items-center justify-center">
-      {children}
+  <div className="journal-write-stage fade-in-book bg-black flex items-center justify-center">
     </div>
   );
 });
@@ -238,7 +237,8 @@ export default function JournalPage() {
       {/* WRITE STAGE */}
       {stage === 'write' && (
         <WriteStage>
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="journal-center-container relative w-full flex items-center justify-center">
+
             {/* Parchment */}
             <img
               src="/images/parchment-page.png"
@@ -567,6 +567,12 @@ export default function JournalPage() {
   height: 60% !important;
   transform: translateX(-50%) !important;
 }
+  .journal-center-container {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+}
+
   /* PATCH 3 — ROOT CONTAINER FIX */
   html,
   body,
