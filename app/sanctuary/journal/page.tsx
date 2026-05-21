@@ -550,74 +550,53 @@ export default function JournalPage() {
           }
         }
 
-        /* MOBILE-ONLY OVERRIDES */
-      @media (max-width: 640px) {
-  .journal-fixed-wrapper {
-    min-width: 0 !important;
-  }
+      /* MOBILE-ONLY OVERRIDES — FORCE DESKTOP LOOK ON MOBILE */
+@media (max-width: 640px) {
 
-  .journal-fixed-canvas {
-    min-width: 0 !important;
-  }
-
-  .journal-write-stage {
-    position: relative !important;
-    inset: unset !important;
-    display: block !important;
-    background: transparent !important;
-    height: auto !important;
-  }
-
+  /* Force desktop width */
+  .journal-fixed-wrapper,
+  .journal-fixed-canvas,
   .journal-inner {
-    display: block !important;
+    min-width: 900px !important;
+    width: 900px !important;
     height: auto !important;
-    min-height: 100vh !important;
-    padding-top: 10px !important;
-    padding-bottom: 20px !important;
-    align-items: unset !important;
-    justify-content: unset !important;
+    overflow-x: hidden !important;
+    transform: scale(0.75) translateX(-12%);
+    transform-origin: top center;
   }
 
-            .journal-parchment {
-    width: auto !important;
-    height: calc(100vh - 20px) !important;
-    max-height: calc(100vh - 20px) !important;
+  /* Parchment stays desktop-sized */
+  .journal-parchment {
+    width: 100% !important;
+    height: auto !important;
     object-fit: contain !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    transform: translateX(-12vw) !important;
-    display: block !important;
   }
 
-          .writing-area {
-            /* keep absolute; you’ll tweak later */
-          }
+  /* Buttons stay desktop-style but smaller so they fit */
+  .sea-btn {
+    padding: 4px 10px !important;
+    font-size: 0.70rem !important;
+    min-width: 80px !important;
+  }
 
-           .journal-controls {
-    position: static !important;
-    margin-top: 20px !important;
-    display: flex !important;
+  /* Prevent wrapping chaos */
+  .journal-controls {
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
     justify-content: center !important;
-    flex-wrap: wrap !important;
   }
 
-         .calendar-panel {
-    top: 8% !important;
-    right: 5% !important;
+  /* Calendar panel still usable */
+  .calendar-panel {
     width: 80% !important;
+    right: 10% !important;
+    top: 10% !important;
     max-height: 60% !important;
   }
+}
+  `}</style>
 
-         
-  .sea-btn {
-    padding: 3px 8px !important;
-    font-size: 0.60rem !important;
-    min-width: 70px !important;
-    border-radius: 9999px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
-  }
-        }
-      `}</style>
+
     </div>
   );
 }
