@@ -551,70 +551,71 @@ export default function JournalPage() {
         }
 
         /* MOBILE-ONLY OVERRIDES */
-        @media (max-width: 640px) {
-          .journal-fixed-wrapper {
-            min-width: 0 !important;
-          }
+      @media (max-width: 640px) {
+  .journal-fixed-wrapper {
+    min-width: 0 !important;
+  }
 
-          .journal-fixed-canvas {
-            min-width: 0 !important;
-          }
+  .journal-fixed-canvas {
+    min-width: 0 !important;
+  }
 
-          .journal-write-stage {
-            position: relative !important;
-            inset: unset !important;
-            display: block !important;
-            background: transparent !important;
-            height: auto !important;
-          }
+  .journal-write-stage {
+    position: relative !important;
+    inset: unset !important;
+    display: block !important;
+    background: transparent !important;
+    height: auto !important;
+  }
 
-          .journal-inner {
-            display: block !important;
-            height: auto !important;
-            min-height: 100vh !important;
-            padding-top: 12px;
-            padding-bottom: 20px;
-            align-items: unset !important;
-            justify-content: unset !important;
-          }
+  .journal-inner {
+    display: block !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    padding-top: 10px !important;
+    padding-bottom: 20px !important;
+    align-items: unset !important;
+    justify-content: unset !important;
+  }
 
-          .journal-parchment {
-            width: auto !important;
-            height: calc(100vh - 60px) !important;
-            max-height: calc(100vh - 60px) !important;
-            object-fit: contain !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            transform: translateX(-12vw) !important;
-            display: block !important;
-          }
+            .journal-parchment {
+    width: auto !important;
+    height: calc(100vh - 20px) !important;
+    max-height: calc(100vh - 20px) !important;
+    object-fit: contain !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateX(-12vw) !important;
+    display: block !important;
+  }
 
           .writing-area {
             /* keep absolute; you’ll tweak later */
           }
 
-          .journal-controls {
-            position: static !important;
-            margin-top: 20px !important;
-            display: flex !important;
-            justify-content: center !important;
-            flex-wrap: wrap !important;
-          }
+           .journal-controls {
+    position: static !important;
+    margin-top: 20px !important;
+    display: flex !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
 
-          .calendar-panel {
-            top: 8% !important;
-            right: 5% !important;
-            width: 80% !important;
-            max-height: 60% !important;
-          }
+         .calendar-panel {
+    top: 8% !important;
+    right: 5% !important;
+    width: 80% !important;
+    max-height: 60% !important;
+  }
 
-          .sea-btn {
-            padding: 4px 10px !important;
-            font-size: 0.68rem !important;
-            min-width: 85px !important;
-            border-radius: 9999px !important;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
-          }
+         
+  .sea-btn {
+    padding: 3px 8px !important;
+    font-size: 0.60rem !important;
+    min-width: 70px !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
+  }
         }
       `}</style>
     </div>
