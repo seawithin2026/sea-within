@@ -15,7 +15,14 @@ interface JournalEntry {
 }
 const WriteStage = React.memo(({ children }: { children: React.ReactNode }) => {
   return (
-    <div style={{ background: 'black', minHeight: '100vh', width: '100vw' }}>
+    <div style={{
+      background: 'black',
+      minHeight: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
       {children}
     </div>
   );
