@@ -246,15 +246,8 @@ export default function JournalPage() {
             />
 
             {/* Writing area */}
-            <div
-              className="absolute"
-              style={{
-                left: '53%',
-                top: '18%',
-                width: '20%',
-                height: '60%',
-              }}
-            >
+           <div className="writing-area-desktop absolute">
+
               {/* Date */}
               <div
                 className="absolute text-[#4b2e1a] text-sm font-medium"
@@ -470,6 +463,13 @@ export default function JournalPage() {
       {/* Global styles */}
       <style jsx global>{`
         /* Desktop protection */
+        .writing-area-desktop {
+  left: 53%;
+  top: 18%;
+  width: 20%;
+  height: 60%;
+}
+
         .journal-fixed-wrapper,
         .journal-fixed-canvas {
           min-width: 900px !important;
@@ -555,6 +555,14 @@ export default function JournalPage() {
 
         /* Mobile scaling */
         @media (max-width: 640px) {
+        .writing-area-desktop {
+  left: 50% !important;
+  top: 12% !important;
+  width: 70% !important;
+  height: 60% !important;
+  transform: translateX(-50%) !important;
+}
+
           .journal-write-stage {
             position: relative !important;
             inset: unset !important;
@@ -564,13 +572,17 @@ export default function JournalPage() {
           }
 
           .journal-parchment {
-            width: 100% !important;
-            height: 85vh !important;
-            max-height: 85vh !important;
-            object-fit: contain !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-          }
+  width: 100% !important;
+  height: 85vh !important;
+  max-height: 85vh !important;
+  object-fit: contain !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.controls {
+  margin-top: 8px !important;
+}
+
 
           .sea-btn {
             padding: 4px 10px !important;
