@@ -15,7 +15,7 @@ interface JournalEntry {
 }
 const WriteStage = React.memo(({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="journal-write-stage fade-in-book bg-black flex items-center justify-center w-full min-h-[100dvh]">
+    <div style={{ background: 'black', minHeight: '100vh', width: '100vw' }}>
       {children}
     </div>
   );
@@ -236,9 +236,15 @@ export default function JournalPage() {
 
       {/* WRITE STAGE */}
       {stage === 'write' && (
-        <WriteStage>
-          <div className="journal-center-container relative w-full flex items-center justify-center">
-
+  <WriteStage>
+    <div
+      style={{
+        color: 'white',
+        fontSize: '24px',
+        position: 'relative',
+        zIndex: 9999,
+      }}
+  >
             {/* Parchment */}
             <img
               src="/images/parchment-page.png"
