@@ -177,7 +177,7 @@ export default function JournalPage() {
     entries.find(e => e.id === selectedEntryId) || null;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
+    <div className="journal-root relative w-screen overflow-hidden bg-black">
       {/* VIDEO STAGE */}
       {stage === 'video' && (
         <div className="absolute inset-0 flex items-center justify-center bg-black relative">
@@ -562,23 +562,34 @@ export default function JournalPage() {
   height: 60% !important;
   transform: translateX(-50%) !important;
 }
-
+  /* PATCH 3 — ROOT CONTAINER FIX */
+  html,
+  body,
+  .journal-root {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
           .journal-write-stage {
-            position: relative !important;
-            inset: unset !important;
-            display: block !important;
-            background: transparent !important;
-            height: auto !important;
-          }
+  position: relative !important;
+  inset: unset !important;
+  display: block !important;
+  background: transparent !important;
 
-          .journal-parchment {
+  /* THE FIX */
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+}
+
+
+        .journal-parchment {
   width: 100% !important;
-  height: 85vh !important;
-  max-height: 85vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
   object-fit: contain !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
 .controls {
   margin-top: 8px !important;
 }
