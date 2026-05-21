@@ -555,6 +555,11 @@ export default function JournalPage() {
 
         /* Mobile scaling */
         @media (max-width: 640px) {
+        .journal-fixed-wrapper,
+  .journal-fixed-canvas {
+    min-width: 100% !important;
+    width: 100% !important;
+  }
         .writing-area-desktop {
   left: 50% !important;
   top: 12% !important;
