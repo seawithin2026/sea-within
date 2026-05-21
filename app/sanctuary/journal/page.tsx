@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 const supabase = createClient();
@@ -41,25 +41,24 @@ export default function JournalPage() {
 
   const [saving, setSaving] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
-
   const [isEditing, setIsEditing] = useState(false);
 
-  const todayPretty = useMemo(() => {
-    return new Date().toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  }, []);
+  const todayPretty = useMemo(
+    () =>
+      new Date().toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+    []
+  );
 
   useEffect(() => {
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-
       if (data?.user) {
         setSession({ user: data.user });
       }
-
       setLoadingUser(false);
     };
 
@@ -137,10 +136,7 @@ export default function JournalPage() {
   const deleteEntry = async () => {
     if (!selectedEntryId) return;
 
-    await supabase
-      .from('journal_entries')
-      .delete()
-      .eq('id', selectedEntryId);
+    await supabase.from('journal_entries').delete().eq('id', selectedEntryId);
 
     setEntries(prev => {
       const idx = prev.findIndex(e => e.id === selectedEntryId);
@@ -193,7 +189,6 @@ export default function JournalPage() {
             className="w-full h-full object-cover"
             onTimeUpdate={e => {
               const video = e.target as HTMLVideoElement;
-
               if (!video.duration || Number.isNaN(video.duration)) return;
 
               const timeLeft = video.duration - video.currentTime;
@@ -204,10 +199,7 @@ export default function JournalPage() {
 
               if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
                 setHasTriggeredVideoEnd(true);
-
-                setTimeout(() => {
-                  setStage('logo');
-                }, 450);
+                setTimeout(() => setStage('logo'), 450);
               }
             }}
             onEnded={() => {
@@ -470,13 +462,13 @@ export default function JournalPage() {
       )}
 
       <style jsx global>{`
-        /* DESKTOP FIREWALL */
+        /* DESKTOP LOCK */
         .journal-fixed-wrapper,
         .journal-fixed-canvas {
           min-width: 900px !important;
         }
 
-        /* BUTTON STYLES */
+        /* BUTTONS */
         .sea-btn {
           background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
           color: #3b2414;
@@ -499,7 +491,7 @@ export default function JournalPage() {
           transform: scale(0.97);
         }
 
-        /* BOOK FADE-IN ANIMATION */
+        /* BOOK FADE-IN */
         .fade-in-book {
           animation: fadeInBook 1.2s ease-out forwards;
         }
@@ -558,7 +550,7 @@ export default function JournalPage() {
           }
         }
 
-        /* MOBILE-ONLY SANDBOX — DESKTOP UNTOUCHED */
+        /* MOBILE-ONLY OVERRIDES */
         @media (max-width: 640px) {
           .journal-fixed-wrapper {
             min-width: 0 !important;
@@ -582,6 +574,8 @@ export default function JournalPage() {
             min-height: 100vh !important;
             padding-top: 12px;
             padding-bottom: 20px;
+            align-items: unset !important;
+            justify-content: unset !important;
           }
 
           .journal-parchment {
@@ -596,7 +590,7 @@ export default function JournalPage() {
           }
 
           .writing-area {
-            /* you’ll adjust this later; keep absolute for now */
+            /* keep absolute; you’ll tweak later */
           }
 
           .journal-controls {
