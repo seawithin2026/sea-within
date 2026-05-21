@@ -7,18 +7,15 @@ const supabase = createClient();
 
 type Stage = 'video' | 'logo' | 'write';
 
-type JournalEntry = {
+interface JournalEntry {
   id: string;
   user_id: string;
   content: string;
   created_at: string;
-};
+}
 
-const WriteStage = React.memo(function WriteStage({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+// Prevents remount flicker when switching into the writing stage
+const WriteStage = React.memo(({ children }: { children: React.ReactNode }) => {
   return (
     <div className="journal-write-stage absolute inset-0 fade-in-book bg-black flex items-center justify-center">
       {children}
@@ -28,43 +25,41 @@ const WriteStage = React.memo(function WriteStage({
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
-  const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
-  const [showShadow, setShowShadow] = useState(false);
+  const [videoTriggered, setVideoTriggered] = useState(false);
+  const [shadowVisible, setShadowVisible] = useState(false);
 
   const [session, setSession] = useState<any>(null);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [currentText, setCurrentText] = useState('');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const [saving, setSaving] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  const todayPretty = useMemo(
-    () =>
-      new Date().toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
-    []
-  );
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) {
-        setSession({ user: data.user });
-      }
-      setLoadingUser(false);
-    };
-
-    loadUser();
+  // Pretty date for new entries
+  const todayPretty = useMemo(() => {
+    return new Date().toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   }, []);
 
+  // Load user session
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setSession({ user: data.user });
+      setLoadingUser(false);
+    };
+    load();
+  }, []);
+
+  // Load journal entries for the authenticated user
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -77,6 +72,7 @@ export default function JournalPage() {
 
       if (!error && data) {
         setEntries(data);
+
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
@@ -88,12 +84,14 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
+  // Save or update entry
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
+    // Update existing entry
     if (isEditing && selectedEntryId) {
       const { error } = await supabase
         .from('journal_entries')
@@ -114,6 +112,7 @@ export default function JournalPage() {
       return;
     }
 
+    // Create new entry
     const { data, error } = await supabase
       .from('journal_entries')
       .insert({
@@ -133,55 +132,55 @@ export default function JournalPage() {
     setSaving(false);
   };
 
+  // Delete entry
   const deleteEntry = async () => {
     if (!selectedEntryId) return;
 
     await supabase.from('journal_entries').delete().eq('id', selectedEntryId);
 
     setEntries(prev => {
-      const idx = prev.findIndex(e => e.id === selectedEntryId);
-      const filtered = prev.filter(e => e.id !== selectedEntryId);
+      const index = prev.findIndex(e => e.id === selectedEntryId);
+      const remaining = prev.filter(e => e.id !== selectedEntryId);
 
-      if (filtered.length > 0 && idx !== -1) {
-        const newIndex = Math.max(0, idx - 1);
-        const newEntry = filtered[newIndex];
-        setSelectedEntryId(newEntry.id);
+      if (remaining.length > 0 && index !== -1) {
+        const newIndex = Math.max(0, index - 1);
+        const nextEntry = remaining[newIndex];
+        setSelectedEntryId(nextEntry.id);
         setCurrentText('');
       } else {
         setSelectedEntryId(null);
         setCurrentText('');
       }
 
-      return filtered;
+      return remaining;
     });
 
     setIsEditing(false);
-    setShowDeleteConfirm(false);
+    setConfirmDelete(false);
   };
 
+  // Loading screen
   if (loadingUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-black" />
-    );
+    return <div className="flex items-center justify-center min-h-screen bg-black" />;
   }
 
+  // Sign-in required
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
-        <p className="text-[#3b2414] font-family['Cormorant Garamond']">
-          Please sign in to access your journal.
-        </p>
+        <p className="text-[#3b2414]">Please sign in to access your journal.</p>
       </div>
     );
   }
 
-  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
+  const selectedEntry =
+    entries.find(e => e.id === selectedEntryId) || null;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black journal-fixed-wrapper">
+    <div className="relative h-screen w-screen overflow-hidden bg-black">
       {/* VIDEO STAGE */}
       {stage === 'video' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black relative journal-fixed-canvas">
+        <div className="absolute inset-0 flex items-center justify-center bg-black relative">
           <video
             src="/videos/book-opening.mp4"
             autoPlay
@@ -193,25 +192,24 @@ export default function JournalPage() {
 
               const timeLeft = video.duration - video.currentTime;
 
-              if (timeLeft < 0.08 && !showShadow) {
-                setShowShadow(true);
+              if (timeLeft < 0.08 && !shadowVisible) {
+                setShadowVisible(true);
               }
 
-              if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
-                setHasTriggeredVideoEnd(true);
+              if (!videoTriggered && timeLeft < 0.25) {
+                setVideoTriggered(true);
                 setTimeout(() => setStage('logo'), 450);
               }
             }}
             onEnded={() => {
-              if (!hasTriggeredVideoEnd) {
-                setStage('logo');
-              }
+              if (!videoTriggered) setStage('logo');
             }}
           />
 
+          {/* Shadow overlay */}
           <div
             className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-              showShadow ? 'opacity-40' : 'opacity-0'
+              shadowVisible ? 'opacity-40' : 'opacity-0'
             }`}
           />
         </div>
@@ -219,7 +217,7 @@ export default function JournalPage() {
 
       {/* LOGO STAGE */}
       {stage === 'logo' && (
-        <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center journal-fixed-canvas">
+        <div className="absolute inset-0 fade-in-book bg-black flex items-center justify-center">
           <img
             src="/images/sea-within-logo-page.png"
             className="w-full h-full object-contain mx-auto"
@@ -240,7 +238,7 @@ export default function JournalPage() {
       {/* WRITE STAGE */}
       {stage === 'write' && (
         <WriteStage>
-          <div className="relative w-full h-full flex items-center justify-center journal-fixed-canvas journal-inner">
+          <div className="relative w-full h-full flex items-center justify-center">
             {/* Parchment */}
             <img
               src="/images/parchment-page.png"
@@ -249,7 +247,7 @@ export default function JournalPage() {
 
             {/* Writing area */}
             <div
-              className="absolute writing-area"
+              className="absolute"
               style={{
                 left: '53%',
                 top: '18%',
@@ -257,6 +255,7 @@ export default function JournalPage() {
                 height: '60%',
               }}
             >
+              {/* Date */}
               <div
                 className="absolute text-[#4b2e1a] text-sm font-medium"
                 style={{ top: '-8%', right: '0%' }}
@@ -273,6 +272,7 @@ export default function JournalPage() {
                   : todayPretty}
               </div>
 
+              {/* Entry viewer or editor */}
               {selectedEntry && !isEditing ? (
                 <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
                   <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
@@ -290,8 +290,8 @@ export default function JournalPage() {
             </div>
 
             {/* Calendar panel */}
-            {showCalendar && (
-              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3] calendar-panel">
+            {calendarOpen && (
+              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
                 <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
 
                 {entries.map(entry => (
@@ -301,7 +301,7 @@ export default function JournalPage() {
                       setSelectedEntryId(entry.id);
                       setCurrentText('');
                       setIsEditing(false);
-                      setShowCalendar(false);
+                      setCalendarOpen(false);
                     }}
                     className="block w-full text-left text-sm text-[#3b2414] hover:underline"
                   >
@@ -314,7 +314,7 @@ export default function JournalPage() {
                 ))}
 
                 <button
-                  onClick={() => setShowCalendar(false)}
+                  onClick={() => setCalendarOpen(false)}
                   className="sea-btn w-full mt-2"
                 >
                   Close
@@ -322,8 +322,8 @@ export default function JournalPage() {
               </div>
             )}
 
-            {/* Delete confirm */}
-            {showDeleteConfirm && (
+            {/* Delete confirmation */}
+            {confirmDelete && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                 <div className="bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
                   <p className="text-[#3b2414] mb-4">
@@ -339,7 +339,7 @@ export default function JournalPage() {
                     </button>
 
                     <button
-                      onClick={() => setShowDeleteConfirm(false)}
+                      onClick={() => setConfirmDelete(false)}
                       className="sea-btn"
                     >
                       Cancel
@@ -350,36 +350,36 @@ export default function JournalPage() {
             )}
 
             {/* Controls */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4 journal-controls">
-              {entries.length > 0 && (
-                <button
-                  onClick={() => {
-                    if (entries.length === 0) return;
+            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
+              {/* Previous */}
+              <button
+                onClick={() => {
+                  if (entries.length === 0) return;
 
-                    if (!selectedEntryId) {
-                      const last = entries[entries.length - 1];
-                      setSelectedEntryId(last.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                      return;
-                    }
+                  if (!selectedEntryId) {
+                    const last = entries[entries.length - 1];
+                    setSelectedEntryId(last.id);
+                    setCurrentText('');
+                    setIsEditing(false);
+                    return;
+                  }
 
-                    const idx = entries.findIndex(
-                      e => e.id === selectedEntryId
-                    );
-                    if (idx > 0) {
-                      const prev = entries[idx - 1];
-                      setSelectedEntryId(prev.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                    }
-                  }}
-                  className="sea-btn"
-                >
-                  ◀ Previous
-                </button>
-              )}
+                  const index = entries.findIndex(
+                    e => e.id === selectedEntryId
+                  );
+                  if (index > 0) {
+                    const prev = entries[index - 1];
+                    setSelectedEntryId(prev.id);
+                    setCurrentText('');
+                    setIsEditing(false);
+                  }
+                }}
+                className="sea-btn"
+              >
+                ◀ Previous
+              </button>
 
+              {/* New Page */}
               <button
                 onClick={() => {
                   setSelectedEntryId(null);
@@ -391,6 +391,7 @@ export default function JournalPage() {
                 New Page
               </button>
 
+              {/* Edit */}
               {selectedEntry && !isEditing && (
                 <button
                   onClick={() => {
@@ -403,6 +404,7 @@ export default function JournalPage() {
                 </button>
               )}
 
+              {/* Cancel Edit */}
               {isEditing && (
                 <button
                   onClick={() => {
@@ -415,6 +417,7 @@ export default function JournalPage() {
                 </button>
               )}
 
+              {/* Save */}
               <button
                 onClick={handleSave}
                 className="sea-btn"
@@ -423,30 +426,33 @@ export default function JournalPage() {
                 {saving ? 'Saving...' : 'Save'}
               </button>
 
+              {/* Delete */}
               {selectedEntry && (
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
+                  onClick={() => setConfirmDelete(true)}
                   className="sea-btn bg-red-200/80 hover:bg-red-300/90"
                 >
                   Delete
                 </button>
               )}
 
+              {/* Calendar */}
               <button
-                onClick={() => setShowCalendar(true)}
+                onClick={() => setCalendarOpen(true)}
                 className="sea-btn"
               >
                 📅 Calendar
               </button>
 
+              {/* Next */}
               <button
                 onClick={() => {
                   if (!selectedEntryId) return;
-                  const idx = entries.findIndex(
+                  const index = entries.findIndex(
                     e => e.id === selectedEntryId
                   );
-                  if (idx < entries.length - 1 && idx !== -1) {
-                    const next = entries[idx + 1];
+                  if (index < entries.length - 1 && index !== -1) {
+                    const next = entries[index + 1];
                     setSelectedEntryId(next.id);
                     setCurrentText('');
                     setIsEditing(false);
@@ -461,14 +467,15 @@ export default function JournalPage() {
         </WriteStage>
       )}
 
+      {/* Global styles */}
       <style jsx global>{`
-        /* DESKTOP LOCK */
+        /* Desktop protection */
         .journal-fixed-wrapper,
         .journal-fixed-canvas {
           min-width: 900px !important;
         }
 
-        /* BUTTONS */
+        /* Buttons */
         .sea-btn {
           background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
           color: #3b2414;
@@ -484,14 +491,13 @@ export default function JournalPage() {
         .sea-btn:hover {
           transform: translateY(-2px) scale(1.05);
           box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-          background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
         }
 
         .sea-btn:active {
           transform: scale(0.97);
         }
 
-        /* BOOK FADE-IN */
+        /* Book fade-in */
         .fade-in-book {
           animation: fadeInBook 1.2s ease-out forwards;
         }
@@ -514,26 +520,23 @@ export default function JournalPage() {
           }
         }
 
-        /* SCROLLBAR */
+        /* Scrollbar */
         ::-webkit-scrollbar {
           width: 10px;
         }
-
         ::-webkit-scrollbar-track {
           background: #a47a3b;
         }
-
         ::-webkit-scrollbar-thumb {
           background: #3b2414;
           border-radius: 10px;
           border: 2px solid #a47a3b;
         }
-
         ::-webkit-scrollbar-thumb:hover {
           background: #2a180d;
         }
 
-        /* TEXT FADE-IN */
+        /* Text fade-in */
         .text-fade-in {
           opacity: 0;
           animation: textFadeIn 0.8s ease-out 0.2s forwards;
@@ -550,53 +553,34 @@ export default function JournalPage() {
           }
         }
 
-      /* MOBILE-ONLY OVERRIDES — FORCE DESKTOP LOOK ON MOBILE */
-@media (max-width: 640px) {
+        /* Mobile scaling */
+        @media (max-width: 640px) {
+          .journal-write-stage {
+            position: relative !important;
+            inset: unset !important;
+            display: block !important;
+            background: transparent !important;
+            height: auto !important;
+          }
 
-  /* Force desktop width */
-  .journal-fixed-wrapper,
-  .journal-fixed-canvas,
-  .journal-inner {
-    min-width: 900px !important;
-    width: 900px !important;
-    height: auto !important;
-    overflow-x: hidden !important;
-    transform: scale(0.75) translateX(-12%);
-    transform-origin: top center;
-  }
+          .journal-parchment {
+            width: 100% !important;
+            height: 85vh !important;
+            max-height: 85vh !important;
+            object-fit: contain !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
 
-  /* Parchment stays desktop-sized */
-  .journal-parchment {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
-  }
-
-  /* Buttons stay desktop-style but smaller so they fit */
-  .sea-btn {
-    padding: 4px 10px !important;
-    font-size: 0.70rem !important;
-    min-width: 80px !important;
-  }
-
-  /* Prevent wrapping chaos */
-  .journal-controls {
-    flex-wrap: nowrap !important;
-    gap: 6px !important;
-    justify-content: center !important;
-  }
-
-  /* Calendar panel still usable */
-  .calendar-panel {
-    width: 80% !important;
-    right: 10% !important;
-    top: 10% !important;
-    max-height: 60% !important;
-  }
-}
-  `}</style>
-
-
+          .sea-btn {
+            padding: 4px 10px !important;
+            font-size: 0.68rem !important;
+            min-width: 85px !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
