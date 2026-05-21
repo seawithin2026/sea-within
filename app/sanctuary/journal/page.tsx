@@ -14,7 +14,6 @@ type JournalEntry = {
   created_at: string;
 };
 
-// Memoized write stage wrapper to prevent re-mount flicker
 const WriteStage = React.memo(function WriteStage({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -26,7 +25,6 @@ const WriteStage = React.memo(function WriteStage({ children }: { children: Reac
   );
 });
 
-
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
   const [hasTriggeredVideoEnd, setHasTriggeredVideoEnd] = useState(false);
@@ -37,15 +35,11 @@ export default function JournalPage() {
   const [currentText, setCurrentText] = useState('');
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
 
-  const [showCalendar, setShowCalendar] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
   const [saving, setSaving] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
-
   const [isEditing, setIsEditing] = useState(false);
 
-  // TODAY'S PRETTY DATE
   const todayPretty = useMemo(() => {
     return new Date().toLocaleDateString(undefined, {
       year: 'numeric',
@@ -54,22 +48,17 @@ export default function JournalPage() {
     });
   }, []);
 
-  // LOAD USER
   useEffect(() => {
     const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
-
       if (data?.user) {
         setSession({ user: data.user });
       }
-
       setLoadingUser(false);
     };
-
     loadUser();
   }, []);
 
-  // LOAD ENTRIES
   useEffect(() => {
     if (!session?.user?.id) return;
 
@@ -85,7 +74,7 @@ export default function JournalPage() {
         if (data.length > 0) {
           const last = data[data.length - 1];
           setSelectedEntryId(last.id);
-          setCurrentText(''); // view mode uses selectedEntry.content
+          setCurrentText('');
         }
       }
     };
@@ -93,14 +82,12 @@ export default function JournalPage() {
     loadEntries();
   }, [session]);
 
-  // SAVE ENTRY (create or update)
   const handleSave = async () => {
     if (!session?.user?.id) return;
     if (!currentText.trim()) return;
 
     setSaving(true);
 
-    // UPDATE existing entry when editing
     if (isEditing && selectedEntryId) {
       const { error } = await supabase
         .from('journal_entries')
@@ -121,7 +108,6 @@ export default function JournalPage() {
       return;
     }
 
-    // CREATE new entry
     const { data, error } = await supabase
       .from('journal_entries')
       .insert({
@@ -141,7 +127,6 @@ export default function JournalPage() {
     setSaving(false);
   };
 
-  // DELETE ENTRY
   const deleteEntry = async () => {
     if (!selectedEntryId) return;
 
@@ -171,14 +156,36 @@ export default function JournalPage() {
     setShowDeleteConfirm(false);
   };
 
-  // Prevent yellow flash
+  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
+
+  const goPrev = () => {
+    if (!selectedEntryId || entries.length === 0) return;
+    const idx = entries.findIndex(e => e.id === selectedEntryId);
+    if (idx > 0) {
+      const prev = entries[idx - 1];
+      setSelectedEntryId(prev.id);
+      setCurrentText('');
+      setIsEditing(false);
+    }
+  };
+
+  const goNext = () => {
+    if (!selectedEntryId || entries.length === 0) return;
+    const idx = entries.findIndex(e => e.id === selectedEntryId);
+    if (idx < entries.length - 1) {
+      const next = entries[idx + 1];
+      setSelectedEntryId(next.id);
+      setCurrentText('');
+      setIsEditing(false);
+    }
+  };
+
   if (loadingUser) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black" />
     );
   }
 
-  // Sign-in screen
   if (!session) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#f5ecdd]">
@@ -189,11 +196,9 @@ export default function JournalPage() {
     );
   }
 
-  const selectedEntry = entries.find(e => e.id === selectedEntryId) || null;
-
-  // MAIN RETURN
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
+
       {/* VIDEO STAGE */}
       {stage === 'video' && (
         <div className="absolute inset-0 flex items-center justify-center bg-black relative">
@@ -209,18 +214,16 @@ export default function JournalPage() {
 
               const timeLeft = video.duration - video.currentTime;
 
-              // Fade shadow in slightly before the end
               if (timeLeft < 0.08 && !showShadow) {
                 setShowShadow(true);
               }
 
-              // Trigger transition 0.25s before the end
               if (!hasTriggeredVideoEnd && timeLeft < 0.25) {
                 setHasTriggeredVideoEnd(true);
 
                 setTimeout(() => {
                   setStage('logo');
-                }, 450); // cinematic pause
+                }, 450);
               }
             }}
             onEnded={() => {
@@ -230,14 +233,11 @@ export default function JournalPage() {
             }}
           />
 
-          {/* Shadow overlay */}
-          {/* Shadow overlay */}
-<div
-  className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
-    showShadow ? 'opacity-40' : 'opacity-0'
-  }`}
-/>
-
+          <div
+            className={`absolute inset-0 bg-black transition-opacity duration-[900ms] pointer-events-none ${
+              showShadow ? 'opacity-40' : 'opacity-0'
+            }`}
+          />
         </div>
       )}
 
@@ -261,390 +261,211 @@ export default function JournalPage() {
         </div>
       )}
 
-{/* WRITE STAGE */}
-{stage === 'write' && (
-  <WriteStage>
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Parchment */}
-      <img
-        src="/images/parchment-page.png"
-        className="journal-parchment pointer-events-none select-none"
-      />
+      {/* WRITE STAGE */}
+      {stage === 'write' && (
+        <WriteStage>
+          <div className="relative w-full h-full flex items-center justify-center">
 
-      {/* WRITING AREA */}
-      <div
-        className="absolute"
-        style={{
-          left: '53%',
-          top: '18%',
-          width: '20%',
-          height: '60%',
-        }}
-            >
-              {/* DATE */}
-              <div
-                className="absolute text-[#4b2e1a] text-sm font-medium"
-                style={{ top: '-8%', right: '0%' }}
-              >
-                {selectedEntry
-                  ? new Date(selectedEntry.created_at).toLocaleDateString(
-                      undefined,
-                      {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      }
-                    )
-                  : todayPretty}
-              </div>
+            {/* DESKTOP VERSION */}
+            <div className="hidden md:flex w-full h-full items-center justify-center">
+              <div className="relative w-[900px] h-[600px] flex">
 
-              {/* ENTRY OR TEXTAREA */}
-              {selectedEntry && !isEditing ? (
-                <div className="w-full h-full overflow-auto text-[#3b2414] text-center">
-                  <div className="ink-writing whitespace-pre-wrap text-lg leading-relaxed text-fade-in">
-                    {selectedEntry.content}
+                {/* LEFT PAGE (PARCHMENT) */}
+                <div
+                  className="w-1/2 bg-cover bg-center"
+                  style={{ backgroundImage: "url('/images/parchment-page.png')" }}
+                />
+
+                {/* RIGHT PAGE (WRITING AREA) */}
+                <div className="w-1/2 bg-[#f5ecdd] p-10 flex flex-col">
+
+                  {/* DATE */}
+                  <div className="text-right text-[#4b2e1a] text-sm font-medium mb-4">
+                    {selectedEntry
+                      ? new Date(selectedEntry.created_at).toLocaleDateString(
+                          undefined,
+                          { year: 'numeric', month: 'long', day: 'numeric' }
+                        )
+                      : todayPretty}
+                  </div>
+
+                  {/* ENTRY OR TEXTAREA */}
+                  {selectedEntry && !isEditing ? (
+                    <div className="text-[#3b2414] whitespace-pre-wrap text-[18px] leading-relaxed">
+                      {selectedEntry.content}
+                    </div>
+                  ) : (
+                    <textarea
+                      className="w-full flex-1 bg-transparent resize-none text-[#3b2414] text-[18px] leading-relaxed outline-none placeholder-[#3b2414]/60"
+                      placeholder="Let the sea within you speak..."
+                      value={currentText}
+                      onChange={e => setCurrentText(e.target.value)}
+                    />
+                  )}
+
+                  {/* DESKTOP BUTTONS */}
+                  <div className="mt-6 flex gap-3 justify-end">
+
+                    <button
+                      onClick={goPrev}
+                      className="px-4 py-2 bg-[#d9c7b3] text-[#3b2414] rounded hover:bg-[#cbb59e]"
+                    >
+                      Previous
+                    </button>
+
+                    <button
+                      onClick={goNext}
+                      className="px-4 py-2 bg-[#d9c7b3] text-[#3b2414] rounded hover:bg-[#cbb59e]"
+                    >
+                      Next
+                    </button>
+
+                    {selectedEntry && !isEditing && (
+                      <button
+                        onClick={() => {
+                          setIsEditing(true);
+                          setCurrentText(selectedEntry.content);
+                        }}
+                        className="px-4 py-2 bg-amber-200 text-[#3b2414] rounded hover:bg-amber-300"
+                      >
+                        Edit
+                      </button>
+                    )}
+
+                    {(isEditing || !selectedEntry) && (
+                      <button
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                      >
+                        {saving ? 'Saving…' : 'Save'}
+                      </button>
+                    )}
+
+                    {selectedEntry && (
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    )}
                   </div>
                 </div>
-              ) : (
-                <textarea
-                  className="w-full h-full bg-transparent resize-none text-[#3b2414] text-lg leading-relaxed outline-none text-center placeholder-[#3b2414]/60 text-fade-in"
-                  placeholder="Let the sea within you speak..."
-                  value={currentText}
-                  onChange={e => setCurrentText(e.target.value)}
-                />
-              )}
+              </div>
             </div>
 
-            {/* CALENDAR */}
-            {showCalendar && (
-              <div className="absolute top-[10%] right-[10%] bg-[#ccb072] shadow-xl rounded-xl p-4 w-72 max-h-[70%] overflow-auto border border-[#d8c9a3]">
-                <h2 className="text-[#3b2414] font-bold mb-3">Your Entries</h2>
+            {/* MOBILE VERSION */}
+            <div className="md:hidden relative w-full h-full flex flex-col items-center overflow-y-auto">
 
-                {entries.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => {
-                      setSelectedEntryId(entry.id);
-                      setCurrentText('');
-                      setIsEditing(false);
-                      setShowCalendar(false);
-                    }}
-                    className="block w-full text-left text-sm text-[#3b2414] hover:underline"
-                  >
-                    {new Date(entry.created_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </button>
-                ))}
+              <div
+                className="w-full bg-cover bg-center"
+                style={{
+                  backgroundImage: "url('/images/parchment-page.png')",
+                  aspectRatio: '3 / 2',
+                }}
+              />
 
-                <button
-                  onClick={() => setShowCalendar(false)}
-                  className="sea-btn w-full mt-2"
-                >
-                  Close
-                </button>
-              </div>
-            )}
+              <div className="w-full flex justify-end px-4 -mt-10">
+                <div className="w-[70%]">
 
-            {/* DELETE CONFIRM */}
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="bg-[#fdf7e6] border border-[#d8c9a3] rounded-xl p-6 shadow-xl w-80 text-center">
-                  <p className="text-[#3b2414] mb-4">
-                    Are you sure you want to delete this entry?
-                  </p>
-
-                  <div className="flex justify-center gap-4">
-                    <button
-                      onClick={deleteEntry}
-                      className="sea-btn bg-red-300/80 hover:bg-red-400/80"
-                    >
-                      Delete
-                    </button>
-
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="sea-btn"
-                    >
-                      Cancel
-                    </button>
+                  <div className="text-right text-[#4b2e1a] text-sm font-medium mb-2">
+                    {selectedEntry
+                      ? new Date(selectedEntry.created_at).toLocaleDateString(
+                          undefined,
+                          { year: 'numeric', month: 'long', day: 'numeric' }
+                        )
+                      : todayPretty}
                   </div>
+
+                  {selectedEntry && !isEditing ? (
+                    <div className="text-[#3b2414] whitespace-pre-wrap text-[17px] leading-relaxed">
+                      {selectedEntry.content}
+                    </div>
+                  ) : (
+                    <textarea
+                      className="w-full h-48 bg-transparent resize-none text-[#3b2414] text-[17px] leading-relaxed outline-none placeholder-[#3b2414]/60"
+                      placeholder="Let the sea within you speak..."
+                      value={currentText}
+                      onChange={e => setCurrentText(e.target.value)}
+                    />
+                  )}
                 </div>
               </div>
-            )}
 
-            {/* CONTROLS */}
-            <div className="absolute bottom-[10%] left-0 right-0 flex flex-wrap justify-center gap-4">
-              {/* PREVIOUS */}
-              <button
-                onClick={() => {
-                  if (entries.length === 0) return;
+              <div className="w-full mt-8 flex flex-wrap justify-center gap-3 pb-10">
 
-                  if (!selectedEntryId) {
-                    const last = entries[entries.length - 1];
-                    setSelectedEntryId(last.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                    return;
-                  }
-
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx > 0) {
-                    const prev = entries[idx - 1];
-                    setSelectedEntryId(prev.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                ◀ Previous
-              </button>
-
-              {/* NEW PAGE */}
-              <button
-                onClick={() => {
-                  setSelectedEntryId(null);
-                  setCurrentText('');
-                  setIsEditing(false);
-                }}
-                className="sea-btn"
-              >
-                New Page
-              </button>
-
-              {/* EDIT (only when viewing an existing entry) */}
-              {selectedEntry && !isEditing && (
                 <button
-                  onClick={() => {
-                    setIsEditing(true);
-                    setCurrentText(selectedEntry.content);
-                  }}
-                  className="sea-btn"
+                  onClick={goPrev}
+                  className="px-4 py-2 bg-[#d9c7b3] text-[#3b2414] rounded hover:bg-[#cbb59e]"
                 >
-                  Edit
+                  Previous
                 </button>
-              )}
 
-              {/* CANCEL EDIT */}
-              {isEditing && (
                 <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setCurrentText('');
-                  }}
-                  className="sea-btn"
+                  onClick={goNext}
+                  className="px-4 py-2 bg-[#d9c7b3] text-[#3b2414] rounded hover:bg-[#cbb59e]"
                 >
-                  Cancel Edit
+                  Next
                 </button>
-              )}
 
-              {/* SAVE */}
-              <button
-                onClick={handleSave}
-                className="sea-btn"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : 'Save'}
-              </button>
+                {selectedEntry && !isEditing && (
+                  <button
+                    onClick={() => {
+                      setIsEditing(true);
+                      setCurrentText(selectedEntry.content);
+                    }}
+                    className="px-4 py-2 bg-amber-200 text-[#3b2414] rounded hover:bg-amber-300"
+                  >
+                    Edit
+                  </button>
+                )}
 
-              {/* DELETE */}
-              {selectedEntry && (
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="sea-btn bg-red-200/80 hover:bg-red-300/90"
-                >
-                  Delete
-                </button>
-              )}
+                {(isEditing || !selectedEntry) && (
+                  <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {saving ? 'Saving…' : 'Save'}
+                  </button>
+                )}
 
-              {/* CALENDAR */}
-              <button
-                onClick={() => setShowCalendar(true)}
-                className="sea-btn"
-              >
-                📅 Calendar
-              </button>
-
-              {/* NEXT */}
-              <button
-                onClick={() => {
-                  if (!selectedEntryId) return;
-                  const idx = entries.findIndex(e => e.id === selectedEntryId);
-                  if (idx < entries.length - 1 && idx !== -1) {
-                    const next = entries[idx + 1];
-                    setSelectedEntryId(next.id);
-                    setCurrentText('');
-                    setIsEditing(false);
-                  }
-                }}
-                className="sea-btn"
-              >
-                Next ▶
-              </button>
+                {selectedEntry && (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </WriteStage>
       )}
 
-   {/* GLOBAL STYLES */}
-<style jsx global>{`
-  /* ————————————————————————————————
-     DESKTOP FIREWALL — PROTECT DESKTOP FOREVER
-  ———————————————————————————————— */
-  .journal-fixed-wrapper,
-  .journal-fixed-canvas {
-    min-width: 900px !important;
-  }
-
-  /* ————————————————————————————————
-     BUTTON STYLES
-  ———————————————————————————————— */
-  .sea-btn {
-    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-    color: #3b2414;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
-    border: none;
-  }
-
-  .sea-btn:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
-    background: linear-gradient(135deg, #e9a107 0%, #e9a107 100%);
-  }
-
-  .sea-btn:active {
-    transform: scale(0.97);
-  }
-
-  /* ————————————————————————————————
-     BOOK FADE‑IN ANIMATION
-  ———————————————————————————————— */
-  .fade-in-book {
-    animation: fadeInBook 1.2s ease-out forwards;
-  }
-
-  @keyframes fadeInBook {
-    0% {
-      opacity: 0;
-      transform: translateY(10px) scale(0.98);
-      filter: blur(4px);
-    }
-    60% {
-      opacity: 0.6;
-      transform: translateY(4px) scale(0.995);
-      filter: blur(1px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
-
-  /* ————————————————————————————————
-     SCROLLBAR
-  ———————————————————————————————— */
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: #a47a3b;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #3b2414;
-    border-radius: 10px;
-    border: 2px solid #a47a3b;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #2a180d;
-  }
-
-  /* ————————————————————————————————
-     TEXT FADE‑IN
-  ———————————————————————————————— */
-  .text-fade-in {
-    opacity: 0;
-    animation: textFadeIn 0.8s ease-out 0.2s forwards;
-  }
-
-  @keyframes textFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(2px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* ————————————————————————————————
-     MOBILE‑ONLY SANDBOX — DESKTOP UNTOUCHABLE
-  ———————————————————————————————— */
-  @media (max-width: 640px) {
-    .journal-fixed-wrapper {
-      /* mobile-only changes go here */
-    }
-
-    .journal-fixed-canvas {
-      /* mobile-only changes go here */
-    }
-
-    /* Stop WriteStage from locking fullscreen flex on mobile */
-    .journal-write-stage {
-      position: relative !important;
-      inset: unset !important;
-      display: block !important;
-      background: transparent !important;
-      height: auto !important;
-    }
-
-    /* Book fills screen height with ~1 inch bottom space */
-    .journal-parchment {
-      width: auto !important;
-      height: calc(100vh - 48px) !important;
-      max-height: calc(100vh - 48px) !important;
-      object-fit: contain !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      transform: translateX(20px) !important;
-    }
-
-    .writing-area {
-      /* mobile-only changes go here */
-    }
-
-    .controls {
-      /* mobile-only changes go here */
-    }
-
-    .calendar-panel {
-      /* mobile-only changes go here */
-    }
-
-    /* Smaller buttons on mobile */
-    .sea-btn {
-      padding: 4px 10px !important;
-      font-size: 0.68rem !important;
-      min-width: 85px !important;
-      border-radius: 9999px !important;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22) !important;
-    }
-  }
-`}</style>
-
-
+      {showDeleteConfirm && (
+        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <p className="text-[#3b2414] mb-4">Delete this entry?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={deleteEntry}
+                className="px-4 py-2 bg-red-600 text-white rounded"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 bg-gray-300 text-[#3b2414] rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
