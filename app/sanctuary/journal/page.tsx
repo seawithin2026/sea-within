@@ -13,14 +13,14 @@ interface JournalEntry {
   content: string;
   created_at: string;
 }
-
-// Prevents remount flicker when switching into the writing stage
 const WriteStage = React.memo(({ children }: { children: React.ReactNode }) => {
   return (
-  <div className="journal-write-stage fade-in-book bg-black flex items-center justify-center">
+    <div className="journal-write-stage fade-in-book bg-black flex items-center justify-center w-full min-h-[100dvh]">
+      {children}
     </div>
   );
 });
+
 
 export default function JournalPage() {
   const [stage, setStage] = useState<Stage>('video');
