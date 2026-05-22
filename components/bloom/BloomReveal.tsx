@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
-type BloomVideo = {
+type UIBloomVideo = {
   id: string;
   src: string;
   title: string;
@@ -12,10 +12,11 @@ type BloomVideo = {
 
 
 type BloomRevealProps = {
-  earned: boolean;      // true ONLY when they complete the cycle
-  bloomVideo: BloomVideo;
-  onSaved?: (bloomId: string) => void; // callback when bloom is stored
+  earned: boolean;
+  bloomVideo: UIBloomVideo;
+  onSaved?: (bloomId: string) => void;
 };
+
 
 export const BloomReveal: React.FC<BloomRevealProps> = ({
   earned,
