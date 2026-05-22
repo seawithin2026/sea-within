@@ -1,3 +1,4 @@
+"use client";
 import { BloomReveal } from "@/components/bloom/BloomReveal";
 
 const mockBloomVideo = {
