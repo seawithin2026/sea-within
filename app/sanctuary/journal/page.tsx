@@ -6,35 +6,34 @@ import { BloomReveal } from "@/components/bloom/BloomReveal";
 import { selectNextBloom } from "@/components/bloom/bloomSelection";
 import { getBloomVideos } from "@/lib/blooms/getBloomVideos";
 import { evolveAura } from "@/lib/blooms/auraEvolution";
+import { BloomVideo } from "@/lib/blooms/types";
+
 
 // ------------------------------------------------------------
 // TYPES
 // ------------------------------------------------------------
 
-// Raw bloom video from Supabase
-type BloomVideo = {
-  id: string;
-  src: string;
-  title: string;
-  base_level: number;
-};
 
-// Bloom video shape expected by BloomReveal UI
 type UIBloomVideo = {
   id: string;
   src: string;
   title: string;
   level: number;
+  element: string;   // ⭐ ADD THIS
 };
+
 
 // Garden bloom from your API
 type GardenBloom = {
   id: string;
   bloomVideoId: string;
   level: number;
+  element: string;   // ⭐ ADD THIS
   stillUrl: string | null;
   createdAt: string;
 };
+
+
 
 export default function BloomJournalPage() {
   const [earned, setEarned] = useState<boolean>(true);
@@ -55,9 +54,9 @@ export default function BloomJournalPage() {
   }, []);
 
   async function loadBloomLibrary() {
-    const blooms = await getBloomVideos();
-    setBloomLibrary(blooms);
-  }
+  const blooms = await getBloomVideos();
+  setBloomLibrary(blooms as BloomVideo[]);
+}
 
   // ------------------------------------------------------------
   // SELECT NEXT BLOOM AFTER BOTH LIBRARY + GARDEN ARE READY
@@ -72,12 +71,14 @@ export default function BloomJournalPage() {
     const rawBloom = selectNextBloom(bloomLibrary, usedBloomIds, userLevel);
     if (!rawBloom) return;
 
-    const nextBloom: UIBloomVideo = {
-      id: rawBloom.id,
-      src: rawBloom.src,
-      title: rawBloom.title ?? rawBloom.id.replace("bloom-", "Bloom "),
-      level: rawBloom.base_level, // normalize Supabase → UI
-    };
+   const nextBloom: UIBloomVideo = {
+  id: rawBloom.id,
+  src: rawBloom.src,
+  title: rawBloom.title ?? rawBloom.id.replace("bloom-", "Bloom "),
+  level: rawBloom.base_level,
+  element: rawBloom.element,   // ⭐ REQUIRED
+};
+
 
     setCurrentBloomVideo(nextBloom);
   }, [loadingGarden, bloomLibrary, garden]);
@@ -113,8 +114,8 @@ export default function BloomJournalPage() {
   }
 // Apply aura evolution to each bloom before rendering
 const gardenWithAura = garden.map((b) => {
-  const { className } = evolveAura(b.level);
-  return { ...b, auraClass: className };
+ const { auraClass } = evolveAura(b.level, b.element);
+return { ...b, auraClass };
 });
 
   return (

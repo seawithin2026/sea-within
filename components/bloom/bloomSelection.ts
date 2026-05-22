@@ -6,13 +6,16 @@ export type BloomVideo = {
   src: string;
   title: string;
   base_level: number;
+  element: string; // ⭐ REQUIRED
 };
+
 
 export function selectNextBloom(
   bloomLibrary: BloomVideo[],
   usedBloomIds: string[],
   userLevel: number
 ): BloomVideo {
+
   const unused = bloomLibrary.filter((b) => !usedBloomIds.includes(b.id));
 
   const pool = unused.length > 0 ? unused : bloomLibrary;

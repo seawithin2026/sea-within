@@ -1,17 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
+import { BloomVideo } from "./types";
 
-export async function getBloomVideos() {
+export async function getBloomVideos(): Promise<BloomVideo[]> {
   const supabase = createClient();
 
   const { data, error } = await supabase
     .from("bloom_videos")
-    .select("*")
+    .select("id, src, title, base_level, element")
     .order("base_level", { ascending: true });
 
-  if (error) {
-    console.error("Error loading bloom videos:", error);
-    return [];
-  }
+  if (error || !data) return [];
 
-  return data;
+  return data as BloomVideo[];
 }
