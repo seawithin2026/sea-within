@@ -6,7 +6,9 @@ const mockBloomVideo = {
   src: "/bloom-videos/bloom-01.mp4",
   title: "First Bloom",
   level: 1,
+  element: "water", // or any element you want
 };
+
 
 export default function DashboardPage() {
   // In your real logic, `earned` becomes true when the cycle is complete.
