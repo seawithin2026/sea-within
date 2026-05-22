@@ -4,7 +4,29 @@ import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { BloomReveal } from "@/components/bloom/BloomReveal";
 import { selectNextBloom } from "@/components/bloom/bloomSelection";
+import { getBloomVideos } from "@/lib/blooms/getBloomVideos";
 
+// ------------------------------------------------------------
+// TYPES
+// ------------------------------------------------------------
+
+// Raw bloom video from Supabase
+type BloomVideo = {
+  id: string;
+  src: string;
+  title: string;
+  base_level: number;
+};
+
+// Bloom video shape expected by BloomReveal UI
+type UIBloomVideo = {
+  id: string;
+  src: string;
+  title: string;
+  level: number;
+};
+
+// Garden bloom from your API
 type GardenBloom = {
   id: string;
   bloomVideoId: string;
@@ -13,85 +35,59 @@ type GardenBloom = {
   createdAt: string;
 };
 
-type BloomVideo = {
-  id: string;
-  src: string;
-  title: string;
-  level: number;
-};
-
-const MOCK_BLOOM_VIDEOS: BloomVideo[] = [
-  {
-    id: "bloom-01",
-    src: "/bloom-videos/bloom-01.mp4",
-    title: "First Bloom",
-    level: 1,
-  },
-  {
-    id: "bloom-02",
-    src: "/bloom-videos/bloom-02.mp4",
-    title: "Second Bloom",
-    level: 2,
-  },
-  {
-    id: "bloom-03",
-    src: "/bloom-videos/bloom-03.mp4",
-    title: "Third Bloom",
-    level: 3,
-  },
-];
-
 export default function BloomJournalPage() {
-  // In your real logic, this comes from the ritual engine:
-  // true only when today’s cycle is complete.
   const [earned, setEarned] = useState<boolean>(true);
 
-  // Current bloom video for this cycle
-  const [currentBloomVideo, setCurrentBloomVideo] = useState<BloomVideo | null>(
-    MOCK_BLOOM_VIDEOS[0]
-  );
+  const [currentBloomVideo, setCurrentBloomVideo] = useState<UIBloomVideo | null>(null);
 
-  // Garden blooms (saved blooms from DB)
   const [garden, setGarden] = useState<GardenBloom[]>([]);
   const [loadingGarden, setLoadingGarden] = useState<boolean>(true);
 
+  const [bloomLibrary, setBloomLibrary] = useState<BloomVideo[]>([]);
+
+  // ------------------------------------------------------------
+  // LOAD BLOOM LIBRARY + GARDEN ON MOUNT
+  // ------------------------------------------------------------
   useEffect(() => {
+    loadBloomLibrary();
     fetchGarden();
   }, []);
-  // SELECT NEXT BLOOM AFTER GARDEN LOADS
-useEffect(() => {
-  if (loadingGarden) return;
-  if (!garden) return;
 
-  const userLevel = 2;
-  const usedBloomIds = garden.map((b) => b.bloomVideoId);
-
-  const rawBloom = selectNextBloom(usedBloomIds, userLevel);
-
-  if (!rawBloom) {
-    console.error("Bloom selection returned undefined");
-    return;
+  async function loadBloomLibrary() {
+    const blooms = await getBloomVideos();
+    setBloomLibrary(blooms);
   }
 
-  // NORMALIZE bloom into the UI format
-  const nextBloom: BloomVideo = {
-    id: rawBloom.id,
-    src: rawBloom.src,
-    title: rawBloom.id.replace("bloom-", "Bloom "), // temporary title
-    level: rawBloom.baseLevel,
-  };
+  // ------------------------------------------------------------
+  // SELECT NEXT BLOOM AFTER BOTH LIBRARY + GARDEN ARE READY
+  // ------------------------------------------------------------
+  useEffect(() => {
+    if (loadingGarden) return;
+    if (!bloomLibrary.length) return;
 
-  setCurrentBloomVideo(nextBloom);
-}, [loadingGarden, garden]);
+    const userLevel = 2;
+    const usedBloomIds = garden.map((b) => b.bloomVideoId);
 
+    const rawBloom = selectNextBloom(bloomLibrary, usedBloomIds, userLevel);
+    if (!rawBloom) return;
 
+    const nextBloom: UIBloomVideo = {
+      id: rawBloom.id,
+      src: rawBloom.src,
+      title: rawBloom.title ?? rawBloom.id.replace("bloom-", "Bloom "),
+      level: rawBloom.base_level, // normalize Supabase → UI
+    };
 
+    setCurrentBloomVideo(nextBloom);
+  }, [loadingGarden, bloomLibrary, garden]);
+
+  // ------------------------------------------------------------
+  // FETCH GARDEN FROM API
+  // ------------------------------------------------------------
   async function fetchGarden() {
     try {
       setLoadingGarden(true);
 
-      // TODO: replace with real GET /api/blooms or Supabase query
-      // For now, this is a placeholder so the UI is wired correctly.
       const res = await fetch("/api/blooms", { method: "GET" }).catch(() => null);
 
       if (res && res.ok) {
@@ -107,18 +103,12 @@ useEffect(() => {
     }
   }
 
-  function handleBloomSaved(bloomVideoId: string) {
-    // After a bloom is saved:
-    // - refresh garden
-    // - mark this cycle as complete
-    // - optionally pick the next bloom video for the next cycle
+  // ------------------------------------------------------------
+  // AFTER BLOOM IS SAVED
+  // ------------------------------------------------------------
+  function handleBloomSaved() {
     fetchGarden();
     setEarned(false);
-
-    // Example: rotate to next mock bloom for next cycle
-    const currentIndex = MOCK_BLOOM_VIDEOS.findIndex((b) => b.id === bloomVideoId);
-    const nextIndex = (currentIndex + 1) % MOCK_BLOOM_VIDEOS.length;
-    setCurrentBloomVideo(MOCK_BLOOM_VIDEOS[nextIndex]);
   }
 
   return (
@@ -235,9 +225,7 @@ useEffect(() => {
                   type="button"
                   className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 aspect-[3/4] shadow-[0_0_30px_rgba(0,0,0,0.6)]"
                 >
-                  {/* Bloom still */}
                   {bloom.stillUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={bloom.stillUrl}
                       alt="Bloom still"
@@ -247,10 +235,8 @@ useEffect(() => {
                     <div className="h-full w-full bg-gradient-to-br from-emerald-500/30 via-sky-500/20 to-slate-900" />
                   )}
 
-                  {/* Aura overlay */}
                   <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-radial-at-center from-amber-300/35 via-rose-400/15 to-transparent" />
 
-                  {/* Meta strip */}
                   <div className="absolute bottom-0 inset-x-0 px-3 pb-3 pt-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
                     <p className="text-[10px] tracking-[0.22em] uppercase text-white/70">
                       Bloom #{bloom.id.slice(-4)}
