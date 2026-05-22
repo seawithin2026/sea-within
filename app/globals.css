@@ -353,6 +353,25 @@ body {
   50% { box-shadow: 0 0 70px rgba(255, 200, 150, 0.55); }
   100% { box-shadow: 0 0 40px rgba(255, 200, 150, 0.35); }
 }
+/* EARTH — deep green + amber */
+.aura-earth {
+  filter: drop-shadow(0 0 18px rgba(80, 200, 120, 0.45));
+}
+
+/* AIR — blue + silver */
+.aura-air {
+  filter: drop-shadow(0 0 18px rgba(120, 180, 255, 0.45));
+}
+
+/* FIRE — red + gold */
+.aura-fire {
+  filter: drop-shadow(0 0 18px rgba(255, 120, 90, 0.45));
+}
+
+/* LIGHT — white + rose-gold */
+.aura-light {
+  filter: drop-shadow(0 0 18px rgba(255, 220, 180, 0.45));
+}
 
 
 
