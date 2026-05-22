@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 type FlowerBloomProps = {
@@ -42,9 +43,9 @@ export default function FlowerBloom({ level, size = 220 }: FlowerBloomProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        filter: `drop-shadow(0 0 ${12 + glowIntensity * 30}px rgba(255, 180, 255, ${
-          0.3 + glowIntensity * 0.4
-        }))`,
+        filter: `drop-shadow(0 0 ${
+          12 + glowIntensity * 30
+        }px rgba(255, 180, 255, ${0.3 + glowIntensity * 0.4}))`,
         transition: "filter 400ms ease",
       }}
     >
