@@ -18,13 +18,14 @@ export function evolveAura(bloomLevel: number, element: string) {
     case "fire":
       elementClass = "aura-fire";
       break;
-    case "light":
-      elementClass = "aura-light";
+    case "water":                // ⭐ updated from "light"
+      elementClass = "aura-water";
       break;
     default:
-      elementClass = "aura-light";
+      elementClass = "aura-water"; // ⭐ fallback
   }
 
+  // ⭐ THIS MUST BE OUTSIDE THE SWITCH
   return {
     auraClass: `${levelClass} ${elementClass}`,
   };

@@ -373,6 +373,11 @@ body {
   filter: drop-shadow(0 0 18px rgba(255, 220, 180, 0.45));
 }
 
+/* WATER — blue + turquoise + soft shimmer */
+.aura-water {
+  filter: drop-shadow(0 0 18px rgba(90, 180, 255, 0.45))
+          drop-shadow(0 0 28px rgba(120, 220, 255, 0.25));
+}
 
 
 /* ————————————————————————————————
