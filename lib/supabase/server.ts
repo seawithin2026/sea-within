@@ -44,3 +44,6 @@ export function createAdminClient() {
     }
   );
 }
+export function createClient() {
+  return createServerSupabaseClient();
+}
