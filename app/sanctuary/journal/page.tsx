@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { BloomReveal } from "@/components/bloom/BloomReveal";
+import { selectNextBloom } from "@/components/bloom/bloomSelection";
 
 type GardenBloom = {
   id: string;
@@ -57,6 +58,33 @@ export default function BloomJournalPage() {
   useEffect(() => {
     fetchGarden();
   }, []);
+  // SELECT NEXT BLOOM AFTER GARDEN LOADS
+useEffect(() => {
+  if (loadingGarden) return;
+  if (!garden) return;
+
+  const userLevel = 2;
+  const usedBloomIds = garden.map((b) => b.bloomVideoId);
+
+  const rawBloom = selectNextBloom(usedBloomIds, userLevel);
+
+  if (!rawBloom) {
+    console.error("Bloom selection returned undefined");
+    return;
+  }
+
+  // NORMALIZE bloom into the UI format
+  const nextBloom: BloomVideo = {
+    id: rawBloom.id,
+    src: rawBloom.src,
+    title: rawBloom.id.replace("bloom-", "Bloom "), // temporary title
+    level: rawBloom.baseLevel,
+  };
+
+  setCurrentBloomVideo(nextBloom);
+}, [loadingGarden, garden]);
+
+
 
   async function fetchGarden() {
     try {
