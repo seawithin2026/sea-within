@@ -1,4 +1,4 @@
-import { BloomReveal } from "../components/bloom/BloomReveal";
+import { BloomReveal } from "@/components/bloom/BloomReveal";
 
 const mockBloomVideo = {
   id: "bloom-01",
