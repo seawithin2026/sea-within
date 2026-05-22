@@ -1,73 +1,84 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-
 export default function DashboardPage() {
-  const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState<string | null>(null);
-  const [nextBloom, setNextBloom] = useState<any>(null);
-  const [garden, setGarden] = useState<any[]>([]);
+  // ⭐ Fake seed data
+  const seed = {
+    level: 3,
+    growth: 72, // %
+    wateredToday: true,
+    nextGrowthIn: "14 hours",
+  };
 
-  useEffect(() => {
-    async function loadData() {
-      // ⭐ Later: fetch user, next bloom, garden from Supabase
-      setLoading(false);
-    }
-    loadData();
-  }, []);
+  // ⭐ Fake next bloom
+  const nextBloom = {
+    element: "water",
+    progress: 45, // %
+    eta: "4–6 days",
+  };
 
-  if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-950 text-white/70">
-        Loading your dashboard…
-      </main>
-    );
-  }
+  // ⭐ Fake garden blooms
+  const garden = [
+    {
+      id: "b1",
+      title: "Water Bloom",
+      level: 3,
+      element: "water",
+      still_url: "/placeholder-flower-1.jpg",
+    },
+    {
+      id: "b2",
+      title: "Fire Bloom",
+      level: 2,
+      element: "fire",
+      still_url: "/placeholder-flower-2.jpg",
+    },
+    {
+      id: "b3",
+      title: "Earth Bloom",
+      level: 4,
+      element: "earth",
+      still_url: "/placeholder-flower-3.jpg",
+    },
+  ];
+
+  // ⭐ Fake season progress
+  const season = {
+    name: "Season of Water",
+    progress: 12,
+    total: 17,
+  };
 
   return (
     <main className="min-h-screen bg-slate-950 text-white p-10 flex flex-col gap-12">
 
-      {/* HEADER */}
-      <section>
-        <h1 className="text-3xl tracking-[0.15em] uppercase text-white/80">
-          Welcome back{userName ? `, ${userName}` : ""}
-        </h1>
-        <p className="text-white/50 mt-2">
-          Your journey continues. Here is your current cycle and your garden.
+      {/* SEED */}
+      <section className="bg-black/30 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
+        <h2 className="text-xl tracking-[0.15em] uppercase text-white/70 mb-4">
+          Your Seed
+        </h2>
+
+        <p className="text-white/80">Level {seed.level}</p>
+        <p className="text-white/50 mt-1">Growth: {seed.growth}%</p>
+        <p className="text-white/50 mt-1">
+          Next growth in: {seed.nextGrowthIn}
+        </p>
+
+        <p className="text-white/60 mt-4">
+          {seed.wateredToday
+            ? "You watered your seed today."
+            : "Your seed is thirsty — visit to water it."}
         </p>
       </section>
 
-      {/* CURRENT CYCLE */}
+      {/* NEXT BLOOM */}
       <section className="bg-black/30 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
         <h2 className="text-xl tracking-[0.15em] uppercase text-white/70 mb-4">
-          Current Cycle
+          Next Bloom
         </h2>
 
-        {nextBloom ? (
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-white/80">Your next bloom is forming…</p>
-              <p className="text-white/50 text-sm mt-1">
-                Level {nextBloom.level} • {nextBloom.element}
-              </p>
-            </div>
-
-            <Link
-              href="/journal"
-              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-            >
-              Continue Journal
-            </Link>
-          </div>
-        ) : (
-          <div className="text-white/50">
-            You haven’t started a cycle yet.
-            <Link href="/journal" className="underline ml-2">
-              Begin your first entry
-            </Link>
-          </div>
-        )}
+        <p className="text-white/80">Element: {nextBloom.element}</p>
+        <p className="text-white/50 mt-1">Progress: {nextBloom.progress}%</p>
+        <p className="text-white/50 mt-1">Estimated bloom: {nextBloom.eta}</p>
       </section>
 
       {/* GARDEN */}
@@ -76,54 +87,32 @@ export default function DashboardPage() {
           Your Garden
         </h2>
 
-        {garden.length === 0 ? (
-          <p className="text-white/50">
-            Your garden is empty. Complete a cycle to grow your first bloom.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {garden.map((bloom) => (
-              <div
-                key={bloom.id}
-                className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-2"
-              >
-                <img
-                  src={bloom.still_url}
-                  alt={bloom.title}
-                  className="rounded-lg object-cover aspect-[4/5]"
-                />
-                <p className="text-sm text-white/80">{bloom.title}</p>
-                <p className="text-xs text-white/50">
-                  Level {bloom.level} • {bloom.element}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {garden.map((bloom) => (
+            <div
+              key={bloom.id}
+              className="bg-white/5 border border-white/10 rounded-xl p-3 flex flex-col gap-2"
+            >
+              <div className="aspect-[4/5] bg-white/10 rounded-lg" />
+              <p className="text-sm text-white/80">{bloom.title}</p>
+              <p className="text-xs text-white/50">
+                Level {bloom.level} • {bloom.element}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* NAVIGATION */}
-      <section className="flex gap-4">
-        <Link
-          href="/journal"
-          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-        >
-          Journal
-        </Link>
+      {/* SEASON */}
+      <section className="bg-black/30 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
+        <h2 className="text-xl tracking-[0.15em] uppercase text-white/70 mb-4">
+          Season Progress
+        </h2>
 
-        <Link
-          href="/garden"
-          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-        >
-          Garden
-        </Link>
-
-        <Link
-          href="/bloom-test"
-          className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm"
-        >
-          Bloom Test Lab
-        </Link>
+        <p className="text-white/80">{season.name}</p>
+        <p className="text-white/50 mt-1">
+          {season.progress} / {season.total} days
+        </p>
       </section>
     </main>
   );
