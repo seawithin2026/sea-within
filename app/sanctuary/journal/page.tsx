@@ -5,6 +5,7 @@ import Navigation from "@/components/layout/Navigation";
 import { BloomReveal } from "@/components/bloom/BloomReveal";
 import { selectNextBloom } from "@/components/bloom/bloomSelection";
 import { getBloomVideos } from "@/lib/blooms/getBloomVideos";
+import { evolveAura } from "@/lib/blooms/auraEvolution";
 
 // ------------------------------------------------------------
 // TYPES
@@ -110,6 +111,11 @@ export default function BloomJournalPage() {
     fetchGarden();
     setEarned(false);
   }
+// Apply aura evolution to each bloom before rendering
+const gardenWithAura = garden.map((b) => {
+  const { className } = evolveAura(b.level);
+  return { ...b, auraClass: className };
+});
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
@@ -219,39 +225,43 @@ export default function BloomJournalPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-              {garden.map((bloom) => (
-                <button
-                  key={bloom.id}
-                  type="button"
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 aspect-[3/4] shadow-[0_0_30px_rgba(0,0,0,0.6)]"
-                >
-                  {bloom.stillUrl ? (
-                    <img
-                      src={bloom.stillUrl}
-                      alt="Bloom still"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-emerald-500/30 via-sky-500/20 to-slate-900" />
-                  )}
+             {gardenWithAura.map((bloom) => (
+  <button
+    key={bloom.id}
+    type="button"
+    className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 aspect-[3/4] shadow-[0_0_30px_rgba(0,0,0,0.6)] ${bloom.auraClass}`}
+  >
+    {/* Bloom still */}
+    {bloom.stillUrl ? (
+      <img
+        src={bloom.stillUrl}
+        alt="Bloom still"
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+      />
+    ) : (
+      <div className="h-full w-full bg-gradient-to-br from-emerald-500/30 via-sky-500/20 to-slate-900" />
+    )}
 
-                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-radial-at-center from-amber-300/35 via-rose-400/15 to-transparent" />
+    {/* Aura overlay */}
+    <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-radial-at-center from-amber-300/35 via-rose-400/15 to-transparent" />
 
-                  <div className="absolute bottom-0 inset-x-0 px-3 pb-3 pt-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-                    <p className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-                      Bloom #{bloom.id.slice(-4)}
-                    </p>
-                    <p className="mt-1 text-[11px] text-white/55">
-                      Level {bloom.level} •{" "}
-                      {new Date(bloom.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                </button>
-              ))}
+    {/* Meta strip */}
+    <div className="absolute bottom-0 inset-x-0 px-3 pb-3 pt-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+      <p className="text-[10px] tracking-[0.22em] uppercase text-white/70">
+        Bloom #{bloom.id.slice(-4)}
+      </p>
+      <p className="mt-1 text-[11px] text-white/55">
+        Level {bloom.level} •{" "}
+        {new Date(bloom.createdAt).toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </p>
+    </div>
+  </button>
+))}
+
             </div>
           )}
         </section>

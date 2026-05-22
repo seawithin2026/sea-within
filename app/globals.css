@@ -330,7 +330,33 @@ body {
   );
   pointer-events: none;
   z-index: -1;
-}/* ————————————————————————————————
+}
+.aura-soft {
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
+}
+
+.aura-warm {
+  box-shadow: 0 0 22px rgba(255, 180, 120, 0.25);
+}
+
+.aura-deep {
+  box-shadow: 0 0 35px rgba(255, 150, 90, 0.35);
+}
+
+.aura-luminous {
+  animation: auraPulse 6s ease-in-out infinite;
+  box-shadow: 0 0 55px rgba(255, 200, 150, 0.45);
+}
+
+@keyframes auraPulse {
+  0% { box-shadow: 0 0 40px rgba(255, 200, 150, 0.35); }
+  50% { box-shadow: 0 0 70px rgba(255, 200, 150, 0.55); }
+  100% { box-shadow: 0 0 40px rgba(255, 200, 150, 0.35); }
+}
+
+
+
+/* ————————————————————————————————
    SANCTUARY — MOBILE FIXES ONLY
 ——————————————————————————————— */
 @media (max-width: 640px) {

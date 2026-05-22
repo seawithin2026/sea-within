@@ -4,13 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(req: NextRequest) {
   try {
     const supabase = createClient();
-    const body = await req.json();
 
-    const { bloomVideoId, stillDataUrl, level } = body as {
-      bloomVideoId?: string;
-      stillDataUrl?: string | null;
-      level?: number;
-    };
+    // ⭐ Correct body parsing (only once)
+    const { bloomVideoId, level, stillUrl, element } = await req.json();
 
     if (!bloomVideoId || typeof level !== "number") {
       return NextResponse.json(
@@ -19,7 +15,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Get the authenticated user
+    // ⭐ Get authenticated user
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -31,14 +27,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2. Insert bloom instance
+    // ⭐ Insert bloom instance with elemental identity
     const { data, error } = await supabase
       .from("bloom_instances")
       .insert({
         user_id: user.id,
         bloom_video_id: bloomVideoId,
         level,
-        still_url: stillDataUrl,
+        still_url: stillUrl,
+        element, // ⭐ NEW FIELD
       })
       .select()
       .single();

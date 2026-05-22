@@ -4,10 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 
 type BloomVideo = {
   id: string;
-  src: string;          // video URL (e.g. /bloom-videos/bloom-01.mp4)
+  src: string;
   title: string;
-  level: number;        // bloom level for aura/glow
+  level: number;
+  element: string; // ⭐ NEW
 };
+
 
 type BloomRevealProps = {
   earned: boolean;      // true ONLY when they complete the cycle
@@ -51,11 +53,13 @@ export const BloomReveal: React.FC<BloomRevealProps> = ({
     try {
       setIsSaving(true);
       const stillDataUrl = captureStillFrame();
-      await saveBloomToServer({
-        bloomVideoId: bloomVideo.id,
-        stillDataUrl,
-        level: bloomVideo.level,
-      });
+     await saveBloomToServer({
+  bloomVideoId: bloomVideo.id,
+  stillUrl: stillDataUrl,     // ⭐ rename
+  level: bloomVideo.level,
+  element: bloomVideo.element, // ⭐ NEW
+});
+
       setIsSaving(false);
       if (onSaved) onSaved(bloomVideo.id);
     } catch (err) {
@@ -187,16 +191,24 @@ function getAuraClass(level: number): string {
 
 type SaveBloomPayload = {
   bloomVideoId: string;
-  stillDataUrl: string | null;
+  stillUrl: string | null;
   level: number;
+  element: string;
 };
+
 
 async function saveBloomToServer(payload: SaveBloomPayload) {
   const res = await fetch("/api/blooms", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      bloomVideoId: payload.bloomVideoId,
+      level: payload.level,
+      stillUrl: payload.stillUrl,
+      element: payload.element,
+    }),
   });
+
 
   if (!res.ok) {
     throw new Error("Failed to save bloom");
