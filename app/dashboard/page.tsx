@@ -1,6 +1,7 @@
 "use client";
 
-import { ProceduralFlower } from "../components/ProceduralFlower";
+import ProceduralFlower from "../components/ProceduralFlower";
+
 
 export default function DashboardPage() {
   const seedLevel = 4; // fake for now
