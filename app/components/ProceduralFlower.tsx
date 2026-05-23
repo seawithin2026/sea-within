@@ -65,6 +65,37 @@ export default function ProceduralFlower({
             <feGaussianBlur stdDeviation="0.08" />
           </filter>
         </defs>
+{/* Bioluminescent vein turbulence */}
+<filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.9"
+    numOctaves="3"
+    seed="4"
+    result="noise"
+  />
+  <feColorMatrix
+    in="noise"
+    type="matrix"
+    values="
+      1 0 0 0 0
+      0 1 0 0 0
+      0 0 1 0 0
+      0 0 0 20 -10
+    "
+    result="contrastNoise"
+  />
+  <feGaussianBlur stdDeviation="0.015" />
+</filter>
+
+{/* Vein glow */}
+<filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
+  <feGaussianBlur stdDeviation="0.04" result="blur" />
+  <feMerge>
+    <feMergeNode in="blur" />
+    <feMergeNode in="SourceGraphic" />
+  </feMerge>
+</filter>
 
         {/* Outer halo */}
         <circle cx="0" cy="0" r="0.95" fill="url(#outerGlow)" filter="url(#blur)" />
@@ -124,6 +155,28 @@ export default function ProceduralFlower({
             );
           });
         })}
+{/* Bioluminescent veins */}
+<circle
+  cx="0"
+  cy="0"
+  r={0.55}
+  fill="none"
+  stroke={palette.glow}
+  strokeWidth="0.015"
+  opacity="0.35"
+  filter="url(#veinNoise)"
+/>
+
+<circle
+  cx="0"
+  cy="0"
+  r={0.55}
+  fill="none"
+  stroke={palette.glow}
+  strokeWidth="0.02"
+  opacity="0.25"
+  filter="url(#veinGlow)"
+/>
 
         {/* Core glow */}
         <circle cx="0" cy="0" r="0.25" fill="url(#coreGlow)" filter="url(#blur)" />
