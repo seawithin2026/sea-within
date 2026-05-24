@@ -39,44 +39,89 @@ export default function ProceduralFlower({
       className="relative flex items-center justify-center"
     >
       <svg viewBox="-1 -1 2 2" className="w-full h-full">
-<defs>
-{/* ⭐ Bioluminescent vein turbulence */}
-<filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
-  <feTurbulence
-    type="fractalNoise"
-    baseFrequency="0.9"
-    numOctaves="3"
-    seed="4"
-    result="noise"
-  />
-  <feColorMatrix
-    in="noise"
-    type="matrix"
-    values="
-      1 0 0 0 0
-      0 1 0 0 0
-      0 0 1 0 0
-      0 0 0 20 -10
-    "
-    result="contrastNoise"
-  />
-  <feGaussianBlur stdDeviation="0.015" />
-</filter>
+        <defs>
+          {/* Outer glow */}
+          <radialGradient id="outerGlow" cx="0" cy="0" r="1">
+            <stop
+              offset="0%"
+              stopColor={palette.glow}
+              stopOpacity={glowIntensity}
+            />
+            <stop offset="70%" stopColor={palette.glow} stopOpacity="0.1" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
 
-{/* ⭐ Vein glow */}
-<filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
-  <feGaussianBlur stdDeviation="0.04" result="blur" />
-  <feMerge>
-    <feMergeNode in="blur" />
-    <feMergeNode in="SourceGraphic" />
-  </feMerge>
-</filter>
+          {/* Petal gradient */}
+          <radialGradient id="petalGrad" cx="0.3" cy="0.2" r="1">
+            <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
+            <stop offset="40%" stopColor={palette.base} stopOpacity="0.95" />
+            <stop offset="100%" stopColor={palette.glow} stopOpacity="0.25" />
+          </radialGradient>
 
-</defs>
+          {/* Core glow */}
+          <radialGradient id="coreGlow" cx="0" cy="0" r="1">
+            <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
+            <stop offset="60%" stopColor={palette.glow} stopOpacity="0.7" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
 
+          {/* Soft blur */}
+          <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.08" />
+          </filter>
+
+          {/* Bioluminescent vein noise (used as a texture source) */}
+          <filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="1.2"
+              numOctaves="4"
+              seed="7"
+              result="noise"
+            />
+            <feColorMatrix
+              in="noise"
+              type="matrix"
+              values="
+                1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 25 -15
+              "
+              result="highContrastNoise"
+            />
+          </filter>
+
+          {/* Vein glow (for the final strokes) */}
+          <filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="0.04" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Vein mask: uses noise to create branching-like gaps */}
+          <mask id="veinMask">
+            <rect x="-1" y="-1" width="2" height="2" fill="black" />
+            <circle
+              cx="0"
+              cy="0"
+              r="0.7"
+              fill="white"
+              filter="url(#veinNoise)"
+            />
+          </mask>
+        </defs>
 
         {/* Outer halo */}
-        <circle cx="0" cy="0" r="0.95" fill="url(#outerGlow)" filter="url(#blur)" />
+        <circle
+          cx="0"
+          cy="0"
+          r="0.95"
+          fill="url(#outerGlow)"
+          filter="url(#blur)"
+        />
 
         {/* Outer petals */}
         {petalsArray.map((_, i) => {
@@ -98,7 +143,7 @@ export default function ProceduralFlower({
                 fill="url(#petalGrad)"
                 stroke={palette.glow}
                 strokeWidth="0.01"
-                opacity="0.9"
+                opacity={0.9}
               />
             </g>
           );
@@ -133,31 +178,46 @@ export default function ProceduralFlower({
             );
           });
         })}
-{/* Bioluminescent veins */}
-<circle
-  cx="0"
-  cy="0"
-  r={0.55}
-  fill="none"
-  stroke={palette.glow}
-  strokeWidth="0.015"
-  opacity="0.35"
-  filter="url(#veinNoise)"
-/>
 
-<circle
-  cx="0"
-  cy="0"
-  r={0.55}
-  fill="none"
-  stroke={palette.glow}
-  strokeWidth="0.02"
-  opacity="0.25"
-  filter="url(#veinGlow)"
-/>
+        {/* Bioluminescent veins (masked, glowing, inside the flower) */}
+        <g mask="url(#veinMask)" filter="url(#veinGlow)">
+          <circle
+            cx="0"
+            cy="0"
+            r={0.6}
+            fill="none"
+            stroke={palette.glow}
+            strokeWidth="0.02"
+            opacity={0.45}
+          />
+          <circle
+            cx="0"
+            cy="0"
+            r={0.4}
+            fill="none"
+            stroke={palette.glow}
+            strokeWidth="0.015"
+            opacity={0.5}
+          />
+          <circle
+            cx="0"
+            cy="0"
+            r={0.25}
+            fill="none"
+            stroke={palette.glow}
+            strokeWidth="0.012"
+            opacity={0.6}
+          />
+        </g>
 
         {/* Core glow */}
-        <circle cx="0" cy="0" r="0.25" fill="url(#coreGlow)" filter="url(#blur)" />
+        <circle
+          cx="0"
+          cy="0"
+          r="0.25"
+          fill="url(#coreGlow)"
+          filter="url(#blur)"
+        />
 
         {/* Core nucleus */}
         <circle
