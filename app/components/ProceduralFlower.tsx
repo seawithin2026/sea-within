@@ -39,63 +39,66 @@ export default function ProceduralFlower({
       className="relative flex items-center justify-center"
     >
       <svg viewBox="-1 -1 2 2" className="w-full h-full">
-        <defs>
-          {/* Outer glow */}
-          <radialGradient id="outerGlow" cx="0" cy="0" r="1">
-            <stop offset="0%" stopColor={palette.glow} stopOpacity={glowIntensity} />
-            <stop offset="70%" stopColor={palette.glow} stopOpacity="0.1" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
+<defs>
+  {/* Outer glow */}
+  <radialGradient id="outerGlow" cx="0" cy="0" r="1">
+    <stop offset="0%" stopColor={palette.glow} stopOpacity={glowIntensity} />
+    <stop offset="70%" stopColor={palette.glow} stopOpacity="0.1" />
+    <stop offset="100%" stopColor="transparent" />
+  </radialGradient>
 
-          {/* Petal gradient */}
-          <radialGradient id="petalGrad" cx="0.3" cy="0.2" r="1">
-            <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
-            <stop offset="40%" stopColor={palette.base} stopOpacity="0.95" />
-            <stop offset="100%" stopColor={palette.glow} stopOpacity="0.25" />
-          </radialGradient>
+  {/* Petal gradient */}
+  <radialGradient id="petalGrad" cx="0.3" cy="0.2" r="1">
+    <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
+    <stop offset="40%" stopColor={palette.base} stopOpacity="0.95" />
+    <stop offset="100%" stopColor={palette.glow} stopOpacity="0.25" />
+  </radialGradient>
 
-          {/* Core glow */}
-          <radialGradient id="coreGlow" cx="0" cy="0" r="1">
-            <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
-            <stop offset="60%" stopColor={palette.glow} stopOpacity="0.7" />
-            <stop offset="100%" stopColor="transparent" />
-          </radialGradient>
+  {/* Core glow */}
+  <radialGradient id="coreGlow" cx="0" cy="0" r="1">
+    <stop offset="0%" stopColor={palette.core} stopOpacity="1" />
+    <stop offset="60%" stopColor={palette.glow} stopOpacity="0.7" />
+    <stop offset="100%" stopColor="transparent" />
+  </radialGradient>
 
-          <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="0.08" />
-          </filter>
-        </defs>
-{/* Bioluminescent vein turbulence */}
-<filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
-  <feTurbulence
-    type="fractalNoise"
-    baseFrequency="0.9"
-    numOctaves="3"
-    seed="4"
-    result="noise"
-  />
-  <feColorMatrix
-    in="noise"
-    type="matrix"
-    values="
-      1 0 0 0 0
-      0 1 0 0 0
-      0 0 1 0 0
-      0 0 0 20 -10
-    "
-    result="contrastNoise"
-  />
-  <feGaussianBlur stdDeviation="0.015" />
-</filter>
+  {/* Soft blur */}
+  <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="0.08" />
+  </filter>
 
-{/* Vein glow */}
-<filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
-  <feGaussianBlur stdDeviation="0.04" result="blur" />
-  <feMerge>
-    <feMergeNode in="blur" />
-    <feMergeNode in="SourceGraphic" />
-  </feMerge>
-</filter>
+  {/* ⭐ Bioluminescent vein turbulence */}
+  <filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
+    <feTurbulence
+      type="fractalNoise"
+      baseFrequency="0.9"
+      numOctaves="3"
+      seed="4"
+      result="noise"
+    />
+    <feColorMatrix
+      in="noise"
+      type="matrix"
+      values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 20 -10
+      "
+      result="contrastNoise"
+    />
+    <feGaussianBlur stdDeviation="0.015" />
+  </filter>
+
+  {/* ⭐ Vein glow */}
+  <filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="0.04" result="blur" />
+    <feMerge>
+      <feMergeNode in="blur" />
+      <feMergeNode in="SourceGraphic" />
+    </feMerge>
+  </filter>
+</defs>
+
 
         {/* Outer halo */}
         <circle cx="0" cy="0" r="0.95" fill="url(#outerGlow)" filter="url(#blur)" />
