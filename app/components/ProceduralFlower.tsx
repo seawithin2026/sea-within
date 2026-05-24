@@ -70,48 +70,57 @@ export default function ProceduralFlower({
             <feGaussianBlur stdDeviation="0.08" />
           </filter>
 
-          {/* Bioluminescent vein noise (used as a texture source) */}
-          <filter id="veinNoise" x="-50%" y="-50%" width="200%" height="200%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="1.2"
-              numOctaves="4"
-              seed="7"
-              result="noise"
-            />
-            <feColorMatrix
-              in="noise"
-              type="matrix"
-              values="
-                1 0 0 0 0
-                0 1 0 0 0
-                0 0 1 0 0
-                0 0 0 25 -15
-              "
-              result="highContrastNoise"
-            />
-          </filter>
+          {/* Branching vein noise */}
+<filter id="branchNoise" x="-50%" y="-50%" width="200%" height="200%">
+  <feTurbulence
+    type="turbulence"
+    baseFrequency="0.8"
+    numOctaves="5"
+    seed="12"
+    result="turb"
+  />
+  <feGaussianBlur stdDeviation="0.02" />
+</filter>
 
-          {/* Vein glow (for the final strokes) */}
-          <filter id="veinGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="0.04" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
+{/* Displacement map to create branching cracks */}
+<filter id="branchDisplace" x="-50%" y="-50%" width="200%" height="200%">
+  <feTurbulence
+    type="fractalNoise"
+    baseFrequency="0.6"
+    numOctaves="4"
+    seed="3"
+    result="fract"
+  />
+  <feDisplacementMap
+    in="SourceGraphic"
+    in2="fract"
+    scale="45"
+    xChannelSelector="R"
+    yChannelSelector="G"
+  />
+</filter>
 
-          {/* Vein mask: uses noise to create branching-like gaps */}
-          <mask id="veinMask">
-            <rect x="-1" y="-1" width="2" height="2" fill="black" />
-            <circle
-              cx="0"
-              cy="0"
-              r="0.7"
-              fill="white"
-              filter="url(#veinNoise)"
-            />
-          </mask>
+{/* Glow for veins */}
+<filter id="branchGlow" x="-50%" y="-50%" width="200%" height="200%">
+  <feGaussianBlur stdDeviation="0.05" result="blur" />
+  <feMerge>
+    <feMergeNode in="blur" />
+    <feMergeNode in="SourceGraphic" />
+  </feMerge>
+</filter>
+
+{/* Mask that carves branching shapes */}
+<mask id="branchMask">
+  <rect x="-1" y="-1" width="2" height="2" fill="black" />
+  <circle
+    cx="0"
+    cy="0"
+    r="0.65"
+    fill="white"
+    filter="url(#branchNoise)"
+  />
+</mask>
+
         </defs>
 
         {/* Outer halo */}
@@ -179,55 +188,47 @@ export default function ProceduralFlower({
           });
         })}
 
-        {/* Bioluminescent veins (masked, glowing, inside the flower) */}
-        <g mask="url(#veinMask)" filter="url(#veinGlow)">
-          <circle
-            cx="0"
-            cy="0"
-            r={0.6}
-            fill="none"
-            stroke={palette.glow}
-            strokeWidth="0.02"
-            opacity={0.45}
-          />
-          <circle
-            cx="0"
-            cy="0"
-            r={0.4}
-            fill="none"
-            stroke={palette.glow}
-            strokeWidth="0.015"
-            opacity={0.5}
-          />
-          <circle
-            cx="0"
-            cy="0"
-            r={0.25}
-            fill="none"
-            stroke={palette.glow}
-            strokeWidth="0.012"
-            opacity={0.6}
-          />
-        </g>
+  {/* Real branching bioluminescent veins */}
+<g mask="url(#branchMask)" filter="url(#branchGlow)">
+  <path
+    d="
+      M 0 -0.55
+      C 0.1 -0.45, 0.15 -0.3, 0 -0.1
+      C -0.15 0.1, -0.1 0.3, 0 0.55
+    "
+    stroke={palette.glow}
+    strokeWidth="0.03"
+    fill="none"
+    opacity="0.55"
+    filter="url(#branchDisplace)"
+  />
 
-        {/* Core glow */}
-        <circle
-          cx="0"
-          cy="0"
-          r="0.25"
-          fill="url(#coreGlow)"
-          filter="url(#blur)"
-        />
+  <path
+    d="
+      M -0.4 -0.4
+      C -0.2 -0.2, -0.1 -0.05, 0 0
+      C 0.1 0.05, 0.2 0.2, 0.4 0.4
+    "
+    stroke={palette.glow}
+    strokeWidth="0.02"
+    fill="none"
+    opacity="0.45"
+    filter="url(#branchDisplace)"
+  />
 
-        {/* Core nucleus */}
-        <circle
-          cx="0"
-          cy="0"
-          r={0.1 + level * 0.005}
-          fill={palette.core}
-          stroke={palette.glow}
-          strokeWidth="0.015"
-        />
+  <path
+    d="
+      M 0.4 -0.4
+      C 0.2 -0.2, 0.05 -0.1, 0 0
+      C -0.05 0.1, -0.2 0.2, -0.4 0.4
+    "
+    stroke={palette.glow}
+    strokeWidth="0.018"
+    fill="none"
+    opacity="0.45"
+    filter="url(#branchDisplace)"
+  />
+</g>
       </svg>
     </div>
   );
