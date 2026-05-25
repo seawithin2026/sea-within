@@ -8,45 +8,36 @@ import { getBloomVideos } from "@/lib/blooms/getBloomVideos";
 import { evolveAura } from "@/lib/blooms/auraEvolution";
 import { BloomVideo } from "@/lib/blooms/types";
 
-
 // ------------------------------------------------------------
 // TYPES
 // ------------------------------------------------------------
-
 
 type UIBloomVideo = {
   id: string;
   src: string;
   title: string;
   level: number;
-  element: string;   // ⭐ ADD THIS
+  element: string;
 };
 
-
-// Garden bloom from your API
 type GardenBloom = {
   id: string;
   bloomVideoId: string;
   level: number;
-  element: string;   // ⭐ ADD THIS
+  element: string;
   stillUrl: string | null;
   createdAt: string;
 };
 
-
-
 export default function BloomJournalPage() {
   const [earned, setEarned] = useState<boolean>(true);
-
   const [currentBloomVideo, setCurrentBloomVideo] = useState<UIBloomVideo | null>(null);
-
   const [garden, setGarden] = useState<GardenBloom[]>([]);
   const [loadingGarden, setLoadingGarden] = useState<boolean>(true);
-
   const [bloomLibrary, setBloomLibrary] = useState<BloomVideo[]>([]);
 
   // ------------------------------------------------------------
-  // LOAD BLOOM LIBRARY + GARDEN ON MOUNT
+  // LOAD BLOOM LIBRARY + GARDEN
   // ------------------------------------------------------------
   useEffect(() => {
     loadBloomLibrary();
@@ -54,12 +45,12 @@ export default function BloomJournalPage() {
   }, []);
 
   async function loadBloomLibrary() {
-  const blooms = await getBloomVideos();
-  setBloomLibrary(blooms as BloomVideo[]);
-}
+    const blooms = await getBloomVideos();
+    setBloomLibrary(blooms as BloomVideo[]);
+  }
 
   // ------------------------------------------------------------
-  // SELECT NEXT BLOOM AFTER BOTH LIBRARY + GARDEN ARE READY
+  // SELECT NEXT BLOOM
   // ------------------------------------------------------------
   useEffect(() => {
     if (loadingGarden) return;
@@ -71,20 +62,19 @@ export default function BloomJournalPage() {
     const rawBloom = selectNextBloom(bloomLibrary, usedBloomIds, userLevel);
     if (!rawBloom) return;
 
-   const nextBloom: UIBloomVideo = {
-  id: rawBloom.id,
-  src: rawBloom.src,
-  title: rawBloom.title ?? rawBloom.id.replace("bloom-", "Bloom "),
-  level: rawBloom.base_level,
-  element: rawBloom.element,   // ⭐ REQUIRED
-};
-
+    const nextBloom: UIBloomVideo = {
+      id: rawBloom.id,
+      src: rawBloom.src,
+      title: rawBloom.title ?? rawBloom.id.replace("bloom-", "Bloom "),
+      level: rawBloom.base_level,
+      element: rawBloom.element,
+    };
 
     setCurrentBloomVideo(nextBloom);
   }, [loadingGarden, bloomLibrary, garden]);
 
   // ------------------------------------------------------------
-  // FETCH GARDEN FROM API
+  // FETCH GARDEN
   // ------------------------------------------------------------
   async function fetchGarden() {
     try {
@@ -106,23 +96,71 @@ export default function BloomJournalPage() {
   }
 
   // ------------------------------------------------------------
-  // AFTER BLOOM IS SAVED
+  // BLOOM SAVED
   // ------------------------------------------------------------
   function handleBloomSaved() {
     fetchGarden();
     setEarned(false);
   }
-// Apply aura evolution to each bloom before rendering
-const gardenWithAura = garden.map((b) => {
- const { auraClass } = evolveAura(b.level, b.element);
-return { ...b, auraClass };
-});
 
+  // ------------------------------------------------------------
+  // AURA EVOLUTION
+  // ------------------------------------------------------------
+  const gardenWithAura = garden.map((b) => {
+    const { auraClass } = evolveAura(b.level, b.element);
+    return { ...b, auraClass };
+  });
+
+  // ------------------------------------------------------------
+  // RITUAL ENGINE (24 STEPS)
+  // ------------------------------------------------------------
+  const ritualSteps = [
+    "/ritual/1-placing-seed.png",
+    "/ritual/2-water-seed.png",
+    "/ritual/3-air-seed.png",
+    "/ritual/4-sun-seed.png",
+    "/ritual/5-glowing-seed.mp4",
+    "/ritual/6-seed-opening.png",
+    "/ritual/7-growing-sprout.png",
+    "/ritual/8-sprout.png",
+    "/ritual/9-water-sprout.png",
+    "/ritual/10-sun-sprout.png",
+    "/ritual/11-glowing-veins.mp4",
+    "/ritual/12-sun-veins.png",
+    "/ritual/13-water-veins.png",
+    "/ritual/14-growing-veins.png",
+    "/ritual/15-water-bud.png",
+    "/ritual/16-water-bud.png",
+    "/ritual/17-air-bud.png",
+    "/ritual/18-sun-bud.png",
+    "/ritual/19-bud-opening.png",
+    "/ritual/20-bud-bloom.png",
+    "/ritual/21-full-bloom.mp4",
+    "/ritual/22-bloom.png",
+    "/ritual/23-sun-bloom.png",
+    "/ritual/24-flower-upgrade.png",
+  ];
+
+  const [ritualStage, setRitualStage] = useState(1);
+  const [ritualIsVideo, setRitualIsVideo] = useState(false);
+
+  function advanceRitual() {
+    if (ritualStage < ritualSteps.length) {
+      const next = ritualStage + 1;
+      setRitualStage(next);
+      setRitualIsVideo(ritualSteps[next - 1].endsWith(".mp4"));
+    }
+  }
+
+  // ------------------------------------------------------------
+  // RENDER
+  // ------------------------------------------------------------
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
       <Navigation />
 
       <main className="flex-1 pt-20 pb-16">
+
         {/* HERO */}
         <section className="px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
           <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
@@ -165,6 +203,49 @@ return { ...b, auraClass };
                 ? "You’ve reached the flowering stage. Your next bloom is ready to unfold."
                 : "Keep returning to your ritual. When the seed is ready, a new bloom will appear."}
             </div>
+          </div>
+        </section>
+
+        {/* ------------------------------------------------------------ */}
+        {/* RITUAL SECTION — ADDED */}
+        {/* ------------------------------------------------------------ */}
+        <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
+          <h2 className="text-sm tracking-[0.22em] uppercase text-white/60 mb-4">
+            Your Ritual Journey
+          </h2>
+
+          <div className="rounded-3xl border border-white/10 bg-slate-950/60 p-6 flex flex-col items-center gap-6 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+
+            {/* Display Image or Video */}
+            <div className="w-full max-w-md aspect-square relative overflow-hidden rounded-2xl border border-white/10 bg-black">
+              {!ritualIsVideo ? (
+                <img
+                  src={ritualSteps[ritualStage - 1]}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <video
+                  src={ritualSteps[ritualStage - 1]}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+
+            {/* Continue Button */}
+            <button
+              onClick={advanceRitual}
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 text-black font-semibold tracking-wide shadow-lg hover:opacity-90 transition"
+            >
+              Continue Ritual
+            </button>
+
+            {/* Stage Indicator */}
+            <p className="text-xs text-white/40 tracking-widest uppercase">
+              Step {ritualStage} of {ritualSteps.length}
+            </p>
           </div>
         </section>
 
@@ -226,43 +307,39 @@ return { ...b, auraClass };
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-             {gardenWithAura.map((bloom) => (
-  <button
-    key={bloom.id}
-    type="button"
-    className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 aspect-[3/4] shadow-[0_0_30px_rgba(0,0,0,0.6)] ${bloom.auraClass}`}
-  >
-    {/* Bloom still */}
-    {bloom.stillUrl ? (
-      <img
-        src={bloom.stillUrl}
-        alt="Bloom still"
-        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-      />
-    ) : (
-      <div className="h-full w-full bg-gradient-to-br from-emerald-500/30 via-sky-500/20 to-slate-900" />
-    )}
+              {gardenWithAura.map((bloom) => (
+                <button
+                  key={bloom.id}
+                  type="button"
+                  className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 aspect-[3/4] shadow-[0_0_30px_rgba(0,0,0,0.6)] ${bloom.auraClass}`}
+                >
+                  {bloom.stillUrl ? (
+                    <img
+                      src={bloom.stillUrl}
+                      alt="Bloom still"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-emerald-500/30 via-sky-500/20 to-slate-900" />
+                  )}
 
-    {/* Aura overlay */}
-    <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-radial-at-center from-amber-300/35 via-rose-400/15 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 bg-radial-at-center from-amber-300/35 via-rose-400/15 to-transparent" />
 
-    {/* Meta strip */}
-    <div className="absolute bottom-0 inset-x-0 px-3 pb-3 pt-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-      <p className="text-[10px] tracking-[0.22em] uppercase text-white/70">
-        Bloom #{bloom.id.slice(-4)}
-      </p>
-      <p className="mt-1 text-[11px] text-white/55">
-        Level {bloom.level} •{" "}
-        {new Date(bloom.createdAt).toLocaleDateString(undefined, {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        })}
-      </p>
-    </div>
-  </button>
-))}
-
+                  <div className="absolute bottom-0 inset-x-0 px-3 pb-3 pt-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+                    <p className="text-[10px] tracking-[0.22em] uppercase text-white/70">
+                      Bloom #{bloom.id.slice(-4)}
+                    </p>
+                    <p className="mt-1 text-[11px] text-white/55">
+                      Level {bloom.level} •{" "}
+                      {new Date(bloom.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
           )}
         </section>
