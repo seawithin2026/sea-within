@@ -121,7 +121,7 @@ export default function BloomJournalPage() {
     "/ritual/4-sun-seed.png",
     "/ritual/5-glowing-seed.mp4",
     "/ritual/6-seed-opening.png",
-    "/ritual/7-growing-sprout.png",
+    "/ritual/7-growing-sprout.mp4",
     "/ritual/8-sprout.png",
     "/ritual/9-water-sprout.png",
     "/ritual/10-sun-sprout.png",
