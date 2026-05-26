@@ -126,32 +126,37 @@ export default function BloomJournalPage() {
     return () => window.removeEventListener("keydown", handleDevReset);
   }, []);
 
-  // -----------------------------
-  // DEVELOPER NEXT-DAY SHORTCUT
-  // Shift + Ctrl/Cmd + N
-  // -----------------------------
-  useEffect(() => {
-    function handleNextDay(e) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+// ---------------------------------------------
+// DEVELOPER-ONLY "NEXT DAY" SHORTCUT
+// Shift + Ctrl/Command + N
+// ---------------------------------------------
+useEffect(() => {
+  function handleNextDay(e) {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
-        const tomorrow = new Date(Date.now() + 86400000)
-          .toISOString()
-          .slice(0, 10);
+    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
+      const tomorrow = new Date(Date.now() + 86400000)
+        .toISOString()
+        .slice(0, 10);
 
-        localStorage.setItem("seaWithin.seedDate", tomorrow);
+      // Set tomorrow as the new ritual date
+      localStorage.setItem("seaWithin.seedDate", tomorrow);
 
-        // Unlock button immediately
-        setSeedPlantedToday(false);
+      // Unlock the button immediately
+      setSeedPlantedToday(false);
 
-        alert("🌞 Advanced to next day for development testing.");
-      }
+      // Do NOT touch the ritual step
+      // Do NOT touch hasPlanted
+      // Do NOT touch media
+
+      alert("🌞 Advanced to next day for development testing.");
     }
+  }
 
-    window.addEventListener("keydown", handleNextDay);
-    return () => window.removeEventListener("keydown", handleNextDay);
-  }, []);
+  window.addEventListener("keydown", handleNextDay);
+  return () => window.removeEventListener("keydown", handleNextDay);
+}, []);
 
   // -----------------------------
   // DETERMINE WHAT TO SHOW IN MIRROR
