@@ -3,10 +3,10 @@
 import React from "react";
 
 type SeaWithinMirrorProps = {
-  mediaSrc: string;              // <-- FIXED NAME
+  mediaSrc: string | null;       // <-- supports empty mirror
   promptText: string;
   onPlantSeed?: () => void;
-  seedPlantedToday: boolean;     // <-- ADDED
+  seedPlantedToday: boolean;
 };
 
 export function SeaWithinMirrorSection({
@@ -15,7 +15,7 @@ export function SeaWithinMirrorSection({
   onPlantSeed,
   seedPlantedToday,
 }: SeaWithinMirrorProps) {
-  const isVideo = mediaSrc.endsWith(".mp4");
+  const isVideo = mediaSrc?.endsWith(".mp4");
 
   return (
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
@@ -27,7 +27,7 @@ export function SeaWithinMirrorSection({
           {/* Soft ambient glow */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(251,191,36,0.16),_transparent_55%)] blur-3xl" />
 
-          {/* Mirror pedestal */}
+          {/* Pedestal */}
           <div className="absolute bottom-0 w-64 h-6 rounded-full bg-gradient-to-r from-emerald-500/25 via-amber-300/25 to-rose-400/25 blur-xl opacity-70" />
 
           {/* Mirror frame */}
@@ -42,22 +42,27 @@ export function SeaWithinMirrorSection({
             {/* Mirror glass */}
             <div className="absolute inset-[14px] rounded-[1.8rem] bg-[radial-gradient(circle_at_top,_rgba(248,250,252,0.16),_transparent_55%),_linear-gradient(to_bottom,_rgba(15,23,42,0.9),_rgba(3,7,18,0.98))]" />
 
-            {/* MEDIA (image or video) */}
-            {isVideo ? (
-              <video
-                src={mediaSrc}
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-                muted
-                playsInline
-                autoPlay
-                loop
-              />
+            {/* MEDIA */}
+            {mediaSrc ? (
+              isVideo ? (
+                <video
+                  src={mediaSrc}
+                  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                />
+              ) : (
+                <img
+                  src={mediaSrc}
+                  alt="Ritual step"
+                  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
+                />
+              )
             ) : (
-              <img
-                src={mediaSrc}
-                alt="Ritual step"
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-              />
+              // EMPTY MIRROR BEFORE FIRST PLANTING
+              <div className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] rounded-[1.6rem] bg-black/80" />
             )}
 
             {/* Highlight */}
@@ -65,7 +70,7 @@ export function SeaWithinMirrorSection({
           </div>
         </div>
 
-        {/* RIGHT: Metaphor + Seed Ritual + Prompt */}
+        {/* RIGHT SIDE */}
         <div className="space-y-7">
 
           {/* Text */}
@@ -101,7 +106,7 @@ export function SeaWithinMirrorSection({
               When you feel ready, plant it into the soil of your day.
             </p>
 
-            {/* BUTTON — two states */}
+            {/* BUTTON */}
             <button
               type="button"
               onClick={seedPlantedToday ? undefined : onPlantSeed}

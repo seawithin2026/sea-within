@@ -38,7 +38,7 @@ const RITUAL_STEPS = [
 const TOTAL_STEPS = RITUAL_STEPS.length;
 
 // -----------------------------
-// PROMPTS (simple for now)
+// PROMPTS
 // -----------------------------
 const PROMPTS = [
   "Drink a full glass of water slowly, noticing how your body receives it.",
@@ -47,22 +47,30 @@ const PROMPTS = [
 ];
 
 // -----------------------------
-// DAILY LOCK STORAGE KEY
+// STORAGE KEYS
 // -----------------------------
 const STORAGE_KEY_DATE = "seaWithin.seedDate";
+const STORAGE_KEY_STEP = "seaWithin.ritualStep";
 
 export default function BloomJournalPage() {
   const [step, setStep] = useState(0);
   const [promptIndex] = useState(0);
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
+  const [hasPlanted, setHasPlanted] = useState(false);
 
   const progressPercent = ((step + 1) / TOTAL_STEPS) * 100;
   const promptText = PROMPTS[promptIndex];
 
   // -----------------------------
-  // LOAD DAILY LOCK
+  // LOAD SAVED STEP + DAILY LOCK
   // -----------------------------
   useEffect(() => {
+    const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
+    if (savedStep) {
+      setStep(parseInt(savedStep, 10));
+      setHasPlanted(true); // show last completed image
+    }
+
     const today = new Date().toISOString().slice(0, 10);
     const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
 
@@ -74,7 +82,7 @@ export default function BloomJournalPage() {
   }, []);
 
   // -----------------------------
-  // HANDLE BUTTON CLICK
+  // HANDLE PLANTING / TENDING
   // -----------------------------
   function handlePlantSeed() {
     if (seedPlantedToday) return;
@@ -83,9 +91,13 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
 
-    if (step < TOTAL_STEPS - 1) {
-      setStep(step + 1);
-    }
+    // Reveal the mirror image for the first time
+    setHasPlanted(true);
+
+    // Advance ritual step
+    const nextStep = Math.min(step + 1, TOTAL_STEPS - 1);
+    setStep(nextStep);
+    localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
   }
 
   return (
@@ -94,9 +106,7 @@ export default function BloomJournalPage() {
 
       <main className="flex-1 pt-20 pb-16">
 
-        {/* -------------------------------- */}
-        {/* HERO SECTION */}
-        {/* -------------------------------- */}
+        {/* HERO */}
         <section className="px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
           <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
             Sanctuary • Daily Ritual
@@ -112,9 +122,7 @@ export default function BloomJournalPage() {
           </p>
         </section>
 
-        {/* -------------------------------- */}
         {/* PROGRESS STRIP */}
-        {/* -------------------------------- */}
         <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
           <div className="w-full rounded-3xl border border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/80 to-slate-950 px-5 py-4 md:px-7 md:py-5 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -147,11 +155,9 @@ export default function BloomJournalPage() {
           </div>
         </section>
 
-        {/* -------------------------------- */}
-        {/* SEA WITHIN MIRROR MASTERPIECE */}
-        {/* -------------------------------- */}
+        {/* SEA WITHIN MIRROR */}
         <SeaWithinMirrorSection
-          mediaSrc={RITUAL_STEPS[step]}
+          mediaSrc={hasPlanted ? RITUAL_STEPS[step] : null}
           promptText={promptText}
           onPlantSeed={handlePlantSeed}
           seedPlantedToday={seedPlantedToday}
