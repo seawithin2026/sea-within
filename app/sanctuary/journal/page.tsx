@@ -71,7 +71,7 @@ export default function BloomJournalPage() {
       const parsed = parseInt(savedStep, 10);
       setStep(parsed);
 
-      // Only show ritual images if ritual has actually started
+      // Ritual only considered "started" if step > 0
       if (parsed > 0) {
         setHasPlanted(true);
       }
@@ -80,11 +80,7 @@ export default function BloomJournalPage() {
     const today = new Date().toISOString().slice(0, 10);
     const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
 
-    if (storedDate === today) {
-      setSeedPlantedToday(true);
-    } else {
-      setSeedPlantedToday(false);
-    }
+    setSeedPlantedToday(storedDate === today);
   }, []);
 
   // -----------------------------
@@ -105,6 +101,56 @@ export default function BloomJournalPage() {
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
   }
+
+  // -----------------------------
+  // DEVELOPER RESET SHORTCUT
+  // Shift + Ctrl/Cmd + R
+  // -----------------------------
+  useEffect(() => {
+    function handleDevReset(e) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
+        localStorage.removeItem("seaWithin.seedDate");
+        localStorage.removeItem("seaWithin.ritualStep");
+
+        setStep(0);
+        setHasPlanted(false);
+        setSeedPlantedToday(false);
+
+        alert("🌿 Ritual reset for development testing.");
+      }
+    }
+
+    window.addEventListener("keydown", handleDevReset);
+    return () => window.removeEventListener("keydown", handleDevReset);
+  }, []);
+
+  // -----------------------------
+  // DEVELOPER NEXT-DAY SHORTCUT
+  // Shift + Ctrl/Cmd + N
+  // -----------------------------
+  useEffect(() => {
+    function handleNextDay(e) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
+        const tomorrow = new Date(Date.now() + 86400000)
+          .toISOString()
+          .slice(0, 10);
+
+        localStorage.setItem("seaWithin.seedDate", tomorrow);
+        setSeedPlantedToday(false);
+
+        alert("🌞 Advanced to next day for development testing.");
+      }
+    }
+
+    window.addEventListener("keydown", handleNextDay);
+    return () => window.removeEventListener("keydown", handleNextDay);
+  }, []);
 
   // -----------------------------
   // DETERMINE WHAT TO SHOW IN MIRROR
