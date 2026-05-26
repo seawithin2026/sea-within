@@ -1,15 +1,21 @@
-import { createClient } from "@/lib/supabase/client";
+/// CLEAN BLOOM VIDEO LOADER
+// ------------------------------------------------------------
+
 import { BloomVideo } from "./types";
 
+// This is your simple, static bloom library.
+// Add or remove videos as you wish.
+// All paths must point to files inside /public/blooms/
+
 export async function getBloomVideos(): Promise<BloomVideo[]> {
-  const supabase = createClient();
-
-  const { data, error } = await supabase
-    .from("bloom_videos")
-    .select("id, src, title, base_level, element")
-    .order("base_level", { ascending: true });
-
-  if (error || !data) return [];
-
-  return data as BloomVideo[];
+  return [
+    {
+      id: "bloom-01",
+      src: "/blooms/bloom-01.mp4",
+      title: "Sanctuary Bloom",
+      base_level: 1,
+      element: "ether",
+    },
+  ];
 }
+
