@@ -66,9 +66,15 @@ export default function BloomJournalPage() {
   // -----------------------------
   useEffect(() => {
     const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
+
     if (savedStep) {
-      setStep(parseInt(savedStep, 10));
-      setHasPlanted(true);
+      const parsed = parseInt(savedStep, 10);
+      setStep(parsed);
+
+      // Only show ritual images if ritual has actually started
+      if (parsed > 0) {
+        setHasPlanted(true);
+      }
     }
 
     const today = new Date().toISOString().slice(0, 10);
@@ -91,7 +97,7 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
 
-    // Reveal ritual sequence
+    // Ritual begins
     setHasPlanted(true);
 
     // Advance ritual step
@@ -104,8 +110,8 @@ export default function BloomJournalPage() {
   // DETERMINE WHAT TO SHOW IN MIRROR
   // -----------------------------
   const mediaToShow = hasPlanted
-    ? RITUAL_STEPS[step]
-    : "/bloom-videos/bloom-01.mp4"; // <-- your cinematic pre-seed video
+    ? RITUAL_STEPS[step]               // ritual image/video
+    : "/bloom-videos/bloom-01.mp4";    // cinematic pre-seed video
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
