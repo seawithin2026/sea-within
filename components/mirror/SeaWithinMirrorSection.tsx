@@ -3,7 +3,7 @@
 import React from "react";
 
 type SeaWithinMirrorProps = {
-  mediaSrc: string | null;       // <-- supports empty mirror
+  mediaSrc: string;              // always a string now
   promptText: string;
   onPlantSeed?: () => void;
   seedPlantedToday: boolean;
@@ -15,7 +15,7 @@ export function SeaWithinMirrorSection({
   onPlantSeed,
   seedPlantedToday,
 }: SeaWithinMirrorProps) {
-  const isVideo = mediaSrc?.endsWith(".mp4");
+  const isVideo = mediaSrc.endsWith(".mp4");
 
   return (
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
@@ -43,26 +43,21 @@ export function SeaWithinMirrorSection({
             <div className="absolute inset-[14px] rounded-[1.8rem] bg-[radial-gradient(circle_at_top,_rgba(248,250,252,0.16),_transparent_55%),_linear-gradient(to_bottom,_rgba(15,23,42,0.9),_rgba(3,7,18,0.98))]" />
 
             {/* MEDIA */}
-            {mediaSrc ? (
-              isVideo ? (
-                <video
-                  src={mediaSrc}
-                  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-                  muted
-                  playsInline
-                  autoPlay
-                  loop
-                />
-              ) : (
-                <img
-                  src={mediaSrc}
-                  alt="Ritual step"
-                  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-                />
-              )
+            {isVideo ? (
+              <video
+                src={mediaSrc}
+                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
+                muted
+                playsInline
+                autoPlay
+                loop
+              />
             ) : (
-              // EMPTY MIRROR BEFORE FIRST PLANTING
-              <div className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] rounded-[1.6rem] bg-black/80" />
+              <img
+                src={mediaSrc}
+                alt="Ritual step"
+                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
+              />
             )}
 
             {/* Highlight */}

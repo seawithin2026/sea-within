@@ -68,7 +68,7 @@ export default function BloomJournalPage() {
     const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
     if (savedStep) {
       setStep(parseInt(savedStep, 10));
-      setHasPlanted(true); // show last completed image
+      setHasPlanted(true);
     }
 
     const today = new Date().toISOString().slice(0, 10);
@@ -91,7 +91,7 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
 
-    // Reveal the mirror image for the first time
+    // Reveal ritual sequence
     setHasPlanted(true);
 
     // Advance ritual step
@@ -99,6 +99,13 @@ export default function BloomJournalPage() {
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
   }
+
+  // -----------------------------
+  // DETERMINE WHAT TO SHOW IN MIRROR
+  // -----------------------------
+  const mediaToShow = hasPlanted
+    ? RITUAL_STEPS[step]
+    : "/bloom-videos/bloom-01.mp4"; // <-- your cinematic pre-seed video
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
@@ -157,7 +164,7 @@ export default function BloomJournalPage() {
 
         {/* SEA WITHIN MIRROR */}
         <SeaWithinMirrorSection
-          mediaSrc={hasPlanted ? RITUAL_STEPS[step] : null}
+          mediaSrc={mediaToShow}
           promptText={promptText}
           onPlantSeed={handlePlantSeed}
           seedPlantedToday={seedPlantedToday}
