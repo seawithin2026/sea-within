@@ -44,20 +44,24 @@ export function SeaWithinMirrorSection({
 
             {/* MEDIA */}
             {isVideo ? (
-              <video
-                src={mediaSrc}
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-                muted
-                playsInline
-                autoPlay
-                loop
-              />
+           <video
+  src={mediaSrc}
+  muted
+  playsInline
+  autoPlay
+  loop
+  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
+             brightness-[1.18] contrast-[1.12] saturate-[1.25] drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+/>
+
             ) : (
-              <img
-                src={mediaSrc}
-                alt="Ritual step"
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]"
-              />
+             <img
+  src={mediaSrc}
+  alt="Ritual step"
+  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
+             brightness-[1.18] contrast-[1.12] saturate-[1.25] drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]"
+/>
+
             )}
 
             {/* Highlight */}
