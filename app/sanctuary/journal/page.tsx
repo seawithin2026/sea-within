@@ -53,7 +53,7 @@ const STORAGE_KEY_DATE = "seaWithin.seedDate";
 const STORAGE_KEY_STEP = "seaWithin.ritualStep";
 
 export default function BloomJournalPage() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(0); // 0 = not started, 1..25 = ritual steps
   const [promptIndex] = useState(0);
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
   const [hasPlanted, setHasPlanted] = useState(false);
@@ -95,7 +95,7 @@ export default function BloomJournalPage() {
     setHasPlanted(true);
 
     // Always start at step 1 on first planting
-    const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS - 1);
+    const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS);
 
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
@@ -106,13 +106,13 @@ export default function BloomJournalPage() {
   // Shift + Ctrl/Cmd + R
   // -----------------------------
   useEffect(() => {
-    function handleDevReset(e) {
+    function handleDevReset(e: KeyboardEvent) {
       const isMac = navigator.platform.toUpperCase().includes("MAC");
       const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
       if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
-        localStorage.removeItem("seaWithin.seedDate");
-        localStorage.removeItem("seaWithin.ritualStep");
+        localStorage.removeItem(STORAGE_KEY_DATE);
+        localStorage.removeItem(STORAGE_KEY_STEP);
 
         setStep(0);
         setHasPlanted(false);
@@ -126,49 +126,43 @@ export default function BloomJournalPage() {
     return () => window.removeEventListener("keydown", handleDevReset);
   }, []);
 
-// ---------------------------------------------
-// DEVELOPER-ONLY "NEXT DAY" SHORTCUT
-// Shift + Ctrl/Command + N
-// ---------------------------------------------
-useEffect(() => {
-  function handleNextDay(e) {
-    const isMac = navigator.platform.toUpperCase().includes("MAC");
-    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+  // -----------------------------
+  // DEVELOPER NEXT-DAY SHORTCUT
+  // Shift + Ctrl/Cmd + N
+  // -----------------------------
+  useEffect(() => {
+    function handleNextDay(e: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
-      const tomorrow = new Date(Date.now() + 86400000)
-        .toISOString()
-        .slice(0, 10);
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
+        const tomorrow = new Date(Date.now() + 86400000)
+          .toISOString()
+          .slice(0, 10);
 
-      // Set tomorrow as the new ritual date
-      localStorage.setItem("seaWithin.seedDate", tomorrow);
+        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
 
-      // Unlock the button immediately
-      setSeedPlantedToday(false);
+        // Unlock button immediately
+        setSeedPlantedToday(false);
 
-      // Do NOT touch the ritual step
-      // Do NOT touch hasPlanted
-      // Do NOT touch media
-
-      alert("🌞 Advanced to next day for development testing.");
+        alert("🌞 Advanced to next day for development testing.");
+      }
     }
-  }
 
-  window.addEventListener("keydown", handleNextDay);
-  return () => window.removeEventListener("keydown", handleNextDay);
-}, []);
+    window.addEventListener("keydown", handleNextDay);
+    return () => window.removeEventListener("keydown", handleNextDay);
+  }, []);
 
   // -----------------------------
   // DETERMINE WHAT TO SHOW IN MIRROR
   // -----------------------------
-  const mediaToShow = hasPlanted
-    ? RITUAL_STEPS[step]
-    : "/bloom-videos/bloom-01.mp4";
+  const mediaToShow =
+    hasPlanted && step > 0
+      ? RITUAL_STEPS[step - 1] // ⭐ OFF-BY-ONE FIX: step 1 -> index 0
+      : "/bloom-videos/bloom-01.mp4";
 
-  // -----------------------------
-  // FIXED STEP DISPLAY
-  // -----------------------------
-  const displayedStep = hasPlanted ? step : 0;
+  // Progress: 0..TOTAL_STEPS
+  const progressPercent = (step / TOTAL_STEPS) * 100;
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
@@ -212,14 +206,14 @@ useEffect(() => {
                 <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 transition-all"
-                    style={{ width: `${(displayedStep / TOTAL_STEPS) * 100}%` }}
+                    style={{ width: `${progressPercent}%` }}
                   />
                 </div>
               </div>
             </div>
 
             <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
-              Step {displayedStep} of {TOTAL_STEPS}. Move at your own pace—each step
+              Step {step} of {TOTAL_STEPS}. Move at your own pace—each step
               is a small act of care.
             </div>
           </div>
