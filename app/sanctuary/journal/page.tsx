@@ -127,31 +127,33 @@ export default function BloomJournalPage() {
   }, []);
 
   // -----------------------------
-  // DEVELOPER NEXT-DAY SHORTCUT
-  // Shift + Ctrl/Cmd + N
-  // -----------------------------
-  useEffect(() => {
-    function handleNextDay(e: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+// DEVELOPER NEXT-DAY SHORTCUT
+// Shift + Ctrl/Cmd + D
+// -----------------------------
+useEffect(() => {
+  function handleNextDay(e: KeyboardEvent) {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "n") {
-        const tomorrow = new Date(Date.now() + 86400000)
-          .toISOString()
-          .slice(0, 10);
+    // Shift + Cmd/Ctrl + D
+    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
+      const tomorrow = new Date(Date.now() + 86400000)
+        .toISOString()
+        .slice(0, 10);
 
-        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
+      localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
 
-        // Unlock button immediately
-        setSeedPlantedToday(false);
+      // Unlock button immediately
+      setSeedPlantedToday(false);
 
-        alert("🌞 Advanced to next day for development testing.");
-      }
+      alert("🌞 Advanced to next day for development testing.");
     }
+  }
 
-    window.addEventListener("keydown", handleNextDay);
-    return () => window.removeEventListener("keydown", handleNextDay);
-  }, []);
+  window.addEventListener("keydown", handleNextDay);
+  return () => window.removeEventListener("keydown", handleNextDay);
+}, []);
+
 
   // -----------------------------
   // DETERMINE WHAT TO SHOW IN MIRROR
