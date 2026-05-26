@@ -139,6 +139,7 @@ export default function BloomJournalPage() {
     "/ritual/22-bloom.png",
     "/ritual/23-sun-bloom.png",
     "/ritual/24-flower-upgrade.png",
+    "/ritual/25-flower-movement.mp4",
   ];
 
   const [ritualStage, setRitualStage] = useState(1);
