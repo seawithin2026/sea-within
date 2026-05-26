@@ -30,12 +30,10 @@ const ritualSteps = [
   "/ritual/25-flower-movement.mp4",
 ];
 
-export default function RitualCinematicViewer({
-  onComplete,
-}: {
-  onComplete: () => void;
-}) {
-  const [stage, setStage] = useState(1);
+export default function RitualCinematicViewer({ onComplete }) {
+  // ⭐ FIX: Start at stage 0, not 1
+  const [stage, setStage] = useState(0);
+
   const [isVideo, setIsVideo] = useState(false);
   const [quest, setQuest] = useState("");
 
@@ -43,53 +41,55 @@ export default function RitualCinematicViewer({
     const savedStage = localStorage.getItem("ritualStage");
     const savedQuest = localStorage.getItem("ritualQuest");
 
+    // ⭐ FIX: Load saved stage correctly (0-based)
     if (savedStage) setStage(parseInt(savedStage));
+
     if (savedQuest) setQuest(savedQuest);
     else generateQuest();
   }, []);
 
   useEffect(() => {
-    setIsVideo(ritualSteps[stage - 1].endsWith(".mp4"));
+    // ⭐ FIX: Use stage directly (no -1)
+    setIsVideo(ritualSteps[stage].endsWith(".mp4"));
     localStorage.setItem("ritualStage", stage.toString());
   }, [stage]);
 
   function generateQuest() {
-  const quests = [
-    "Notice one thing about yourself that feels true today.",
-    "Observe how your body feels without trying to change it.",
-    "Recognize one quality you naturally express without effort.",
-    "Take a sip of water and notice how your body receives it.",
-    "Think of one food your body feels good after eating.",
-    "Notice the sensation of hydration spreading through you.",
-    "Feel the weight of your body being supported beneath you.",
-    "Observe how your posture shifts when you breathe deeply.",
-    "Notice one area of your body that feels strong today.",
-    "Observe a thought as it appears, without following it.",
-    "Notice what your mind focuses on when it’s calm.",
-    "Recognize one thing you learned recently, no matter how small.",
-    "Acknowledge the version of you who keeps going.",
-    "Notice how your chest feels when you inhale slowly.",
-    "Recognize a boundary you honored, even quietly.",
-    "Touch something near you and observe its texture.",
-    "Notice the temperature of the air on your skin.",
-    "Observe how your breath changes when you soften your shoulders.",
-    "Acknowledge one decision you made that supported you.",
-    "Recognize one value that quietly guides your choices.",
-    "Notice one thing you’re curious to understand about yourself.",
-    "Gently stretch and observe where your body wants more space.",
-    "Notice how your energy shifts after one slow breath.",
-    "Acknowledge a strength you’ve shown recently, even if small.",
-    "Say quietly to yourself: “I am becoming more myself.”",
-  ];
+    const quests = [
+      "Notice one thing about yourself that feels true today.",
+      "Observe how your body feels without trying to change it.",
+      "Recognize one quality you naturally express without effort.",
+      "Take a sip of water and notice how your body receives it.",
+      "Think of one food your body feels good after eating.",
+      "Notice the sensation of hydration spreading through you.",
+      "Feel the weight of your body being supported beneath you.",
+      "Observe how your posture shifts when you breathe deeply.",
+      "Notice one area of your body that feels strong today.",
+      "Observe a thought as it appears, without following it.",
+      "Notice what your mind focuses on when it’s calm.",
+      "Recognize one thing you learned recently, no matter how small.",
+      "Acknowledge the version of you who keeps going.",
+      "Notice how your chest feels when you inhale slowly.",
+      "Recognize a boundary you honored, even quietly.",
+      "Touch something near you and observe its texture.",
+      "Notice the temperature of the air on your skin.",
+      "Observe how your breath changes when you soften your shoulders.",
+      "Acknowledge one decision you made that supported you.",
+      "Recognize one value that quietly guides your choices.",
+      "Notice one thing you’re curious to understand about yourself.",
+      "Gently stretch and observe where your body wants more space.",
+      "Notice how your energy shifts after one slow breath.",
+      "Acknowledge a strength you’ve shown recently, even if small.",
+      "Say quietly to yourself: “I am becoming more myself.”",
+    ];
 
-  const q = quests[Math.floor(Math.random() * quests.length)];
-  setQuest(q);
-  localStorage.setItem("ritualQuest", q);
-}
-
+    const q = quests[Math.floor(Math.random() * quests.length)];
+    setQuest(q);
+    localStorage.setItem("ritualQuest", q);
+  }
 
   function completeQuest() {
-    if (stage < ritualSteps.length) {
+    if (stage < ritualSteps.length - 1) {
       setStage(stage + 1);
       generateQuest();
     } else {
@@ -99,18 +99,17 @@ export default function RitualCinematicViewer({
 
   return (
     <div className="w-full flex flex-col items-center gap-6">
-
       <div className="w-full aspect-square max-w-md relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_0_40px_rgba(0,0,0,0.6)]">
         {!isVideo ? (
           <img
             key={stage}
-            src={ritualSteps[stage - 1]}
+            src={ritualSteps[stage]}
             className="w-full h-full object-cover animate-fade-slide"
           />
         ) : (
           <video
             key={stage}
-            src={ritualSteps[stage - 1]}
+            src={ritualSteps[stage]}
             autoPlay
             muted
             playsInline
@@ -134,7 +133,7 @@ export default function RitualCinematicViewer({
       </button>
 
       <p className="text-xs text-white/40 tracking-widest uppercase">
-        Step {stage} of {ritualSteps.length}
+        Step {stage + 1} of {ritualSteps.length}
       </p>
     </div>
   );
