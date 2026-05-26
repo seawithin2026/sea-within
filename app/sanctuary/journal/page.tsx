@@ -207,7 +207,7 @@ export default function BloomJournalPage() {
                 <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 transition-all"
-                    style={{ width: `${((displayedStep + 1) / TOTAL_STEPS) * 100}%` }}
+                    style={{ width: `${(displayedStep / TOTAL_STEPS) * 100}%` }}
                   />
                 </div>
               </div>
