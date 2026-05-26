@@ -39,7 +39,6 @@ export default function RitualCinematicViewer({
   const [isVideo, setIsVideo] = useState(false);
   const [quest, setQuest] = useState("");
 
-  // Load saved ritual progress
   useEffect(() => {
     const savedStage = localStorage.getItem("ritualStage");
     const savedQuest = localStorage.getItem("ritualQuest");
@@ -49,29 +48,46 @@ export default function RitualCinematicViewer({
     else generateQuest();
   }, []);
 
-  // Update video/image state
   useEffect(() => {
     setIsVideo(ritualSteps[stage - 1].endsWith(".mp4"));
     localStorage.setItem("ritualStage", stage.toString());
   }, [stage]);
 
-  // Generate a gentle daily quest
   function generateQuest() {
-    const quests = [
-      "Place your hands on your heart and breathe slowly.",
-      "Drink a full glass of water with intention.",
-      "Step outside and feel the air on your skin.",
-      "Sit in silence for a moment.",
-      "Stretch your arms toward the sky.",
-      "Write one kind sentence to yourself.",
-    ];
+  const quests = [
+    "Notice one thing about yourself that feels true today.",
+    "Observe how your body feels without trying to change it.",
+    "Recognize one quality you naturally express without effort.",
+    "Take a sip of water and notice how your body receives it.",
+    "Think of one food your body feels good after eating.",
+    "Notice the sensation of hydration spreading through you.",
+    "Feel the weight of your body being supported beneath you.",
+    "Observe how your posture shifts when you breathe deeply.",
+    "Notice one area of your body that feels strong today.",
+    "Observe a thought as it appears, without following it.",
+    "Notice what your mind focuses on when it’s calm.",
+    "Recognize one thing you learned recently, no matter how small.",
+    "Acknowledge the version of you who keeps going.",
+    "Notice how your chest feels when you inhale slowly.",
+    "Recognize a boundary you honored, even quietly.",
+    "Touch something near you and observe its texture.",
+    "Notice the temperature of the air on your skin.",
+    "Observe how your breath changes when you soften your shoulders.",
+    "Acknowledge one decision you made that supported you.",
+    "Recognize one value that quietly guides your choices.",
+    "Notice one thing you’re curious to understand about yourself.",
+    "Gently stretch and observe where your body wants more space.",
+    "Notice how your energy shifts after one slow breath.",
+    "Acknowledge a strength you’ve shown recently, even if small.",
+    "Say quietly to yourself: “I am becoming more myself.”",
+  ];
 
-    const q = quests[Math.floor(Math.random() * quests.length)];
-    setQuest(q);
-    localStorage.setItem("ritualQuest", q);
-  }
+  const q = quests[Math.floor(Math.random() * quests.length)];
+  setQuest(q);
+  localStorage.setItem("ritualQuest", q);
+}
 
-  // Completing the quest advances the ritual
+
   function completeQuest() {
     if (stage < ritualSteps.length) {
       setStage(stage + 1);
@@ -84,7 +100,6 @@ export default function RitualCinematicViewer({
   return (
     <div className="w-full flex flex-col items-center gap-6">
 
-      {/* Cinematic Viewer */}
       <div className="w-full aspect-square max-w-md relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_0_40px_rgba(0,0,0,0.6)]">
         {!isVideo ? (
           <img
@@ -104,7 +119,6 @@ export default function RitualCinematicViewer({
         )}
       </div>
 
-      {/* Quest */}
       <div className="text-center text-white/70 text-sm max-w-xs">
         <p className="uppercase tracking-[0.22em] text-white/40 mb-2">
           Today's Ritual
@@ -112,7 +126,6 @@ export default function RitualCinematicViewer({
         <p>{quest}</p>
       </div>
 
-      {/* Complete Button */}
       <button
         onClick={completeQuest}
         className="px-6 py-3 rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 text-black font-semibold tracking-wide shadow-lg hover:opacity-90 transition"
@@ -120,7 +133,6 @@ export default function RitualCinematicViewer({
         Complete Ritual
       </button>
 
-      {/* Stage Indicator */}
       <p className="text-xs text-white/40 tracking-widest uppercase">
         Step {stage} of {ritualSteps.length}
       </p>
