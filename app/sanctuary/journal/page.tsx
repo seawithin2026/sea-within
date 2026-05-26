@@ -66,19 +66,18 @@ export default function BloomJournalPage() {
   // -----------------------------
   useEffect(() => {
     const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
+    const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
+    const today = new Date().toISOString().slice(0, 10);
 
     if (savedStep) {
       const parsed = parseInt(savedStep, 10);
       setStep(parsed);
 
-      // Ritual only considered "started" if step > 0
-      if (parsed > 0) {
+      // FIX: Only show ritual images if the user planted TODAY
+      if (parsed > 0 && storedDate === today) {
         setHasPlanted(true);
       }
     }
-
-    const today = new Date().toISOString().slice(0, 10);
-    const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
 
     setSeedPlantedToday(storedDate === today);
   }, []);
@@ -96,10 +95,8 @@ export default function BloomJournalPage() {
     // Ritual begins
     setHasPlanted(true);
 
-    // 🌱 FIRST‑STEP FIX:
-    // If step is 0 → ALWAYS go to step 1
-    const nextStep =
-      step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS - 1);
+    // FIX: Always show step 1 on first planting
+    const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS - 1);
 
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
@@ -145,6 +142,8 @@ export default function BloomJournalPage() {
           .slice(0, 10);
 
         localStorage.setItem("seaWithin.seedDate", tomorrow);
+
+        // Unlock button immediately
         setSeedPlantedToday(false);
 
         alert("🌞 Advanced to next day for development testing.");
