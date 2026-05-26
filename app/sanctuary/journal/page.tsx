@@ -58,7 +58,6 @@ export default function BloomJournalPage() {
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
   const [hasPlanted, setHasPlanted] = useState(false);
 
-  const progressPercent = ((step + 1) / TOTAL_STEPS) * 100;
   const promptText = PROMPTS[promptIndex];
 
   // -----------------------------
@@ -73,7 +72,7 @@ export default function BloomJournalPage() {
       const parsed = parseInt(savedStep, 10);
       setStep(parsed);
 
-      // FIX: Only show ritual images if the user planted TODAY
+      // Only show ritual images if planted TODAY
       if (parsed > 0 && storedDate === today) {
         setHasPlanted(true);
       }
@@ -92,10 +91,10 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
 
-    // Ritual begins
+    // Ritual begins visually
     setHasPlanted(true);
 
-    // FIX: Always show step 1 on first planting
+    // Always start at step 1 on first planting
     const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS - 1);
 
     setStep(nextStep);
@@ -158,8 +157,13 @@ export default function BloomJournalPage() {
   // DETERMINE WHAT TO SHOW IN MIRROR
   // -----------------------------
   const mediaToShow = hasPlanted
-    ? RITUAL_STEPS[step]               // ritual image/video
-    : "/bloom-videos/bloom-01.mp4";    // cinematic pre-seed video
+    ? RITUAL_STEPS[step]
+    : "/bloom-videos/bloom-01.mp4";
+
+  // -----------------------------
+  // FIXED STEP DISPLAY
+  // -----------------------------
+  const displayedStep = hasPlanted ? step : 0;
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
@@ -203,14 +207,14 @@ export default function BloomJournalPage() {
                 <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 transition-all"
-                    style={{ width: `${progressPercent}%` }}
+                    style={{ width: `${((displayedStep + 1) / TOTAL_STEPS) * 100}%` }}
                   />
                 </div>
               </div>
             </div>
 
             <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
-              Step {step + 1} of {TOTAL_STEPS}. Move at your own pace—each step
+              Step {displayedStep} of {TOTAL_STEPS}. Move at your own pace—each step
               is a small act of care.
             </div>
           </div>
