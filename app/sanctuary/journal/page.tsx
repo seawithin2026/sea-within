@@ -96,8 +96,11 @@ export default function BloomJournalPage() {
     // Ritual begins
     setHasPlanted(true);
 
-    // Advance ritual step
-    const nextStep = Math.min(step + 1, TOTAL_STEPS - 1);
+    // 🌱 FIRST‑STEP FIX:
+    // If step is 0 → ALWAYS go to step 1
+    const nextStep =
+      step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS - 1);
+
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
   }
