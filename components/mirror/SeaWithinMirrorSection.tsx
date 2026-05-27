@@ -37,7 +37,7 @@ export function SeaWithinMirrorSection({
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
 {/* MIRROR FRAME + MEDIA */}
-<div className="relative w-full max-w-[1200px] aspect-[3/5] mx-auto">
+<div className="relative w-full max-w-[1400px] aspect-[3/5] mx-auto">
 
   {/* Golden Lotus Mirror Frame */}
   <img
@@ -53,12 +53,12 @@ export function SeaWithinMirrorSection({
       left-1/2
       -translate-x-1/2
 
-      /* PERFECT POSITION FOR YOUR MIRROR OPENING */
-      top-[11%]
+      /* POSITION MATCHED TO MIRROR OPENING */
+      top-[10%]
 
-      /* PERFECT SIZE FOR YOUR MIRROR OPENING */
-      w-[52%]
-      h-[74%]
+      /* SIZE MATCHED TO MIRROR OPENING */
+      w-[58%]
+      h-[78%]
 
       overflow-hidden
       rounded-full
@@ -85,6 +85,7 @@ export function SeaWithinMirrorSection({
     )}
   </div>
 </div>
+
         </div>
 
         {/* RIGHT SIDE */}
