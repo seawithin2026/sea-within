@@ -29,8 +29,8 @@ export function SeaWithinMirrorSection({
         grid 
         grid-cols-1 
         lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]   /* ← BIGGER LEFT SIDE */
-        gap-20
-        items-center
+        gap-12
+        items-start
         w-full
       ">
 
@@ -40,7 +40,7 @@ export function SeaWithinMirrorSection({
   <div
     className="
       w-full
-      h-[95vh]              /* ← TALL on all devices */
+      h-[100vh]              /* ← TALL on all devices */
       md:h-[75vh]           /* ← EVEN TALLER on desktop */
       rounded-2xl
       overflow-hidden
