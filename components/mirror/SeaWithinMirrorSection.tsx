@@ -36,20 +36,17 @@ export function SeaWithinMirrorSection({
           {/* Soft grounding glow */}
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
-          {/* MIRROR FRAME */}
-          <div className="relative w-full max-w-sm aspect-[3/5] rounded-[3rem] overflow-hidden">
+          {/* MIRROR FRAME + MEDIA */}
+          <div className="relative w-full max-w-sm aspect-[3/5] mx-auto">
 
-            {/* Outer ornate gold frame */}
-            <div className="absolute inset-0 rounded-[3rem] border-[6px] border-amber-300/70 shadow-[0_0_45px_rgba(255,200,80,0.45)] 
-                            bg-[radial-gradient(circle_at_top,_rgba(255,240,200,0.25),_transparent_70%),_linear-gradient(to_bottom,_rgba(80,60,20,0.45),_rgba(40,30,10,0.55))]" />
+            {/* Golden Lotus Mirror Frame */}
+            <img
+              src="/mirror-image/mirror.png"
+              alt="Golden Lotus Mirror Frame"
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+            />
 
-            {/* Inner glowing rim */}
-            <div className="absolute inset-[10px] rounded-[2.6rem] border-[3px] border-amber-200/60 shadow-[0_0_35px_rgba(255,220,150,0.45)]" />
-
-            {/* Soft inner halo */}
-            <div className="absolute inset-[18px] rounded-[2.2rem] bg-[radial-gradient(circle_at_center,_rgba(255,230,180,0.12),_transparent_65%)]" />
-
-            {/* MEDIA CONTENT */}
+            {/* Ritual media inside mirror */}
             {isVideo ? (
               <video
                 src={mediaSrc}
@@ -57,20 +54,17 @@ export function SeaWithinMirrorSection({
                 playsInline
                 autoPlay
                 loop
-                className="absolute inset-[26px] w-[calc(100%-52px)] h-[calc(100%-52px)] object-cover rounded-[2rem]
+                className="absolute inset-[12%] w-[76%] h-[76%] object-cover rounded-[1.8rem]
                            brightness-[1.22] contrast-[1.15] saturate-[1.28]"
               />
             ) : (
               <img
                 src={mediaSrc}
                 alt="Ritual step"
-                className="absolute inset-[26px] w-[calc(100%-52px)] h-[calc(100%-52px)] object-cover rounded-[2rem]
+                className="absolute inset-[12%] w-[76%] h-[76%] object-cover rounded-[1.8rem]
                            brightness-[1.22] contrast-[1.15] saturate-[1.28]"
               />
             )}
-
-            {/* Top soft glow */}
-            <div className="pointer-events-none absolute inset-x-12 top-6 h-20 rounded-full bg-amber-100/10 blur-xl opacity-70" />
           </div>
         </div>
 
@@ -158,3 +152,4 @@ export function SeaWithinMirrorSection({
     </section>
   );
 }
+
