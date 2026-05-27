@@ -36,8 +36,8 @@ export function SeaWithinMirrorSection({
           {/* Soft grounding glow */}
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
-          {/* MIRROR FRAME + MEDIA */}
-<div className="relative w-full max-w-md aspect-[3/5] mx-auto scale-[1.18]">
+{/* MIRROR FRAME + MEDIA */}
+<div className="relative w-full max-w-lg aspect-[3/5] mx-auto">
 
   {/* Golden Lotus Mirror Frame */}
   <img
@@ -54,18 +54,19 @@ export function SeaWithinMirrorSection({
       playsInline
       autoPlay
       loop
-      className="absolute inset-[17%] w-[66%] h-[66%] object-cover rounded-[1.6rem]
+      className="absolute inset-[20%] w-[60%] h-[60%] object-cover rounded-[1.4rem]
                  brightness-[1.22] contrast-[1.15] saturate-[1.28]"
     />
   ) : (
     <img
       src={mediaSrc}
       alt="Ritual step"
-      className="absolute inset-[17%] w-[66%] h-[66%] object-cover rounded-[1.6rem]
+      className="absolute inset-[20%] w-[60%] h-[60%] object-cover rounded-[1.4rem]
                  brightness-[1.22] contrast-[1.15] saturate-[1.28]"
     />
   )}
 </div>
+
 
         </div>
 
