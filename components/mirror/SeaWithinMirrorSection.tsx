@@ -27,7 +27,7 @@ export function SeaWithinMirrorSection({
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-12 items-center">
 
-        {/* LEFT: Sea Within Mirror */}
+        {/* LEFT SIDE — MIRROR */}
         <div className="relative flex items-center justify-center">
 
           {/* Ambient glow */}
@@ -36,23 +36,18 @@ export function SeaWithinMirrorSection({
           {/* Ground glow */}
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
-          {/* MIRROR FRAME + MEDIA */}
+          {/* MIRROR FRAME + CONTENT */}
           <div
             className="
               relative
               w-full
               max-w-[1400px]
-
-              /* PHONE HEIGHT FIX */
               h-[80vh]
-
-              /* DESKTOP FIX */
-              md:aspect-[3/5]
-
+              md:aspect-[2/3]
               mx-auto
             "
           >
-            {/* Mirror Frame */}
+            {/* FRAME IMAGE */}
             <img
               src="/mirror-image/mirror.png"
               alt="Golden Lotus Mirror Frame"
@@ -65,23 +60,22 @@ export function SeaWithinMirrorSection({
               "
             />
 
-            {/* OVAL MASKED MEDIA — TRUE OVAL + PHONE HEIGHT */}
+            {/* OVAL CONTENT AREA */}
             <div
               className="
                 absolute
                 left-1/2
                 -translate-x-1/2
 
-                /* POSITION MATCHED TO MIRROR OPENING */
+                /* PERFECT MATCH TO YOUR FRAME OPENING */
                 top-[14%]
-
-                /* TRUE OVAL SHAPE MATCHED TO FRAME */
                 w-[62%]
                 h-[74%]
 
                 overflow-hidden
+                rounded-full
 
-                /* REAL OVAL FIX */
+                /* TRUE OVAL MASK */
                 [clip-path:ellipse(48%_50%_at_50%_50%)]
 
                 z-20
@@ -94,20 +88,32 @@ export function SeaWithinMirrorSection({
                   playsInline
                   autoPlay
                   loop
-                  className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+                  className="
+                    w-full h-full
+                    object-cover
+                    brightness-[1.22]
+                    contrast-[1.15]
+                    saturate-[1.28]
+                  "
                 />
               ) : (
                 <img
                   src={mediaSrc}
                   alt="Ritual step"
-                  className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+                  className="
+                    w-full h-full
+                    object-cover
+                    brightness-[1.22]
+                    contrast-[1.15]
+                    saturate-[1.28]
+                  "
                 />
               )}
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT SIDE — TEXT + BUTTONS */}
         <div className="space-y-7">
           <div className="space-y-3">
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
