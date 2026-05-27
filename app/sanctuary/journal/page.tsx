@@ -198,47 +198,51 @@ export default function BloomJournalPage() {
           hasTendedToday={hasTendedToday}
         />
 
-        {/* GOLD-ERA PROGRESS BAR — MOVED TO BOTTOM */}
+  {/* PROGRESS BAR — CLEAN, BLACK, SEED VIDEO */}
 <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
-  <div className="
-    w-full rounded-3xl border border-amber-300/40 
-    bg-gradient-to-r from-black via-[#0a0a0a] to-black
-    px-6 py-5 
-    flex flex-col md:flex-row items-center justify-between gap-4
-    shadow-[0_0_45px_rgba(255,200,120,0.25)]
-    relative overflow-hidden
-  ">
+  <div
+    className="
+      w-full rounded-2xl border border-white/10 
+      bg-black/40
+      px-6 py-4 
+      flex flex-col md:flex-row items-center justify-between gap-6
+      shadow-[0_0_25px_rgba(255,255,255,0.08)]
+      backdrop-blur-md
+    "
+  >
 
-    <div className="flex items-center gap-4 relative z-10">
+    {/* LEFT — GLOWING SEED VIDEO */}
+    <div className="flex items-center gap-4">
+      <div
+        className="
+          h-[60px] w-[60px]
+          rounded-xl overflow-hidden 
+          shadow-[0_0_20px_rgba(255,255,255,0.15)]
+          bg-black
+        "
+      >
+        <video
+          src="/ritual/5-glowing-seed.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      {/* LOTUS ICON — NOW RESIZABLE */}
-      <div className="
-  relative 
-  h-[80px] w-[80px]          /* ← make the circle bigger */
-  rounded-full 
-  bg-gradient-to-br from-amber-300/80 to-amber-100/40
-  flex items-center justify-center 
-  shadow-[0_0_35px_rgba(255,215,130,0.55)]
-">
-  <img 
-    src="/lotus/lotus-amber.png"
-    alt="Lotus Icon"
-    className="h-[90px] w-[90px] opacity-95 drop-shadow-[0_0_12px_rgba(255,215,130,0.8)]"
-  />
-</div>
-
-
-      <div className="text-left">
-        <p className="text-xs md:text-sm text-amber-200/80 tracking-wide">
+      <div>
+        <p className="text-xs md:text-sm text-white/60 tracking-wide">
           Today’s ritual progress
         </p>
 
-        <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-amber-200/20 overflow-hidden shadow-inner">
+        {/* PROGRESS BAR */}
+        <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
           <div
             className="
               h-full rounded-full 
-              bg-gradient-to-r from-amber-300 via-amber-200 to-amber-100
-              shadow-[0_0_12px_rgba(255,215,130,0.6)]
+              bg-gradient-to-r from-white/70 to-white/30
+              shadow-[0_0_10px_rgba(255,255,255,0.4)]
               transition-all duration-500
             "
             style={{ width: `${progressPercent}%` }}
@@ -247,13 +251,14 @@ export default function BloomJournalPage() {
       </div>
     </div>
 
-    <div className="text-xs md:text-sm text-amber-200/80 text-center md:text-right relative z-10">
-      Step {step} of {TOTAL_STEPS}.  
-      <span className="text-amber-100/90">Your bloom unfolds gently.</span>
+    {/* RIGHT — STEP COUNT */}
+    <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
+      Step {step} of {TOTAL_STEPS}
     </div>
 
   </div>
 </section>
+
 
 
       </main>
