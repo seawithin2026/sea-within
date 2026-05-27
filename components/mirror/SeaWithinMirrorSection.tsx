@@ -36,56 +36,55 @@ export function SeaWithinMirrorSection({
           {/* Soft grounding glow */}
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
-{/* MIRROR FRAME + MEDIA */}
-<div className="relative w-full max-w-[1400px] aspect-[3/5] mx-auto">
+          {/* MIRROR FRAME + MEDIA */}
+          <div className="relative w-full max-w-[1400px] aspect-[3/5] mx-auto">
 
-  {/* Golden Lotus Mirror Frame */}
-  <img
-    src="/mirror-image/mirror.png"
-    alt="Golden Lotus Mirror Frame"
-    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-30"
-  />
+            {/* Golden Lotus Mirror Frame */}
+            <img
+              src="/mirror-image/mirror.png"
+              alt="Golden Lotus Mirror Frame"
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-30"
+            />
 
-  {/* OVAL MASKED MEDIA */}
-  <div
-    className="
-      absolute
-      left-1/2
-      -translate-x-1/2
+            {/* OVAL MASKED MEDIA — FINAL FIX */}
+            <div
+              className="
+                absolute
+                left-1/2
+                -translate-x-1/2
 
-      /* POSITION MATCHED TO MIRROR OPENING */
-      top-[10%]
+                /* POSITION MATCHED TO MIRROR OPENING */
+                top-[14%]
 
-      /* SIZE MATCHED TO MIRROR OPENING */
-      w-[58%]
-      h-[78%]
+                /* SIZE MATCHED TO MIRROR OPENING */
+                w-[66%]
+                h-[72%]
 
-      overflow-hidden
-      rounded-full
-      [clip-path:ellipse(50%_50%_at_50%_50%)]
+                overflow-hidden
+                rounded-full
+                [clip-path:ellipse(50%_50%_at_50%_50%)]
 
-      z-20
-    "
-  >
-    {isVideo ? (
-      <video
-        src={mediaSrc}
-        muted
-        playsInline
-        autoPlay
-        loop
-        className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-      />
-    ) : (
-      <img
-        src={mediaSrc}
-        alt="Ritual step"
-        className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-      />
-    )}
-  </div>
-</div>
-
+                z-20
+              "
+            >
+              {isVideo ? (
+                <video
+                  src={mediaSrc}
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+                />
+              ) : (
+                <img
+                  src={mediaSrc}
+                  alt="Ritual step"
+                  className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+                />
+              )}
+            </div>
+          </div>
         </div>
 
         {/* RIGHT SIDE */}
@@ -172,4 +171,3 @@ export function SeaWithinMirrorSection({
     </section>
   );
 }
-
