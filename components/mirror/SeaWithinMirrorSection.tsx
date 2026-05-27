@@ -34,14 +34,16 @@ export function SeaWithinMirrorSection({
         w-full
       ">
 
-       {/* LEFT SIDE — WIDE + TALL FULL CINEMATIC PANEL */}
-<div className="relative w-full h-full flex items-center justify-center">
+ {/* LEFT SIDE — WIDE + TALL + LOWERED */}
+<div className="relative w-full h-full flex items-start justify-center">
 
   <div
     className="
       w-full
-      h-[100vh]              /* ← TALL on all devices */
-      md:h-[75vh]           /* ← EVEN TALLER on desktop */
+      h-[60vh]              /* tall on all devices */
+      md:h-[75vh]           /* taller on desktop */
+      mt-10                 /* ← LOWER THE VIDEO */
+      md:mt-16              /* ← LOWER EVEN MORE ON DESKTOP */
       rounded-2xl
       overflow-hidden
       bg-black
