@@ -27,79 +27,44 @@ export function SeaWithinMirrorSection({
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-12 items-center">
 
-        {/* LEFT SIDE — MIRROR */}
+        {/* LEFT SIDE — OVAL VIDEO */}
         <div className="relative flex items-center justify-center">
 
-          {/* Ambient glow */}
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,215,128,0.22),_transparent_70%)] blur-3xl" />
-
-          {/* Ground glow */}
-          <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
-
-          {/* MIRROR FRAME + CONTENT */}
+          {/* OVAL VIDEO / IMAGE */}
           <div
             className="
               relative
-              w-full
-              max-w-[180px]
-              h-[80vh]
-              md:aspect-[2/3]
               mx-auto
+
+              /* CONTROL SIZE HERE */
+              w-[300px]        /* width of oval */
+              h-[700px]        /* height of oval — make taller here */
+
+              overflow-hidden
+
+              /* OVAL SHAPE */
+              [clip-path:ellipse(50%_50%_at_50%_50%)]
+
+              rounded-full
+              z-20
             "
           >
-
-            {/* FRAME IMAGE */}
-            <img
-              src="/mirror-image/mirror.png"
-              alt="Golden Lotus Mirror Frame"
-              className="
-                absolute inset-0
-                w-full h-full
-                object-contain
-                pointer-events-none select-none
-                z-30
-              "
-            />
-{/* MEDIA INSIDE MIRROR — OVAL, NOT RECTANGLE */}
-<div
-  className="
-    absolute
-    left-1/2
-    -translate-x-1/2
-
-    /* Position inside your mirror */
-    top-[14%]
-
-    /* Your exact inner mirror size */
-    w-[513px]
-    h-[713px]
-
-    /* THIS is what makes it an oval */
-    overflow-hidden
-    [clip-path:ellipse(50%_50%_at_50%_50%)]
-
-    z-20
-  "
->
-  {isVideo ? (
-    <video
-      src={mediaSrc}
-      muted
-      playsInline
-      autoPlay
-      loop
-      className="w-full h-full object-cover"
-    />
-  ) : (
-    <img
-      src={mediaSrc}
-      alt="Ritual step"
-      className="w-full h-full object-cover"
-    />
-  )}
-</div>
-
-
+            {isVideo ? (
+              <video
+                src={mediaSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={mediaSrc}
+                alt="Ritual step"
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
         </div>
 
@@ -107,7 +72,7 @@ export function SeaWithinMirrorSection({
         <div className="space-y-7">
           <div className="space-y-3">
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
-              Sea Within • Mirror Ritual
+              Sea Within • Ritual
             </p>
 
             <h2 className="text-2xl md:text-[1.9rem] tracking-[0.16em] uppercase text-white/90">
@@ -115,10 +80,7 @@ export function SeaWithinMirrorSection({
             </h2>
 
             <p className="text-sm md:text-[0.95rem] leading-relaxed text-white/65">
-              Inside you lives a flower that grows only through care. It changes
-              shape as you change, opens when you open, and rests when you rest.
-              This mirror is a metaphor for that inner bloom—a reminder that
-              your growth responds to your devotion.
+              Inside you lives a flower that grows only through care.
             </p>
 
             <p className="text-sm md:text-[0.95rem] leading-relaxed text-white/65">
@@ -134,7 +96,6 @@ export function SeaWithinMirrorSection({
 
             <p className="text-sm text-white/70">
               Rub your hands together gently, warming the energy of your seed.
-              When you feel ready, plant it into the soil of your day.
             </p>
 
             <button
