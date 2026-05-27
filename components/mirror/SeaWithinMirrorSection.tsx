@@ -40,7 +40,7 @@ export function SeaWithinMirrorSection({
   <div
     className="
       w-full
-      h-[60vh]              /* ← TALL on all devices */
+      h-[80vh]              /* ← TALL on all devices */
       md:h-[75vh]           /* ← EVEN TALLER on desktop */
       rounded-2xl
       overflow-hidden
