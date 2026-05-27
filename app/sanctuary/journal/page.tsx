@@ -160,22 +160,70 @@ export default function BloomJournalPage() {
 
     // Save last completed date (for tomorrow advancement)
     localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, today);
-
-    // DO NOT ADVANCE PROMPT HERE — wait until tomorrow
   }
 
   // -----------------------------
   // DETERMINE MEDIA
   // -----------------------------
- const mediaToShow =
-  step > 0
-    ? RITUAL_STEPS[step - 1]
-    : "/bloom-videos/bloom-01.mp4";
-
+  const mediaToShow =
+    step > 0
+      ? RITUAL_STEPS[step - 1]
+      : "/bloom-videos/bloom-01.mp4";
 
   const progressPercent = (step / TOTAL_STEPS) * 100;
-
   const promptText = PROMPTS[promptIndex];
+
+  // ----------------------------------------------------
+  // SHORTCUT — ADVANCE ONE STEP (Shift + Ctrl/Cmd + D)
+  // ----------------------------------------------------
+  useEffect(() => {
+    function handleDevAdvance(e: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
+        console.log("⏭ Developer Day-Advance Shortcut Triggered");
+
+        const nextStep = Math.min(step + 1, TOTAL_STEPS);
+        setStep(nextStep);
+        localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
+
+        const today = new Date().toISOString().slice(0, 10);
+        localStorage.setItem(STORAGE_KEY_TENDED, today);
+        setHasTendedToday(true);
+      }
+    }
+
+    window.addEventListener("keydown", handleDevAdvance);
+    return () => window.removeEventListener("keydown", handleDevAdvance);
+  }, [step]);
+
+  // ----------------------------------------------------
+  // SHORTCUT — FULL RESET (Shift + Ctrl/Cmd + R)
+  // ----------------------------------------------------
+  useEffect(() => {
+    function handleDevReset(e: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
+        console.log("🔄 Developer Ritual Reset Triggered");
+
+        localStorage.removeItem(STORAGE_KEY_DATE);
+        localStorage.removeItem(STORAGE_KEY_STEP);
+        localStorage.removeItem(STORAGE_KEY_TENDED);
+        localStorage.removeItem(STORAGE_KEY_LAST_COMPLETED);
+
+        setStep(0);
+        setSeedPlantedToday(false);
+        setHasPlanted(false);
+        setHasTendedToday(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleDevReset);
+    return () => window.removeEventListener("keydown", handleDevReset);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
@@ -199,53 +247,48 @@ export default function BloomJournalPage() {
           </p>
         </section>
 
-   {/* PROGRESS STRIP */}
-<section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
-  <div className="w-full rounded-3xl border border-white/10 
-      bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] 
-      px-5 py-4 md:px-7 md:py-5 
-      flex flex-col md:flex-row items-center justify-between gap-4
-      shadow-[0_0_40px_rgba(255,215,160,0.08)]">
-  
-    <div className="flex items-center gap-4">
-      
-      {/* GOLD-TINTED CIRCULAR SEED ICON */}
-      <div className="relative h-12 w-12 rounded-full 
-          bg-gradient-to-br from-[#dab890]/80 to-[#f4e4c0]/50
-          flex items-center justify-center 
-          shadow-[0_0_30px_rgba(80,200,180,0.35)]">
+        {/* PROGRESS STRIP */}
+        <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
+          <div className="w-full rounded-3xl border border-white/10 
+              bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] 
+              px-5 py-4 md:px-7 md:py-5 
+              flex flex-col md:flex-row items-center justify-between gap-4
+              shadow-[0_0_40px_rgba(255,215,160,0.08)]">
+            
+            <div className="flex items-center gap-4">
+              <div className="relative h-12 w-12 rounded-full 
+                  bg-gradient-to-br from-[#dab890]/80 to-[#f4e4c0]/50
+                  flex items-center justify-center 
+                  shadow-[0_0_30px_rgba(80,200,180,0.35)]">
+                <img 
+                  src="/icons/seed-icon.png"
+                  alt="Seed Icon"
+                  className="h-7 w-7 opacity-95"
+                />
+              </div>
 
-        <img 
-          src="/icons/seed-icon.png"
-          alt="Seed Icon"
-          className="h-7 w-7 opacity-95"
-        />
-      </div>
+              <div className="text-left">
+                <p className="text-xs md:text-sm text-white/70">
+                  Today’s ritual progress
+                </p>
 
-      <div className="text-left">
-        <p className="text-xs md:text-sm text-white/70">
-          Today’s ritual progress
-        </p>
+                <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full 
+                      bg-gradient-to-r 
+                      from-[#dab890] to-[#f4e4c0]
+                      transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            </div>
 
-        {/* PURE GOLDEN PROGRESS BAR */}
-        <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="h-full rounded-full 
-              bg-gradient-to-r 
-              from-[#dab890] to-[#f4e4c0]
-              transition-all"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-      </div>
-    </div>
-
-    <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
-      Step {step} of {TOTAL_STEPS}. Your bloom unfolds gently.
-    </div>
-  </div>
-</section>
-
+            <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
+              Step {step} of {TOTAL_STEPS}. Your bloom unfolds gently.
+            </div>
+          </div>
+        </section>
 
         {/* MIRROR */}
         <SeaWithinMirrorSection
