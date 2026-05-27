@@ -3,17 +3,21 @@
 import React from "react";
 
 type SeaWithinMirrorProps = {
-  mediaSrc: string;              // always a string now
+  mediaSrc: string;
   promptText: string;
   onPlantSeed?: () => void;
+  onTendPlant?: () => void;     // ⭐ NEW
   seedPlantedToday: boolean;
+  step?: number;                // ⭐ NEW
 };
 
 export function SeaWithinMirrorSection({
   mediaSrc,
   promptText,
   onPlantSeed,
+  onTendPlant,       // ⭐ NEW
   seedPlantedToday,
+  step = 0,          // ⭐ DEFAULT
 }: SeaWithinMirrorProps) {
   const isVideo = mediaSrc.endsWith(".mp4");
 
@@ -44,24 +48,28 @@ export function SeaWithinMirrorSection({
 
             {/* MEDIA */}
             {isVideo ? (
-           <video
-  src={mediaSrc}
-  muted
-  playsInline
-  autoPlay
-  loop
-  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-             brightness-[1.18] contrast-[1.12] saturate-[1.25] drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-/>
-
+              <video
+                src={mediaSrc}
+                muted
+                playsInline
+                autoPlay
+                loop
+                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
+                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]
+                           drop-shadow-[0_0_22px_rgba(0,255,195,0.45)]
+                           drop-shadow-[0_0_38px_rgba(0,180,255,0.25)]
+                           drop-shadow-[0_0_65px_rgba(0,120,255,0.18)]"
+              />
             ) : (
-             <img
-  src={mediaSrc}
-  alt="Ritual step"
-  className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-             brightness-[1.18] contrast-[1.12] saturate-[1.25] drop-shadow-[0_0_18px_rgba(255,255,255,0.25)]"
-/>
-
+              <img
+                src={mediaSrc}
+                alt="Ritual step"
+                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
+                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]
+                           drop-shadow-[0_0_22px_rgba(0,255,195,0.45)]
+                           drop-shadow-[0_0_38px_rgba(0,180,255,0.25)]
+                           drop-shadow-[0_0_65px_rgba(0,120,255,0.18)]"
+              />
             )}
 
             {/* Highlight */}
@@ -105,7 +113,7 @@ export function SeaWithinMirrorSection({
               When you feel ready, plant it into the soil of your day.
             </p>
 
-            {/* BUTTON */}
+            {/* PLANT SEED BUTTON */}
             <button
               type="button"
               onClick={seedPlantedToday ? undefined : onPlantSeed}
@@ -133,6 +141,21 @@ export function SeaWithinMirrorSection({
               {promptText}
             </p>
           </div>
+
+          {/* DAILY TENDING BUTTON */}
+          {seedPlantedToday && step > 0 && step < 25 && (
+            <button
+              type="button"
+              onClick={onTendPlant}
+              className="mt-4 inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] tracking-[0.22em] uppercase
+                         bg-gradient-to-r from-emerald-400/20 via-amber-300/20 to-rose-400/20
+                         text-amber-100 border border-amber-300/40 shadow-[0_0_25px_rgba(250,204,21,0.25)]
+                         hover:from-emerald-400/30 hover:to-rose-400/30 transition-all"
+            >
+              Tend to your bloom
+            </button>
+          )}
+
         </div>
       </div>
     </section>

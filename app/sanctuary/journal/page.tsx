@@ -72,7 +72,6 @@ export default function BloomJournalPage() {
       const parsed = parseInt(savedStep, 10);
       setStep(parsed);
 
-      // Only show ritual images if planted TODAY
       if (parsed > 0 && storedDate === today) {
         setHasPlanted(true);
       }
@@ -82,7 +81,7 @@ export default function BloomJournalPage() {
   }, []);
 
   // -----------------------------
-  // HANDLE PLANTING / TENDING
+  // HANDLE PLANTING (DAY 1 START)
   // -----------------------------
   function handlePlantSeed() {
     if (seedPlantedToday) return;
@@ -91,14 +90,29 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
 
-    // Ritual begins visually
     setHasPlanted(true);
 
-    // Always start at step 1 on first planting
     const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS);
-
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
+  }
+
+  // -----------------------------
+  // HANDLE DAILY TENDING
+  // -----------------------------
+  function handleTendPlant() {
+    if (!seedPlantedToday) return;
+
+    const nextStep = Math.min(step + 1, TOTAL_STEPS);
+    setStep(nextStep);
+    localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
+
+    // If cycle complete → reset for next season
+    if (nextStep === TOTAL_STEPS) {
+      setHasPlanted(false);
+      setSeedPlantedToday(false);
+      localStorage.removeItem(STORAGE_KEY_DATE);
+    }
   }
 
   // -----------------------------
@@ -127,43 +141,38 @@ export default function BloomJournalPage() {
   }, []);
 
   // -----------------------------
-// DEVELOPER NEXT-DAY SHORTCUT
-// Shift + Ctrl/Cmd + D
-// -----------------------------
-useEffect(() => {
-  function handleNextDay(e: KeyboardEvent) {
-    const isMac = navigator.platform.toUpperCase().includes("MAC");
-    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+  // DEVELOPER NEXT-DAY SHORTCUT
+  // Shift + Ctrl/Cmd + D
+  // -----------------------------
+  useEffect(() => {
+    function handleNextDay(e: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-    // Shift + Cmd/Ctrl + D
-    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
-      const tomorrow = new Date(Date.now() + 86400000)
-        .toISOString()
-        .slice(0, 10);
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
+        const tomorrow = new Date(Date.now() + 86400000)
+          .toISOString()
+          .slice(0, 10);
 
-      localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
+        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
+        setSeedPlantedToday(false);
 
-      // Unlock button immediately
-      setSeedPlantedToday(false);
-
-      alert("🌞 Advanced to next day for development testing.");
+        alert("🌞 Advanced to next day for development testing.");
+      }
     }
-  }
 
-  window.addEventListener("keydown", handleNextDay);
-  return () => window.removeEventListener("keydown", handleNextDay);
-}, []);
-
+    window.addEventListener("keydown", handleNextDay);
+    return () => window.removeEventListener("keydown", handleNextDay);
+  }, []);
 
   // -----------------------------
   // DETERMINE WHAT TO SHOW IN MIRROR
   // -----------------------------
   const mediaToShow =
     hasPlanted && step > 0
-      ? RITUAL_STEPS[step - 1] // ⭐ OFF-BY-ONE FIX: step 1 -> index 0
+      ? RITUAL_STEPS[step - 1]
       : "/bloom-videos/bloom-01.mp4";
 
-  // Progress: 0..TOTAL_STEPS
   const progressPercent = (step / TOTAL_STEPS) * 100;
 
   return (
@@ -173,7 +182,7 @@ useEffect(() => {
       <main className="flex-1 pt-20 pb-16">
 
         {/* HERO */}
-       <section className="mt-8 md:mt-12 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
+        <section className="mt-8 md:mt-12 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
           <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
             Sanctuary • Daily Ritual
           </p>
@@ -226,7 +235,9 @@ useEffect(() => {
           mediaSrc={mediaToShow}
           promptText={promptText}
           onPlantSeed={handlePlantSeed}
+          onTendPlant={handleTendPlant}
           seedPlantedToday={seedPlantedToday}
+          step={step}
         />
       </main>
     </div>
