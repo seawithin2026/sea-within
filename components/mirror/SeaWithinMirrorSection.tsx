@@ -60,46 +60,45 @@ export function SeaWithinMirrorSection({
                 z-30
               "
             />
+{/* MEDIA INSIDE MIRROR — OVAL, NOT RECTANGLE */}
+<div
+  className="
+    absolute
+    left-1/2
+    -translate-x-1/2
 
-            {/* MEDIA INSIDE MIRROR — EXACT 513 × 713 FIT */}
-            <div
-              className="
-                absolute
-                left-1/2
-                -translate-x-1/2
+    /* Position inside your mirror */
+    top-[14%]
 
-                /* POSITION THIS UNTIL IT SITS PERFECTLY IN YOUR PNG */
-                top-[14%]
+    /* Your exact inner mirror size */
+    w-[513px]
+    h-[713px]
 
-                /* EXACT INNER MIRROR SIZE */
-                w-[513px]
-                h-[713px]
+    /* THIS is what makes it an oval */
+    overflow-hidden
+    [clip-path:ellipse(50%_50%_at_50%_50%)]
 
-                overflow-hidden
+    z-20
+  "
+>
+  {isVideo ? (
+    <video
+      src={mediaSrc}
+      muted
+      playsInline
+      autoPlay
+      loop
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <img
+      src={mediaSrc}
+      alt="Ritual step"
+      className="w-full h-full object-cover"
+    />
+  )}
+</div>
 
-                /* OVAL MASK — ADJUST IF NEEDED */
-                [clip-path:ellipse(50%_50%_at_50%_50%)]
-
-                z-20
-              "
-            >
-              {isVideo ? (
-                <video
-                  src={mediaSrc}
-                  muted
-                  playsInline
-                  autoPlay
-                  loop
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <img
-                  src={mediaSrc}
-                  alt="Ritual step"
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
 
           </div>
         </div>
