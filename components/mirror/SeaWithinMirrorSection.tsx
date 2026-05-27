@@ -29,14 +29,27 @@ export function SeaWithinMirrorSection({
 
         {/* LEFT: Sea Within Mirror */}
         <div className="relative flex items-center justify-center">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(251,191,36,0.16),_transparent_55%)] blur-3xl" />
-          <div className="absolute bottom-0 w-64 h-6 rounded-full bg-gradient-to-r from-emerald-500/25 via-amber-300/25 to-rose-400/25 blur-xl opacity-70" />
 
-          <div className="relative w-full max-w-sm aspect-[3/5] rounded-[2.5rem] bg-gradient-to-b from-slate-900/90 via-slate-950 to-black border border-[rgba(255,255,255,0.16)] shadow-[0_0_70px_rgba(0,0,0,0.95)] overflow-hidden backdrop-blur-2xl">
-            <div className="pointer-events-none absolute -inset-[1px] bg-[radial-gradient(circle_at_center,_rgba(250,204,21,0.18),_transparent_60%)]" />
-            <div className="absolute inset-[10px] rounded-[2rem] border border-[rgba(250,204,21,0.45)]/80 shadow-[0_0_30px_rgba(250,204,21,0.35)]" />
-            <div className="absolute inset-[14px] rounded-[1.8rem] bg-[radial-gradient(circle_at_top,_rgba(248,250,252,0.16),_transparent_55%),_linear-gradient(to_bottom,_rgba(15,23,42,0.9),_rgba(3,7,18,0.98))]" />
+          {/* Ambient glow behind mirror */}
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,215,128,0.22),_transparent_70%)] blur-3xl" />
 
+          {/* Soft grounding glow */}
+          <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
+
+          {/* MIRROR FRAME */}
+          <div className="relative w-full max-w-sm aspect-[3/5] rounded-[3rem] overflow-hidden">
+
+            {/* Outer ornate gold frame */}
+            <div className="absolute inset-0 rounded-[3rem] border-[6px] border-amber-300/70 shadow-[0_0_45px_rgba(255,200,80,0.45)] 
+                            bg-[radial-gradient(circle_at_top,_rgba(255,240,200,0.25),_transparent_70%),_linear-gradient(to_bottom,_rgba(80,60,20,0.45),_rgba(40,30,10,0.55))]" />
+
+            {/* Inner glowing rim */}
+            <div className="absolute inset-[10px] rounded-[2.6rem] border-[3px] border-amber-200/60 shadow-[0_0_35px_rgba(255,220,150,0.45)]" />
+
+            {/* Soft inner halo */}
+            <div className="absolute inset-[18px] rounded-[2.2rem] bg-[radial-gradient(circle_at_center,_rgba(255,230,180,0.12),_transparent_65%)]" />
+
+            {/* MEDIA CONTENT */}
             {isVideo ? (
               <video
                 src={mediaSrc}
@@ -44,19 +57,20 @@ export function SeaWithinMirrorSection({
                 playsInline
                 autoPlay
                 loop
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]"
+                className="absolute inset-[26px] w-[calc(100%-52px)] h-[calc(100%-52px)] object-cover rounded-[2rem]
+                           brightness-[1.22] contrast-[1.15] saturate-[1.28]"
               />
             ) : (
               <img
                 src={mediaSrc}
                 alt="Ritual step"
-                className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]"
+                className="absolute inset-[26px] w-[calc(100%-52px)] h-[calc(100%-52px)] object-cover rounded-[2rem]
+                           brightness-[1.22] contrast-[1.15] saturate-[1.28]"
               />
             )}
 
-            <div className="pointer-events-none absolute inset-x-10 top-4 h-16 rounded-full bg-white/10 blur-xl opacity-60" />
+            {/* Top soft glow */}
+            <div className="pointer-events-none absolute inset-x-12 top-6 h-20 rounded-full bg-amber-100/10 blur-xl opacity-70" />
           </div>
         </div>
 
