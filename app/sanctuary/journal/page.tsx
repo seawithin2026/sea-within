@@ -75,6 +75,7 @@ const STORAGE_KEY_DATE = "seaWithin.seedDate";
 const STORAGE_KEY_STEP = "seaWithin.ritualStep";
 const STORAGE_KEY_TENDED = "seaWithin.tendedToday";
 const STORAGE_KEY_PROMPT = "seaWithin.promptIndex";
+const STORAGE_KEY_LAST_COMPLETED = "seaWithin.lastCompletedDate";
 
 export default function BloomJournalPage() {
   const [step, setStep] = useState(0);
@@ -82,8 +83,6 @@ export default function BloomJournalPage() {
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
   const [hasPlanted, setHasPlanted] = useState(false);
   const [hasTendedToday, setHasTendedToday] = useState(false);
-
-  const promptText = PROMPTS[promptIndex];
 
   // -----------------------------
   // LOAD SAVED STATE
@@ -93,9 +92,14 @@ export default function BloomJournalPage() {
     const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
     const tendedDate = localStorage.getItem(STORAGE_KEY_TENDED);
     const savedPrompt = localStorage.getItem(STORAGE_KEY_PROMPT);
+    const lastCompletedDate = localStorage.getItem(STORAGE_KEY_LAST_COMPLETED);
 
     const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .slice(0, 10);
 
+    // Load step
     if (savedStep) {
       const parsedStep = parseInt(savedStep, 10);
       setStep(parsedStep);
@@ -104,12 +108,21 @@ export default function BloomJournalPage() {
       }
     }
 
+    // Load prompt
     if (savedPrompt) {
       setPromptIndex(parseInt(savedPrompt, 10));
     }
 
+    // Daily state
     setSeedPlantedToday(storedDate === today);
     setHasTendedToday(tendedDate === today);
+
+    // DAILY PROMPT ADVANCEMENT
+    if (lastCompletedDate === yesterday) {
+      const nextPrompt = (parseInt(savedPrompt || "0") + 1) % PROMPTS.length;
+      setPromptIndex(nextPrompt);
+      localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
+    }
   }, []);
 
   // -----------------------------
@@ -140,25 +153,15 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
 
     const today = new Date().toISOString().slice(0, 10);
+
+    // Mark today as tended
     localStorage.setItem(STORAGE_KEY_TENDED, today);
     setHasTendedToday(true);
 
-    // Advance prompt for next day
-    const nextPrompt = (promptIndex + 1) % PROMPTS.length;
-    setPromptIndex(nextPrompt);
-    localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
+    // Save last completed date (for tomorrow advancement)
+    localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, today);
 
-    // Cycle complete → reset
-    if (nextStep === TOTAL_STEPS) {
-      setHasPlanted(false);
-      setSeedPlantedToday(false);
-      setHasTendedToday(false);
-      setStep(0);
-
-      localStorage.removeItem(STORAGE_KEY_DATE);
-      localStorage.removeItem(STORAGE_KEY_STEP);
-      localStorage.removeItem(STORAGE_KEY_TENDED);
-    }
+    // DO NOT ADVANCE PROMPT HERE — wait until tomorrow
   }
 
   // -----------------------------
@@ -170,6 +173,8 @@ export default function BloomJournalPage() {
       : "/bloom-videos/bloom-01.mp4";
 
   const progressPercent = (step / TOTAL_STEPS) * 100;
+
+  const promptText = PROMPTS[promptIndex];
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
