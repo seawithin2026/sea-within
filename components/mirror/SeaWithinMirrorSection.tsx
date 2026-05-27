@@ -6,18 +6,20 @@ type SeaWithinMirrorProps = {
   mediaSrc: string;
   promptText: string;
   onPlantSeed?: () => void;
-  onTendPlant?: () => void;     // ⭐ NEW
+  onTendPlant?: () => void;
   seedPlantedToday: boolean;
-  step?: number;                // ⭐ NEW
+  step?: number;
+  hasTendedToday?: boolean;
 };
 
 export function SeaWithinMirrorSection({
   mediaSrc,
   promptText,
   onPlantSeed,
-  onTendPlant,       // ⭐ NEW
+  onTendPlant,
   seedPlantedToday,
-  step = 0,          // ⭐ DEFAULT
+  step = 0,
+  hasTendedToday = false,
 }: SeaWithinMirrorProps) {
   const isVideo = mediaSrc.endsWith(".mp4");
 
@@ -27,26 +29,14 @@ export function SeaWithinMirrorSection({
 
         {/* LEFT: Sea Within Mirror */}
         <div className="relative flex items-center justify-center">
-
-          {/* Soft ambient glow */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(251,191,36,0.16),_transparent_55%)] blur-3xl" />
-
-          {/* Pedestal */}
           <div className="absolute bottom-0 w-64 h-6 rounded-full bg-gradient-to-r from-emerald-500/25 via-amber-300/25 to-rose-400/25 blur-xl opacity-70" />
 
-          {/* Mirror frame */}
           <div className="relative w-full max-w-sm aspect-[3/5] rounded-[2.5rem] bg-gradient-to-b from-slate-900/90 via-slate-950 to-black border border-[rgba(255,255,255,0.16)] shadow-[0_0_70px_rgba(0,0,0,0.95)] overflow-hidden backdrop-blur-2xl">
-
-            {/* Golden mandala glow */}
             <div className="pointer-events-none absolute -inset-[1px] bg-[radial-gradient(circle_at_center,_rgba(250,204,21,0.18),_transparent_60%)]" />
-
-            {/* Inner rim */}
             <div className="absolute inset-[10px] rounded-[2rem] border border-[rgba(250,204,21,0.45)]/80 shadow-[0_0_30px_rgba(250,204,21,0.35)]" />
-
-            {/* Mirror glass */}
             <div className="absolute inset-[14px] rounded-[1.8rem] bg-[radial-gradient(circle_at_top,_rgba(248,250,252,0.16),_transparent_55%),_linear-gradient(to_bottom,_rgba(15,23,42,0.9),_rgba(3,7,18,0.98))]" />
 
-            {/* MEDIA */}
             {isVideo ? (
               <video
                 src={mediaSrc}
@@ -55,32 +45,23 @@ export function SeaWithinMirrorSection({
                 autoPlay
                 loop
                 className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]
-                           drop-shadow-[0_0_22px_rgba(0,255,195,0.45)]
-                           drop-shadow-[0_0_38px_rgba(0,180,255,0.25)]
-                           drop-shadow-[0_0_65px_rgba(0,120,255,0.18)]"
+                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]"
               />
             ) : (
               <img
                 src={mediaSrc}
                 alt="Ritual step"
                 className="relative z-10 inset-[18px] absolute w-[calc(100%-36px)] h-[calc(100%-36px)] object-cover rounded-[1.6rem]
-                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]
-                           drop-shadow-[0_0_22px_rgba(0,255,195,0.45)]
-                           drop-shadow-[0_0_38px_rgba(0,180,255,0.25)]
-                           drop-shadow-[0_0_65px_rgba(0,120,255,0.18)]"
+                           brightness-[1.25] contrast-[1.18] saturate-[1.35] hue-rotate-[8deg]"
               />
             )}
 
-            {/* Highlight */}
             <div className="pointer-events-none absolute inset-x-10 top-4 h-16 rounded-full bg-white/10 blur-xl opacity-60" />
           </div>
         </div>
 
         {/* RIGHT SIDE */}
         <div className="space-y-7">
-
-          {/* Text */}
           <div className="space-y-3">
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
               Sea Within • Mirror Ritual
@@ -113,7 +94,6 @@ export function SeaWithinMirrorSection({
               When you feel ready, plant it into the soil of your day.
             </p>
 
-            {/* PLANT SEED BUTTON */}
             <button
               type="button"
               onClick={seedPlantedToday ? undefined : onPlantSeed}
@@ -146,16 +126,19 @@ export function SeaWithinMirrorSection({
           {seedPlantedToday && step > 0 && step < 25 && (
             <button
               type="button"
-              onClick={onTendPlant}
-              className="mt-4 inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] tracking-[0.22em] uppercase
-                         bg-gradient-to-r from-emerald-400/20 via-amber-300/20 to-rose-400/20
-                         text-amber-100 border border-amber-300/40 shadow-[0_0_25px_rgba(250,204,21,0.25)]
-                         hover:from-emerald-400/30 hover:to-rose-400/30 transition-all"
+              onClick={hasTendedToday ? undefined : onTendPlant}
+              disabled={hasTendedToday}
+              className={`mt-4 inline-flex items-center justify-center rounded-full px-6 py-3 text-[11px] tracking-[0.22em] uppercase transition-all
+                ${
+                  hasTendedToday
+                    ? "border border-white/20 bg-white/5 text-white/30 cursor-not-allowed"
+                    : "bg-gradient-to-r from-emerald-400/20 via-amber-300/20 to-rose-400/20 text-amber-100 border border-amber-300/40 shadow-[0_0_25px_rgba(250,204,21,0.25)] hover:from-emerald-400/30 hover:to-rose-400/30"
+                }
+              `}
             >
-              Tend to your bloom
+              {hasTendedToday ? "Prompt completed for today" : "Tend to your bloom"}
             </button>
           )}
-
         </div>
       </div>
     </section>

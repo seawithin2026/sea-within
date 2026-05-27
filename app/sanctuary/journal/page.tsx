@@ -73,45 +73,55 @@ const PROMPTS = [
 // -----------------------------
 const STORAGE_KEY_DATE = "seaWithin.seedDate";
 const STORAGE_KEY_STEP = "seaWithin.ritualStep";
+const STORAGE_KEY_TENDED = "seaWithin.tendedToday";
+const STORAGE_KEY_PROMPT = "seaWithin.promptIndex";
 
 export default function BloomJournalPage() {
-  const [step, setStep] = useState(0); // 0 = not started, 1..25 = ritual steps
-  const [promptIndex] = useState(0);
+  const [step, setStep] = useState(0);
+  const [promptIndex, setPromptIndex] = useState(0);
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
   const [hasPlanted, setHasPlanted] = useState(false);
+  const [hasTendedToday, setHasTendedToday] = useState(false);
 
   const promptText = PROMPTS[promptIndex];
 
   // -----------------------------
-  // LOAD SAVED STEP + DAILY LOCK
+  // LOAD SAVED STATE
   // -----------------------------
   useEffect(() => {
     const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
     const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
+    const tendedDate = localStorage.getItem(STORAGE_KEY_TENDED);
+    const savedPrompt = localStorage.getItem(STORAGE_KEY_PROMPT);
+
     const today = new Date().toISOString().slice(0, 10);
 
     if (savedStep) {
-      const parsed = parseInt(savedStep, 10);
-      setStep(parsed);
-
-      if (parsed > 0 && storedDate === today) {
+      const parsedStep = parseInt(savedStep, 10);
+      setStep(parsedStep);
+      if (parsedStep > 0 && storedDate === today) {
         setHasPlanted(true);
       }
     }
 
+    if (savedPrompt) {
+      setPromptIndex(parseInt(savedPrompt, 10));
+    }
+
     setSeedPlantedToday(storedDate === today);
+    setHasTendedToday(tendedDate === today);
   }, []);
 
   // -----------------------------
-  // HANDLE PLANTING (DAY 1 START)
+  // HANDLE PLANTING
   // -----------------------------
   function handlePlantSeed() {
     if (seedPlantedToday) return;
 
     const today = new Date().toISOString().slice(0, 10);
+
     localStorage.setItem(STORAGE_KEY_DATE, today);
     setSeedPlantedToday(true);
-
     setHasPlanted(true);
 
     const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS);
@@ -123,75 +133,36 @@ export default function BloomJournalPage() {
   // HANDLE DAILY TENDING
   // -----------------------------
   function handleTendPlant() {
-    if (!seedPlantedToday) return;
+    if (!seedPlantedToday || hasTendedToday) return;
 
     const nextStep = Math.min(step + 1, TOTAL_STEPS);
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
 
-    // If cycle complete → FULL RESET for next season
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(STORAGE_KEY_TENDED, today);
+    setHasTendedToday(true);
+
+    // Advance prompt for next day
+    const nextPrompt = (promptIndex + 1) % PROMPTS.length;
+    setPromptIndex(nextPrompt);
+    localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
+
+    // Cycle complete → reset
     if (nextStep === TOTAL_STEPS) {
       setHasPlanted(false);
       setSeedPlantedToday(false);
+      setHasTendedToday(false);
       setStep(0);
 
       localStorage.removeItem(STORAGE_KEY_DATE);
       localStorage.removeItem(STORAGE_KEY_STEP);
+      localStorage.removeItem(STORAGE_KEY_TENDED);
     }
   }
 
   // -----------------------------
-  // DEVELOPER RESET SHORTCUT
-  // Shift + Ctrl/Cmd + R
-  // -----------------------------
-  useEffect(() => {
-    function handleDevReset(e: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
-
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
-        localStorage.removeItem(STORAGE_KEY_DATE);
-        localStorage.removeItem(STORAGE_KEY_STEP);
-
-        setStep(0);
-        setHasPlanted(false);
-        setSeedPlantedToday(false);
-
-        alert("🌿 Ritual reset for development testing.");
-      }
-    }
-
-    window.addEventListener("keydown", handleDevReset);
-    return () => window.removeEventListener("keydown", handleDevReset);
-  }, []);
-
-  // -----------------------------
-  // DEVELOPER NEXT-DAY SHORTCUT
-  // Shift + Ctrl/Cmd + D
-  // -----------------------------
-  useEffect(() => {
-    function handleNextDay(e: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
-
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
-        const tomorrow = new Date(Date.now() + 86400000)
-          .toISOString()
-          .slice(0, 10);
-
-        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
-        setSeedPlantedToday(false);
-
-        alert("🌞 Advanced to next day for development testing.");
-      }
-    }
-
-    window.addEventListener("keydown", handleNextDay);
-    return () => window.removeEventListener("keydown", handleNextDay);
-  }, []);
-
-  // -----------------------------
-  // DETERMINE WHAT TO SHOW IN MIRROR
+  // DETERMINE MEDIA
   // -----------------------------
   const mediaToShow =
     hasPlanted && step > 0
@@ -255,7 +226,7 @@ export default function BloomJournalPage() {
           </div>
         </section>
 
-        {/* SEA WITHIN MIRROR */}
+        {/* MIRROR */}
         <SeaWithinMirrorSection
           mediaSrc={mediaToShow}
           promptText={promptText}
@@ -263,6 +234,7 @@ export default function BloomJournalPage() {
           onTendPlant={handleTendPlant}
           seedPlantedToday={seedPlantedToday}
           step={step}
+          hasTendedToday={hasTendedToday}
         />
       </main>
     </div>
