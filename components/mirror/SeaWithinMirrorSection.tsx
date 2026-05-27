@@ -41,7 +41,7 @@ export function SeaWithinMirrorSection({
             className="
               relative
               w-full
-              max-w-[180px]
+              max-w-[1800px]
               h-[80vh]
               md:aspect-[2/3]
               mx-auto
@@ -59,23 +59,24 @@ export function SeaWithinMirrorSection({
                 z-30
               "
             />
-
-           {/* OVAL CONTENT AREA — PIXEL PERFECT */}
+{/* OVAL CONTENT AREA — EXACT FIT */}
 <div
   className="
     absolute
     left-1/2
     -translate-x-1/2
 
-    /* PERFECT MATCH TO YOUR TRANSPARENT OVAL */
-    top-[13.8%]
-    w-[52.4%]
-    h-[69.2%]
+    /* EXACT POSITION OF YOUR TRANSPARENT OVAL */
+    top-[15.2%]
+
+    /* EXACT SIZE OF THE OVAL OPENING */
+    w-[50.8%]
+    h-[67.4%]
 
     overflow-hidden
 
-    /* TRUE OVAL MASK — MATCHES YOUR PNG EXACTLY */
-    [clip-path:ellipse(39.6%_48.1%_at_50%_50%)]
+    /* EXACT OVAL SHAPE */
+    [clip-path:ellipse(38.7%_47.9%_at_50%_50%)]
 
     z-20
   "
@@ -87,28 +88,17 @@ export function SeaWithinMirrorSection({
       playsInline
       autoPlay
       loop
-      className="
-        w-full h-full
-        object-cover
-        brightness-[1.22]
-        contrast-[1.15]
-        saturate-[1.28]
-      "
+      className="w-full h-full object-cover"
     />
   ) : (
     <img
       src={mediaSrc}
       alt="Ritual step"
-      className="
-        w-full h-full
-        object-cover
-        brightness-[1.22]
-        contrast-[1.15]
-        saturate-[1.28]
-      "
+      className="w-full h-full object-cover"
     />
   )}
 </div>
+
 
           </div>
         </div>
