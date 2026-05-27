@@ -34,40 +34,40 @@ export function SeaWithinMirrorSection({
         w-full
       ">
 
-        {/* LEFT SIDE — TRUE CINEMATIC FULL COLUMN */}
-        <div className="relative w-full h-full flex items-center justify-center">
+       {/* LEFT SIDE — WIDE + TALL FULL CINEMATIC PANEL */}
+<div className="relative w-full h-full flex items-center justify-center">
 
-          <div
-            className="
-              w-full
-              h-auto
-              aspect-[16/9]          /* cinematic */
-              md:aspect-[21/9]       /* ultra-wide on desktop */
-              rounded-2xl
-              overflow-hidden
-              bg-black
-              shadow-[0_0_80px_rgba(0,0,0,0.6)]
-            "
-          >
-            {isVideo ? (
-              <video
-                src={mediaSrc}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <img
-                src={mediaSrc}
-                alt="Ritual step"
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
+  <div
+    className="
+      w-full
+      h-[60vh]              /* ← TALL on all devices */
+      md:h-[75vh]           /* ← EVEN TALLER on desktop */
+      rounded-2xl
+      overflow-hidden
+      bg-black
+      shadow-[0_0_80px_rgba(0,0,0,0.6)]
+    "
+  >
+    {isVideo ? (
+      <video
+        src={mediaSrc}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <img
+        src={mediaSrc}
+        alt="Ritual step"
+        className="w-full h-full object-cover"
+      />
+    )}
+  </div>
 
-        </div>
+</div>
+
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
         <div className="space-y-7">
