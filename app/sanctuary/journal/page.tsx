@@ -38,12 +38,34 @@ const RITUAL_STEPS = [
 const TOTAL_STEPS = RITUAL_STEPS.length;
 
 // -----------------------------
-// PROMPTS
+// PROMPTS (25 gentle rituals)
 // -----------------------------
 const PROMPTS = [
   "Drink a full glass of water slowly, noticing how your body receives it.",
-  "Take three slow breaths and place a hand on your heart.",
-  "Choose one small act of kindness for yourself today.",
+  "Do a gentle neck stretch: slow circles, side-to-side, no strain.",
+  "Open a window and take one refreshing breath of outdoor air.",
+  "Rub your hands together for 5 seconds and feel the warmth settle.",
+  "Take one slow sip of your favorite drink and savor the taste.",
+  "Roll your shoulders back 5 times to release tension.",
+  "Walk to another room with intention, noticing your steps.",
+  "Splash cool water on your face to refresh your senses.",
+  "Take one deep breath in and one long breath out.",
+  "Reach your arms overhead and stretch gently for 3 seconds.",
+  "Close your eyes for one second and think of one tiny thing you appreciate.",
+  "Sit or stand a little taller and soften your shoulders.",
+  "Hold a warm mug and feel the heat in your hands.",
+  "Put away one small item around you — just one.",
+  "Step outside for 10 seconds and feel the air on your skin.",
+  "Give yourself a tiny, soft smile — just enough to feel it.",
+  "Apply a bit of lotion and massage your hands for a moment.",
+  "Look up at the ceiling or sky and take a slow breath.",
+  "Place one hand on your chest and feel one breath rise and fall.",
+  "Sit still for 5 seconds and notice one sound around you.",
+  "Wiggle your toes or rotate your ankles gently.",
+  "Take a moment to check if you need another sip of water.",
+  "Gently touch your arm or shoulder and notice the sensation.",
+  "Eat one nourishing bite of something that feels good to your body.",
+  "Inhale while lifting your arms, exhale while lowering them.",
 ];
 
 // -----------------------------
@@ -107,11 +129,14 @@ export default function BloomJournalPage() {
     setStep(nextStep);
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
 
-    // If cycle complete → reset for next season
+    // If cycle complete → FULL RESET for next season
     if (nextStep === TOTAL_STEPS) {
       setHasPlanted(false);
       setSeedPlantedToday(false);
+      setStep(0);
+
       localStorage.removeItem(STORAGE_KEY_DATE);
+      localStorage.removeItem(STORAGE_KEY_STEP);
     }
   }
 
