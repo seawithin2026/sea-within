@@ -37,7 +37,7 @@ export function SeaWithinMirrorSection({
               mx-auto
 
               /* CONTROL SIZE HERE */
-              w-[700px]        /* width of oval */
+              w-[900px]        /* width of oval */
               h-[800px]        /* height of oval — make taller here */
 
               overflow-hidden
