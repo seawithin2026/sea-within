@@ -199,64 +199,59 @@ export default function BloomJournalPage() {
         />
 
         {/* GOLD-ERA PROGRESS BAR — MOVED TO BOTTOM */}
-        <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
-          <div className="
-            w-full rounded-3xl border border-amber-300/40 
-            bg-gradient-to-r from-[#3b2a14] via-[#5a3f1c] to-[#3b2a14]
-            px-6 py-5 
-            flex flex-col md:flex-row items-center justify-between gap-4
-            shadow-[0_0_45px_rgba(255,200,120,0.25)]
-            relative
-            overflow-hidden
-          ">
+<section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
+  <div className="
+    w-full rounded-3xl border border-amber-300/40 
+    bg-gradient-to-r from-black via-[#0a0a0a] to-black
+    px-6 py-5 
+    flex flex-col md:flex-row items-center justify-between gap-4
+    shadow-[0_0_45px_rgba(255,200,120,0.25)]
+    relative overflow-hidden
+  ">
 
-            <div className="
-              absolute inset-0 
-              bg-[radial-gradient(circle_at_top,_rgba(255,220,150,0.25),_transparent_70%)]
-              pointer-events-none
-            " />
+    <div className="flex items-center gap-4 relative z-10">
 
-            <div className="flex items-center gap-4 relative z-10">
+      {/* LOTUS ICON — NOW RESIZABLE */}
+      <div className="
+        relative h-14 w-14 rounded-full 
+        bg-gradient-to-br from-amber-300/80 to-amber-100/40
+        flex items-center justify-center 
+        shadow-[0_0_25px_rgba(255,215,130,0.45)]
+      ">
+        <img 
+          src="/lotus/lotus-amber.png"
+          alt="Lotus Icon"
+          className="h-[40px] w-[40px] opacity-95 drop-shadow-[0_0_10px_rgba(255,215,130,0.7)]"
+        />
+      </div>
 
-              <div className="
-                relative h-12 w-12 rounded-full 
-                bg-gradient-to-br from-amber-300/80 to-amber-100/40
-                flex items-center justify-center 
-                shadow-[0_0_25px_rgba(255,200,120,0.45)]
-              ">
-                <img 
-                  src="/lotus/lotus-amber.png"
-                  alt="Lotus Icon"
-                  className="h-25 w-25 opacity-95 drop-shadow-[0_0_6px_rgba(255,200,120,0.6)]"
-                />
-              </div>
+      <div className="text-left">
+        <p className="text-xs md:text-sm text-amber-200/80 tracking-wide">
+          Today’s ritual progress
+        </p>
 
-              <div className="text-left">
-                <p className="text-xs md:text-sm text-amber-200/80 tracking-wide">
-                  Today’s ritual progress
-                </p>
+        <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-amber-200/20 overflow-hidden shadow-inner">
+          <div
+            className="
+              h-full rounded-full 
+              bg-gradient-to-r from-amber-300 via-amber-200 to-amber-100
+              shadow-[0_0_12px_rgba(255,215,130,0.6)]
+              transition-all duration-500
+            "
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+    </div>
 
-                <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-amber-200/20 overflow-hidden shadow-inner">
-                  <div
-                    className="
-                      h-full rounded-full 
-                      bg-gradient-to-r from-amber-300 via-amber-200 to-amber-100
-                      shadow-[0_0_12px_rgba(255,220,150,0.6)]
-                      transition-all duration-500
-                    "
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+    <div className="text-xs md:text-sm text-amber-200/80 text-center md:text-right relative z-10">
+      Step {step} of {TOTAL_STEPS}.  
+      <span className="text-amber-100/90">Your bloom unfolds gently.</span>
+    </div>
 
-            <div className="text-xs md:text-sm text-amber-200/80 text-center md:text-right relative z-10">
-              Step {step} of {TOTAL_STEPS}.  
-              <span className="text-amber-100/90">Your bloom unfolds gently.</span>
-            </div>
+  </div>
+</section>
 
-          </div>
-        </section>
 
       </main>
     </div>
