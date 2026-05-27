@@ -198,38 +198,53 @@ export default function BloomJournalPage() {
           </p>
         </section>
 
-        {/* PROGRESS STRIP */}
-        <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
-          <div className="w-full rounded-3xl border border-white/10 bg-gradient-to-r from-slate-950 via-slate-900/80 to-slate-950 px-5 py-4 md:px-7 md:py-5 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="relative h-10 w-10 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-emerald-400/70 to-sky-500/70 flex items-center justify-center shadow-[0_0_25px_rgba(16,185,129,0.7)]">
-                <div className="h-6 w-6 rounded-full bg-slate-950 flex items-center justify-center">
-                  <span className="text-[11px] tracking-[0.18em] uppercase text-emerald-300">
-                    Seed
-                  </span>
-                </div>
-              </div>
+    {/* PROGRESS STRIP */}
+<section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
+  <div className="w-full rounded-3xl border border-white/10 
+      bg-gradient-to-r from-[#0a0f14] via-[#0d1319] to-[#0a0f14]
+      px-5 py-4 md:px-7 md:py-5 
+      flex flex-col md:flex-row items-center justify-between gap-4
+      shadow-[0_0_40px_rgba(255,215,160,0.08)]">
 
-              <div className="text-left">
-                <p className="text-xs md:text-sm text-white/70">
-                  Today&apos;s ritual progress
-                </p>
+    <div className="flex items-center gap-4">
 
-                <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-300 to-rose-400 transition-all"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-            </div>
+      {/* LOTUS SEED ICON */}
+      <div className="relative h-12 w-12 rounded-full 
+          bg-gradient-to-br from-[#d8b98b]/60 to-[#f5e6c8]/40 
+          flex items-center justify-center 
+          shadow-[0_0_30px_rgba(255,220,170,0.35)]">
 
-            <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
-              Step {step} of {TOTAL_STEPS}. Move at your own pace—each step
-              is a small act of care.
-            </div>
-          </div>
-        </section>
+        <img 
+          src="/icons/lotus-seed.png"
+          alt="Lotus Seed"
+          className="h-7 w-7 opacity-90"
+        />
+      </div>
+
+      <div className="text-left">
+        <p className="text-xs md:text-sm text-white/70">
+          Today’s ritual progress
+        </p>
+
+        {/* PROGRESS BAR */}
+        <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
+          <div
+            className="h-full rounded-full 
+              bg-gradient-to-r 
+              from-[#d8b98b] via-[#a7d8d0] to-[#6fb7c6]
+              transition-all"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+    </div>
+
+    <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
+      Step {step} of {TOTAL_STEPS}. Your bloom unfolds gently.
+    </div>
+  </div>
+</section>
+
 
         {/* MIRROR */}
         <SeaWithinMirrorSection
