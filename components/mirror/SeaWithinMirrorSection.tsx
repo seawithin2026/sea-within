@@ -43,22 +43,22 @@ export function SeaWithinMirrorSection({
   <img
     src="/mirror-image/mirror.png"
     alt="Golden Lotus Mirror Frame"
-    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-20"
+    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-30"
   />
 
   {/* OVAL MASKED MEDIA */}
   <div
     className="
       absolute 
-      top-[17%] 
+      top-[14%] 
       left-1/2 
       -translate-x-1/2 
-      w-[62%] 
-      h-[66%] 
+      w-[68%] 
+      h-[70%] 
       overflow-hidden 
       rounded-full 
       [clip-path:ellipse(50%_50%_at_50%_50%)] 
-      z-10
+      z-20
     "
   >
     {isVideo ? (
@@ -79,6 +79,7 @@ export function SeaWithinMirrorSection({
     )}
   </div>
 </div>
+
 
 
 
