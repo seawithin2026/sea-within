@@ -30,23 +30,42 @@ export function SeaWithinMirrorSection({
         {/* LEFT: Sea Within Mirror */}
         <div className="relative flex items-center justify-center">
 
-          {/* Ambient glow behind mirror */}
+          {/* Ambient glow */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,215,128,0.22),_transparent_70%)] blur-3xl" />
 
-          {/* Soft grounding glow */}
+          {/* Ground glow */}
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
           {/* MIRROR FRAME + MEDIA */}
-          <div className="relative w-full max-w-[1400px] aspect-[3/5] mx-auto">
+          <div
+            className="
+              relative
+              w-full
+              max-w-[1400px]
 
-            {/* Golden Lotus Mirror Frame */}
+              /* PHONE HEIGHT FIX */
+              h-[80vh]
+
+              /* DESKTOP FIX */
+              md:aspect-[3/5]
+
+              mx-auto
+            "
+          >
+            {/* Mirror Frame */}
             <img
               src="/mirror-image/mirror.png"
               alt="Golden Lotus Mirror Frame"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-30"
+              className="
+                absolute inset-0
+                w-full h-full
+                object-contain
+                pointer-events-none select-none
+                z-30
+              "
             />
 
-            {/* OVAL MASKED MEDIA — FINAL FIX */}
+            {/* OVAL MASKED MEDIA — TRUE OVAL + PHONE HEIGHT */}
             <div
               className="
                 absolute
@@ -56,13 +75,14 @@ export function SeaWithinMirrorSection({
                 /* POSITION MATCHED TO MIRROR OPENING */
                 top-[14%]
 
-                /* SIZE MATCHED TO MIRROR OPENING */
-                w-[66%]
-                h-[72%]
+                /* TRUE OVAL SHAPE MATCHED TO FRAME */
+                w-[62%]
+                h-[74%]
 
                 overflow-hidden
-                rounded-full
-                [clip-path:ellipse(50%_50%_at_50%_50%)]
+
+                /* REAL OVAL FIX */
+                [clip-path:ellipse(48%_50%_at_50%_50%)]
 
                 z-20
               "
