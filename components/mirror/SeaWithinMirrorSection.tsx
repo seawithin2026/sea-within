@@ -27,26 +27,19 @@ export function SeaWithinMirrorSection({
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-12 items-center">
 
-        {/* LEFT SIDE — OVAL VIDEO */}
-        <div className="relative flex items-center justify-center">
+        {/* LEFT SIDE — WIDESCREEN MEDIA */}
+        <div className="relative flex items-center justify-center w-full">
 
-          {/* OVAL VIDEO / IMAGE */}
           <div
             className="
               relative
-              mx-auto
-
-              /* CONTROL SIZE HERE */
-              w-[1000px]        /* width of oval */
-              h-[800px]        /* height of oval — make taller here */
-
+              w-full
+              max-w-[480px]        /* widescreen width */
+              aspect-[16/10]       /* cinematic rectangle */
+              rounded-2xl
               overflow-hidden
-
-              /* OVAL SHAPE */
-              [clip-path:ellipse(50%_50%_at_50%_50%)]
-
-              rounded-full
-              z-20
+              shadow-[0_0_40px_rgba(255,215,130,0.25)]
+              bg-black/40
             "
           >
             {isVideo ? (
@@ -66,6 +59,7 @@ export function SeaWithinMirrorSection({
               />
             )}
           </div>
+
         </div>
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
