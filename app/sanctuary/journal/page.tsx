@@ -260,11 +260,12 @@ export default function BloomJournalPage() {
                   bg-gradient-to-br from-[#dab890]/80 to-[#f4e4c0]/50
                   flex items-center justify-center 
                   shadow-[0_0_30px_rgba(80,200,180,0.35)]">
-                <img 
-                  src="/icons/seed-icon.png"
-                  alt="Seed Icon"
-                  className="h-7 w-7 opacity-95"
-                />
+               <img 
+  src="/lotus/lotus-amber.png"
+  alt="Lotus Icon"
+  className="h-7 w-7 opacity-95"
+/>
+
               </div>
 
               <div className="text-left">
