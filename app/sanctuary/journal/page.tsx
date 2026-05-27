@@ -233,7 +233,7 @@ export default function BloomJournalPage() {
 
       <div>
         <p className="text-xs md:text-sm text-white/60 tracking-wide">
-          Today’s ritual progress
+          Ritual progress
         </p>
 
         {/* PROGRESS BAR */}
