@@ -30,7 +30,7 @@ export function SeaWithinMirrorSection({
         grid-cols-1 
         lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]   /* ← BIGGER LEFT SIDE */
         gap-12 
-        items-start
+        items-center
         w-full
       ">
 
