@@ -213,17 +213,20 @@ export default function BloomJournalPage() {
 
       {/* LOTUS ICON — NOW RESIZABLE */}
       <div className="
-        relative h-14 w-14 rounded-full 
-        bg-gradient-to-br from-amber-300/80 to-amber-100/40
-        flex items-center justify-center 
-        shadow-[0_0_25px_rgba(255,215,130,0.45)]
-      ">
-        <img 
-          src="/lotus/lotus-amber.png"
-          alt="Lotus Icon"
-          className="h-[40px] w-[40px] opacity-95 drop-shadow-[0_0_10px_rgba(255,215,130,0.7)]"
-        />
-      </div>
+  relative 
+  h-[80px] w-[80px]          /* ← make the circle bigger */
+  rounded-full 
+  bg-gradient-to-br from-amber-300/80 to-amber-100/40
+  flex items-center justify-center 
+  shadow-[0_0_35px_rgba(255,215,130,0.55)]
+">
+  <img 
+    src="/lotus/lotus-amber.png"
+    alt="Lotus Icon"
+    className="h-[90px] w-[90px] opacity-95 drop-shadow-[0_0_12px_rgba(255,215,130,0.8)]"
+  />
+</div>
+
 
       <div className="text-left">
         <p className="text-xs md:text-sm text-amber-200/80 tracking-wide">
