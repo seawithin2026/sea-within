@@ -27,40 +27,40 @@ export function SeaWithinMirrorSection({
     <section className="mt-14 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] gap-12 items-center">
 
-        {/* LEFT SIDE — WIDESCREEN MEDIA */}
-        <div className="relative flex items-center justify-center w-full">
+    {/* LEFT SIDE — TRUE CINEMATIC FULL COLUMN */}
+<div className="relative w-full flex items-center justify-center">
 
-          <div
-            className="
-              relative
-              w-full
-              max-w-[480px]        /* widescreen width */
-              aspect-[16/10]       /* cinematic rectangle */
-              rounded-2xl
-              overflow-hidden
-              shadow-[0_0_40px_rgba(255,215,130,0.25)]
-              bg-black/40
-            "
-          >
-            {isVideo ? (
-              <video
-                src={mediaSrc}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <img
-                src={mediaSrc}
-                alt="Ritual step"
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
+  <div
+    className="
+      w-full
+      aspect-[16/9]          /* cinematic widescreen */
+      md:aspect-[21/9]       /* ultra-wide on desktop */
+      rounded-2xl
+      overflow-hidden
+      bg-black
+      shadow-[0_0_80px_rgba(0,0,0,0.6)]
+    "
+  >
+    {isVideo ? (
+      <video
+        src={mediaSrc}
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <img
+        src={mediaSrc}
+        alt="Ritual step"
+        className="w-full h-full object-cover"
+      />
+    )}
+  </div>
 
-        </div>
+</div>
+
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
         <div className="space-y-7">
