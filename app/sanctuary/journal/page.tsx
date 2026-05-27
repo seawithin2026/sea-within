@@ -227,7 +227,7 @@ export default function BloomJournalPage() {
                 <img 
                   src="/lotus/lotus-amber.png"
                   alt="Lotus Icon"
-                  className="h-8 w-8 opacity-95 drop-shadow-[0_0_6px_rgba(255,200,120,0.6)]"
+                  className="h-25 w-25 opacity-95 drop-shadow-[0_0_6px_rgba(255,200,120,0.6)]"
                 />
               </div>
 
