@@ -167,10 +167,11 @@ export default function BloomJournalPage() {
   // -----------------------------
   // DETERMINE MEDIA
   // -----------------------------
-  const mediaToShow =
-    hasPlanted && step > 0
-      ? RITUAL_STEPS[step - 1]
-      : "/bloom-videos/bloom-01.mp4";
+ const mediaToShow =
+  step > 0
+    ? RITUAL_STEPS[step - 1]
+    : "/bloom-videos/bloom-01.mp4";
+
 
   const progressPercent = (step / TOTAL_STEPS) * 100;
 
