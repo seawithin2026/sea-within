@@ -198,26 +198,26 @@ export default function BloomJournalPage() {
           </p>
         </section>
 
-    {/* PROGRESS STRIP */}
+   {/* PROGRESS STRIP */}
 <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
   <div className="w-full rounded-3xl border border-white/10 
-      bg-gradient-to-r from-[#0a0f14] via-[#0d1319] to-[#0a0f14]
+      bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] 
       px-5 py-4 md:px-7 md:py-5 
       flex flex-col md:flex-row items-center justify-between gap-4
       shadow-[0_0_40px_rgba(255,215,160,0.08)]">
-
+  
     <div className="flex items-center gap-4">
-
-      {/* LOTUS SEED ICON */}
+      
+      {/* GOLD-TINTED CIRCULAR SEED ICON */}
       <div className="relative h-12 w-12 rounded-full 
-          bg-gradient-to-br from-[#d8b98b]/60 to-[#f5e6c8]/40 
+          bg-gradient-to-br from-[#dab890]/80 to-[#f4e4c0]/50
           flex items-center justify-center 
-          shadow-[0_0_30px_rgba(255,220,170,0.35)]">
+          shadow-[0_0_30px_rgba(80,200,180,0.35)]">
 
         <img 
-          src="/icons/lotus-seed.png"
-          alt="Lotus Seed"
-          className="h-7 w-7 opacity-90"
+          src="/icons/seed-icon.png"
+          alt="Seed Icon"
+          className="h-7 w-7 opacity-95"
         />
       </div>
 
@@ -226,12 +226,12 @@ export default function BloomJournalPage() {
           Today’s ritual progress
         </p>
 
-        {/* PROGRESS BAR */}
+        {/* PURE GOLDEN PROGRESS BAR */}
         <div className="mt-1 h-1.5 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
           <div
             className="h-full rounded-full 
               bg-gradient-to-r 
-              from-[#d8b98b] via-[#a7d8d0] to-[#6fb7c6]
+              from-[#dab890] to-[#f4e4c0]
               transition-all"
             style={{ width: `${progressPercent}%` }}
           />
