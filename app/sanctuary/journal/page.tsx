@@ -120,6 +120,53 @@ export default function BloomJournalPage() {
       localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
     }
   }, []);
+// ----------------------------------------------------
+// DEVELOPER SHORTCUTS: RESET + SKIP DAY
+// ----------------------------------------------------
+useEffect(() => {
+  function handleDevKeys(e: KeyboardEvent) {
+    const isMac = navigator.platform.toUpperCase().includes("MAC");
+    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
+
+    // RESET — Shift + Ctrl/Cmd + R
+    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
+      console.log("🔄 Developer Reset Triggered");
+
+      localStorage.removeItem(STORAGE_KEY_DATE);
+      localStorage.removeItem(STORAGE_KEY_STEP);
+      localStorage.removeItem(STORAGE_KEY_TENDED);
+      localStorage.removeItem(STORAGE_KEY_LAST_COMPLETED);
+
+      setStep(0);
+      setSeedPlantedToday(false);
+      setHasPlanted(false);
+      setHasTendedToday(false);
+
+      alert("🌿 Ritual fully reset.");
+    }
+
+    // SKIP DAY — Shift + Ctrl/Cmd + D
+    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
+      console.log("⏭ Developer Day Skip Triggered");
+
+      const tomorrow = new Date(Date.now() + 86400000)
+        .toISOString()
+        .slice(0, 10);
+
+      localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
+      localStorage.setItem(STORAGE_KEY_TENDED, tomorrow);
+      localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, tomorrow);
+
+      const nextStep = Math.min(step + 1, TOTAL_STEPS);
+      setStep(nextStep);
+
+      alert("⏭ Advanced to the next ritual day.");
+    }
+  }
+
+  window.addEventListener("keydown", handleDevKeys);
+  return () => window.removeEventListener("keydown", handleDevKeys);
+}, [step]);
 
   // -----------------------------
   // HANDLE PLANTING
