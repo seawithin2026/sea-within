@@ -41,12 +41,13 @@ export function SeaWithinMirrorSection({
             className="
               relative
               w-full
-              max-w-[3800px]
-              h-[100vh]
+              max-w-[180px]
+              h-[80vh]
               md:aspect-[2/3]
               mx-auto
             "
           >
+
             {/* FRAME IMAGE */}
             <img
               src="/mirror-image/mirror.png"
@@ -59,46 +60,46 @@ export function SeaWithinMirrorSection({
                 z-30
               "
             />
-{/* OVAL CONTENT AREA — EXACT FIT */}
-<div
-  className="
-    absolute
-    left-1/2
-    -translate-x-1/2
 
-    /* EXACT POSITION OF YOUR TRANSPARENT OVAL */
-    top-[15.2%]
+            {/* MEDIA INSIDE MIRROR — EXACT 513 × 713 FIT */}
+            <div
+              className="
+                absolute
+                left-1/2
+                -translate-x-1/2
 
-    /* EXACT SIZE OF THE OVAL OPENING */
-    w-[50.8%]
-    h-[67.4%]
+                /* POSITION THIS UNTIL IT SITS PERFECTLY IN YOUR PNG */
+                top-[14%]
 
-    overflow-hidden
+                /* EXACT INNER MIRROR SIZE */
+                w-[513px]
+                h-[713px]
 
-    /* EXACT OVAL SHAPE */
-    [clip-path:ellipse(20_20_at_20_20)]
+                overflow-hidden
 
-    z-20
-  "
->
-  {isVideo ? (
-    <video
-      src={mediaSrc}
-      muted
-      playsInline
-      autoPlay
-      loop
-      className="w-full h-full object-cover"
-    />
-  ) : (
-    <img
-      src={mediaSrc}
-      alt="Ritual step"
-      className="w-full h-full object-cover"
-    />
-  )}
-</div>
+                /* OVAL MASK — ADJUST IF NEEDED */
+                [clip-path:ellipse(50%_50%_at_50%_50%)]
 
+                z-20
+              "
+            >
+              {isVideo ? (
+                <video
+                  src={mediaSrc}
+                  muted
+                  playsInline
+                  autoPlay
+                  loop
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src={mediaSrc}
+                  alt="Ritual step"
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
 
           </div>
         </div>
