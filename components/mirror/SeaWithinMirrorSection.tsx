@@ -76,7 +76,7 @@ export function SeaWithinMirrorSection({
     overflow-hidden
 
     /* EXACT OVAL SHAPE */
-    [clip-path:ellipse(38.7%_47.9%_at_50%_50%)]
+    [clip-path:ellipse(20_20_at_20_20)]
 
     z-20
   "
