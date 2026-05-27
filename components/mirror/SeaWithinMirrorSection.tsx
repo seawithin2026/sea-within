@@ -60,56 +60,56 @@ export function SeaWithinMirrorSection({
               "
             />
 
-            {/* OVAL CONTENT AREA */}
-            <div
-              className="
-                absolute
-                left-1/2
-                -translate-x-1/2
+           {/* OVAL CONTENT AREA — PIXEL PERFECT */}
+<div
+  className="
+    absolute
+    left-1/2
+    -translate-x-1/2
 
-                /* PERFECT MATCH TO YOUR FRAME OPENING */
-                top-[14%]
-                w-[62%]
-                h-[74%]
+    /* PERFECT MATCH TO YOUR TRANSPARENT OVAL */
+    top-[13.8%]
+    w-[52.4%]
+    h-[69.2%]
 
-                overflow-hidden
-                rounded-full
+    overflow-hidden
 
-                /* TRUE OVAL MASK */
-                [clip-path:ellipse(48%_50%_at_50%_50%)]
+    /* TRUE OVAL MASK — MATCHES YOUR PNG EXACTLY */
+    [clip-path:ellipse(39.6%_48.1%_at_50%_50%)]
 
-                z-20
-              "
-            >
-              {isVideo ? (
-                <video
-                  src={mediaSrc}
-                  muted
-                  playsInline
-                  autoPlay
-                  loop
-                  className="
-                    w-full h-full
-                    object-cover
-                    brightness-[1.22]
-                    contrast-[1.15]
-                    saturate-[1.28]
-                  "
-                />
-              ) : (
-                <img
-                  src={mediaSrc}
-                  alt="Ritual step"
-                  className="
-                    w-full h-full
-                    object-cover
-                    brightness-[1.22]
-                    contrast-[1.15]
-                    saturate-[1.28]
-                  "
-                />
-              )}
-            </div>
+    z-20
+  "
+>
+  {isVideo ? (
+    <video
+      src={mediaSrc}
+      muted
+      playsInline
+      autoPlay
+      loop
+      className="
+        w-full h-full
+        object-cover
+        brightness-[1.22]
+        contrast-[1.15]
+        saturate-[1.28]
+      "
+    />
+  ) : (
+    <img
+      src={mediaSrc}
+      alt="Ritual step"
+      className="
+        w-full h-full
+        object-cover
+        brightness-[1.22]
+        contrast-[1.15]
+        saturate-[1.28]
+      "
+    />
+  )}
+</div>
+
           </div>
         </div>
 
