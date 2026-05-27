@@ -37,35 +37,49 @@ export function SeaWithinMirrorSection({
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
 {/* MIRROR FRAME + MEDIA */}
-<div className="relative w-full max-w-lg aspect-[3/5] mx-auto">
+<div className="relative w-full max-w-3xl aspect-[3/5] mx-auto">
 
   {/* Golden Lotus Mirror Frame */}
   <img
     src="/mirror-image/mirror.png"
     alt="Golden Lotus Mirror Frame"
-    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none z-20"
   />
 
-  {/* Ritual media inside mirror */}
-  {isVideo ? (
-    <video
-      src={mediaSrc}
-      muted
-      playsInline
-      autoPlay
-      loop
-      className="absolute inset-[20%] w-[60%] h-[60%] object-cover rounded-[1.4rem]
-                 brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-    />
-  ) : (
-    <img
-      src={mediaSrc}
-      alt="Ritual step"
-      className="absolute inset-[20%] w-[60%] h-[60%] object-cover rounded-[1.4rem]
-                 brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-    />
-  )}
+  {/* OVAL MASKED MEDIA */}
+  <div
+    className="
+      absolute 
+      top-[17%] 
+      left-1/2 
+      -translate-x-1/2 
+      w-[62%] 
+      h-[66%] 
+      overflow-hidden 
+      rounded-full 
+      [clip-path:ellipse(50%_50%_at_50%_50%)] 
+      z-10
+    "
+  >
+    {isVideo ? (
+      <video
+        src={mediaSrc}
+        muted
+        playsInline
+        autoPlay
+        loop
+        className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+      />
+    ) : (
+      <img
+        src={mediaSrc}
+        alt="Ritual step"
+        className="w-full h-full object-cover brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+      />
+    )}
+  </div>
 </div>
+
 
 
         </div>
