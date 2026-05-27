@@ -42,8 +42,8 @@ export function SeaWithinMirrorSection({
       w-full
       h-[60vh]              /* tall on all devices */
       md:h-[75vh]           /* taller on desktop */
-      mt-10                 /* ← LOWER THE VIDEO */
-      md:mt-16              /* ← LOWER EVEN MORE ON DESKTOP */
+      mt-20                 /* ← LOWER THE VIDEO */
+      md:mt-25              /* ← LOWER EVEN MORE ON DESKTOP */
       rounded-2xl
       overflow-hidden
       bg-black
