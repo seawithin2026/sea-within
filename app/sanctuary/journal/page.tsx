@@ -219,7 +219,7 @@ useEffect(() => {
       <main className="flex-1 pt-20 pb-16">
 
         {/* HERO */}
-        <section className="mt-8 md:mt-12 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
+        <section className="mt-20 md:mt-28 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto text-center md:text-left">
           <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
             Sanctuary • Daily Ritual
           </p>
