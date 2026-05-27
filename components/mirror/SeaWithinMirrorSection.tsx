@@ -37,35 +37,36 @@ export function SeaWithinMirrorSection({
           <div className="absolute bottom-0 w-72 h-8 rounded-full bg-gradient-to-r from-amber-300/25 via-rose-300/25 to-emerald-300/25 blur-xl opacity-70" />
 
           {/* MIRROR FRAME + MEDIA */}
-          <div className="relative w-full max-w-sm aspect-[3/5] mx-auto">
+<div className="relative w-full max-w-md aspect-[3/5] mx-auto scale-[1.18]">
 
-            {/* Golden Lotus Mirror Frame */}
-            <img
-              src="/mirror-image/mirror.png"
-              alt="Golden Lotus Mirror Frame"
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
-            />
+  {/* Golden Lotus Mirror Frame */}
+  <img
+    src="/mirror-image/mirror.png"
+    alt="Golden Lotus Mirror Frame"
+    className="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+  />
 
-            {/* Ritual media inside mirror */}
-            {isVideo ? (
-              <video
-                src={mediaSrc}
-                muted
-                playsInline
-                autoPlay
-                loop
-                className="absolute inset-[12%] w-[76%] h-[76%] object-cover rounded-[1.8rem]
-                           brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-              />
-            ) : (
-              <img
-                src={mediaSrc}
-                alt="Ritual step"
-                className="absolute inset-[12%] w-[76%] h-[76%] object-cover rounded-[1.8rem]
-                           brightness-[1.22] contrast-[1.15] saturate-[1.28]"
-              />
-            )}
-          </div>
+  {/* Ritual media inside mirror */}
+  {isVideo ? (
+    <video
+      src={mediaSrc}
+      muted
+      playsInline
+      autoPlay
+      loop
+      className="absolute inset-[17%] w-[66%] h-[66%] object-cover rounded-[1.6rem]
+                 brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+    />
+  ) : (
+    <img
+      src={mediaSrc}
+      alt="Ritual step"
+      className="absolute inset-[17%] w-[66%] h-[66%] object-cover rounded-[1.6rem]
+                 brightness-[1.22] contrast-[1.15] saturate-[1.28]"
+    />
+  )}
+</div>
+
         </div>
 
         {/* RIGHT SIDE */}
