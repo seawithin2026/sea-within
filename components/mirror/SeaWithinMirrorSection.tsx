@@ -41,8 +41,8 @@ export function SeaWithinMirrorSection({
             className="
               relative
               w-full
-              max-w-[3800px]
-              h-[100vh]
+              max-w-[4800px]
+              h-[200vh]
               md:aspect-[2/3]
               mx-auto
             "
