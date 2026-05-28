@@ -25,54 +25,51 @@ export function SeaWithinMirrorSection({
 
   return (
     <section className="px-6 md:px-10 lg:px-16 w-full">
-      <div className="
-        grid 
-        grid-cols-1 
-        lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]   /* ← BIGGER LEFT SIDE */
-        gap-12
-        items-center
-        w-full
-      ">
+      <div
+        className="
+          grid
+          grid-cols-1
+          lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]
+          gap-12
+          items-stretch
+          w-full
+          min-h-[100vh]          /* FULL HEIGHT GRID */
+        "
+      >
 
-{/* LEFT SIDE — WIDE + TALL + LOWERED */}
-<div className="w-full min-h-[90vh] md:min-h-[100vh] flex items-center justify-center">
-
-
-  <div
-    className="
-      w-full
-      h-[90vh]              /* tall but safe */
-      md:h-[95vh]           /* cinematic on desktop */
-      mt-[3.5rem]           /* lowered */
-      md:mt-[3.5rem]          /* lowered more on desktop */
-      rounded-2xl
-      overflow-hidden
-      bg-black
-      shadow-[0_0_80px_rgba(0,0,0,0.6)]
-    "
-  >
-    {isVideo ? (
-      <video
-        src={mediaSrc}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="w-full h-full object-cover"
-      />
-    ) : (
-      <img
-        src={mediaSrc}
-        alt="Ritual step"
-        className="w-full h-full object-cover"
-      />
-    )}
-  </div>
-
-</div>
+        {/* LEFT SIDE — FULL HEIGHT CINEMATIC RECTANGLE */}
+        <div className="w-full h-full flex items-center">
+          <div
+            className="
+              w-full
+              h-full               /* FULL HEIGHT ALWAYS */
+              rounded-2xl
+              overflow-hidden
+              bg-black
+              shadow-[0_0_80px_rgba(0,0,0,0.6)]
+            "
+          >
+            {isVideo ? (
+              <video
+                src={mediaSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={mediaSrc}
+                alt="Ritual step"
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+        </div>
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
-        <div className="space-y-7">
+        <div className="space-y-7 flex flex-col justify-center py-10">
           <div className="space-y-3">
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
               Sea Within • Ritual
