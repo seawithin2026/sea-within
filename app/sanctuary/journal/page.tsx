@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { SeaWithinMirrorSection } from "@/components/mirror/SeaWithinMirrorSection";
 
-// -----------------------------
-// RITUAL MEDIA (25 steps)
-// -----------------------------
 const RITUAL_STEPS = [
   "/ritual/1-placing-seed.png",
   "/ritual/2-water-seed.png",
@@ -37,14 +34,11 @@ const RITUAL_STEPS = [
 
 const TOTAL_STEPS = RITUAL_STEPS.length;
 
-// -----------------------------
-// PROMPTS (25 gentle rituals)
-// -----------------------------
 const PROMPTS = [
   "Drink a full glass of water slowly, noticing how your body receives it.",
   "Do a gentle neck stretch: slow circles, side-to-side, no strain.",
   "Open a window and take one refreshing breath of outdoor air.",
-  "Rub your hands together for 5 seconds and feel the warmth settle.",
+  "Rub your hands together gently, warming the energy of your seed.",
   "Take one slow sip of your favorite drink and savor the taste.",
   "Roll your shoulders back 5 times to release tension.",
   "Walk to another room with intention, noticing your steps.",
@@ -68,9 +62,6 @@ const PROMPTS = [
   "Inhale while lifting your arms, exhale while lowering them.",
 ];
 
-// -----------------------------
-// STORAGE KEYS
-// -----------------------------
 const STORAGE_KEY_DATE = "seaWithin.seedDate";
 const STORAGE_KEY_STEP = "seaWithin.ritualStep";
 const STORAGE_KEY_TENDED = "seaWithin.tendedToday";
@@ -84,9 +75,6 @@ export default function BloomJournalPage() {
   const [hasPlanted, setHasPlanted] = useState(false);
   const [hasTendedToday, setHasTendedToday] = useState(false);
 
-  // -----------------------------
-  // LOAD SAVED STATE
-  // -----------------------------
   useEffect(() => {
     const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
     const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
@@ -121,57 +109,6 @@ export default function BloomJournalPage() {
     }
   }, []);
 
-  // ----------------------------------------------------
-  // DEVELOPER SHORTCUTS: RESET + SKIP DAY
-  // ----------------------------------------------------
-  useEffect(() => {
-    function handleDevKeys(e: KeyboardEvent) {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
-
-      // RESET — Shift + Ctrl/Cmd + R
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
-        console.log("🔄 Developer Reset Triggered");
-
-        localStorage.removeItem(STORAGE_KEY_DATE);
-        localStorage.removeItem(STORAGE_KEY_STEP);
-        localStorage.removeItem(STORAGE_KEY_TENDED);
-        localStorage.removeItem(STORAGE_KEY_LAST_COMPLETED);
-
-        setStep(0);
-        setSeedPlantedToday(false);
-        setHasPlanted(false);
-        setHasTendedToday(false);
-
-        alert("🌿 Ritual fully reset.");
-      }
-
-      // SKIP DAY — Shift + Ctrl/Cmd + D
-      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
-        console.log("⏭ Developer Day Skip Triggered");
-
-        const tomorrow = new Date(Date.now() + 86400000)
-          .toISOString()
-          .slice(0, 10);
-
-        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
-        localStorage.setItem(STORAGE_KEY_TENDED, tomorrow);
-        localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, tomorrow);
-
-        const nextStep = Math.min(step + 1, TOTAL_STEPS);
-        setStep(nextStep);
-
-        alert("⏭ Advanced to the next ritual day.");
-      }
-    }
-
-    window.addEventListener("keydown", handleDevKeys);
-    return () => window.removeEventListener("keydown", handleDevKeys);
-  }, [step]);
-
-  // -----------------------------
-  // HANDLE PLANTING
-  // -----------------------------
   function handlePlantSeed() {
     if (seedPlantedToday) return;
 
@@ -186,9 +123,6 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
   }
 
-  // -----------------------------
-  // HANDLE DAILY TENDING
-  // -----------------------------
   function handleTendPlant() {
     if (!seedPlantedToday || hasTendedToday) return;
 
@@ -204,9 +138,6 @@ export default function BloomJournalPage() {
     localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, today);
   }
 
-  // -----------------------------
-  // DETERMINE MEDIA
-  // -----------------------------
   const mediaToShow =
     step > 0 ? RITUAL_STEPS[step - 1] : "/bloom-videos/bloom-01.mp4";
 
@@ -235,8 +166,8 @@ export default function BloomJournalPage() {
           </p>
         </section>
 
-        {/* FULLSCREEN WRAPPER FOR MIRROR */}
-        <div className="w-full min-h-[90vh] md:min-h-[100vh] flex items-center justify-center">
+        {/* CINEMATIC MIRROR SECTION */}
+        <section className="w-full min-h-[100vh] flex items-stretch">
           <SeaWithinMirrorSection
             mediaSrc={mediaToShow}
             promptText={promptText}
@@ -246,7 +177,7 @@ export default function BloomJournalPage() {
             step={step}
             hasTendedToday={hasTendedToday}
           />
-        </div>
+        </section>
 
         {/* PROGRESS BAR */}
         <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
@@ -260,8 +191,6 @@ export default function BloomJournalPage() {
               backdrop-blur-md
             "
           >
-
-            {/* LEFT — GLOWING SEED VIDEO */}
             <div className="flex items-center gap-4">
               <div
                 className="
@@ -286,7 +215,6 @@ export default function BloomJournalPage() {
                   Ritual progress
                 </p>
 
-                {/* PROGRESS BAR */}
                 <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
                   <div
                     className="
@@ -301,11 +229,9 @@ export default function BloomJournalPage() {
               </div>
             </div>
 
-            {/* RIGHT — STEP COUNT */}
             <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
               Step {step} of {TOTAL_STEPS}
             </div>
-
           </div>
         </section>
 
