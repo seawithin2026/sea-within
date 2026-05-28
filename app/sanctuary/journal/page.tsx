@@ -120,53 +120,54 @@ export default function BloomJournalPage() {
       localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
     }
   }, []);
-// ----------------------------------------------------
-// DEVELOPER SHORTCUTS: RESET + SKIP DAY
-// ----------------------------------------------------
-useEffect(() => {
-  function handleDevKeys(e: KeyboardEvent) {
-    const isMac = navigator.platform.toUpperCase().includes("MAC");
-    const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-    // RESET — Shift + Ctrl/Cmd + R
-    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
-      console.log("🔄 Developer Reset Triggered");
+  // ----------------------------------------------------
+  // DEVELOPER SHORTCUTS: RESET + SKIP DAY
+  // ----------------------------------------------------
+  useEffect(() => {
+    function handleDevKeys(e: KeyboardEvent) {
+      const isMac = navigator.platform.toUpperCase().includes("MAC");
+      const ctrlOrCmd = isMac ? e.metaKey : e.ctrlKey;
 
-      localStorage.removeItem(STORAGE_KEY_DATE);
-      localStorage.removeItem(STORAGE_KEY_STEP);
-      localStorage.removeItem(STORAGE_KEY_TENDED);
-      localStorage.removeItem(STORAGE_KEY_LAST_COMPLETED);
+      // RESET — Shift + Ctrl/Cmd + R
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "r") {
+        console.log("🔄 Developer Reset Triggered");
 
-      setStep(0);
-      setSeedPlantedToday(false);
-      setHasPlanted(false);
-      setHasTendedToday(false);
+        localStorage.removeItem(STORAGE_KEY_DATE);
+        localStorage.removeItem(STORAGE_KEY_STEP);
+        localStorage.removeItem(STORAGE_KEY_TENDED);
+        localStorage.removeItem(STORAGE_KEY_LAST_COMPLETED);
 
-      alert("🌿 Ritual fully reset.");
+        setStep(0);
+        setSeedPlantedToday(false);
+        setHasPlanted(false);
+        setHasTendedToday(false);
+
+        alert("🌿 Ritual fully reset.");
+      }
+
+      // SKIP DAY — Shift + Ctrl/Cmd + D
+      if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
+        console.log("⏭ Developer Day Skip Triggered");
+
+        const tomorrow = new Date(Date.now() + 86400000)
+          .toISOString()
+          .slice(0, 10);
+
+        localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
+        localStorage.setItem(STORAGE_KEY_TENDED, tomorrow);
+        localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, tomorrow);
+
+        const nextStep = Math.min(step + 1, TOTAL_STEPS);
+        setStep(nextStep);
+
+        alert("⏭ Advanced to the next ritual day.");
+      }
     }
 
-    // SKIP DAY — Shift + Ctrl/Cmd + D
-    if (e.shiftKey && ctrlOrCmd && e.key.toLowerCase() === "d") {
-      console.log("⏭ Developer Day Skip Triggered");
-
-      const tomorrow = new Date(Date.now() + 86400000)
-        .toISOString()
-        .slice(0, 10);
-
-      localStorage.setItem(STORAGE_KEY_DATE, tomorrow);
-      localStorage.setItem(STORAGE_KEY_TENDED, tomorrow);
-      localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, tomorrow);
-
-      const nextStep = Math.min(step + 1, TOTAL_STEPS);
-      setStep(nextStep);
-
-      alert("⏭ Advanced to the next ritual day.");
-    }
-  }
-
-  window.addEventListener("keydown", handleDevKeys);
-  return () => window.removeEventListener("keydown", handleDevKeys);
-}, [step]);
+    window.addEventListener("keydown", handleDevKeys);
+    return () => window.removeEventListener("keydown", handleDevKeys);
+  }, [step]);
 
   // -----------------------------
   // HANDLE PLANTING
@@ -234,79 +235,79 @@ useEffect(() => {
           </p>
         </section>
 
-        {/* MIRROR / OVAL VIDEO */}
-        <SeaWithinMirrorSection
-          mediaSrc={mediaToShow}
-          promptText={promptText}
-          onPlantSeed={handlePlantSeed}
-          onTendPlant={handleTendPlant}
-          seedPlantedToday={seedPlantedToday}
-          step={step}
-          hasTendedToday={hasTendedToday}
-        />
-
-  {/* PROGRESS BAR — CLEAN, BLACK, SEED VIDEO */}
-<section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
-  <div
-    className="
-      w-full rounded-2xl border border-white/10 
-      bg-black/40
-      px-6 py-4 
-      flex flex-col md:flex-row items-center justify-between gap-6
-      shadow-[0_0_25px_rgba(255,255,255,0.08)]
-      backdrop-blur-md
-    "
-  >
-
-    {/* LEFT — GLOWING SEED VIDEO */}
-    <div className="flex items-center gap-4">
-      <div
-        className="
-          h-[60px] w-[60px]
-          rounded-xl overflow-hidden 
-          shadow-[0_0_20px_rgba(255,255,255,0.15)]
-          bg-black
-        "
-      >
-        <video
-          src="/ritual/5-glowing-seed.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      <div>
-        <p className="text-xs md:text-sm text-white/60 tracking-wide">
-          Ritual progress
-        </p>
-
-        {/* PROGRESS BAR */}
-        <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
-          <div
-            className="
-              h-full rounded-full 
-              bg-gradient-to-r from-white/70 to-white/30
-              shadow-[0_0_10px_rgba(255,255,255,0.4)]
-              transition-all duration-500
-            "
-            style={{ width: `${progressPercent}%` }}
+        {/* FULLSCREEN WRAPPER FOR MIRROR */}
+        <div className="w-full min-h-[90vh] md:min-h-[100vh] flex items-center justify-center">
+          <SeaWithinMirrorSection
+            mediaSrc={mediaToShow}
+            promptText={promptText}
+            onPlantSeed={handlePlantSeed}
+            onTendPlant={handleTendPlant}
+            seedPlantedToday={seedPlantedToday}
+            step={step}
+            hasTendedToday={hasTendedToday}
           />
         </div>
-      </div>
-    </div>
 
-    {/* RIGHT — STEP COUNT */}
-    <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
-      Step {step} of {TOTAL_STEPS}
-    </div>
+        {/* PROGRESS BAR */}
+        <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-6xl mx-auto">
+          <div
+            className="
+              w-full rounded-2xl border border-white/10 
+              bg-black/40
+              px-6 py-4 
+              flex flex-col md:flex-row items-center justify-between gap-6
+              shadow-[0_0_25px_rgba(255,255,255,0.08)]
+              backdrop-blur-md
+            "
+          >
 
-  </div>
-</section>
+            {/* LEFT — GLOWING SEED VIDEO */}
+            <div className="flex items-center gap-4">
+              <div
+                className="
+                  h-[60px] w-[60px]
+                  rounded-xl overflow-hidden 
+                  shadow-[0_0_20px_rgba(255,255,255,0.15)]
+                  bg-black
+                "
+              >
+                <video
+                  src="/ritual/5-glowing-seed.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
+              <div>
+                <p className="text-xs md:text-sm text-white/60 tracking-wide">
+                  Ritual progress
+                </p>
 
+                {/* PROGRESS BAR */}
+                <div className="mt-1 h-2 w-40 md:w-56 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="
+                      h-full rounded-full 
+                      bg-gradient-to-r from-white/70 to-white/30
+                      shadow-[0_0_10px_rgba(255,255,255,0.4)]
+                      transition-all duration-500
+                    "
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT — STEP COUNT */}
+            <div className="text-xs md:text-sm text-white/60 text-center md:text-right">
+              Step {step} of {TOTAL_STEPS}
+            </div>
+
+          </div>
+        </section>
 
       </main>
     </div>
