@@ -35,7 +35,8 @@ export function SeaWithinMirrorSection({
       ">
 
 {/* LEFT SIDE — WIDE + TALL + LOWERED */}
-<div className="relative w-full h-full flex justify-center">
+<div className="w-full min-h-[90vh] md:min-h-[100vh] flex items-center justify-center">
+
 
   <div
     className="
