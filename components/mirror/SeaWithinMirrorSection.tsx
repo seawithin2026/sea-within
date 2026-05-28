@@ -34,16 +34,16 @@ export function SeaWithinMirrorSection({
         w-full
       ">
 
- {/* LEFT SIDE — WIDE + TALL + LOWERED */}
-<div className="relative w-full h-full flex items-start justify-center">
+{/* LEFT SIDE — WIDE + TALL + LOWERED */}
+<div className="relative w-full h-full flex justify-center">
 
   <div
     className="
       w-full
-      h-[70vh]              /* tall on all devices */
-      md:h-[95vh]           /* taller on desktop */
-      mt-18                /* ← LOWER THE VIDEO */
-      md:mt-18             /* ← LOWER EVEN MORE ON DESKTOP */
+      h-[68vh]              /* tall but safe */
+      md:h-[82vh]           /* cinematic on desktop */
+      mt-[3.5rem]           /* lowered */
+      md:mt-[5rem]          /* lowered more on desktop */
       rounded-2xl
       overflow-hidden
       bg-black
@@ -69,7 +69,6 @@ export function SeaWithinMirrorSection({
   </div>
 
 </div>
-
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
         <div className="space-y-7">
