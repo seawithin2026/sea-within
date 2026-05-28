@@ -40,8 +40,8 @@ export function SeaWithinMirrorSection({
   <div
     className="
       w-full
-      h-[100vh]              /* tall on all devices */
-      md:h-[140vh]           /* taller on desktop */
+      h-[70vh]              /* tall on all devices */
+      md:h-[95vh]           /* taller on desktop */
       mt-18                /* ← LOWER THE VIDEO */
       md:mt-18             /* ← LOWER EVEN MORE ON DESKTOP */
       rounded-2xl
