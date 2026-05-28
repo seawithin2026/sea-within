@@ -24,7 +24,7 @@ export function SeaWithinMirrorSection({
   const isVideo = mediaSrc.endsWith(".mp4");
 
   return (
-    <section className="mt-14 px-6 md:px-10 lg:px-16 w-full">
+    <section className="px-6 md:px-10 lg:px-16 w-full">
       <div className="
         grid 
         grid-cols-1 
