@@ -38,24 +38,25 @@ export function SeaWithinMirrorSection({
       >
 
       {/* LEFT SIDE — FINAL, STABLE, UNCROPPED CINEMATIC WINDOW */}
-<div className="w-[95%] md:w-[100%] h-[85vh] mx-auto rounded-2xl overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.6)]">
-  {mediaSrc.endsWith(".mp4") ? (
+<div className="w-[95%] md:w-full h-[85vh] mx-auto rounded-2xl overflow-hidden bg-black flex items-center justify-center">
+  {isVideo ? (
     <video
       src={mediaSrc}
       autoPlay
       loop
       muted
       playsInline
-      className="w-full h-full object-contain bg-black"
+      className="max-w-full max-h-full object-contain"
     />
   ) : (
     <img
       src={mediaSrc}
       alt="Ritual step"
-      className="w-full h-full object-contain bg-black"
+      className="max-w-full max-h-full object-contain"
     />
   )}
 </div>
+
 
         {/* RIGHT SIDE — TEXT + BUTTONS */}
         <div className="space-y-7 flex flex-col justify-center py-10">
