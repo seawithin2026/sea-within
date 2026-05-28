@@ -38,7 +38,7 @@ export function SeaWithinMirrorSection({
       >
 
       {/* LEFT SIDE — FINAL, STABLE, UNCROPPED CINEMATIC WINDOW */}
-<div className="w-full h-[85vh] rounded-2xl overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.6)]">
+<div className="w-[95%] md:w-[100%] h-[85vh] mx-auto rounded-2xl overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.6)]">
   {mediaSrc.endsWith(".mp4") ? (
     <video
       src={mediaSrc}
