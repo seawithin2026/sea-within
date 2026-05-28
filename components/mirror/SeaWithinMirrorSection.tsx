@@ -29,7 +29,7 @@ export function SeaWithinMirrorSection({
         className="
           grid
           grid-cols-1
-          lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]
+          lg:grid-cols-[minmax(0,2.6fr)_minmax(0,1fr)]
           gap-12
           items-stretch
           w-full
