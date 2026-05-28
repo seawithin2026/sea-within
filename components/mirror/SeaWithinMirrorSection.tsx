@@ -41,10 +41,10 @@ export function SeaWithinMirrorSection({
   <div
     className="
       w-full
-      h-[68vh]              /* tall but safe */
-      md:h-[82vh]           /* cinematic on desktop */
+      h-[90vh]              /* tall but safe */
+      md:h-[95vh]           /* cinematic on desktop */
       mt-[3.5rem]           /* lowered */
-      md:mt-[5rem]          /* lowered more on desktop */
+      md:mt-[3.5rem]          /* lowered more on desktop */
       rounded-2xl
       overflow-hidden
       bg-black
