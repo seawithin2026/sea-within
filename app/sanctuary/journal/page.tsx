@@ -167,7 +167,7 @@ export default function BloomJournalPage() {
         </section>
 
         {/* CINEMATIC MIRROR SECTION */}
-        <section className="w-full min-h-[100vh] flex items-stretch">
+        <section className="w-full min-h-[85vh] flex items-stretch">
           <SeaWithinMirrorSection
             mediaSrc={mediaToShow}
             promptText={promptText}

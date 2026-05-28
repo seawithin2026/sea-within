@@ -33,16 +33,16 @@ export function SeaWithinMirrorSection({
           gap-12
           items-stretch
           w-full
-          min-h-[100vh]          /* FULL HEIGHT GRID */
+          min-h-[85vh]        /* ← slightly less tall */
         "
       >
 
-        {/* LEFT SIDE — FULL HEIGHT CINEMATIC RECTANGLE */}
+        {/* LEFT SIDE — CINEMATIC RECTANGLE */}
         <div className="w-full h-full flex items-center">
           <div
             className="
               w-full
-              h-full               /* FULL HEIGHT ALWAYS */
+              h-[85vh]            /* ← slightly less tall but still cinematic */
               rounded-2xl
               overflow-hidden
               bg-black
