@@ -1,239 +1,134 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { useAudio } from "@/app/providers/AudioProvider";
-import NarrationPlayer from "@/components/NarrationPlayer";
-import { getDayScript } from "@/lib/voice/voiceConfig";
-import "./day1.css";
-
-// Narrator configs
-const INTRO_VOICE = {
-  volume: 0.5,
-  playbackRate: 0.92,
-  lineDelay: 6500,
-};
-
-const RITUAL_VOICE = {
-  volume: 0.4,
-  playbackRate: 0.98,
-  lineDelay: 5000,
-};
+import React from "react";
 
 export default function Day1Page() {
-  const [mode, setMode] = useState("intro");
-  const { setAmbientMuted } = useAudio();
-
-  // Scripts
-  const intro = getDayScript("season1-day1-intro");
-  const ritual = getDayScript("season1-day1-ritual");
-
-  // ⭐ JSX-safe refs (no TypeScript)
-  const introPlay = useRef(null);
-  const ritualPlay = useRef(null);
-
-  // ⭐ FIXED: "instant" is invalid → use "auto"
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
-    setAmbientMuted(false);
-  }, [setAmbientMuted]);
-
-  const goToRitual = () => {
-    setMode("ritual");
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }, 50);
-  };
-
   return (
     <div className="day1">
 
-      {/* HERO */}
-      {mode === "intro" && (
-        <section className="hero">
-          <video
-            src="/video-season1/day-1.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="heroVideo"
-          />
+      {/* -------------------------------------------------- */}
+      {/* 1. HERO VIDEO (YOUR ORIGINAL VIDEO + NEW TITLE) */}
+      {/* -------------------------------------------------- */}
+      <section className="hero">
+        <video className="heroVideo" autoPlay muted loop playsInline>
+          <source src="/video-season1/day-1.mp4" type="video/mp4" />
+        </video>
 
-          <div className="heroOverlay">
-            <p className="heroSeason">Season 1 — Day 1</p>
-            <h1 className="heroTitle">The Arrival</h1>
-            <p className="heroTagline">A cinematic descent into yourself.</p>
-          </div>
-        </section>
-      )}
+        <div className="heroOverlay">
+          <p className="heroSeason">SEASON 1 — DAY 1</p>
+          <h1 className="heroTitle">Water Purification Ritual</h1>
+          <p className="heroTagline">A return to clarity, softness, and release</p>
+        </div>
+      </section>
 
-      {/* INTRO SECTION */}
-      {mode === "intro" && (
-        <section className="chamber">
-          <div className="chamberGlow" />
+      {/* -------------------------------------------------- */}
+      {/* 2. RITUAL ELEMENTS GRID (8 ITEMS, 4 PER ROW) */}
+      {/* -------------------------------------------------- */}
+      <section className="ritualElements">
+        <h2 className="elementsTitle">The Elements You Bring Into the Water</h2>
 
-          <div className="chamberInner">
-            <h2 className="chamberTitle">Pre‑Preparation</h2>
-            <p className="chamberSubtitle">A quiet descent into readiness.</p>
+        <div className="elementsGrid">
 
-            <div className="narrationButtonWrapper">
-              <button
-                className="narrationButton"
-                onClick={() => introPlay.current && introPlay.current()}
-              >
-                <span className="narrationDot"></span>
-                <span className="narrationLabel">Play Narration</span>
-              </button>
-            </div>
-
-            <div className="chamberLines">
-              <NarrationPlayer
-                audioSrc={intro.audio}
-                script={intro.script}
-                config={INTRO_VOICE}
-                onReady={(fn) => {
-                  introPlay.current = fn;
-                }}
-              />
-            </div>
-
-            <div className="narrationButtonWrapper">
-              <button className="narrationButton" onClick={goToRitual}>
-                <span className="narrationDot"></span>
-                <span className="narrationLabel">Enter the Sanctuary</span>
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* RITUAL SECTION */}
-      {mode === "ritual" && (
-        <section className="ritual">
-          <div className="ritualContent">
-            <p className="ritualLabel">Water Purification</p>
-
-            {/* MAIN VIDEO */}
-            <div className="ritualMainVideo">
-              <video
-                src="/video-season1/day1-water-purification.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="ritualMainVideoFile"
-              />
-              <p className="ritualMainCaption">
-                Water Purification — a symbolic cleansing of what no longer serves you.
-              </p>
-            </div>
-
-            {/* ITEM GRID */}
-            <div className="itemSuggestionGrid">
-              <div className="item">
-                <video src="/items/petals.mp4" autoPlay muted loop playsInline />
-                <p>Flower petals — beauty floating with you</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/led-candle.mp4" autoPlay muted loop playsInline />
-                <p>Battery LED candle — safe, soft glow</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/bath-oil.mp4" autoPlay muted loop playsInline />
-                <p>Bath oil — nourishment and softness</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/epsom-salt.mp4" autoPlay muted loop playsInline />
-                <p>Epsom salt — release and purification</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/soft-cloth.mp4" autoPlay muted loop playsInline />
-                <p>Soft cloth — gentle grounding</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/towel.mp4" autoPlay muted loop playsInline />
-                <p>Towel — warmth for your return</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/bathrobe.mp4" autoPlay muted loop playsInline />
-                <p>Bathrobe — comfort after cleansing</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/music.mp4" autoPlay muted loop playsInline />
-                <p>Music — atmosphere for your ritual</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/calming-object.mp4" autoPlay muted loop playsInline />
-                <p>Calming object — stone, shell, or meaning</p>
-              </div>
-
-              <div className="item">
-                <video src="/items/moon-water.mp4" autoPlay muted loop playsInline />
-                <p>Moon/Sun water — charged intention</p>
-              </div>
-            </div>
-
-            {/* PLAY RITUAL NARRATION */}
-            <div className="narrationButtonWrapper ritualPlayButton">
-              <button
-                className="narrationButton"
-                onClick={() => ritualPlay.current && ritualPlay.current()}
-              >
-                <span className="narrationDot"></span>
-                <span className="narrationLabel">Play Ritual Narration</span>
-              </button>
-            </div>
-
-            {/* RITUAL VIDEO */}
-            <div className="ritualClip">
-              <video
-                src="/video-season1/day1-ritual.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-              <p className="ritualClipCaption">
-                Let the water hold every burden, every old story, every pain that no longer belongs to you.
-              </p>
-              <p className="ritualClipCaption">
-                When you rise, you rise into a new beginning — one chosen by you, for you.
-              </p>
-            </div>
-
-            {/* TEXT REVEAL */}
-            <div className="ritualLines">
-              <NarrationPlayer
-                audioSrc={ritual.audio}
-                script={ritual.script}
-                config={RITUAL_VOICE}
-                onReady={(fn) => {
-                  ritualPlay.current = fn;
-                }}
-              />
-            </div>
-
-            {/* FINAL MESSAGE */}
-            <div className="ritualFinalMessage">
-              <p>
-                View this once. Then put the screen away.  
-                Create your own version of this ritual — in your own timing, in your own way.  
-                This is symbolic: a release of what no longer serves you, and a quiet honoring of your new beginning.
-              </p>
-            </div>
+          {/* Row 1 */}
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Sun‑Infused Water</p>
+            <p className="elementText">Water warmed by the day, carrying the memory of light.</p>
           </div>
 
-          <div className="ritualBackground" />
-        </section>
-      )}
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Moon‑Infused Water</p>
+            <p className="elementText">Water cooled by the night, carrying the memory of calm.</p>
+          </div>
+
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Flower Petals</p>
+            <p className="elementText">A soft offering to the water — beauty returning to beauty.</p>
+          </div>
+
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Epsom Salt</p>
+            <p className="elementText">Mineral release. A quiet unburdening.</p>
+          </div>
+
+          {/* Row 2 */}
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Bath Oil</p>
+            <p className="elementText">A touch of nourishment for the skin.</p>
+          </div>
+
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Your Favorite Scent</p>
+            <p className="elementText">A fragrance that feels like home.</p>
+          </div>
+
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">A Light That Doesn’t Burn</p>
+            <p className="elementText">A soft, flameless glow — safe for any space.</p>
+          </div>
+
+          <div className="element">
+            <div className="elementMedia"></div>
+            <p className="elementTitle">Music</p>
+            <p className="elementText">A soundscape to soften the world around you.</p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* 3. SECOND HERO VIDEO — BATH SCENE */}
+      {/* -------------------------------------------------- */}
+      <section className="bathHero">
+        <video className="bathVideo" autoPlay muted loop playsInline>
+          <source src="/videos/day1-bath.mp4" type="video/mp4" />
+        </video>
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* 4. CINEMATIC RITUAL TEXT BLOCK */}
+      {/* -------------------------------------------------- */}
+      <section className="ritualText">
+        <div className="ritualTextInner">
+          <h2 className="ritualHeading">The Descent</h2>
+
+          <p className="ritualParagraph">
+            Begin with water — not as a task, but as a return.  
+            Let the room dim. Let the world soften.  
+            Let this moment belong only to you.
+          </p>
+
+          <p className="ritualParagraph">
+            Touch the surface.  
+            Feel the warmth rise into your skin.  
+            Let the water hold what you no longer want to carry.
+          </p>
+
+          <p className="ritualParagraph">
+            Cleanse slowly — across your face, your neck, your hands —  
+            as if you’re washing away a story that no longer belongs to you.
+          </p>
+
+          <p className="ritualParagraph">
+            Whisper what you’re ready to release.  
+            Let it dissolve into the water.  
+            Let it leave your body gently.
+          </p>
+
+          <p className="ritualParagraph">
+            When you’re ready, lift your hands.  
+            The ritual is complete.  
+            The quiet that remains is yours.
+          </p>
+        </div>
+      </section>
+
     </div>
   );
 }

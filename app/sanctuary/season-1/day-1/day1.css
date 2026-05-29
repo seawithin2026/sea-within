@@ -1,18 +1,23 @@
-/* ============================================================
-   GENERAL
-   ============================================================ */
+/* -------------------------------------------------- */
+/* GLOBAL DAY 1 WRAPPER */
+/* -------------------------------------------------- */
 .day1 {
   width: 100%;
-  background: black;
-  color: white;
+  overflow-x: hidden;
+  background: #02070d;
+  color: #e8faff;
+  font-family: var(--font-body);
 }
 
-/* ============================================================
-   HERO
-   ============================================================ */
+
+
+/* -------------------------------------------------- */
+/* 1. HERO VIDEO (YOUR ORIGINAL HERO) */
+/* -------------------------------------------------- */
 .hero {
   position: relative;
-  height: 110vh;
+  width: 100%;
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -30,116 +35,164 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  transform: translate(-2.5%, 1.5%);
-}
-
-.heroOverlay p,
-.heroOverlay h1 {
-  margin: 0;
-  padding: 0;
-  text-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+  padding: 0 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
 }
 
 .heroSeason {
-  font-size: 0.75rem;
-  letter-spacing: 0.25em;
-  color: #cbd5e1;
-  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 10px;
 }
 
 .heroTitle {
-  font-size: 2rem;
-  font-weight: 300;
-  line-height: 1.4;
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  letter-spacing: 2px;
+  color: #e8faff;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px rgba(0, 150, 255, 0.4);
 }
 
 .heroTagline {
-  margin-top: 1rem;
   font-size: 1rem;
-  color: #e2e8f0;
+  color: rgba(255,255,255,0.7);
 }
 
 
 
-/* ============================================================
-   RITUAL LAYOUT FIXES
-   ============================================================ */
-.ritual {
-  position: relative;
-  min-height: 100vh;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* -------------------------------------------------- */
+/* 2. RITUAL ELEMENTS GRID */
+/* -------------------------------------------------- */
+.ritualElements {
+  padding: 80px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.elementsTitle {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #dff7ff;
+  letter-spacing: 1px;
+}
+
+.elementsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.element {
   text-align: center;
 }
 
-.ritualContent {
-  position: relative;
-  z-index: 2;
-  max-width: 700px;
+.elementMedia {
   width: 100%;
-  margin-top: 3rem;
+  height: 180px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  backdrop-filter: blur(4px);
 }
 
-.ritualLabel {
-  margin-bottom: 2rem;
-  margin-top: 10rem;
-  font-size: 1.6rem;
-  font-weight: 300;
-  letter-spacing: 0.25em;
-  color: #dbeafe;
-  text-shadow:
-    0 0 12px rgba(80, 150, 255, 0.45),
-    0 0 22px rgba(40, 120, 255, 0.35);
+.elementTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #e8faff;
 }
 
-.breathe {
-  margin-top: 6rem;
-  margin-bottom: 6rem;
+.elementText {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
 }
 
 
 
-/* ============================================================
-   KEYFRAMES
-   ============================================================ */
-@keyframes storyFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+/* -------------------------------------------------- */
+/* 3. SECOND HERO VIDEO — BATH SCENE */
+/* -------------------------------------------------- */
+.bathHero {
+  width: 100%;
+  margin-top: 100px;
+}
+
+.bathVideo {
+  width: 100%;
+  height: 60vh;
+  object-fit: cover;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+
+
+/* -------------------------------------------------- */
+/* 4. CINEMATIC RITUAL TEXT BLOCK */
+/* -------------------------------------------------- */
+.ritualText {
+  padding: 100px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.ritualTextInner {
+  text-align: center;
+}
+
+.ritualHeading {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin-bottom: 40px;
+  color: #dff7ff;
+  letter-spacing: 1px;
+}
+
+.ritualParagraph {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
+}
+
+
+
+/* -------------------------------------------------- */
+/* MOBILE RESPONSIVE */
+/* -------------------------------------------------- */
+@media (max-width: 900px) {
+  .elementsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .bathVideo {
+    height: 40vh;
   }
 }
 
-@keyframes masterpieceFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
+@media (max-width: 600px) {
+  .heroTitle {
+    font-size: 2rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes masterpieceBreath {
-  0% {
-    transform: scale(1);
-    opacity: 0.75;
-    filter: blur(3px);
+  .elementsGrid {
+    grid-template-columns: 1fr;
   }
-  50% {
-    transform: scale(1.18);
-    opacity: 1;
-    filter: blur(0px);
+
+  .elementMedia {
+    height: 160px;
   }
-  100% {
-    transform: scale(1);
-    opacity: 0.75;
-    filter: blur(3px);
+
+  .ritualParagraph {
+    font-size: 1rem;
   }
 }
