@@ -1,121 +1,106 @@
 "use client";
 
 import { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/supabase/client";
 
-// 🌿 SEA WITHIN USERNAME RULES
+// SEA WITHIN USERNAME RULES
 function isUsernameAllowed(username: string): boolean {
-  if (!username) return false;
+  const clean = username.toLowerCase().trim();
 
-  const lower = username.toLowerCase();
-
-  // ❌ Banned emojis (sexual, violent, dark)
-  const bannedEmojis = [
-    "🍆", "🍑", "💦", "🔞", // sexual
-    "💀", "☠️", "🩸", "🔪", "🗡️", "⚰️", // dark/violent
-    "👹", "👺", "😈", "👿" // devil/demon
+  // No profanity, no slurs, no sexual content, no violence
+  const banned = [
+    "fuck", "shit", "bitch", "cunt", "slut", "whore",
+    "kill", "murder", "suicide", "rape",
   ];
 
-  if (bannedEmojis.some(e => username.includes(e))) {
-    return false;
-  }
+  if (banned.some((word) => clean.includes(word))) return false;
 
-  // ❌ Banned words (sexual, violent, dark, hateful, negative)
-  const bannedWords = [
-    // sexual
-    "sex", "sexy", "horny", "porn", "slut", "whore", "dick", "pussy", "anal",
-    // violence
-    "kill", "murder", "stab", "shoot", "blood", "gore", "torture",
-    // dark/occult
-    "devil", "demon", "satan", "hell", "death", "dead", "skull", "curse",
-    // negativity
-    "hate", "ugly", "stupid", "loser", "idiot", "trash", "worthless",
-    // self-harm
-    "suicide", "selfharm", "cut", "overdose",
-  ];
+  // Only letters, numbers, underscores — no emojis, no symbols
+  const allowedPattern = /^[a-zA-Z0-9_]+$/;
+  if (!allowedPattern.test(username)) return false;
 
-  if (bannedWords.some(w => lower.includes(w))) {
-    return false;
-  }
-
-  // ❌ Too short or too long
-  if (username.length < 2 || username.length > 30) {
-    return false;
-  }
+  // Length rules
+  if (username.length < 3 || username.length > 20) return false;
 
   return true;
 }
 
 export default function UsernameModal({ onComplete }: { onComplete: () => void }) {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
+
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit() {
-    setError("");
+  const saveUsername = async () => {
+    setFeedback("");
 
-    // Validate username with Sea Within rules
     if (!isUsernameAllowed(username)) {
-      setError("This username doesn’t align with the Sanctuary’s energy.");
+      setFeedback("This name doesn’t align with the Sanctuary’s energy.");
       return;
     }
 
-    // Get user
+    setLoading(true);
+
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("You must be signed in.");
+      setFeedback("You must be signed in to choose a Sanctuary name.");
+      setLoading(false);
       return;
     }
 
-    // Save username to Supabase
-    const { error: supaError } = await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({ username })
       .eq("id", user.id);
 
-    if (supaError) {
-      setError("This username is already taken.");
+    if (error) {
+      setFeedback("Something went wrong. Please try again.");
+      setLoading(false);
       return;
     }
 
-    onComplete();
-  }
+    setLoading(false);
+    onComplete(); // Close modal + refresh parent
+  };
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
-      <div className="bg-white/10 border border-white/20 p-8 rounded-2xl max-w-sm w-full text-center shadow-xl">
-        
-        <h2 className="text-xl text-white mb-4 tracking-wide">
-          Choose your username to represent you in the Sanctuary
+      <div className="bg-sanctuary-dark border border-white/10 rounded-xl p-8 max-w-sm w-full text-center shadow-xl">
+        <h2 className="font-display text-xl text-sea-100 mb-2">
+          Choose Your Sanctuary Name
         </h2>
+
+        <p className="font-body text-sm text-white/40 mb-6">
+          This name will represent you in the Sanctuary.
+        </p>
 
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="
-            w-full px-4 py-2 rounded-lg bg-white/5 border border-white/20 
-            text-white placeholder-white/40 focus:outline-none
-          "
-          placeholder="Your username"
+          maxLength={20}
+          placeholder="Your chosen name"
+          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
+                     text-sea-100 font-body text-sm placeholder:text-white/20
+                     focus:outline-none focus:border-golden-400/40 transition"
         />
 
-        {error && (
-          <p className="text-red-300 text-sm mt-2">{error}</p>
+        {feedback && (
+          <p className="text-golden-300 text-xs mt-3">{feedback}</p>
         )}
 
         <button
-          onClick={handleSubmit}
-          className="
-            mt-5 px-6 py-2 rounded-full bg-amber-300/20 border border-amber-300/40 
-            text-amber-100 uppercase tracking-[0.2em] hover:bg-amber-300/30 
-            transition-all
-          "
+          onClick={saveUsername}
+          disabled={loading || username.trim().length < 3}
+          className="mt-6 w-full bg-gradient-to-br from-golden-400 to-golden-600
+                     text-sanctuary-dark font-body text-xs tracking-[2px] uppercase
+                     py-3 rounded-lg transition disabled:opacity-40"
         >
-          Save Username
+          {loading ? "Saving..." : "Save Name"}
         </button>
       </div>
     </div>
