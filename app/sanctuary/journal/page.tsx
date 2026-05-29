@@ -111,6 +111,37 @@ export default function BloomJournalPage() {
     setSeedPlantedToday(storedDate === today);
     setHasTendedToday(tendedDate === today);
   }, []);
+  // DEV SHORTCUTS — only active for you
+useEffect(() => {
+  function handleKey(e: KeyboardEvent) {
+    // CMD + SHIFT + ] → next step
+    if (e.metaKey && e.shiftKey && e.key === "]") {
+      advanceStep();
+    }
+
+    // CMD + SHIFT + [ → previous step
+    if (e.metaKey && e.shiftKey && e.key === "[") {
+      const prev = Math.max(step - 1, 0);
+      setStep(prev);
+      localStorage.setItem(STORAGE_KEY_STEP, String(prev));
+    }
+
+    // CMD + SHIFT + R → reset cycle
+    if (e.metaKey && e.shiftKey && e.key === "R") {
+      resetCycle();
+    }
+
+    // CMD + SHIFT + 2 → jump to final bloom (step 25)
+    if (e.metaKey && e.shiftKey && e.key === "2") {
+      setStep(25);
+      localStorage.setItem(STORAGE_KEY_STEP, "25");
+    }
+  }
+
+  window.addEventListener("keydown", handleKey);
+  return () => window.removeEventListener("keydown", handleKey);
+}, [step]);
+
 
   // 🌱 PLANT SEED — only allowed at step 0
   function handlePlantSeed() {
