@@ -146,38 +146,53 @@ export function SeaWithinMirrorSection({
             </>
           )}
 
-          {/* 🌸 FINAL BLOOM MODE UI */}
-          {isFinalBloom && (
-            <>
-              <div className="space-y-3">
-                <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
-                  Sea Within • Final Bloom
-                </p>
+     {/* 🌿 RITUAL MODE UI */}
+{isRitualMode && (
+  <>
+    <div className="space-y-3">
+      <p className="text-[11px] tracking-[0.28em] uppercase text-white/35">
+        Sea Within • Ritual
+      </p>
 
-                <h2 className="text-2xl md:text-[1.9rem] tracking-[0.16em] uppercase text-white/90">
-                  Your Flower Has Fully Bloomed
-                </h2>
+      <h2 className="text-2xl md:text-[1.9rem] tracking-[0.16em] uppercase text-white/90">
+        Your Inner Flower Evolves With You
+      </h2>
 
-                <p className="text-sm md:text-[0.95rem] text-white/65">
-                  Stay with your bloom as long as you wish.  
-                  When you’re ready, begin a new cycle.
-                </p>
-              </div>
+      {/* ✨ YOUR METAPHOR TEXT — restored */}
+      <p className="text-sm md:text-[0.95rem] leading-relaxed text-white/65">
+        Inside you lives a flower that grows only through care — a quiet
+        reflection of your inner world. Each small act of tending nourishes
+        something real within you.
+      </p>
 
-              <button
-                type="button"
-                onClick={onStartNewCycle}
-                className="
-                  inline-flex items-center justify-center rounded-full px-6 py-3
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-amber-300/40 bg-white/5 text-amber-100
-                  hover:bg-white/10 transition-all
-                "
-              >
-                Start a New Cycle
-              </button>
-            </>
-          )}
+      <p className="text-[11px] tracking-[0.22em] uppercase text-white/40 mt-4">
+        Today’s Seed Prompt
+      </p>
+
+      <p className="text-sm md:text-[0.95rem] text-white/75">
+        {promptText}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      onClick={hasTendedToday ? undefined : onTendPlant}
+      disabled={hasTendedToday}
+      className={`
+        inline-flex items-center justify-center rounded-full px-6 py-3
+        text-[11px] tracking-[0.22em] uppercase transition-all
+        ${
+          hasTendedToday
+            ? "border border-white/20 bg-white/5 text-white/30 cursor-not-allowed"
+            : "bg-gradient-to-r from-emerald-400/20 via-amber-300/20 to-rose-400/20 text-amber-100 border border-amber-300/40 shadow-[0_0_25px_rgba(250,204,21,0.25)] hover:from-emerald-400/30 hover:to-rose-400/30"
+        }
+      `}
+    >
+      {hasTendedToday ? "Prompt Completed Today" : "Tend to Your Bloom"}
+    </button>
+  </>
+)}
+
 
         </div>
       </div>
