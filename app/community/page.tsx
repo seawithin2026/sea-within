@@ -43,9 +43,20 @@ export default function CommunityPage() {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Scroll to bottom on new messages
+  // Smooth + stable scroll behavior
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesEndRef.current;
+    if (!el) return;
+
+    // Instant scroll on first load
+    el.scrollIntoView({ behavior: 'auto' });
+
+    // Smooth scroll after slight delay
+    const timeout = setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+
+    return () => clearTimeout(timeout);
   }, [messages]);
 
   const fetchMessages = async () => {
@@ -147,7 +158,7 @@ export default function CommunityPage() {
   };
 
   return (
-    <main className="min-h-screen bg-sanctuary-dark flex flex-col">
+    <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col">
       <Navigation />
 
       <section className="pt-24 pb-6 px-6 text-center border-b border-white/5">
@@ -164,8 +175,9 @@ export default function CommunityPage() {
         </ScrollReveal>
       </section>
 
-      <section className="flex-1 overflow-y-auto px-4 md:px-8 py-6 max-w-3xl mx-auto w-full">
-        <div className="space-y-4">
+      {/* CHAT MESSAGES */}
+      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-4">
+        <div className="space-y-4 pb-24">
           {messages.length === 0 && (
             <div className="text-center py-20">
               <p className="font-display text-xl text-white/15 font-light">
@@ -183,7 +195,6 @@ export default function CommunityPage() {
               className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`chat-bubble ${msg.is_own ? 'own' : ''}`}>
-
                 {/* EDIT MODE */}
                 {editingId === msg.id ? (
                   <>
@@ -222,7 +233,6 @@ export default function CommunityPage() {
                       {msg.message}
                     </p>
 
-                    {/* EDIT + DELETE BUTTONS (LEFT SIDE) */}
                     {msg.is_own && (
                       <div className="flex gap-4 mt-3">
                         <button
@@ -254,6 +264,7 @@ export default function CommunityPage() {
         </div>
       </section>
 
+      {/* FEEDBACK */}
       {feedback && (
         <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
           <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
@@ -262,7 +273,8 @@ export default function CommunityPage() {
         </div>
       )}
 
-      <section className="border-t border-white/5 px-4 md:px-8 py-4">
+      {/* INPUT BAR */}
+      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-sanctuary-dark/95 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto">
           <p className="font-body text-[10px] text-white/15 text-center mb-3 tracking-wide">
             This space is for uplifting, reflective, and supportive communication.
