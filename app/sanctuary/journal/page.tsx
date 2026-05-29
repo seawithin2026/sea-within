@@ -66,80 +66,77 @@ const STORAGE_KEY_DATE = "seaWithin.seedDate";
 const STORAGE_KEY_STEP = "seaWithin.ritualStep";
 const STORAGE_KEY_TENDED = "seaWithin.tendedToday";
 const STORAGE_KEY_PROMPT = "seaWithin.promptIndex";
-const STORAGE_KEY_LAST_COMPLETED = "seaWithin.lastCompletedDate";
 
 export default function BloomJournalPage() {
   const [step, setStep] = useState(0);
   const [promptIndex, setPromptIndex] = useState(0);
   const [seedPlantedToday, setSeedPlantedToday] = useState(false);
-  const [hasPlanted, setHasPlanted] = useState(false);
   const [hasTendedToday, setHasTendedToday] = useState(false);
 
-  useEffect(() => {
-    const savedStep = localStorage.getItem(STORAGE_KEY_STEP);
-    const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
-    const tendedDate = localStorage.getItem(STORAGE_KEY_TENDED);
-    const savedPrompt = localStorage.getItem(STORAGE_KEY_PROMPT);
-    const lastCompletedDate = localStorage.getItem(STORAGE_KEY_LAST_COMPLETED);
+  // 🌸 RESET CYCLE — manual only
+  function resetCycle() {
+    // rotate prompt for next cycle
+    const nextPrompt = (promptIndex + 1) % PROMPTS.length;
+    setPromptIndex(nextPrompt);
+    localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
 
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000)
-      .toISOString()
-      .slice(0, 10);
+    // clear ritual state
+    localStorage.removeItem(STORAGE_KEY_DATE);
+    localStorage.removeItem(STORAGE_KEY_STEP);
+    localStorage.removeItem(STORAGE_KEY_TENDED);
 
-    if (savedStep) {
-      const parsedStep = parseInt(savedStep, 10);
-      setStep(parsedStep);
-      if (parsedStep > 0 && storedDate === today) {
-        setHasPlanted(true);
-      }
-    }
-
-    if (savedPrompt) {
-      setPromptIndex(parseInt(savedPrompt, 10));
-    }
-
-    setSeedPlantedToday(storedDate === today);
-    setHasTendedToday(tendedDate === today);
-
-    if (lastCompletedDate === yesterday) {
-      const nextPrompt = (parseInt(savedPrompt || "0") + 1) % PROMPTS.length;
-      setPromptIndex(nextPrompt);
-      localStorage.setItem(STORAGE_KEY_PROMPT, String(nextPrompt));
-    }
-  }, []);
-
-  function handlePlantSeed() {
-    if (seedPlantedToday) return;
-
-    const today = new Date().toISOString().slice(0, 10);
-
-    localStorage.setItem(STORAGE_KEY_DATE, today);
-    setSeedPlantedToday(true);
-    setHasPlanted(true);
-
-    const nextStep = step === 0 ? 1 : Math.min(step + 1, TOTAL_STEPS);
-    setStep(nextStep);
-    localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
+    // reset UI
+    setStep(0);
+    setSeedPlantedToday(false);
+    setHasTendedToday(false);
   }
 
-  function handleTendPlant() {
-    if (!seedPlantedToday || hasTendedToday) return;
+  // 🌿 UNIFIED STEP ADVANCER
+  function advanceStep() {
+    const next = Math.min(step + 1, TOTAL_STEPS);
+    setStep(next);
+    localStorage.setItem(STORAGE_KEY_STEP, String(next));
+  }
 
-    const nextStep = Math.min(step + 1, TOTAL_STEPS);
-    setStep(nextStep);
-    localStorage.setItem(STORAGE_KEY_STEP, String(nextStep));
+  useEffect(() => {
+    const savedStep = Number(localStorage.getItem(STORAGE_KEY_STEP)) || 0;
+    const storedDate = localStorage.getItem(STORAGE_KEY_DATE);
+    const tendedDate = localStorage.getItem(STORAGE_KEY_TENDED);
+    const savedPrompt = Number(localStorage.getItem(STORAGE_KEY_PROMPT)) || 0;
 
     const today = new Date().toISOString().slice(0, 10);
 
+    setStep(savedStep);
+    setPromptIndex(savedPrompt);
+    setSeedPlantedToday(storedDate === today);
+    setHasTendedToday(tendedDate === today);
+  }, []);
+
+  // 🌱 PLANT SEED — only allowed at step 0
+  function handlePlantSeed() {
+    if (step !== 0) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(STORAGE_KEY_DATE, today);
+    setSeedPlantedToday(true);
+
+    advanceStep(); // 0 → 1
+  }
+
+  // 🌿 TEND PLANT — only allowed between steps 1–24
+  function handleTendPlant() {
+    if (step <= 0 || step >= 25) return;
+    if (hasTendedToday) return;
+
+    const today = new Date().toISOString().slice(0, 10);
     localStorage.setItem(STORAGE_KEY_TENDED, today);
     setHasTendedToday(true);
 
-    localStorage.setItem(STORAGE_KEY_LAST_COMPLETED, today);
+    advanceStep(); // 1 → 2 → ... → 25
   }
 
   const mediaToShow =
-    step > 0 ? RITUAL_STEPS[step - 1] : "/bloom-videos/bloom-01.mp4";
+    step === 0 ? "/bloom-videos/bloom-01.mp4" : RITUAL_STEPS[step - 1];
 
   const progressPercent = (step / TOTAL_STEPS) * 100;
   const promptText = PROMPTS[promptIndex];
@@ -206,6 +203,7 @@ export default function BloomJournalPage() {
                   loop
                   muted
                   playsInline
+                  preload="none"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -234,6 +232,18 @@ export default function BloomJournalPage() {
             </div>
           </div>
         </section>
+
+        {/* START NEW CYCLE BUTTON */}
+        {step === 25 && (
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={resetCycle}
+              className="px-8 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-amber-300/40 bg-white/5 text-amber-100 hover:bg-white/10 transition-all"
+            >
+              Start a New Cycle
+            </button>
+          </div>
+        )}
 
       </main>
     </div>
