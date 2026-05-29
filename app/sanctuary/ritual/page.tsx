@@ -113,37 +113,35 @@ export default function BloomJournalPage() {
   }, []);
 // DEV SHORTCUTS — only for you
 useEffect(() => {
-  function handleDevKeys(e: KeyboardEvent) {
-    const isCmd = e.metaKey; // Mac command key
-    const isShift = e.shiftKey;
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const ctrl = e.ctrlKey;
+    const shift = e.shiftKey;
 
-    // ⌘ + ⇧ + F → Forward one step
-    if (isCmd && isShift && e.key.toLowerCase() === "f") {
-      advanceStep();
+    // Forward
+    if (ctrl && shift && e.key.toLowerCase() === "f") {
+      e.preventDefault();
+      console.log("Dev Shortcut: Forward");
+      window.dispatchEvent(new CustomEvent("ritual_forward"));
     }
 
-    // ⌘ + ⇧ + B → Back one step
-    if (isCmd && isShift && e.key.toLowerCase() === "b") {
-      const prev = Math.max(step - 1, 0);
-      setStep(prev);
-      localStorage.setItem(STORAGE_KEY_STEP, String(prev));
+    // Backward
+    if (ctrl && shift && e.key.toLowerCase() === "b") {
+      e.preventDefault();
+      console.log("Dev Shortcut: Backward");
+      window.dispatchEvent(new CustomEvent("ritual_back"));
     }
 
-    // ⌘ + ⇧ + R → Reset cycle
-    if (isCmd && isShift && e.key.toLowerCase() === "r") {
-      resetCycle();
+    // Reset
+    if (ctrl && shift && e.key.toLowerCase() === "r") {
+      e.preventDefault();
+      console.log("Dev Shortcut: Reset");
+      window.dispatchEvent(new CustomEvent("ritual_reset"));
     }
+  };
 
-    // ⌘ + ⇧ + 2 → Jump to final bloom (step 25)
-    if (isCmd && isShift && e.key === "2") {
-      setStep(25);
-      localStorage.setItem(STORAGE_KEY_STEP, "25");
-    }
-  }
-
-  window.addEventListener("keydown", handleDevKeys);
-  return () => window.removeEventListener("keydown", handleDevKeys);
-}, [step]);
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, []);
 
 
   // 🌱 PLANT SEED — only allowed at step 0
