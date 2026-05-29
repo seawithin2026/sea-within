@@ -111,35 +111,38 @@ export default function BloomJournalPage() {
     setSeedPlantedToday(storedDate === today);
     setHasTendedToday(tendedDate === today);
   }, []);
-  // DEV SHORTCUTS — only active for you
+// DEV SHORTCUTS — only for you
 useEffect(() => {
-  function handleKey(e: KeyboardEvent) {
-    // CMD + SHIFT + ] → next step
-    if (e.metaKey && e.shiftKey && e.key === "]") {
+  function handleDevKeys(e: KeyboardEvent) {
+    const isCmd = e.metaKey; // Mac command key
+    const isShift = e.shiftKey;
+
+    // ⌘ + ⇧ + F → Forward one step
+    if (isCmd && isShift && e.key.toLowerCase() === "f") {
       advanceStep();
     }
 
-    // CMD + SHIFT + [ → previous step
-    if (e.metaKey && e.shiftKey && e.key === "[") {
+    // ⌘ + ⇧ + B → Back one step
+    if (isCmd && isShift && e.key.toLowerCase() === "b") {
       const prev = Math.max(step - 1, 0);
       setStep(prev);
       localStorage.setItem(STORAGE_KEY_STEP, String(prev));
     }
 
-    // CMD + SHIFT + R → reset cycle
-    if (e.metaKey && e.shiftKey && e.key === "R") {
+    // ⌘ + ⇧ + R → Reset cycle
+    if (isCmd && isShift && e.key.toLowerCase() === "r") {
       resetCycle();
     }
 
-    // CMD + SHIFT + 2 → jump to final bloom (step 25)
-    if (e.metaKey && e.shiftKey && e.key === "2") {
+    // ⌘ + ⇧ + 2 → Jump to final bloom (step 25)
+    if (isCmd && isShift && e.key === "2") {
       setStep(25);
       localStorage.setItem(STORAGE_KEY_STEP, "25");
     }
   }
 
-  window.addEventListener("keydown", handleKey);
-  return () => window.removeEventListener("keydown", handleKey);
+  window.addEventListener("keydown", handleDevKeys);
+  return () => window.removeEventListener("keydown", handleDevKeys);
 }, [step]);
 
 
