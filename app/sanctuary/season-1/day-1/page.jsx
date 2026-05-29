@@ -5,7 +5,9 @@ import React from "react";
 export default function Day1Page() {
   return (
     <div className="day1">
+      {/* -------------------------------------------------- */}
       {/* 1. HERO */}
+      {/* -------------------------------------------------- */}
       <section className="hero">
         <video className="heroVideo" autoPlay muted loop playsInline>
           <source src="/video-season1/day-1.mp4" type="video/mp4" />
@@ -18,85 +20,117 @@ export default function Day1Page() {
         </div>
       </section>
 
+      {/* -------------------------------------------------- */}
       {/* 2. RITUAL ELEMENTS GRID */}
+      {/* -------------------------------------------------- */}
       <section className="ritualElements">
         <h2 className="elementsTitle">The Elements You Bring Into the Water</h2>
 
         <div className="elementsGrid">
+
+          {/* 1 — Sun‑Infused Water */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/sun-infused-water.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Sun‑Infused Water</p>
-            <p className="elementText">
-              Water warmed by the day, carrying the memory of light.
-            </p>
+            <p className="elementText">Water warmed by the day, carrying the memory of light.</p>
           </div>
 
+          {/* 2 — Moon‑Infused Water */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/moon-infused-water.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Moon‑Infused Water</p>
-            <p className="elementText">
-              Water cooled by the night, carrying the memory of calm.
-            </p>
+            <p className="elementText">Water cooled by the night, carrying the memory of calm.</p>
           </div>
 
+          {/* 3 — Flower Petals */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/flower-petals.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Flower Petals</p>
-            <p className="elementText">
-              A soft offering to the water — beauty returning to beauty.
-            </p>
+            <p className="elementText">A soft offering to the water — beauty returning to beauty.</p>
           </div>
 
+          {/* 4 — Epsom Salt */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/epsom-salt.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Epsom Salt</p>
-            <p className="elementText">
-              Mineral release. A quiet unburdening.
-            </p>
+            <p className="elementText">Mineral release. A quiet unburdening.</p>
           </div>
 
+          {/* 5 — Bath Oil */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/bath-oil.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Bath Oil</p>
-            <p className="elementText">
-              A touch of nourishment for the skin.
-            </p>
+            <p className="elementText">A touch of nourishment for the skin.</p>
           </div>
 
+          {/* 6 — Favorite Scent */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/favorite-scent.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Your Favorite Scent</p>
-            <p className="elementText">
-              A fragrance that feels like home.
-            </p>
+            <p className="elementText">A fragrance that feels like home.</p>
           </div>
 
+          {/* 7 — Safe Light */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/safe-light.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">A Light That Doesn’t Burn</p>
-            <p className="elementText">
-              A soft, flameless glow — safe for any space.
-            </p>
+            <p className="elementText">A soft, flameless glow — safe for any space.</p>
           </div>
 
+          {/* 8 — Music */}
           <div className="element">
-            <div className="elementMedia"></div>
+            <div className="elementMedia">
+              <video autoPlay muted loop playsInline>
+                <source src="/ritual-elements/day1/music-ambience.mp4" />
+              </video>
+            </div>
             <p className="elementTitle">Music</p>
-            <p className="elementText">
-              A soundscape to soften the world around you.
-            </p>
+            <p className="elementText">A soundscape to soften the world around you.</p>
           </div>
+
         </div>
       </section>
 
+      {/* -------------------------------------------------- */}
       {/* 3. BATH HERO VIDEO */}
+      {/* -------------------------------------------------- */}
       <section className="bathHero">
         <video className="bathVideo" autoPlay muted loop playsInline>
           <source src="/videos/day1-bath.mp4" type="video/mp4" />
         </video>
       </section>
 
-      {/* 4. DRAMATIC REBIRTH RITUAL TEXT */}
+      {/* -------------------------------------------------- */}
+      {/* 4. DRAMATIC REBIRTH TEXT */}
+      {/* -------------------------------------------------- */}
       <section className="ritualText">
         <div className="ritualTextInner">
           <h2 className="ritualHeading">The Rebirth</h2>
