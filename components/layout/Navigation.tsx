@@ -8,7 +8,7 @@ import SignInModal from '../SignInModal';
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
-  { href: '/sanctuary/journal', label: 'Journal' },
+  { href: '/sanctuary/ritual', label: 'Ritual' }, // 🌸 UPDATED
   { href: '/wisdom-board', label: 'Wisdom Board' },
   { href: '/community', label: 'Community' },
 ];

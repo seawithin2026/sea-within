@@ -2849,10 +2849,10 @@ const sanctuaryCards = [
     element: 'earth',
   },
   {
-    title: 'Inner Fire Journal',
-    description: 'A private space for your deepest reflections.',
+    title: 'Inner Blooming Ritual',
+    description: 'A place to see your growth.',
     icon: '🔥',
-    href: '#journal',
+    href: '#bloom',
     element: 'fire',
   },
 ];

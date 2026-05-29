@@ -10,10 +10,19 @@ export async function GET(req: Request) {
 
   const supabase = createServerSupabaseClient();
 
+  //
+  // ⭐ WISDOM BOARD — includes username
+  //
   if (type === 'wisdom') {
     const { data, error } = await supabase
       .from('wisdom_posts')
-      .select('id, content, created_at, user_id, is_approved')
+      .select(`
+        id,
+        content,
+        created_at,
+        user_id,
+        profiles:profiles(username)
+      `)
       .order('created_at', { ascending: false });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -22,16 +31,25 @@ export async function GET(req: Request) {
       id: p.id,
       content: p.content,
       created_at: p.created_at,
-      author: 'Anonymous',
+      author: p.profiles?.username || "Unknown",
     }));
 
     return NextResponse.json({ posts });
   }
 
-  if (type === 'journal') {
+  //
+  // ⭐ BLOOMING RITUAL
+  //
+  if (type === 'ritual') {
     const { data, error } = await supabase
-      .from('journal_entries')
-      .select('id, content, created_at, user_id')
+      .from('ritual_entries') // ← your new table name
+      .select(`
+        id,
+        content,
+        created_at,
+        user_id,
+        profiles:profiles(username)
+      `)
       .order('created_at', { ascending: false });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -40,18 +58,27 @@ export async function GET(req: Request) {
       id: p.id,
       content: p.content,
       created_at: p.created_at,
-      author: 'Anonymous',
+      author: p.profiles?.username || "Unknown",
     }));
 
     return NextResponse.json({ posts });
   }
 
+  //
+  // ⭐ COMMUNITY CIRCLE CHAT — includes username
+  //
   if (type === 'chat') {
     const { data: auth } = await supabase.auth.getUser();
 
     const { data, error } = await supabase
       .from('chat_messages')
-      .select('id, content, created_at, user_id')
+      .select(`
+        id,
+        content,
+        created_at,
+        user_id,
+        profiles:profiles(username)
+      `)
       .order('created_at', { ascending: true });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -60,7 +87,7 @@ export async function GET(req: Request) {
       id: m.id,
       message: m.content,
       created_at: m.created_at,
-      author: 'A Beautiful Soul',
+      author: m.profiles?.username || "A Beautiful Soul",
       is_own: auth?.user?.id ? m.user_id === auth.user.id : false,
     }));
 
@@ -70,6 +97,9 @@ export async function GET(req: Request) {
   return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
 }
 
+//
+// ⭐ POST — now supports wisdom, ritual, chat
+//
 export async function POST(req: Request) {
   const body = await req.json();
   const { content, type } = body;
@@ -101,19 +131,18 @@ export async function POST(req: Request) {
   };
 
   if (type === 'wisdom') {
-  table = 'wisdom_posts';
-  payload.content = content;
+    table = 'wisdom_posts';
+    payload.content = content;
 
-  // 🌱 Dual‑write: also add to affirmation_pool
-  await supabase.from("affirmation_pool").insert({
-    message: content,
-    attribution: "Anonymous — Viewer Submission",
-  });
-}
+    // Dual-write to affirmation pool
+    await supabase.from("affirmation_pool").insert({
+      message: content,
+      attribution: "Anonymous — Viewer Submission",
+    });
+  }
 
-
-  if (type === 'journal') {
-    table = 'journal_entries';
+  if (type === 'ritual') {
+    table = 'ritual_entries'; // ← new table
     payload.content = content;
   }
 
@@ -142,6 +171,9 @@ export async function POST(req: Request) {
   return NextResponse.json({ success: true });
 }
 
+//
+// ⭐ PUT — supports wisdom + ritual
+//
 export async function PUT(req: Request) {
   const body = await req.json();
   const { id, content, type } = body;
@@ -150,13 +182,12 @@ export async function PUT(req: Request) {
 
   let table = '';
   if (type === 'wisdom') table = 'wisdom_posts';
-  if (type === 'journal') table = 'journal_entries';
+  if (type === 'ritual') table = 'ritual_entries';
 
   if (!table) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
   }
 
-  // 🔐 Re‑run moderation on edits
   const moderation = moderateContent(content);
   if (!moderation.approved) {
     return NextResponse.json(
@@ -180,6 +211,9 @@ export async function PUT(req: Request) {
   return NextResponse.json({ success: true });
 }
 
+//
+// ⭐ DELETE — supports wisdom + ritual
+//
 export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
@@ -189,7 +223,7 @@ export async function DELETE(req: Request) {
 
   let table = '';
   if (type === 'wisdom') table = 'wisdom_posts';
-  if (type === 'journal') table = 'journal_entries';
+  if (type === 'ritual') table = 'ritual_entries';
 
   if (!table || !id) {
     return NextResponse.json({ error: 'Invalid type or id' }, { status: 400 });
