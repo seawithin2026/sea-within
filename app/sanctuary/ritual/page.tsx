@@ -111,27 +111,27 @@ export default function BloomJournalPage() {
     setSeedPlantedToday(storedDate === today);
     setHasTendedToday(tendedDate === today);
   }, []);
-// DEV SHORTCUTS — HP‑friendly (Alt + Arrow Keys + R)
+// DEV SHORTCUTS — Universal (Shift + Arrow Keys + R)
 useEffect(() => {
   const handleKeyDown = (e: KeyboardEvent) => {
-    const alt = e.altKey;
+    const shift = e.shiftKey;
 
-    // Forward — Alt + →
-    if (alt && e.key === "ArrowRight") {
+    // Forward — Shift + →
+    if (shift && e.key === "ArrowRight") {
       e.preventDefault();
       console.log("Dev Shortcut: Forward");
       window.dispatchEvent(new CustomEvent("ritual_forward"));
     }
 
-    // Backward — Alt + ←
-    if (alt && e.key === "ArrowLeft") {
+    // Backward — Shift + ←
+    if (shift && e.key === "ArrowLeft") {
       e.preventDefault();
       console.log("Dev Shortcut: Backward");
       window.dispatchEvent(new CustomEvent("ritual_back"));
     }
 
-    // Reset — Alt + R
-    if (alt && e.key.toLowerCase() === "r") {
+    // Reset — Shift + R
+    if (shift && e.key.toLowerCase() === "r") {
       e.preventDefault();
       console.log("Dev Shortcut: Reset");
       window.dispatchEvent(new CustomEvent("ritual_reset"));
@@ -141,6 +141,7 @@ useEffect(() => {
   window.addEventListener("keydown", handleKeyDown);
   return () => window.removeEventListener("keydown", handleKeyDown);
 }, []);
+
 
   // 🌱 PLANT SEED — only allowed at step 0
   function handlePlantSeed() {
