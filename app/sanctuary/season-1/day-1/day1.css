@@ -215,3 +215,19 @@
     font-size: 1rem;
   }
 }
+/* HOVER GLOW EFFECT */
+.elementMedia {
+  transition: 
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.elementMedia:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 0 18px rgba(120, 200, 255, 0.35),
+    0 0 28px rgba(80, 150, 255, 0.25),
+    0 0 40px rgba(40, 120, 255, 0.20);
+  border-color: rgba(150, 220, 255, 0.45);
+}
