@@ -22,11 +22,12 @@
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: flex-end; /* lower third */
-  align-items: center;
+  justify-content: center;   /* FIXED: centers horizontally */
+  align-items: flex-end;      /* keeps it in the lower third */
   padding-bottom: 8vh;
   pointer-events: none;
 }
+
 
 .day1-circle {
   width: 260px;
