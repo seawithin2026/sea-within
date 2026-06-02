@@ -36,9 +36,19 @@ export default function Day1Page() {
             {/* 1 — Sun‑Infused Water */}
             <div className="element">
               <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/sun-infused-water.mp4" />
-                </video>
+               <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  style={{
+    objectFit: "cover",
+    objectPosition: "50% 20%", // shift view upward
+  }}
+>
+  <source src="/ritual-elements/day1/sun-infused-water.mp4" />
+</video>
+
               </div>
               <p className="elementTitle">Sun‑Infused Water</p>
               <p className="elementText">Water warmed by the day, carrying the memory of light.</p>
@@ -47,9 +57,19 @@ export default function Day1Page() {
             {/* 2 — Moon‑Infused Water */}
             <div className="element">
               <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/moon-infused-water.mp4" />
-                </video>
+                <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  style={{
+    objectFit: "cover",
+    objectPosition: "50% 20%", // shift view upward
+  }}
+>
+  <source src="/ritual-elements/day1/moon-infused-water.mp4" />
+</video>
+
               </div>
               <p className="elementTitle">Moon‑Infused Water</p>
               <p className="elementText">Water cooled by the night, carrying the memory of calm.</p>
