@@ -1,3 +1,86 @@
+/* -------------------------------------------------- */
+/* 1. CINEMATIC HERO (MATCHES DAY 1) */
+/* -------------------------------------------------- */
+
+.day2-hero {
+  position: relative;
+  width: 100vw;
+  height: 80vh;
+  margin-top: 6rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.day2-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.day2-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 22vh; /* cinematic lower-third */
+}
+
+.day2-circle {
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15), rgba(0,0,0,0.6));
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.day2-season {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+}
+
+.day2-title {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: #e8faff;
+  margin-bottom: 6px;
+}
+
+.day2-tagline {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+  max-width: 180px;
+  line-height: 1.4;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .day2-circle {
+    width: 200px;
+    height: 200px;
+  }
+  .day2-title {
+    font-size: 1.1rem;
+  }
+  .day2-tagline {
+    font-size: 0.75rem;
+  }
+}
+
+/* -------------------------------------------------- */
+/* 2. ORIGINAL DAY 2 DESIGN (PRESERVED COMPLETELY) */
+/* -------------------------------------------------- */
+
 /* ROOT COLORS */
 :root {
   --bg-dark: #05060a;
