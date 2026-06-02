@@ -36,11 +36,12 @@ export default function Day1Page() {
             {/* 1 — Sun‑Infused Water */}
             <div className="element">
               <div className="elementMedia">
-               <video
+             <video
   autoPlay
   muted
   loop
   playsInline
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
   style={{
     objectFit: "cover",
     objectPosition: "50% 20%", // shift view upward
@@ -48,6 +49,7 @@ export default function Day1Page() {
 >
   <source src="/ritual-elements/day1/sun-infused-water.mp4" />
 </video>
+
 
               </div>
               <p className="elementTitle">Sun‑Infused Water</p>
@@ -62,6 +64,7 @@ export default function Day1Page() {
   muted
   loop
   playsInline
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
   style={{
     objectFit: "cover",
     objectPosition: "50% 20%", // shift view upward
@@ -69,6 +72,7 @@ export default function Day1Page() {
 >
   <source src="/ritual-elements/day1/moon-infused-water.mp4" />
 </video>
+
 
               </div>
               <p className="elementTitle">Moon‑Infused Water</p>
