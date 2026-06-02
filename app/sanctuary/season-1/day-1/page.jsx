@@ -154,15 +154,22 @@ export default function Day1Page() {
 
 
             {/* 8 — Music */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/music-ambience.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">Music</p>
-              <p className="elementText">A soundscape to soften the world around you.</p>
-            </div>
+         <div className="element">
+  <div className="elementMedia">
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
+    >
+      <source src="/ritual-elements/day1/music-ambience.mp4" />
+    </video>
+  </div>
+  <p className="elementTitle">Music</p>
+  <p className="elementText">A soundscape to soften the world around you.</p>
+</div>
+
 
           </div>
         </section>
