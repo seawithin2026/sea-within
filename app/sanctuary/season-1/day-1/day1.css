@@ -1,5 +1,5 @@
 /* -------------------------------------------------- */
-/* GLOBAL DAY 1 WRAPPER */
+/* GLOBAL DAY 1 WRAPPER — ADDED BREATHING SPACE */
 /* -------------------------------------------------- */
 .day1 {
   width: 100%;
@@ -7,25 +7,31 @@
   background: #02070d;
   color: #e8faff;
   font-family: var(--font-body);
+
+  /* NEW — creates space under the navigation */
+  padding-top: 6rem;
 }
 
 
 
 /* -------------------------------------------------- */
-/* 1. HERO — FIXED ALIGNMENT */
+/* 1. HERO — FIXED ALIGNMENT + INTERACTION FIX */
 /* -------------------------------------------------- */
 .hero {
   position: relative;
   width: 100%;
-  height: 100vh; /* perfect full screen */
+  height: 100vh;
   overflow: hidden;
+
+  /* NEW — ensures hero never blocks clicks below */
+  pointer-events: none;
 }
 
 .heroVideo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center; /* keeps the video centered */
+  object-position: center;
 }
 
 .heroOverlay {
@@ -33,11 +39,13 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* perfect vertical centering */
+  justify-content: center;
   align-items: center;
   text-align: center;
   padding: 0 20px;
-  transform: none; /* removes misalignment */
+
+  /* NEW — allows text to be clickable if needed */
+  pointer-events: auto;
 }
 
 .heroOverlay p,
@@ -71,7 +79,7 @@
 
 
 /* -------------------------------------------------- */
-/* 2. RITUAL ELEMENTS GRID — FIXED + CINEMATIC */
+/* 2. RITUAL ELEMENTS GRID */
 /* -------------------------------------------------- */
 .ritualElements {
   padding: 80px 20px;
@@ -91,7 +99,7 @@
 .elementsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 50px; /* luxury spacing */
+  gap: 50px;
   align-items: start;
 }
 
@@ -99,15 +107,28 @@
   text-align: center;
 }
 
-/* FIXED MEDIA BOX */
 .elementMedia {
   width: 100%;
-  aspect-ratio: 4 / 5; /* cinematic vertical frame */
+  aspect-ratio: 4 / 5;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   overflow: hidden;
   backdrop-filter: blur(4px);
+
+  transition: 
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.elementMedia:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 0 18px rgba(120, 200, 255, 0.35),
+    0 0 28px rgba(80, 150, 255, 0.25),
+    0 0 40px rgba(40, 120, 255, 0.20);
+  border-color: rgba(150, 220, 255, 0.45);
 }
 
 .elementMedia video {
@@ -214,20 +235,4 @@
   .ritualParagraph {
     font-size: 1rem;
   }
-}
-/* HOVER GLOW EFFECT */
-.elementMedia {
-  transition: 
-    transform 0.4s ease,
-    box-shadow 0.4s ease,
-    border-color 0.4s ease;
-}
-
-.elementMedia:hover {
-  transform: translateY(-6px);
-  box-shadow: 
-    0 0 18px rgba(120, 200, 255, 0.35),
-    0 0 28px rgba(80, 150, 255, 0.25),
-    0 0 40px rgba(40, 120, 255, 0.20);
-  border-color: rgba(150, 220, 255, 0.45);
 }
