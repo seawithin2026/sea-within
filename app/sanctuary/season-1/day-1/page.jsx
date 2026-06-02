@@ -59,7 +59,7 @@ export default function Day1Page() {
             <div className="element">
               <div className="elementMedia">
                 <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/images/flower-petals.jpg" />
+                  <source src="/ritual-elements/day1/flower-petals.mp4" />
                 </video>
               </div>
               <p className="elementTitle">Flower Petals</p>
@@ -70,7 +70,7 @@ export default function Day1Page() {
             <div className="element">
               <div className="elementMedia">
                 <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/images/epsom-salt.jpg" />
+                  <source src="/ritual-elements/day1/epsom-salt.mp4" />
                 </video>
               </div>
               <p className="elementTitle">Epsom Salt</p>
@@ -81,7 +81,7 @@ export default function Day1Page() {
             <div className="element">
               <div className="elementMedia">
                 <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/images/bath-oil.jpg" />
+                  <source src="/ritual-elements/day1/bath-oil.mp4" />
                 </video>
               </div>
               <p className="elementTitle">Bath Oil</p>
