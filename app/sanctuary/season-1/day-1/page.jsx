@@ -127,7 +127,7 @@ export default function Day1Page() {
         {/* BATH HERO */}
         <section className="bathHero">
           <video className="bathVideo" autoPlay muted loop playsInline>
-            <source src="/videos/day1-bath.mp4" type="video/mp4" />
+            <source src="/video-season1/day1-bath.mp4" type="video/mp4" />
           </video>
         </section>
 
