@@ -200,12 +200,12 @@
   border-radius: 20px;
   overflow: hidden;
 }
-
 .ritualText {
-  padding: 100px 20px;
+  padding: 60px 20px; /* lifted closer to the grid */
   max-width: 900px;
   margin: 0 auto;
 }
+
 
 .ritualHeading {
   font-family: var(--font-display);
