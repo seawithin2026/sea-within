@@ -7,6 +7,8 @@ export default function Day2Page() {
   const [water, setWater] = useState(false);
   const [earth, setEarth] = useState(false);
 
+  const [showTripleFlameVideo, setShowTripleFlameVideo] = useState(false);
+
   const allActive = fire && water && earth;
 
   const activate = (setter) => setter(true);
@@ -27,7 +29,7 @@ export default function Day2Page() {
     >
 
       {/* -------------------------------------------------- */}
-      {/* 1. CINEMATIC HERO (MATCHES DAY 1) */}
+      {/* 1. CINEMATIC HERO */}
       {/* -------------------------------------------------- */}
       <section className="day2-hero">
         <video
@@ -39,7 +41,6 @@ export default function Day2Page() {
           className="day2-hero-video"
         />
 
-        {/* OVERLAY CONTENT */}
         <div className="day2-hero-overlay">
           <div className="day2-circle">
             <p className="day2-season">SEASON 1 — DAY 2</p>
@@ -139,6 +140,9 @@ export default function Day2Page() {
 
       </section>
 
+      {/* -------------------------------------------------- */}
+      {/* 4. UNIFICATION + VIDEO TRIGGER */}
+      {/* -------------------------------------------------- */}
       <section className="unification">
         <span>Fire to awaken you.</span>
         <span>Sea to clear you.</span>
@@ -150,7 +154,13 @@ export default function Day2Page() {
 
         <div className="unification-symbol"></div>
 
-        <button className="btn btn-main" onClick={unify}>
+        <button
+          className="btn btn-main"
+          onClick={() => {
+            unify();
+            setShowTripleFlameVideo(true);
+          }}
+        >
           Awaken the Triple Flame
         </button>
       </section>
@@ -160,6 +170,27 @@ export default function Day2Page() {
         <span>Return tomorrow.</span>
         <span>The journey continues.</span>
       </footer>
+
+      {/* -------------------------------------------------- */}
+      {/* 5. CINEMATIC VIDEO MODAL */}
+      {/* -------------------------------------------------- */}
+      {showTripleFlameVideo && (
+        <div className="tripleFlameModal">
+          <div className="tripleFlameModalContent">
+            <video autoPlay muted playsInline className="tripleFlameVideo">
+              <source src="/video-season1/day2-triple-flame.mp4" type="video/mp4" />
+            </video>
+
+            <button
+              className="closeTripleFlame"
+              onClick={() => setShowTripleFlameVideo(false)}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

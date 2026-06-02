@@ -364,3 +364,59 @@
   40% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
+/* -------------------------------------------------- */
+/* TRIPLE FLAME CINEMATIC VIDEO MODAL */
+/* -------------------------------------------------- */
+
+.tripleFlameModal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.4s ease;
+}
+
+.tripleFlameModalContent {
+  position: relative;
+  width: 92%;
+  max-width: 900px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
+
+.tripleFlameVideo {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.closeTripleFlame {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0,0,0,0.55);
+  border: none;
+  color: white;
+  font-size: 26px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.closeTripleFlame:hover {
+  background: rgba(0,0,0,0.75);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
