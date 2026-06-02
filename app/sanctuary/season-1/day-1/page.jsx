@@ -56,15 +56,23 @@ export default function Day1Page() {
             </div>
 
             {/* 3 — Flower Petals */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/flower-petals.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">Flower Petals</p>
-              <p className="elementText">A soft offering to the water — beauty returning to beauty.</p>
-            </div>
+           <div className="element">
+  <div className="elementMedia">
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      style={{
+        filter: "brightness(0.85) contrast(1.05) saturate(0.9)",
+      }}
+    >
+      <source src="/ritual-elements/day1/flower-petals.mp4" />
+    </video>
+  </div>
+  <p className="elementTitle">Flower Petals</p>
+  <p className="elementText">A soft offering to the water — beauty returning to beauty.</p>
+</div>
 
             {/* 4 — Epsom Salt */}
      <div className="element">
