@@ -24,10 +24,9 @@
   display: flex;
   justify-content: center;   /* centered horizontally */
   align-items: flex-end;      /* lower third */
-  padding-bottom: 22vh;       /* lifted higher */
+  padding-bottom: 22vh;       /* your perfect height */
   pointer-events: none;
 }
-
 
 .day1-circle {
   width: 260px;
@@ -87,7 +86,139 @@
 
 .day1-content {
   width: 100%;
-  max-width: 960px;
+  max-width: 1400px; /* expanded for 4-column grid */
   margin: auto;
   padding: 40px 20px;
+}
+
+/* -------------------------------------------------- */
+/* 3. RITUAL ELEMENTS GRID — FINAL CINEMATIC VERSION */
+/* -------------------------------------------------- */
+
+.ritualElements {
+  padding: 80px 20px;
+  max-width: 1400px; /* allows 4 columns comfortably */
+  margin: 0 auto;
+}
+
+.elementsTitle {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #dff7ff;
+  letter-spacing: 1px;
+}
+
+.elementsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 per row */
+  gap: 50px; /* cinematic spacing */
+  align-items: start;
+}
+
+.element {
+  text-align: center;
+  min-width: 240px; /* prevents collapsing */
+}
+
+/* VIDEO TILE */
+.elementMedia {
+  width: 100%;
+  aspect-ratio: 4 / 5; /* cinematic vertical frame */
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  transition: 
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.elementMedia video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* HOVER GLOW */
+.elementMedia:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 0 18px rgba(120, 200, 255, 0.35),
+    0 0 28px rgba(80, 150, 255, 0.25),
+    0 0 40px rgba(40, 120, 255, 0.20);
+  border-color: rgba(150, 220, 255, 0.45);
+}
+
+.elementTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  color: #e8faff;
+}
+
+.elementText {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.4;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 900px) {
+  .elementsGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row */
+    gap: 35px;
+  }
+}
+
+@media (max-width: 600px) {
+  .elementsGrid {
+    grid-template-columns: 1fr; /* 1 per row */
+    gap: 30px;
+  }
+}
+
+/* -------------------------------------------------- */
+/* 4. BATH HERO + RITUAL TEXT (unchanged) */
+/* -------------------------------------------------- */
+
+.bathHero {
+  width: 100%;
+  margin-top: 100px;
+}
+
+.bathVideo {
+  width: 100%;
+  height: 60vh;
+  object-fit: cover;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.ritualText {
+  padding: 100px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.ritualHeading {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  margin-bottom: 40px;
+  color: #dff7ff;
+  letter-spacing: 1px;
+}
+
+.ritualParagraph {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
 }
