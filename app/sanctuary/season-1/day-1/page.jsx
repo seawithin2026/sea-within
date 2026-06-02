@@ -67,15 +67,22 @@ export default function Day1Page() {
             </div>
 
             {/* 4 — Epsom Salt */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/epsom-salt.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">Epsom Salt</p>
-              <p className="elementText">Mineral release. A quiet unburdening.</p>
-            </div>
+          <div className="element">
+  <div className="elementMedia">
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
+    >
+      <source src="/ritual-elements/day1/epsom-salt.mp4" />
+    </video>
+  </div>
+  <p className="elementTitle">Epsom Salt</p>
+  <p className="elementText">Mineral release. A quiet unburdening.</p>
+</div>
+
 
             {/* 5 — Bath Oil */}
             <div className="element">
