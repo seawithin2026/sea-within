@@ -22,9 +22,9 @@
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: center;   /* FIXED: centers horizontally */
-  align-items: flex-end;      /* keeps it in the lower third */
-  padding-bottom: 8vh;
+  justify-content: center;   /* centered horizontally */
+  align-items: flex-end;      /* lower third */
+  padding-bottom: 12vh;       /* lifted higher */
   pointer-events: none;
 }
 
