@@ -136,15 +136,22 @@ export default function Day1Page() {
             </div>
 
             {/* 7 — Safe Light */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/safe-light.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">A Light That Doesn’t Burn</p>
-              <p className="elementText">A soft, flameless glow — safe for any space.</p>
-            </div>
+         <div className="element">
+  <div className="elementMedia">
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
+    >
+      <source src="/ritual-elements/day1/safe-light.mp4" />
+    </video>
+  </div>
+  <p className="elementTitle">A Light That Doesn’t Burn</p>
+  <p className="elementText">A soft, flameless glow — safe for any space.</p>
+</div>
+
 
             {/* 8 — Music */}
             <div className="element">
