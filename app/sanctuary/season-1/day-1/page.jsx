@@ -67,7 +67,7 @@ export default function Day1Page() {
             </div>
 
             {/* 4 — Epsom Salt */}
-          <div className="element">
+     <div className="element">
   <div className="elementMedia">
     <video
       autoPlay
@@ -82,6 +82,7 @@ export default function Day1Page() {
   <p className="elementTitle">Epsom Salt</p>
   <p className="elementText">Mineral release. A quiet unburdening.</p>
 </div>
+
 
 
             {/* 5 — Bath Oil */}
