@@ -78,6 +78,49 @@ export default function Day2Page() {
         <span>This is the moment you begin to become.</span>
       </section>
 
+      {/* -------------------------------------------------- */}
+      {/* 3.5 — CINEMATIC HORIZONTAL GRID */}
+      {/* -------------------------------------------------- */}
+      <section className="day2-grid">
+
+        {/* FIRE */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day2-fire.mp4" />
+            </video>
+          </div>
+          <p className="grid-title">The Fire Within</p>
+          <p className="grid-text">The spark that rises when you remember who you are.</p>
+        </div>
+
+        {/* SEA */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day2-sea.mp4" />
+            </video>
+          </div>
+          <p className="grid-title">The Sea Within</p>
+          <p className="grid-text">The depth that steadies you when the world feels loud.</p>
+        </div>
+
+        {/* EARTH */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day2-earth.mp4" />
+            </video>
+          </div>
+          <p className="grid-title">The Earth Within</p>
+          <p className="grid-text">The ground that holds you steady as you rise.</p>
+        </div>
+
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* 4. RITUAL SECTIONS */}
+      {/* -------------------------------------------------- */}
       <section className="sections">
 
         {/* FIRE */}
@@ -141,7 +184,7 @@ export default function Day2Page() {
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 4. UNIFICATION + VIDEO TRIGGER */}
+      {/* 5. UNIFICATION + VIDEO TRIGGER */}
       {/* -------------------------------------------------- */}
       <section className="unification">
         <span>Fire to awaken you.</span>
@@ -172,7 +215,7 @@ export default function Day2Page() {
       </footer>
 
       {/* -------------------------------------------------- */}
-      {/* 5. CINEMATIC VIDEO MODAL */}
+      {/* 6. CINEMATIC VIDEO MODAL */}
       {/* -------------------------------------------------- */}
       {showTripleFlameVideo && (
         <div className="tripleFlameModal">
