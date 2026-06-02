@@ -190,16 +190,21 @@
 
 .bathHero {
   width: 100%;
-  margin-top: 100px;
+  max-width: 1400px;
+  margin: 80px auto 0;
+  border-radius: 20px;
+  overflow: hidden;
 }
 
 .bathVideo {
   width: 100%;
-  height: 60vh;
+  height: 80vh; /* taller for vertical videos */
   object-fit: cover;
+  object-position: center;
+  display: block;
   border-radius: 20px;
-  overflow: hidden;
 }
+
 .ritualText {
   padding: 60px 20px; /* lifted closer to the grid */
   max-width: 900px;
