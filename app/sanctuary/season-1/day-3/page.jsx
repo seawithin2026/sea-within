@@ -72,8 +72,8 @@ export default function Day3Page() {
           <p className="grid-text">The stone‑holding ritual that reminds you you belong to this world.</p>
 
           <div className="element-paragraph">
-            <p>Place your hand on something solid — your thigh, the floor, a stone, the earth itself.</p>
-            <p>Feel the coolness, the weight, the truth of it.</p>
+            <p>Place your hand on something solid. Your thigh, the floor, a stone or the earth itself.</p>
+            <p>Feel the coolness, the weight, and the truth of it.</p>
             <p>Let your palm soften against it.</p>
             <p>Let the steadiness of the object travel into your hand, up your arm, into your chest.</p>
             <p>This is the Stone‑Holding Ritual — a grounding practice older than language, where humans placed their hands on the world to remember they belonged to it.</p>
