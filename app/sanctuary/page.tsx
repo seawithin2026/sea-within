@@ -147,7 +147,7 @@ export default async function SanctuaryPage() {
   >
     <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
     <video
-      src="/video-season1/day-4.mp4"
+      src="/video-season1/day4-hero.mp4"
       autoPlay
       loop
       muted
