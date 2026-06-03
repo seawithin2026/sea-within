@@ -22,13 +22,11 @@ export default async function SanctuaryPage() {
           className="w-full h-full object-cover"
         />
 
-        {/* OVERLAY TEXT — FULL CONTROL */}
+        {/* OVERLAY TEXT */}
         <div 
           className="absolute inset-0 flex flex-col justify-end px-10 sanctuary-hero-text"
           style={{ paddingBottom: "51rem" }}
         >
-
-          {/* TOP LABEL */}
           <p 
             className="uppercase text-slate-200 sanctuary-hero-subtitle"
             style={{
@@ -41,7 +39,6 @@ export default async function SanctuaryPage() {
             Welcome Home Beautiful Souls
           </p>
 
-          {/* MAIN TITLE */}
           <h1
             className="font-light text-slate-100 sanctuary-hero-title"
             style={{
@@ -54,7 +51,6 @@ export default async function SanctuaryPage() {
             This is how your story begins.
           </h1>
 
-          {/* SUBTEXT */}
           <p
             className="text-slate-300 sanctuary-hero-subtext"
             style={{
@@ -66,11 +62,10 @@ export default async function SanctuaryPage() {
           >
             Season 1 — Living is Feeling.
           </p>
-
         </div>
       </section>
 
-      {/* SECTION DIVIDER */}
+      {/* DIVIDER */}
       <div className="w-full h-42 bg-gradient-to-b from-black/0 to-black"></div>
 
       {/* GRID SECTION */}
@@ -78,131 +73,130 @@ export default async function SanctuaryPage() {
         <h2 className="text-center text-2xl md:text-3xl font-light mb-12 tracking-wide">
           Your 3‑Day Descent Into Self
         </h2>
-<div className="grid gap-10 md:grid-cols-3">
 
-  {/* DAY 1 */}
-  <Link
-    href="/sanctuary/season-1/day-1"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day-1.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 1</p>
-      <p className="text-lg font-light">Water Purification Ritual</p>
-    </div>
-  </Link>
+        <div className="grid gap-10 md:grid-cols-3">
 
-  {/* DAY 2 */}
-  <Link
-    href="/sanctuary/season-1/day-2"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day-2.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 2</p>
-      <p className="text-lg font-light">Triple Flame Ritual</p>
-    </div>
-  </Link>
+          {/* DAY 1 */}
+          <Link
+            href="/sanctuary/season-1/day-1"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day-1.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 1</p>
+              <p className="text-lg font-light">Water Purification Ritual</p>
+            </div>
+          </Link>
 
-  {/* DAY 3 */}
-  <Link
-    href="/sanctuary/season-1/day-3"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day-3.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 3</p>
-      <p className="text-lg font-light">Grounding Ritual</p>
-    </div>
-  </Link>
+          {/* DAY 2 */}
+          <Link
+            href="/sanctuary/season-1/day-2"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day-2.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 2</p>
+              <p className="text-lg font-light">Triple Flame Ritual</p>
+            </div>
+          </Link>
 
-  {/* DAY 4 */}
-  <Link
-    href="/sanctuary/season-1/day-4"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day4-hero.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 4</p>
-      <p className="text-lg font-light">Protection Ritual</p>
-    </div>
-  </Link>
+          {/* DAY 3 */}
+          <Link
+            href="/sanctuary/season-1/day-3"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day-3.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 3</p>
+              <p className="text-lg font-light">Grounding Ritual</p>
+            </div>
+          </Link>
 
-  {/* DAY 5 */}
-  <Link
-    href="/sanctuary/season-1/day-5"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day-5.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 5</p>
-      <p className="text-lg font-light">Breath of Life Ritual</p>
-    </div>
-  </Link>
+          {/* DAY 4 */}
+          <Link
+            href="/sanctuary/season-1/day-4"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day4-hero.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 4</p>
+              <p className="text-lg font-light">Protection Ritual</p>
+            </div>
+          </Link>
 
-  {/* DAY 6 */}
-  <Link
-    href="/sanctuary/season-1/day-6"
-    className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-  >
-    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-    <video
-      src="/video-season1/day-6.mp4"
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
-    />
-    <div className="absolute bottom-6 left-6 z-20">
-      <p className="text-xs text-slate-300">Day 6</p>
-      <p className="text-lg font-light">The Ancient Sun Greeting Ritual</p>
-    </div>
-  </Link>
+          {/* DAY 5 */}
+          <Link
+            href="/sanctuary/season-1/day-5"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day-5.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 5</p>
+              <p className="text-lg font-light">Breath of Life Ritual</p>
+            </div>
+          </Link>
 
-</div>
+          {/* DAY 6 */}
+          <Link
+            href="/sanctuary/season-1/day-6"
+            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+            <video
+              src="/video-season1/day-6.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+              <p className="text-xs text-slate-300">Day 6</p>
+              <p className="text-lg font-light">The Ancient Sun Greeting Ritual</p>
+            </div>
+          </Link>
 
-
+        </div>
       </section>
 
     </main>
