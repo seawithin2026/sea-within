@@ -34,7 +34,7 @@ export default function Day2Page() {
         <span>The Sea that remembers.</span>
         <span>The Earth that holds you steady.</span>
         <span className="mt">Three powers. One self.</span>
-        <span>This is the moment you begin to become.</span>
+        <span>This is the moment you begin to feel this spark again.</span>
       </section>
 
       {/* -------------------------------------------------- */}
