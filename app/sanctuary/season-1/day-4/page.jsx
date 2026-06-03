@@ -1,196 +1,118 @@
 "use client";
-import { useState } from "react";
 import "./day4.css";
 
 export default function Day4Page() {
-  const [breath, setBreath] = useState(false);
-  const [dome, setDome] = useState(false);
-  const [seal, setSeal] = useState(false);
-
-  const allActive = breath && dome && seal;
-
-  const activate = (setter) => setter(true);
-
-  const unify = () => {
-    setBreath(true);
-    setDome(true);
-    setSeal(true);
-  };
-
   return (
-    <div
-      className={`day4-page 
-        ${breath ? "breath-active" : ""} 
-        ${dome ? "dome-active" : ""} 
-        ${seal ? "seal-active" : ""} 
-        ${allActive ? "unified" : ""}`}
-    >
+    <div className="day4-wrapper">
 
-      {/* HERO VIDEO */}
-      <section className="relative w-full h-[130vh] overflow-hidden day4-hero">
+      {/* -------------------------------------------------- */}
+      {/* 1. FULL-SCREEN HERO */}
+      {/* -------------------------------------------------- */}
+      <section className="day4-hero">
         <video
-          src="/video-season1/day-4.mp4"
+          src="/video-season1/day4-hero.mp4"
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover"
+          className="day4-hero-video"
         />
 
-        {/* DARK GRADIENT OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/80 z-10"></div>
-
-        {/* HERO TEXT */}
-        <div 
-          className="absolute inset-0 flex flex-col justify-end px-10 z-20"
-          style={{ paddingBottom: "48rem" }}
-        >
-          <p 
-            className="uppercase text-slate-200"
-            style={{
-              fontSize: "0.85rem",
-              letterSpacing: "0.38em",
-              marginBottom: "1.2rem",
-              opacity: 0.92,
-            }}
-          >
-            Sea Within · Day 4
-          </p>
-
-          <h1
-            className="font-light text-slate-100"
-            style={{
-              fontSize: "2.9rem",
-              lineHeight: "1.45",
-              maxWidth: "38rem",
-              textShadow: "0 0 22px rgba(0,0,0,0.65)",
-            }}
-          >
-            Protection Ritual
-          </h1>
-
-          <p
-            className="text-slate-300"
-            style={{
-              marginTop: "1.8rem",
-              fontSize: "1.25rem",
-              letterSpacing: "0.08em",
-              opacity: 0.95,
-            }}
-          >
-            Seal your inner power in a dome of light.
-          </p>
+        <div className="day4-hero-overlay">
+          <p className="day4-hero-tag">SEA WITHIN · DAY 4</p>
+          <h1 className="day4-hero-title">The Protection Ritual</h1>
         </div>
       </section>
 
-      {/* Ambient Glows */}
-      <div className="glow aura"></div>
-      <div className="glow dome"></div>
-
-      <header className="header">
-        <div className="tag">
-          <span className="tag-dot"></span>
-          <span>Sea Within · Day 4</span>
-        </div>
-        <h1 className="title">The Protection Ritual</h1>
-        <p className="subtitle">Seal your inner power in a dome of light.</p>
-      </header>
-
-      {/* Opening */}
-      <section className="opening">
+      {/* -------------------------------------------------- */}
+      {/* 2. OPENING POETIC TEXT */}
+      {/* -------------------------------------------------- */}
+      <section className="cinematic-opening">
         <span>Today, you draw a circle around your becoming.</span>
         <span>A boundary of light. A shield of truth.</span>
         <span className="mt">What rises within you is sacred.</span>
         <span>And today, you protect it.</span>
       </section>
 
-      <section className="sections">
-        {/* STEP I — BREATH */}
-        <article className={`section ${breath ? "pulse" : ""}`}>
-          <div className="section-label">Step I</div>
-          <div className="section-title air">The Breath That Builds the Shield</div>
-          <p className="section-instruction">
-            Inhale slowly. Let your breath expand outward like a force field.
-          </p>
-          <p className="section-text">
-            <span>With every inhale, your power gathers.</span>
-            <span>With every exhale, your space becomes untouchable.</span>
-            <span>Your breath is not just air —</span>
-            <span>it is the architecture of your protection.</span>
-          </p>
-          <button className="btn btn-air" onClick={() => activate(setBreath)}>
-            <span className="dot"></span>
-            Breathe the Shield
-          </button>
-        </article>
+      {/* -------------------------------------------------- */}
+      {/* 3. ANCIENT PROTECTION TECHNIQUES GRID */}
+      {/* -------------------------------------------------- */}
+      <section className="day4-grid">
 
-        {/* STEP II — DOME */}
-        <article className={`section ${dome ? "pulse" : ""}`}>
-          <div className="section-label">Step II</div>
-          <div className="section-title light">The Dome of Light</div>
-          <p className="section-instruction">
-            Visualize a sphere of light rising around your body.
-          </p>
-          <p className="section-text">
-            <span>Now the dome forms.</span>
-            <span>A shimmering sphere of your own energy.</span>
-            <span>It rises from your feet.</span>
-            <span>It curves over your head.</span>
-            <span>It seals behind your spine.</span>
-            <span className="mt">Nothing heavy can cross this threshold.</span>
-            <span>Nothing that drains you can enter.</span>
-            <span className="mt">This is your sanctuary.</span>
-            <span>This is your sovereignty.</span>
-          </p>
-          <button className="btn btn-light" onClick={() => activate(setDome)}>
-            <span className="dot"></span>
-            Raise the Dome
-          </button>
-        </article>
+        {/* SHIELDING BREATH — BREATH OF THE SENTINEL */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day4-shielding-breath.mp4" />
+            </video>
+          </div>
 
-        {/* STEP III — SEAL */}
-        <article className={`section ${seal ? "pulse" : ""}`}>
-          <div className="section-label">Step III</div>
-          <div className="section-title seal">The Seal of Protection</div>
-          <p className="section-instruction">
-            Place your hand over your heart.
-          </p>
-          <p className="section-text">
-            <span>By your breath, you are protected.</span>
-            <span>By your light, you are shielded.</span>
-            <span>By your truth, you are untouchable.</span>
-            <span className="mt">Your inner flame is yours alone.</span>
-            <span>Your energy answers to no one.</span>
-            <span className="mt">What rises within you is sealed in light.</span>
-          </p>
-          <button className="btn btn-seal" onClick={() => activate(setSeal)}>
-            <span className="dot"></span>
-            Seal the Light
-          </button>
-        </article>
+          <p className="grid-title">The Shielding Breath</p>
+          <p className="grid-text">The ancient breath of the sentinel that builds your first circle of light.</p>
+
+          <div className="element-paragraph">
+            <p>Inhale slowly, as if drawing in the first light of dawn.</p>
+            <p>Let the breath expand outward, not as air — but as a widening field of presence.</p>
+            <p>With each inhale, your inner force gathers.</p>
+            <p>With each exhale, your boundary strengthens.</p>
+            <p>This is the Breath of the Sentinel — the ancient art of building a shield from within.</p>
+            <p>Your breath becomes architecture. Your breath becomes protection.</p>
+          </div>
+        </div>
+
+        {/* DOME OF LIGHT — LUMINOUS SPHERE */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day4-dome-of-light.mp4" />
+            </video>
+          </div>
+
+          <p className="grid-title">The Dome of Light</p>
+          <p className="grid-text">The luminous sphere that rises around you like a sanctuary of radiance.</p>
+
+          <div className="element-paragraph">
+            <p>Visualize a sphere rising around you — not imagined, but remembered.</p>
+            <p>A dome of light that curves upward from your feet, arches over your crown, and seals behind your spine.</p>
+            <p>This is the Luminous Sphere — a ritual once used to guard initiates as they stepped into their becoming.</p>
+            <p>Nothing heavy can cross this threshold. Nothing draining can enter.</p>
+            <p>This dome is not escape — it is sovereignty.</p>
+            <p>A sanctuary woven from your own radiance.</p>
+          </div>
+        </div>
+
+        {/* SEAL OF PROTECTION — HEARTWARD SEAL */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day4-seal-of-protection.mp4" />
+            </video>
+          </div>
+
+          <p className="grid-title">The Seal of Protection</p>
+          <p className="grid-text">The heartward seal that locks your inner flame behind a veil of light.</p>
+
+          <div className="element-paragraph">
+            <p>Place your hand over your heart.</p>
+            <p>Feel the warmth beneath your palm — the quiet fire that has carried you through every chapter.</p>
+            <p>This is the Heartward Seal — a sacred gesture that locks your inner flame behind a veil of light.</p>
+            <p>By your breath, you are guarded. By your dome, you are held.</p>
+            <p>By your truth, you are untouchable.</p>
+            <p>Your energy answers to no one. Your inner fire is yours alone.</p>
+          </div>
+        </div>
+
       </section>
 
-      {/* Unification */}
-      <section className="unification">
-        <span>Breath to build the shield.</span>
-        <span>Light to form the dome.</span>
-        <span>Truth to seal your power.</span>
-        <span className="mt">Three forces. One protection.</span>
-        <span className="mt">Your dome is complete.</span>
-        <span>Your path is protected.</span>
-
-        <div className="unification-symbol"></div>
-
-        <button className="btn btn-main" onClick={unify}>
-          Activate the Dome
-        </button>
-      </section>
-
+      {/* -------------------------------------------------- */}
+      {/* 4. CLOSING TEXT */}
+      {/* -------------------------------------------------- */}
       <footer className="closing">
         <span>Your light is sealed.</span>
         <span>Your energy is your own.</span>
-        <span>Return tomorrow. The journey continues.</span>
+        <span>The journey continues.</span>
       </footer>
+
     </div>
   );
 }
