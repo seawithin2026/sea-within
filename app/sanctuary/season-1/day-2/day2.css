@@ -116,7 +116,8 @@
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  text-align: center; /* CENTER EVERYTHING */
 }
 
 .grid-media {
@@ -139,6 +140,7 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--text-main);
+  text-align: center;
 }
 
 .grid-title.fire { color: var(--accent-fire); }
@@ -149,6 +151,7 @@
   font-size: 12px;
   color: var(--text-soft);
   line-height: 1.6;
+  text-align: center;
 }
 
 /* Long poetic paragraphs */
@@ -156,7 +159,9 @@
   font-size: 13px;
   line-height: 1.7;
   color: var(--text-main);
-  margin-top: 6px;
+  max-width: 240px; /* keeps it elegant */
+  margin: 0 auto;   /* centers it */
+  text-align: center;
 }
 
 .element-paragraph p {
