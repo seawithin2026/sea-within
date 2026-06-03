@@ -18,70 +18,51 @@
   object-position: center;
 }
 
-.day2-hero-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 22vh; /* cinematic lower-third */
-}
+/* -------------------------------------------------- */
+/* 2. CINEMATIC OPENING TEXT (MATCHES DAY 1) */
+/* -------------------------------------------------- */
 
-.day2-circle {
-  width: 260px;
-  height: 260px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(255,255,255,0.15), rgba(0,0,0,0.6));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.15);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.cinematic-opening {
+  margin: 48px auto 40px;
+  max-width: 560px;
   text-align: center;
-  pointer-events: auto;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-main);
+  letter-spacing: 0.02em;
+  opacity: 0.92;
 }
 
-.day2-season {
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 8px;
-}
-
-.day2-title {
-  font-size: 1.4rem;
-  font-weight: 300;
-  color: #e8faff;
+.cinematic-opening span {
+  display: block;
   margin-bottom: 6px;
 }
 
-.day2-tagline {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.75);
-  max-width: 180px;
-  line-height: 1.4;
-}
-
-/* MOBILE */
-@media (max-width: 600px) {
-  .day2-circle {
-    width: 200px;
-    height: 200px;
-  }
-  .day2-title {
-    font-size: 1.1rem;
-  }
-  .day2-tagline {
-    font-size: 0.75rem;
-  }
+.cinematic-opening .mt {
+  margin-top: 14px;
 }
 
 /* -------------------------------------------------- */
-/* 2. ORIGINAL DAY 2 DESIGN (PRESERVED COMPLETELY) */
+/* 3. ACTIVATION BLOCK (CINEMATIC + MINIMAL) */
 /* -------------------------------------------------- */
 
-/* ROOT COLORS */
+.activation-block {
+  margin: 32px auto 60px;
+  text-align: center;
+}
+
+.activation-block .btn-main {
+  padding: 12px 26px;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border-radius: 999px;
+}
+
+/* -------------------------------------------------- */
+/* 4. ORIGINAL DAY 2 DESIGN (PRESERVED COMPLETELY) */
+/* -------------------------------------------------- */
+
 :root {
   --bg-dark: #05060a;
   --bg-deep: #050814;
@@ -95,7 +76,6 @@
   --button-hover: rgba(255, 255, 255, 0.16);
 }
 
-/* PAGE WRAPPER */
 .day2-page {
   position: relative;
   width: 100%;
@@ -364,6 +344,7 @@
   40% { transform: scale(1.02); }
   100% { transform: scale(1); }
 }
+
 /* -------------------------------------------------- */
 /* TRIPLE FLAME CINEMATIC VIDEO MODAL */
 /* -------------------------------------------------- */
@@ -420,6 +401,7 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
 /* -------------------------------------------------- */
 /* DAY 2 — CINEMATIC HORIZONTAL GRID */
 /* -------------------------------------------------- */

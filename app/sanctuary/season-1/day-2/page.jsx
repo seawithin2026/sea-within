@@ -29,7 +29,7 @@ export default function Day2Page() {
     >
 
       {/* -------------------------------------------------- */}
-      {/* 1. CINEMATIC HERO */}
+      {/* 1. CINEMATIC HERO (NO CIRCLE OVERLAY) */}
       {/* -------------------------------------------------- */}
       <section className="day2-hero">
         <video
@@ -40,36 +40,12 @@ export default function Day2Page() {
           playsInline
           className="day2-hero-video"
         />
-
-        <div className="day2-hero-overlay">
-          <div className="day2-circle">
-            <p className="day2-season">SEASON 1 — DAY 2</p>
-            <h1 className="day2-title">The Triple Flame Ritual</h1>
-            <p className="day2-tagline">Awaken the Fire, the Sea, the Earth within you.</p>
-          </div>
-        </div>
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 2. AMBIENT GLOWS */}
+      {/* 2. CINEMATIC OPENING TEXT (LIKE DAY 1) */}
       {/* -------------------------------------------------- */}
-      <div className="glow fire"></div>
-      <div className="glow water"></div>
-      <div className="glow earth"></div>
-
-      {/* -------------------------------------------------- */}
-      {/* 3. MAIN CONTENT */}
-      {/* -------------------------------------------------- */}
-      <header className="header">
-        <div className="tag">
-          <span className="tag-dot"></span>
-          <span>Sea Within · Day 2</span>
-        </div>
-        <h1 className="title">The Triple Flame Ritual</h1>
-        <p className="subtitle">Awaken the Fire, the Sea, the Earth within you.</p>
-      </header>
-
-      <section className="opening">
+      <section className="opening cinematic-opening">
         <span>Today, the Triple Flame rises within you.</span>
         <span>The Fire that transforms.</span>
         <span>The Sea that remembers.</span>
@@ -79,7 +55,22 @@ export default function Day2Page() {
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 3.5 — CINEMATIC HORIZONTAL GRID */}
+      {/* 3. ACTIVATION BUTTON (CLEAN + CENTERED) */}
+      {/* -------------------------------------------------- */}
+      <section className="activation-block">
+        <button
+          className="btn btn-main"
+          onClick={() => {
+            unify();
+            setShowTripleFlameVideo(true);
+          }}
+        >
+          Awaken the Triple Flame
+        </button>
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* 4. ORIGINAL GRID (UNCHANGED) */}
       {/* -------------------------------------------------- */}
       <section className="day2-grid">
 
@@ -119,7 +110,7 @@ export default function Day2Page() {
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 4. RITUAL SECTIONS */}
+      {/* 5. ORIGINAL RITUAL SECTIONS (UNCHANGED) */}
       {/* -------------------------------------------------- */}
       <section className="sections">
 
@@ -184,7 +175,7 @@ export default function Day2Page() {
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 5. UNIFICATION + VIDEO TRIGGER */}
+      {/* 6. UNIFICATION (UNCHANGED) */}
       {/* -------------------------------------------------- */}
       <section className="unification">
         <span>Fire to awaken you.</span>
@@ -215,7 +206,7 @@ export default function Day2Page() {
       </footer>
 
       {/* -------------------------------------------------- */}
-      {/* 6. CINEMATIC VIDEO MODAL */}
+      {/* 7. CINEMATIC VIDEO MODAL */}
       {/* -------------------------------------------------- */}
       {showTripleFlameVideo && (
         <div className="tripleFlameModal">
