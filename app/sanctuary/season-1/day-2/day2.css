@@ -1,14 +1,35 @@
 /* -------------------------------------------------- */
-/* 1. CINEMATIC HERO (MATCHES DAY 1) */
+/* ROOT COLORS */
 /* -------------------------------------------------- */
+:root {
+  --bg-dark: #05060a;
+  --bg-deep: #050814;
 
+  --accent-fire: #ffb36b;
+  --accent-water: #6bdcff;
+  --accent-earth: #9be58a;
+
+  --text-main: #f7f7fb;
+  --text-soft: #c5c7d7;
+}
+
+/* -------------------------------------------------- */
+/* PAGE WRAPPER */
+/* -------------------------------------------------- */
+.day2-wrapper {
+  width: 100%;
+  background: radial-gradient(circle at top, #151a30 0, #05060a 60%, #020308 100%);
+  padding-bottom: 80px;
+}
+
+/* -------------------------------------------------- */
+/* 1. FULL-SCREEN HERO (MATCHES DAY 1) */
+/* -------------------------------------------------- */
 .day2-hero {
   position: relative;
   width: 100vw;
-  height: 80vh;
-  margin-top: 6rem;
+  height: 100vh;
   overflow: hidden;
-  pointer-events: none;
 }
 
 .day2-hero-video {
@@ -18,18 +39,49 @@
   object-position: center;
 }
 
-/* -------------------------------------------------- */
-/* 2. CINEMATIC OPENING TEXT (MATCHES DAY 1) */
-/* -------------------------------------------------- */
+.day2-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.55));
+  color: white;
+}
 
+.day2-hero-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.day2-hero-title {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.day2-hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+/* -------------------------------------------------- */
+/* 2. CINEMATIC OPENING TEXT */
+/* -------------------------------------------------- */
 .cinematic-opening {
-  margin: 48px auto 40px;
+  margin: 60px auto 40px;
   max-width: 560px;
   text-align: center;
   font-size: 15px;
   line-height: 1.9;
   color: var(--text-main);
-  letter-spacing: 0.02em;
   opacity: 0.92;
 }
 
@@ -43,369 +95,8 @@
 }
 
 /* -------------------------------------------------- */
-/* 3. ACTIVATION BLOCK (CINEMATIC + MINIMAL) */
+/* 3. CINEMATIC HORIZONTAL GRID */
 /* -------------------------------------------------- */
-
-.activation-block {
-  margin: 32px auto 60px;
-  text-align: center;
-}
-
-.activation-block .btn-main {
-  padding: 12px 26px;
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  border-radius: 999px;
-}
-
-/* -------------------------------------------------- */
-/* 4. ORIGINAL DAY 2 DESIGN (PRESERVED COMPLETELY) */
-/* -------------------------------------------------- */
-
-:root {
-  --bg-dark: #05060a;
-  --bg-deep: #050814;
-  --accent-fire: #ffb36b;
-  --accent-water: #6bdcff;
-  --accent-earth: #9be58a;
-  --text-main: #f7f7fb;
-  --text-soft: #c5c7d7;
-  --button-bg: rgba(255, 255, 255, 0.06);
-  --button-border: rgba(255, 255, 255, 0.18);
-  --button-hover: rgba(255, 255, 255, 0.16);
-}
-
-.day2-page {
-  position: relative;
-  width: 100%;
-  max-width: 960px;
-  margin: auto;
-  padding: 32px 20px;
-  background: radial-gradient(circle at top, #151a30 0, #05060a 60%, #020308 100%);
-  border-radius: 24px;
-  min-height: 100vh;
-  overflow: hidden;
-}
-
-/* GLOWS */
-.glow {
-  position: absolute;
-  border-radius: 999px;
-  filter: blur(40px);
-  opacity: 0.35;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  transition: opacity 0.4s ease-out;
-}
-
-.glow.fire {
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, #ffb36b 0, transparent 70%);
-  top: -40px;
-  right: -40px;
-}
-
-.glow.water {
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, #6bdcff 0, transparent 70%);
-  bottom: -60px;
-  left: -40px;
-}
-
-.glow.earth {
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, #9be58a 0, transparent 70%);
-  bottom: -40px;
-  right: 10%;
-}
-
-.fire-active .glow.fire { opacity: 0.9; }
-.water-active .glow.water { opacity: 0.9; }
-.earth-active .glow.earth { opacity: 0.9; }
-
-/* HEADER */
-.header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(5, 7, 16, 0.85);
-  color: var(--text-soft);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.tag-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #ffb36b, #6bdcff, #9be58a);
-}
-
-.title {
-  margin-top: 16px;
-  font-size: 26px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.subtitle {
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--text-soft);
-}
-
-/* OPENING */
-.opening {
-  margin: 28px auto 32px;
-  max-width: 520px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text-soft);
-}
-
-.opening span {
-  display: block;
-}
-
-.mt {
-  margin-top: 8px;
-}
-
-/* SECTIONS */
-.sections {
-  display: grid;
-  gap: 18px;
-}
-
-@media (min-width: 768px) {
-  .sections {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.section {
-  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.04), rgba(5, 6, 12, 0.96));
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 18px;
-  padding: 18px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 180px;
-  transition: 0.3s ease-out;
-}
-
-.section-label {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-soft);
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.section-title.fire { color: var(--accent-fire); }
-.section-title.water { color: var(--accent-water); }
-.section-title.earth { color: var(--accent-earth); }
-
-.section-instruction {
-  font-size: 12px;
-  color: var(--text-soft);
-}
-
-.section-text {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-main);
-}
-
-.section-text span {
-  display: block;
-}
-
-/* BUTTONS */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--button-border);
-  background: var(--button-bg);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: 0.2s ease-out;
-}
-
-.btn:hover {
-  background: var(--button-hover);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.btn-fire { color: var(--accent-fire); }
-.btn-water { color: var(--accent-water); }
-.btn-earth { color: var(--accent-earth); }
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-}
-
-/* UNIFICATION */
-.unification {
-  margin: 28px auto 18px;
-  max-width: 520px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text-main);
-}
-
-.unification span {
-  display: block;
-}
-
-.unification-symbol {
-  margin: 18px auto 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background:
-    radial-gradient(circle at 20% 0, rgba(255, 179, 107, 0.7), transparent 55%),
-    radial-gradient(circle at 80% 0, rgba(107, 220, 255, 0.7), transparent 55%),
-    radial-gradient(circle at 50% 100%, rgba(155, 229, 138, 0.7), transparent 55%),
-    rgba(5, 7, 16, 0.9);
-}
-
-.unified .unification-symbol {
-  animation: spin 12s linear infinite;
-}
-
-.btn-main {
-  margin-top: 18px;
-  background: linear-gradient(135deg, #ffb36b, #6bdcff, #9be58a);
-  background-size: 200% 200%;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.3);
-  animation: gradientShift 10s ease-in-out infinite;
-}
-
-/* CLOSING */
-.closing {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-soft);
-}
-
-/* ANIMATIONS */
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
-}
-
-.pulse {
-  animation: pulse 500ms ease-out;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.02); }
-  100% { transform: scale(1); }
-}
-
-/* -------------------------------------------------- */
-/* TRIPLE FLAME CINEMATIC VIDEO MODAL */
-/* -------------------------------------------------- */
-
-.tripleFlameModal {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(10px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  animation: fadeIn 0.4s ease;
-}
-
-.tripleFlameModalContent {
-  position: relative;
-  width: 92%;
-  max-width: 900px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 0 60px rgba(0,0,0,0.5);
-}
-
-.tripleFlameVideo {
-  width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
-}
-
-.closeTripleFlame {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  background: rgba(0,0,0,0.55);
-  border: none;
-  color: white;
-  font-size: 26px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.closeTripleFlame:hover {
-  background: rgba(0,0,0,0.75);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* -------------------------------------------------- */
-/* DAY 2 — CINEMATIC HORIZONTAL GRID */
-/* -------------------------------------------------- */
-
 .day2-grid {
   display: flex;
   gap: 20px;
@@ -425,7 +116,7 @@
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .grid-media {
@@ -450,10 +141,26 @@
   color: var(--text-main);
 }
 
+.grid-title.fire { color: var(--accent-fire); }
+.grid-title.water { color: var(--accent-water); }
+.grid-title.earth { color: var(--accent-earth); }
+
 .grid-text {
   font-size: 12px;
   color: var(--text-soft);
   line-height: 1.6;
+}
+
+/* Long poetic paragraphs */
+.element-paragraph {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-main);
+  margin-top: 6px;
+}
+
+.element-paragraph p {
+  margin-bottom: 6px;
 }
 
 /* DESKTOP — 3 column grid instead of scroll */
@@ -468,4 +175,19 @@
     min-width: unset;
     max-width: unset;
   }
+}
+
+/* -------------------------------------------------- */
+/* 4. CLOSING TEXT */
+/* -------------------------------------------------- */
+.closing {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.closing span {
+  display: block;
+  margin-bottom: 6px;
 }
