@@ -136,12 +136,14 @@
 }
 
 .grid-title {
-  font-size: 14px;
+  font-size: 18px;          /* bigger title */
+  font-weight: 600;         /* stronger presence */
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;   /* more cinematic spacing */
   color: var(--text-main);
   text-align: center;
 }
+
 
 .grid-title.fire { color: var(--accent-fire); }
 .grid-title.water { color: var(--accent-water); }
@@ -186,13 +188,16 @@
 /* 4. CLOSING TEXT */
 /* -------------------------------------------------- */
 .closing {
-  margin-top: 40px;
-  text-align: center;
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;               /* spacing between the three lines */
   font-size: 12px;
   color: var(--text-soft);
+  text-align: center;
 }
 
 .closing span {
-  display: block;
-  margin-bottom: 6px;
+  margin: 0;               /* remove vertical spacing */
+  white-space: nowrap;     /* keeps each phrase on one line */
 }
