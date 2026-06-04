@@ -67,9 +67,16 @@ export default function Day6Page() {
         {/* Technique 2 */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
-              <source src="/video-season1/day6-gathering.mp4" />
-            </video>
+            <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}
+>
+  <source src="/video-season1/day6-gathering.mp4" />
+</video>
+
           </div>
 
           <p className="grid-title">The Gathering</p>
@@ -87,7 +94,13 @@ export default function Day6Page() {
         {/* Technique 3 */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+             <video
+  autoPlay
+  muted
+  loop
+  playsInline
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}
+  >
               <source src="/video-season1/day6-expansion.mp4" />
             </video>
           </div>
