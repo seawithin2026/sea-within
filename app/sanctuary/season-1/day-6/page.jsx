@@ -99,7 +99,7 @@ export default function Day6Page() {
   muted
   loop
   playsInline
-  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
   >
               <source src="/video-season1/day6-expansion.mp4" />
             </video>
