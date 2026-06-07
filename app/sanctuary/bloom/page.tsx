@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 
-// 🌿 GESTURE LIBRARY — simple, nourishing suggestions
+/* -----------------------------------------------------
+   🌿 GESTURES — all in one place
+----------------------------------------------------- */
 const GESTURES = [
+  // Original 20
   "Take a warm shower and feel the water on your skin for one slow breath.",
   "Drink a glass of water and notice the coolness moving through you.",
   "Step outside and let the air touch your face for a moment.",
@@ -25,6 +28,8 @@ const GESTURES = [
   "Look at something beautiful and let your eyes rest there.",
   "Place both feet flat on the floor and feel their weight.",
   "Sit quietly and notice the rhythm of your breathing.",
+
+  // Awakening 30
   "Take a slow breath and feel your chest open just a little more than usual.",
   "Place your hand on your collarbone and feel the gentle rise beneath your touch.",
   "Stand tall for a moment and feel your whole body wake up.",
@@ -55,10 +60,11 @@ const GESTURES = [
   "Place your hand on your upper arm and feel the comfort of your own touch.",
   "Take a slow inhale and feel your body wake up from the inside.",
   "Let your breath deepen and feel a quiet spark rise within you.",
-
 ];
 
-// 🌸 BLOOM LIBRARY — cinematic flower videos
+/* -----------------------------------------------------
+   🌸 BLOOM VIDEOS — all in one place
+----------------------------------------------------- */
 const BLOOMS = [
   "/bloom-videos/bloom-01.mp4",
   "/bloom-videos/bloom-02.mp4",
@@ -76,171 +82,156 @@ const BLOOMS = [
   "/bloom-videos/bloom-14.mp4",
 ];
 
-const STORAGE_KEY_USED_GESTURES = "seaWithin.usedGestures";
-const STORAGE_KEY_USED_BLOOMS = "seaWithin.usedBlooms";
-
-function getRandomUnusedIndex(total: number, used: number[]): number {
-  const allIndices = Array.from({ length: total }, (_, i) => i);
-  const available = allIndices.filter((i) => !used.includes(i));
-
-  // if all used, reset
-  if (available.length === 0) {
-    return Math.floor(Math.random() * total);
-  }
-
-  const randomIndex = available[Math.floor(Math.random() * available.length)];
-  return randomIndex;
-}
-
-function loadUsedIndices(key: string): number[] {
-  if (typeof window === "undefined") return [];
-  const raw = window.localStorage.getItem(key);
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-    return [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUsedIndices(key: string, used: number[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, JSON.stringify(used));
+/* -----------------------------------------------------
+   🌙 Helper functions
+----------------------------------------------------- */
+function getRandomUnusedIndex(total, used) {
+  const all = Array.from({ length: total }, (_, i) => i);
+  const available = all.filter((i) => !used.includes(i));
+  if (available.length === 0) return Math.floor(Math.random() * total);
+  return available[Math.floor(Math.random() * available.length)];
 }
 
 export default function BloomRitualPage() {
-  const [gestureIndex, setGestureIndex] = useState<number | null>(null);
-  const [bloomIndex, setBloomIndex] = useState<number | null>(null);
+  const [gestureIndex, setGestureIndex] = useState(null);
+  const [bloomIndex, setBloomIndex] = useState(null);
   const [showBloom, setShowBloom] = useState(false);
 
-  // load or choose gesture + bloom on first render
   useEffect(() => {
-    const usedGestures = loadUsedIndices(STORAGE_KEY_USED_GESTURES);
-    const usedBlooms = loadUsedIndices(STORAGE_KEY_USED_BLOOMS);
+    const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
+    const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
 
-    const gIndex = getRandomUnusedIndex(GESTURES.length, usedGestures);
-    const bIndex = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
+    const g = getRandomUnusedIndex(GESTURES.length, usedGestures);
+    const b = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
 
-    setGestureIndex(gIndex);
-    setBloomIndex(bIndex);
+    setGestureIndex(g);
+    setBloomIndex(b);
 
-    // update used lists (non‑repeating until exhausted)
-    const newUsedGestures =
-      usedGestures.length >= GESTURES.length ? [gIndex] : [...usedGestures, gIndex];
-    const newUsedBlooms =
-      usedBlooms.length >= BLOOMS.length ? [bIndex] : [...usedBlooms, bIndex];
+    localStorage.setItem(
+      "usedGestures",
+      JSON.stringify(usedGestures.length >= GESTURES.length ? [g] : [...usedGestures, g])
+    );
 
-    saveUsedIndices(STORAGE_KEY_USED_GESTURES, newUsedGestures);
-    saveUsedIndices(STORAGE_KEY_USED_BLOOMS, newUsedBlooms);
+    localStorage.setItem(
+      "usedBlooms",
+      JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
+    );
   }, []);
 
-  function handleAcknowledge() {
-    // user says: “I offered myself a moment”
-    setShowBloom(true);
-  }
-
-  function handleCloseBloom() {
-    setShowBloom(false);
-  }
-
-  const gestureText =
-    gestureIndex !== null ? GESTURES[gestureIndex] : "Offer yourself one small moment of softness.";
-
-  const bloomSrc =
-    bloomIndex !== null ? BLOOMS[bloomIndex] : "/bloom-videos/bloom-01.mp4";
+  const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
+  const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
   return (
     <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
       <Navigation />
 
-      <main className="flex-1 pt-20 pb-16 flex flex-col items-center">
-        {/* HERO */}
-        <section className="mt-16 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto text-center">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
-            Sanctuary • Bloom Ritual
+      {/* HERO */}
+      <section className="pt-28 pb-10 text-center animate-fadeIn">
+        <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
+          Sanctuary • Bloom Ritual
+        </p>
+
+        <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+          Your Bloom Ritual
+        </h1>
+
+        <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
+          There is a place inside you where the world quiets —  
+          where your breath gathers like light on water,  
+          where the smallest kindness you offer yourself becomes a tide rising.  
+          The Bloom is not a flower on a screen.  
+          It is the reflection of your own becoming —  
+          a reminder that even the gentlest moment of care can awaken something luminous within you.
+        </p>
+      </section>
+
+      {/* GESTURE BOX */}
+      <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
+        <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
+          <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
+            Your Moment of Nourishment
           </p>
 
-          <h1 className="mt-3 text-3xl md:text-4xl tracking-[0.16em] uppercase text-white/90">
-            Your Bloom Ritual
-          </h1>
-
-          <p className="mt-4 text-sm md:text-base text-white/60">
-            One simple act of nourishment.  
-            One Bloom rising from your inner ocean.
+          <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
+            {gesture}
           </p>
-        </section>
 
-        {/* GESTURE + ACKNOWLEDGE */}
-        <section className="mt-12 w-full px-6 md:px-10 lg:px-16 max-w-3xl mx-auto">
-          <div className="rounded-3xl border border-white/10 bg-black/40 px-6 py-8 shadow-[0_0_30px_rgba(0,0,0,0.7)] backdrop-blur-md flex flex-col items-center gap-6">
+          <button
+            onClick={() => setShowBloom(true)}
+            className="
+              mt-4 px-10 py-3 rounded-full
+              text-[11px] tracking-[0.22em] uppercase
+              border border-white/20 text-white/80
+              hover:border-white/40 hover:text-white
+              transition-all duration-500
+              backdrop-blur-sm
+            "
+          >
+            I offered myself a moment
+          </button>
+        </div>
+      </section>
+
+      {/* BLOOM REVEAL */}
+      {showBloom && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
+          <div className="relative max-w-2xl w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-8 py-10 flex flex-col items-center gap-8 animate-softRise">
             <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-              Today’s Moment of Nourishment
+              Your Bloom
             </p>
 
-            <p className="text-sm md:text-base text-white/75 text-center max-w-xl">
-              {gestureText}
+            <div className="w-full aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+              <video
+                key={bloomSrc}
+                src={bloomSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <p className="text-sm md:text-base text-white/70 text-center max-w-md leading-relaxed">
+              This Bloom rose from the kindness you offered yourself —  
+              a quiet unfolding from the inner ocean you carry.
             </p>
 
             <button
-              onClick={handleAcknowledge}
+              onClick={() => setShowBloom(false)}
               className="
-                mt-4 px-8 py-3 rounded-full 
+                mt-2 px-6 py-2 rounded-full 
                 text-[11px] tracking-[0.22em] uppercase
-                bg-gradient-to-r from-emerald-300 via-amber-200 to-rose-300
-                text-black shadow-[0_0_25px_rgba(255,255,255,0.35)]
-                hover:opacity-90 transition-all
+                border border-white/30 text-white/80
+                hover:bg-white/10 transition-all duration-500
               "
             >
-              I offered myself a moment
+              Close
             </button>
-
-            <p className="text-[11px] text-white/40 tracking-[0.22em] uppercase mt-2 text-center">
-              When you feel ready, let this Bloom rise for you.
-            </p>
           </div>
-        </section>
+        </div>
+      )}
 
-        {/* BLOOM REVEAL MODAL */}
-        {showBloom && (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-xl">
-            <div className="relative max-w-xl w-full mx-6 rounded-3xl border border-white/15 bg-[rgba(5,7,11,0.95)] shadow-[0_0_60px_rgba(0,0,0,0.9)] px-6 py-8 flex flex-col items-center gap-6">
-              <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-                Your Bloom
-              </p>
+      {/* ANIMATIONS */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
 
-              <div className="w-full aspect-square rounded-2xl overflow-hidden border border-white/10 bg-black shadow-[0_0_40px_rgba(0,0,0,0.8)]">
-                <video
-                  key={bloomSrc}
-                  src={bloomSrc}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              </div>
+        @keyframes softRise {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-              <p className="text-sm md:text-base text-white/75 text-center max-w-md">
-                This Bloom rose from the kindness you offered yourself.
-              </p>
+        .animate-fadeIn {
+          animation: fadeIn 1s ease forwards;
+        }
 
-              <button
-                onClick={handleCloseBloom}
-                className="
-                  mt-2 px-6 py-2 rounded-full 
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-white/30 text-white/80
-                  hover:bg-white/10 transition-all
-                "
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
+        .animate-softRise {
+          animation: softRise 1.2s ease forwards;
+        }
+      `}</style>
     </div>
   );
 }
