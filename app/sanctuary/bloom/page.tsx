@@ -37,6 +37,12 @@ const BLOOMS = [
   "/bloom-videos/bloom-06.mp4",
   "/bloom-videos/bloom-07.mp4",
   "/bloom-videos/bloom-08.mp4",
+  "/bloom-videos/bloom-09.mp4",
+  "/bloom-videos/bloom-10.mp4",
+  "/bloom-videos/bloom-11.mp4",
+  "/bloom-videos/bloom-12.mp4",
+  "/bloom-videos/bloom-13.mp4",
+  "/bloom-videos/bloom-14.mp4",
 ];
 
 const STORAGE_KEY_USED_GESTURES = "seaWithin.usedGestures";
