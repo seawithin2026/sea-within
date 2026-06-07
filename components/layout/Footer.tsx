@@ -25,6 +25,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { href: '/sanctuary', label: 'Sanctuary' },
+                { href: '/bloom', label: 'Bloom' },
                 { href: '/wisdom-board', label: 'Wisdom Board' },
                 { href: '/community', label: 'Community' },
                 { href: '/join', label: 'Join the Movement' },
