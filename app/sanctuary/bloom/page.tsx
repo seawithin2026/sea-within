@@ -97,6 +97,10 @@ export default function BloomRitualPage() {
   const [bloomIndex, setBloomIndex] = useState(null);
   const [showBloom, setShowBloom] = useState(false);
 
+  // NEW STATES
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [showOutro, setShowOutro] = useState(false);
+
   useEffect(() => {
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
@@ -198,7 +202,10 @@ export default function BloomRitualPage() {
             </p>
 
             <button
-              onClick={() => setShowBloom(false)}
+              onClick={() => {
+                setShowBloom(false);
+                setTimeout(() => setShowCompletion(true), 600);
+              }}
               className="
                 mt-2 px-6 py-2 rounded-full 
                 text-[11px] tracking-[0.22em] uppercase
@@ -208,6 +215,57 @@ export default function BloomRitualPage() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* COMPLETION SCREEN */}
+      {showCompletion && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
+          <div className="relative max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
+            <h2 className="text-2xl tracking-[0.14em] uppercase text-white/90">
+              Ritual Complete
+            </h2>
+
+            <p className="text-white/70 text-center leading-relaxed max-w-md">
+              You offered yourself a moment of nourishment.  
+              Something inside you softened, opened, and rose.
+            </p>
+
+            <button
+              onClick={() => {
+                setShowCompletion(false);
+                setTimeout(() => setShowOutro(true), 600);
+              }}
+              className="
+                mt-2 px-10 py-3 rounded-full 
+                text-[11px] tracking-[0.22em] uppercase
+                border border-white/30 text-white/80
+                hover:bg-white/10 transition-all duration-500
+              "
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* OUTRO SCREEN */}
+      {showOutro && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeInSlow">
+          <div className="text-center px-10 animate-softRiseSlow">
+            <p className="text-[11px] tracking-[0.28em] uppercase text-white/40 mb-6">
+              Sanctuary • Bloom Ritual
+            </p>
+
+            <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-white/90 mb-6">
+              Your Ritual for Today is Complete
+            </h2>
+
+            <p className="text-white/60 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+              Return tomorrow for your next Bloom —  
+              a new unfolding, a new breath, a new moment of becoming.
+            </p>
           </div>
         </div>
       )}
@@ -224,12 +282,30 @@ export default function BloomRitualPage() {
           to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes fadeInSlow {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes softRiseSlow {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
         .animate-fadeIn {
           animation: fadeIn 1s ease forwards;
         }
 
         .animate-softRise {
           animation: softRise 1.2s ease forwards;
+        }
+
+        .animate-fadeInSlow {
+          animation: fadeInSlow 2.2s ease forwards;
+        }
+
+        .animate-softRiseSlow {
+          animation: softRiseSlow 2.4s ease forwards;
         }
       `}</style>
     </div>
