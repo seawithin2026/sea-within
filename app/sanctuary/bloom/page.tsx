@@ -356,32 +356,38 @@ export default function BloomRitualPage() {
         </div>
       )}
 
-      {/* -----------------------------------------------------
-         🌟 SANCTUARY MODE — Achievement Replay
-      ----------------------------------------------------- */}
-      {mode === "sanctuary" && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+  {/* -----------------------------------------------------
+   🌟 SANCTUARY MODE — Achievement Replay (Cinematic)
+----------------------------------------------------- */}
+{mode === "sanctuary" && (
+  <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
 
-          <video
-            key={bloomSrc}
-            src={bloomSrc}
-            autoPlay
-            muted
-            playsInline
-            loop={false}
-            onEnded={() => setVideoEnded(true)}
-            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-          />
+    <video
+      key={bloomSrc}
+      src={bloomSrc}
+      autoPlay
+      muted
+      playsInline
+      loop={false}
+      onEnded={() => setVideoEnded(true)}
+      className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+    />
 
-          {videoEnded && (
-            <div className="absolute bottom-20 w-full text-center animate-softRiseSlow">
-              <p className="text-[#C6A667] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_6px_rgba(0,0,0,0.55)]">
-                You bloomed today.
-              </p>
-            </div>
-          )}
+    {videoEnded && (
+      <>
+        {/* Soft cinematic gradient bar */}
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+
+        {/* Cinematic achievement message */}
+        <div className="absolute bottom-8 left-10 animate-softRiseSlow">
+          <p className="text-[#C6A667] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
+            You bloomed today.
+          </p>
         </div>
-      )}
+      </>
+    )}
+  </div>
+)}
 
       {/* -----------------------------------------------------
          🌟 ANIMATIONS
