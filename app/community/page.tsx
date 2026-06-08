@@ -28,14 +28,14 @@ export default function CommunityPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load user
+  /* LOAD USER */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
   }, []);
 
-  // Fetch messages once user is known
+  /* FETCH MESSAGES */
   useEffect(() => {
     if (!user) return;
     fetchMessages();
@@ -43,11 +43,10 @@ export default function CommunityPage() {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Only scroll when YOU send a message
+  /* SCROLL ONLY WHEN YOU SEND */
   useEffect(() => {
     if (isSubmitting) {
-      const el = messagesEndRef.current;
-      el?.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 
@@ -61,7 +60,6 @@ export default function CommunityPage() {
           ...msg,
           is_own: user && msg.user_id === user.id,
         }));
-
         setMessages(withOwnership);
       }
     } catch {
@@ -130,8 +128,7 @@ export default function CommunityPage() {
   };
 
   const deleteMessage = async (id: string) => {
-    const confirmDelete = confirm("Delete this message?");
-    if (!confirmDelete) return;
+    if (!confirm('Delete this message?')) return;
 
     await fetch(`/api/messages?id=${id}&type=chat`, {
       method: 'DELETE',
@@ -150,27 +147,25 @@ export default function CommunityPage() {
   };
 
   return (
-   <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
-{/* 🌊 CINEMATIC JELLYFISH BACKGROUND */}
-<div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+    <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
 
-  {/* Jellyfish Image */}
-  <img
-    src="/images/jellyfish-bg.png"
-    alt="jellyfish background"
-    className="absolute w-full h-full object-cover opacity-[0.45] animate-slowFloat"
-  />
+      {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}
+      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
 
-  {/* Softer gradient so the jellyfish is visible */}
-  <div className="absolute inset-0 bg-gradient-to-b from-[#02050a]/40 via-[#030a14]/30 to-[#05070b]/60"></div>
+        <img
+          src="/images/jellyfish-bg.png"
+          alt="jellyfish background"
+          className="absolute w-full h-full object-cover opacity-[0.85] animate-slowFloat"
+        />
 
-  {/* Soft glow */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)]"></div>
-</div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#02050a]/10 via-[#030a14]/10 to-[#05070b]/20"></div>
 
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.18),transparent_70%)]"></div>
+      </div>
 
       <Navigation />
 
+      {/* TITLE */}
       <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
         <ScrollReveal>
           <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-3">
@@ -186,8 +181,9 @@ export default function CommunityPage() {
       </section>
 
       {/* CHAT MESSAGES */}
-      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14">
+      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
         <div className="space-y-4 pb-24">
+
           {messages.length === 0 && (
             <div className="text-center py-20">
               <p className="font-display text-xl text-white/15 font-light">
@@ -283,7 +279,7 @@ export default function CommunityPage() {
       )}
 
       {/* INPUT BAR */}
-      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-sanctuary-dark/95 backdrop-blur-xl">
+      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-black/40 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto">
           <p className="font-body text-[10px] text-white/15 text-center mb-3 tracking-wide">
             This space is for uplifting, reflective, and supportive communication.
@@ -315,7 +311,17 @@ export default function CommunityPage() {
         </div>
       </section>
 
+      {/* STYLES */}
       <style>{`
+        /* HIDE SCROLLBAR */
+        .chat-scroll::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+        .chat-scroll {
+          scrollbar-width: none;
+        }
+
         .chat-bubble {
           max-width: 75%;
           padding: 14px 18px;
@@ -350,13 +356,6 @@ export default function CommunityPage() {
 
         .animate-slowFloat {
           animation: slowFloat 22s ease-in-out infinite;
-        }
-
-        @media (max-width: 640px) {
-          .chat-bubble {
-            max-width: 88%;
-            padding: 12px 15px;
-          }
         }
       `}</style>
     </main>
