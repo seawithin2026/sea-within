@@ -83,7 +83,7 @@ const BLOOMS = [
 ];
 
 /* -----------------------------------------------------
-   🌙 Helper
+   🌙 Helper — ensures no repeats until all used
 ----------------------------------------------------- */
 function getRandomUnusedIndex(total, used) {
   const all = Array.from({ length: total }, (_, i) => i);
@@ -99,25 +99,26 @@ export default function BloomRitualPage() {
   const [showBloom, setShowBloom] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showOutro, setShowOutro] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
 
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — FULLY FIXED
+     🌙 DAILY LOCKOUT — AUTO-OPEN BLOOM IF DONE TODAY
   ----------------------------------------------------- */
   useEffect(() => {
     const last = localStorage.getItem("lastBloomDate");
     const today = new Date().toDateString();
 
+    // If already completed today → auto-open bloom fullscreen
     if (last === today) {
       const savedBloom = localStorage.getItem("todayBloomIndex");
-
       if (savedBloom !== null) {
         setBloomIndex(parseInt(savedBloom));
         setShowBloom(true);
       }
-
       return;
     }
 
+    // NEW DAY → generate new gesture + bloom
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
 
@@ -141,6 +142,26 @@ export default function BloomRitualPage() {
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
+  /* -----------------------------------------------------
+     🌸 DEV BYPASS — SHIFT + B resets the day instantly
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.shiftKey && e.key.toLowerCase() === "b") {
+        localStorage.removeItem("lastBloomDate");
+        localStorage.removeItem("todayBloomIndex");
+        localStorage.removeItem("usedGestures");
+        localStorage.removeItem("usedBlooms");
+
+        alert("🌸 Bloom Ritual Reset (Dev Mode)");
+
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
@@ -180,7 +201,10 @@ export default function BloomRitualPage() {
             </p>
 
             <button
-              onClick={() => setShowBloom(true)}
+              onClick={() => {
+                setShowBloom(true);
+                setVideoEnded(false);
+              }}
               className="
                 mt-4 px-10 py-3 rounded-full
                 text-[11px] tracking-[0.22em] uppercase
@@ -195,59 +219,80 @@ export default function BloomRitualPage() {
           </div>
         </section>
       )}
-
       {/* -----------------------------------------------------
-         🌸 FULLSCREEN BLOOM REVEAL (OPTION C)
+         🌸 FULLSCREEN BLOOM REVEAL — CINEMATIC MODE
       ----------------------------------------------------- */}
       {showBloom && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
 
           {/* FULLSCREEN VIDEO */}
           <video
+            key={bloomSrc}
             src={bloomSrc}
             autoPlay
             muted
             playsInline
-            className="w-full h-full object-cover"
+            loop={false}
+            onEnded={() => setVideoEnded(true)}
+            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {/* OVERLAY CONTENT */}
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 px-6 text-center pointer-events-none">
+          {/* Soft glow overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
 
-            <p className="uppercase text-[11px] tracking-[0.22em] text-white/60 mb-6 pointer-events-auto">
-              Your Bloom
-            </p>
+          {/* BUTTONS — only appear after video ends */}
+          {videoEnded && (
+            <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
 
-            <p className="text-sm md:text-base text-white/80 max-w-md leading-relaxed mb-8 pointer-events-auto">
-              This Bloom rose from the kindness you offered yourself —  
-              a quiet unfolding from the inner ocean you carry.
-            </p>
+              {/* REPLAY BUTTON */}
+              <button
+                onClick={() => {
+                  setVideoEnded(false);
+                  const vid = document.querySelector("video");
+                  if (vid) {
+                    vid.currentTime = 0;
+                    vid.play();
+                  }
+                }}
+                className="
+                  px-10 py-3 rounded-full 
+                  text-[11px] tracking-[0.22em] uppercase
+                  border border-white/40 text-white/90
+                  hover:bg-white/10 transition-all duration-500
+                "
+              >
+                Replay
+              </button>
 
-            <button
-              onClick={() => {
-                setShowBloom(false);
-                localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-                localStorage.setItem("lastBloomDate", new Date().toDateString());
-                setTimeout(() => setShowCompletion(true), 600);
-              }}
-              className="
-                px-10 py-3 rounded-full 
-                text-[11px] tracking-[0.22em] uppercase
-                border border-white/40 text-white/90
-                hover:bg-white/10 transition-all duration-500
-                pointer-events-auto
-              "
-            >
-              Close
-            </button>
-          </div>
+              {/* CONTINUE BUTTON */}
+              <button
+                onClick={() => {
+                  setShowBloom(false);
+                  localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+                  localStorage.setItem("lastBloomDate", new Date().toDateString());
+                  setTimeout(() => setShowCompletion(true), 600);
+                }}
+                className="
+                  px-10 py-3 rounded-full 
+                  text-[11px] tracking-[0.22em] uppercase
+                  border border-white/40 text-white/90
+                  hover:bg-white/10 transition-all duration-500
+                "
+              >
+                Continue
+              </button>
+
+            </div>
+          )}
         </div>
       )}
-
-      {/* COMPLETION SCREEN */}
+      {/* -----------------------------------------------------
+         🌙 COMPLETION SCREEN (your original version)
+      ----------------------------------------------------- */}
       {showCompletion && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
           <div className="relative max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
+
             <h2 className="text-2xl tracking-[0.14em] uppercase text-white/90">
               Ritual Complete
             </h2>
@@ -271,14 +316,18 @@ export default function BloomRitualPage() {
             >
               Continue
             </button>
+
           </div>
         </div>
       )}
 
-      {/* OUTRO SCREEN */}
+      {/* -----------------------------------------------------
+         🌙 OUTRO SCREEN (your original version)
+      ----------------------------------------------------- */}
       {showOutro && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeInSlow">
           <div className="text-center px-10 animate-softRiseSlow">
+
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/40 mb-6">
               Sanctuary • Bloom Ritual
             </p>
@@ -307,11 +356,14 @@ export default function BloomRitualPage() {
             >
               Return to Sanctuary
             </button>
+
           </div>
         </div>
       )}
 
-      {/* ANIMATIONS */}
+      {/* -----------------------------------------------------
+         🌟 ANIMATIONS
+      ----------------------------------------------------- */}
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; }
