@@ -171,9 +171,10 @@ export default function CommunityPage() {
       {/* TITLE */}
       <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
         <ScrollReveal>
-          <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400 drop-shadow-[0_0_6px_rgba(0,0,0,0.35)] mb-3">
+         <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/90 drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mb-3">
   community circle
 </p>
+
 
           <h1 className="font-display text-2xl md:text-3xl font-light text-sea-100">
             The Gathering
