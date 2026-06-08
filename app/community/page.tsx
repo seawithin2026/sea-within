@@ -150,7 +150,7 @@ export default function CommunityPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col relative overflow-hidden">
+   <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
 {/* 🌊 CINEMATIC JELLYFISH BACKGROUND */}
 <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
 
