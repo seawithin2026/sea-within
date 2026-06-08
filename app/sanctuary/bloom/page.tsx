@@ -142,7 +142,7 @@ export default function BloomRitualPage() {
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
   return (
-    <div className="min-h-screen bg-[#05070b] text-white flex flex-col">
+    <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
       {/* HERO */}
