@@ -171,9 +171,10 @@ export default function CommunityPage() {
       {/* TITLE */}
       <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
         <ScrollReveal>
-      <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-200 drop-shadow-[0_0_10px_rgba(0,0,0,0.75)] mb-3">
+      <p className="font-whisper text-sm tracking-[6px] uppercase text-[#B8860B] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
   community circle
 </p>
+
 
 
 
@@ -236,9 +237,10 @@ export default function CommunityPage() {
                 ) : (
                   <>
                     {!msg.is_own && (
-                      <p className="font-body text-[10px] tracking-[1px] uppercase text-golden-400/50 mb-1">
-                        {msg.author}
-                      </p>
+                     <p className="font-body text-[10px] tracking-[1px] uppercase text-[#8B6508] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+  {msg.author}
+</p>
+
                     )}
 
                     <p className="font-body text-sm text-sea-100/80 leading-relaxed">
