@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 
 /* -----------------------------------------------------
-   🌿 GESTURES — all in one place
+   🌿 GESTURES — 20 grounding + 30 awakening (FULL SET)
 ----------------------------------------------------- */
 const GESTURES = [
-  // Original 20
+  // Grounding 20
   "Take a warm shower and feel the water on your skin for one slow breath.",
   "Drink a glass of water and notice the coolness moving through you.",
   "Step outside and let the air touch your face for a moment.",
@@ -63,7 +63,7 @@ const GESTURES = [
 ];
 
 /* -----------------------------------------------------
-   🌸 BLOOM VIDEOS — all in one place
+   🌸 BLOOM VIDEOS — 14 total
 ----------------------------------------------------- */
 const BLOOMS = [
   "/bloom-videos/bloom-01.mp4",
@@ -83,7 +83,7 @@ const BLOOMS = [
 ];
 
 /* -----------------------------------------------------
-   🌙 Helper functions
+   🌙 Helper
 ----------------------------------------------------- */
 function getRandomUnusedIndex(total, used) {
   const all = Array.from({ length: total }, (_, i) => i);
@@ -95,32 +95,28 @@ function getRandomUnusedIndex(total, used) {
 export default function BloomRitualPage() {
   const [gestureIndex, setGestureIndex] = useState(null);
   const [bloomIndex, setBloomIndex] = useState(null);
-  const [showBloom, setShowBloom] = useState(false);
 
+  const [showBloom, setShowBloom] = useState(false);
   const [showCompletion, setShowCompletion] = useState(false);
   const [showOutro, setShowOutro] = useState(false);
 
-  const [videoEnded, setVideoEnded] = useState(false);
-
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT CHECK
+     🌙 DAILY LOCKOUT — FULLY FIXED
   ----------------------------------------------------- */
   useEffect(() => {
- const last = localStorage.getItem("lastBloomDate");
-const today = new Date().toDateString();
+    const last = localStorage.getItem("lastBloomDate");
+    const today = new Date().toDateString();
 
-if (last === today) {
-  // They already completed today’s ritual
-  const savedBloom = localStorage.getItem("todayBloomIndex");
+    if (last === today) {
+      const savedBloom = localStorage.getItem("todayBloomIndex");
 
-  if (savedBloom !== null) {
-    setBloomIndex(parseInt(savedBloom));
-    setShowBloom(true); // Show the bloom viewer immediately
-  }
+      if (savedBloom !== null) {
+        setBloomIndex(parseInt(savedBloom));
+        setShowBloom(true);
+      }
 
-  return;
-}
-
+      return;
+    }
 
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
@@ -150,27 +146,29 @@ if (last === today) {
       <Navigation />
 
       {/* HERO */}
-      <section className="pt-28 pb-10 text-center animate-fadeIn">
-        <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
-          Sanctuary • Bloom Ritual
-        </p>
+      {!showBloom && !showOutro && (
+        <section className="pt-28 pb-10 text-center animate-fadeIn">
+          <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
+            Sanctuary • Bloom Ritual
+          </p>
 
-        <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-          Your Bloom Ritual
-        </h1>
+          <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+            Your Bloom Ritual
+          </h1>
 
-        <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
-          There is a place inside you where the world quiets —  
-          where your breath gathers like light on water,  
-          where the smallest kindness you offer yourself becomes a tide rising.  
-          The Bloom is not a flower on a screen.  
-          It is the reflection of your own becoming —  
-          a reminder that even the gentlest moment of care can awaken something luminous within you.
-        </p>
-      </section>
+          <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
+            There is a place inside you where the world quiets —  
+            where your breath gathers like light on water,  
+            where the smallest kindness you offer yourself becomes a tide rising.  
+            The Bloom is not a flower on a screen.  
+            It is the reflection of your own becoming —  
+            a reminder that even the gentlest moment of care can awaken something luminous within you.
+          </p>
+        </section>
+      )}
 
       {/* GESTURE BOX */}
-      {!showOutro && (
+      {!showBloom && !showOutro && (
         <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
           <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
             <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
@@ -197,64 +195,54 @@ if (last === today) {
           </div>
         </section>
       )}
-{/* BLOOM REVEAL */}
-{showBloom && (
-  <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn px-4 pt-20 md:pt-28">
 
-    {/* Title */}
-    <p className="uppercase text-[11px] tracking-[0.22em] text-white/40 mb-6 mt-6">
-      Your Bloom
-    </p>
+      {/* -----------------------------------------------------
+         🌸 FULLSCREEN BLOOM REVEAL (OPTION C)
+      ----------------------------------------------------- */}
+      {showBloom && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
 
-    {/* CINEMATIC VIDEO CONTAINER */}
-    <div
-      className="
-        w-full 
-        max-w-5xl 
-        h-[70vh] 
-        md:h-[80vh]
-        rounded-3xl 
-        overflow-hidden 
-        border border-white/10 
-        shadow-[0_0_80px_rgba(0,0,0,0.9)]
-      "
-    >
-      <video
-        src={bloomSrc}
-        autoPlay
-        muted
-        playsInline
-        className="w-full h-full object-cover"
-      />
-    </div>
+          {/* FULLSCREEN VIDEO */}
+          <video
+            src={bloomSrc}
+            autoPlay
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
 
-    {/* Description */}
-    <p className="text-sm md:text-base text-white/70 text-center max-w-md leading-relaxed mt-8">
-      This Bloom rose from the kindness you offered yourself —  
-      a quiet unfolding from the inner ocean you carry.
-    </p>
+          {/* OVERLAY CONTENT */}
+          <div className="absolute inset-0 flex flex-col items-center justify-end pb-16 px-6 text-center pointer-events-none">
 
-    {/* Close */}
-    <button
-      onClick={() => {
-        setShowBloom(false);
-        localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-        localStorage.setItem("lastBloomDate", new Date().toDateString());
+            <p className="uppercase text-[11px] tracking-[0.22em] text-white/60 mb-6 pointer-events-auto">
+              Your Bloom
+            </p>
 
-        setTimeout(() => setShowCompletion(true), 600);
-      }}
-      className="
-        mt-6 px-10 py-3 rounded-full 
-        text-[11px] tracking-[0.22em] uppercase
-        border border-white/30 text-white/80
-        hover:bg-white/10 transition-all duration-500
-      "
-    >
-      Close
-    </button>
-  </div>
-)}
+            <p className="text-sm md:text-base text-white/80 max-w-md leading-relaxed mb-8 pointer-events-auto">
+              This Bloom rose from the kindness you offered yourself —  
+              a quiet unfolding from the inner ocean you carry.
+            </p>
 
+            <button
+              onClick={() => {
+                setShowBloom(false);
+                localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+                localStorage.setItem("lastBloomDate", new Date().toDateString());
+                setTimeout(() => setShowCompletion(true), 600);
+              }}
+              className="
+                px-10 py-3 rounded-full 
+                text-[11px] tracking-[0.22em] uppercase
+                border border-white/40 text-white/90
+                hover:bg-white/10 transition-all duration-500
+                pointer-events-auto
+              "
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* COMPLETION SCREEN */}
       {showCompletion && (
