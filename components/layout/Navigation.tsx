@@ -8,7 +8,7 @@ import SignInModal from '../SignInModal';
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
-  { href: '/sanctuary/bloom', label: 'Bloom' }, // 🌸 UPDATED
+  { href: '/sanctuary/bloom', label: 'Bloom' },
   { href: '/wisdom-board', label: 'Wisdom Board' },
   { href: '/community', label: 'Community' },
 ];
@@ -34,7 +34,7 @@ export default function Navigation() {
         transition={{ duration: 1, delay: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
           isScrolled
-            ? 'backdrop-blur-xl border-b border-white/5'
+            ? 'backdrop-blur-xl'
             : 'bg-transparent'
         }`}
         style={{
@@ -86,7 +86,7 @@ export default function Navigation() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden backdrop-blur-xl border-t border-white/5"
+              className="md:hidden backdrop-blur-xl"
               style={{ backgroundColor: 'rgba(10, 22, 40, 0.95)' }}
             >
               <div className="px-6 py-8 flex flex-col gap-6">
