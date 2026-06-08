@@ -96,16 +96,11 @@ export default function BloomRitualPage() {
   const [gestureIndex, setGestureIndex] = useState(null);
   const [bloomIndex, setBloomIndex] = useState(null);
 
-  const [showBloom, setShowBloom] = useState(false);
-  const [showCompletion, setShowCompletion] = useState(false);
-  const [showOutro, setShowOutro] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
+  // ⭐ Single mode state machine
+  const [mode, setMode] = useState("loading"); 
+  // modes: loading → intro → bloom → completion → outro → sanctuary
 
-  // ⭐ NEW: Prevents intro flicker
-  const [pageReady, setPageReady] = useState(false);
-  useEffect(() => {
-    setPageReady(true);
-  }, []);
+  const [videoEnded, setVideoEnded] = useState(false);
 
   /* -----------------------------------------------------
      🌙 DAILY LOCKOUT — AUTO-OPEN BLOOM IF DONE TODAY
@@ -118,11 +113,12 @@ export default function BloomRitualPage() {
       const savedBloom = localStorage.getItem("todayBloomIndex");
       if (savedBloom !== null) {
         setBloomIndex(parseInt(savedBloom));
-        setShowBloom(true);
+        setMode("sanctuary"); // ⭐ Directly show achievement mode
       }
       return;
     }
 
+    // NEW DAY → generate new gesture + bloom
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
 
@@ -141,6 +137,8 @@ export default function BloomRitualPage() {
       "usedBlooms",
       JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
     );
+
+    setMode("intro");
   }, []);
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
@@ -171,11 +169,10 @@ export default function BloomRitualPage() {
       <Navigation />
 
       {/* -----------------------------------------------------
-         🌸 HERO + GESTURE BOX (only when intro is active)
+         🌸 INTRO MODE — Gesture Box
       ----------------------------------------------------- */}
-      {pageReady && !showBloom && !showCompletion && !showOutro && (
+      {mode === "intro" && (
         <>
-          {/* HERO */}
           <section className="pt-28 pb-10 text-center animate-fadeIn">
             <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
               Sanctuary • Bloom Ritual
@@ -195,7 +192,6 @@ export default function BloomRitualPage() {
             </p>
           </section>
 
-          {/* GESTURE BOX */}
           <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
             <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
               <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
@@ -208,8 +204,8 @@ export default function BloomRitualPage() {
 
               <button
                 onClick={() => {
-                  setShowBloom(true);
                   setVideoEnded(false);
+                  setMode("bloom");
                 }}
                 className="
                   mt-4 px-10 py-3 rounded-full
@@ -228,12 +224,11 @@ export default function BloomRitualPage() {
       )}
 
       {/* -----------------------------------------------------
-         🌸 FULLSCREEN BLOOM REVEAL — CINEMATIC MODE
+         🌸 BLOOM MODE — Fullscreen Video
       ----------------------------------------------------- */}
-      {showBloom && !showCompletion && !showOutro && (
+      {mode === "bloom" && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
 
-          {/* FULLSCREEN VIDEO */}
           <video
             key={bloomSrc}
             src={bloomSrc}
@@ -245,14 +240,11 @@ export default function BloomRitualPage() {
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {/* Soft glow overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
 
-          {/* BUTTONS — only appear after video ends */}
           {videoEnded && (
             <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
 
-              {/* REPLAY BUTTON */}
               <button
                 onClick={() => {
                   setVideoEnded(false);
@@ -272,13 +264,11 @@ export default function BloomRitualPage() {
                 Replay
               </button>
 
-              {/* CONTINUE BUTTON */}
               <button
                 onClick={() => {
-                  setShowBloom(false);
                   localStorage.setItem("todayBloomIndex", bloomIndex.toString());
                   localStorage.setItem("lastBloomDate", new Date().toDateString());
-                  setTimeout(() => setShowCompletion(true), 300);
+                  setMode("completion");
                 }}
                 className="
                   px-10 py-3 rounded-full 
@@ -296,9 +286,9 @@ export default function BloomRitualPage() {
       )}
 
       {/* -----------------------------------------------------
-         🌙 COMPLETION SCREEN
+         🌙 COMPLETION MODE
       ----------------------------------------------------- */}
-      {showCompletion && !showOutro && (
+      {mode === "completion" && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
           <div className="relative max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
 
@@ -312,10 +302,7 @@ export default function BloomRitualPage() {
             </p>
 
             <button
-              onClick={() => {
-                setShowCompletion(false);
-                setTimeout(() => setShowOutro(true), 300);
-              }}
+              onClick={() => setMode("outro")}
               className="
                 mt-2 px-10 py-3 rounded-full 
                 text-[11px] tracking-[0.22em] uppercase
@@ -331,9 +318,9 @@ export default function BloomRitualPage() {
       )}
 
       {/* -----------------------------------------------------
-         🌙 OUTRO SCREEN — RETURN TOMORROW
+         🌙 OUTRO MODE — Return Tomorrow
       ----------------------------------------------------- */}
-      {showOutro && (
+      {mode === "outro" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeInSlow">
           <div className="text-center px-10 animate-softRiseSlow">
 
@@ -352,10 +339,8 @@ export default function BloomRitualPage() {
 
             <button
               onClick={() => {
-                // ⭐ No flicker: do NOT show intro again
-                setShowOutro(false);
-                setShowBloom(true); // show the bloom video again
-                setVideoEnded(true); // show navigation immediately
+                setVideoEnded(false);
+                setMode("sanctuary");
               }}
               className="
                 mt-10 px-10 py-3 rounded-full 
@@ -368,6 +353,33 @@ export default function BloomRitualPage() {
             </button>
 
           </div>
+        </div>
+      )}
+
+      {/* -----------------------------------------------------
+         🌟 SANCTUARY MODE — Achievement Replay
+      ----------------------------------------------------- */}
+      {mode === "sanctuary" && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+
+          <video
+            key={bloomSrc}
+            src={bloomSrc}
+            autoPlay
+            muted
+            playsInline
+            loop={false}
+            onEnded={() => setVideoEnded(true)}
+            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+          />
+
+          {videoEnded && (
+            <div className="absolute bottom-20 w-full text-center animate-softRiseSlow">
+              <p className="text-[#C6A667] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_6px_rgba(0,0,0,0.55)]">
+                You bloomed today.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
