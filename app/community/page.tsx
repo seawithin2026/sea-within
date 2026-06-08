@@ -176,7 +176,7 @@ export default function CommunityPage() {
       </section>
 
       {/* CHAT MESSAGES */}
-      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-4">
+      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14">
         <div className="space-y-4 pb-24">
           {messages.length === 0 && (
             <div className="text-center py-20">
