@@ -71,7 +71,7 @@ export default async function SanctuaryPage() {
       {/* GRID SECTION */}
       <section className="max-w-6xl mx-auto px-6 pb-32">
         <h2 className="text-center text-2xl md:text-3xl font-light mb-12 tracking-wide">
-          Your 3‑Day Descent Into Self
+          Your Ritual Journey Into Self
         </h2>
 
         <div className="grid gap-10 md:grid-cols-3">
