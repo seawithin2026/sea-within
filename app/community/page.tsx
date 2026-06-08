@@ -161,7 +161,7 @@ export default function CommunityPage() {
     <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col">
       <Navigation />
 
-      <section className="pt-24 pb-6 px-6 text-center border-b border-white/5">
+      <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
         <ScrollReveal>
           <p className="font-whisper text-sm tracking-[6px] uppercase text-golden-400/40 mb-3">
             community circle
