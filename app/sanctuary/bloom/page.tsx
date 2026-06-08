@@ -191,70 +191,86 @@ export default function BloomRitualPage() {
       )}
 
       {/* BLOOM REVEAL */}
-      {showBloom && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
-          <div className="relative max-w-2xl w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-8 py-10 flex flex-col items-center gap-8 animate-softRise">
-            <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-              Your Bloom
-            </p>
+{showBloom && (
+  <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn px-4">
 
-            <div className="w-full aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
-              {!videoEnded ? (
-                <video
-                  key={bloomSrc}
-                  src={bloomSrc}
-                  autoPlay
-                  muted
-                  playsInline
-                  className="w-full h-full object-cover"
-                  onEnded={() => setVideoEnded(true)}
-                />
-              ) : (
-                <img
-                  src={bloomSrc.replace(".mp4", ".jpg")}
-                  alt="Bloom Final Frame"
-                  className="w-full h-full object-cover"
-                />
-              )}
-            </div>
+    {/* Title */}
+    <p className="uppercase text-[11px] tracking-[0.22em] text-white/40 mb-6 mt-6">
+      Your Bloom
+    </p>
 
-            <p className="text-sm md:text-base text-white/70 text-center max-w-md leading-relaxed">
-              This Bloom rose from the kindness you offered yourself —  
-              a quiet unfolding from the inner ocean you carry.
-            </p>
-
-            {videoEnded && (
-              <button
-                onClick={() => setVideoEnded(false)}
-                className="
-                  px-6 py-2 rounded-full 
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-white/30 text-white/80
-                  hover:bg-white/10 transition-all duration-500
-                "
-              >
-                Play Again
-              </button>
-            )}
-
-            <button
-              onClick={() => {
-                setShowBloom(false);
-                localStorage.setItem("lastBloomDate", new Date().toDateString());
-                setTimeout(() => setShowCompletion(true), 600);
-              }}
-              className="
-                mt-2 px-6 py-2 rounded-full 
-                text-[11px] tracking-[0.22em] uppercase
-                border border-white/30 text-white/80
-                hover:bg-white/10 transition-all duration-500
-              "
-            >
-              Close
-            </button>
-          </div>
-        </div>
+    {/* CINEMATIC VIDEO CONTAINER */}
+    <div
+      className="
+        w-full 
+        max-w-5xl 
+        h-[70vh] 
+        md:h-[80vh]
+        rounded-3xl 
+        overflow-hidden 
+        border border-white/10 
+        shadow-[0_0_80px_rgba(0,0,0,0.9)]
+      "
+    >
+      {!videoEnded ? (
+        <video
+          key={bloomSrc}
+          src={bloomSrc}
+          autoPlay
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+          onEnded={() => setVideoEnded(true)}
+        />
+      ) : (
+        <img
+          src={bloomSrc.replace(".mp4", ".jpg")}
+          alt="Bloom Final Frame"
+          className="w-full h-full object-cover"
+        />
       )}
+    </div>
+
+    {/* Description */}
+    <p className="text-sm md:text-base text-white/70 text-center max-w-md leading-relaxed mt-8">
+      This Bloom rose from the kindness you offered yourself —  
+      a quiet unfolding from the inner ocean you carry.
+    </p>
+
+    {/* Play Again */}
+    {videoEnded && (
+      <button
+        onClick={() => setVideoEnded(false)}
+        className="
+          mt-4 px-6 py-2 rounded-full 
+          text-[11px] tracking-[0.22em] uppercase
+          border border-white/30 text-white/80
+          hover:bg-white/10 transition-all duration-500
+        "
+      >
+        Play Again
+      </button>
+    )}
+
+    {/* Close */}
+    <button
+      onClick={() => {
+        setShowBloom(false);
+        localStorage.setItem("lastBloomDate", new Date().toDateString());
+        setTimeout(() => setShowCompletion(true), 600);
+      }}
+      className="
+        mt-6 px-10 py-3 rounded-full 
+        text-[11px] tracking-[0.22em] uppercase
+        border border-white/30 text-white/80
+        hover:bg-white/10 transition-all duration-500
+      "
+    >
+      Close
+    </button>
+  </div>
+)}
+
 
       {/* COMPLETION SCREEN */}
       {showCompletion && (
