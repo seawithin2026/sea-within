@@ -189,8 +189,7 @@ export default function BloomRitualPage() {
           </div>
         </section>
       )}
-
-      {/* BLOOM REVEAL */}
+{/* BLOOM REVEAL */}
 {showBloom && (
   <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn px-4">
 
@@ -212,23 +211,13 @@ export default function BloomRitualPage() {
         shadow-[0_0_80px_rgba(0,0,0,0.9)]
       "
     >
-      {!videoEnded ? (
-        <video
-          key={bloomSrc}
-          src={bloomSrc}
-          autoPlay
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-          onEnded={() => setVideoEnded(true)}
-        />
-      ) : (
-        <img
-          src={bloomSrc.replace(".mp4", ".jpg")}
-          alt="Bloom Final Frame"
-          className="w-full h-full object-cover"
-        />
-      )}
+      <video
+        src={bloomSrc}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+      />
     </div>
 
     {/* Description */}
@@ -236,21 +225,6 @@ export default function BloomRitualPage() {
       This Bloom rose from the kindness you offered yourself —  
       a quiet unfolding from the inner ocean you carry.
     </p>
-
-    {/* Play Again */}
-    {videoEnded && (
-      <button
-        onClick={() => setVideoEnded(false)}
-        className="
-          mt-4 px-6 py-2 rounded-full 
-          text-[11px] tracking-[0.22em] uppercase
-          border border-white/30 text-white/80
-          hover:bg-white/10 transition-all duration-500
-        "
-      >
-        Play Again
-      </button>
-    )}
 
     {/* Close */}
     <button
@@ -270,6 +244,7 @@ export default function BloomRitualPage() {
     </button>
   </div>
 )}
+
 
 
       {/* COMPLETION SCREEN */}
