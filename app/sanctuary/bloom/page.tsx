@@ -191,7 +191,7 @@ export default function BloomRitualPage() {
       )}
 {/* BLOOM REVEAL */}
 {showBloom && (
-  <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn px-4">
+  <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn px-4 pt-20 md:pt-28">
 
     {/* Title */}
     <p className="uppercase text-[11px] tracking-[0.22em] text-white/40 mb-6 mt-6">
@@ -244,7 +244,6 @@ export default function BloomRitualPage() {
     </button>
   </div>
 )}
-
 
 
       {/* COMPLETION SCREEN */}
