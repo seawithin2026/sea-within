@@ -269,9 +269,10 @@ export default function CommunityPage() {
               )}
 
               {/* TIMESTAMP */}
-              <p className="font-body text-[10px] text-[#C8B08A] drop-shadow-[0_0_4px_rgba(0,0,0,0.55)] mt-2 text-right">
-                {formatTime(msg.created_at)}
-              </p>
+            <p className="font-body text-[10px] text-[#C6A667] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
+  {formatTime(msg.created_at)}
+</p>
+
             </>
           )}
         </div>
