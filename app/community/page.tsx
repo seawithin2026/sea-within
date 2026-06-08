@@ -154,7 +154,7 @@ export default function CommunityPage() {
 
   {/* Bright Jellyfish Image */}
   <img
-    src="/images/jellyfish-bg.png"
+    src="/images/jellyfish-bg.jpg"
     alt="jellyfish background"
     className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
   />
@@ -243,9 +243,10 @@ export default function CommunityPage() {
 
                     )}
 
-                    <p className="font-body text-sm text-sea-100/80 leading-relaxed">
-                      {msg.message}
-                    </p>
+<p className="font-body text-sm text-white leading-relaxed">
+  {msg.message}
+</p>
+
 
                     {msg.is_own && (
                       <div className="flex gap-4 mt-3">
