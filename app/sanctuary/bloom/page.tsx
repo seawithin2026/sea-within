@@ -101,6 +101,12 @@ export default function BloomRitualPage() {
   const [showOutro, setShowOutro] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
 
+  // ⭐ NEW: Prevents intro flicker
+  const [pageReady, setPageReady] = useState(false);
+  useEffect(() => {
+    setPageReady(true);
+  }, []);
+
   /* -----------------------------------------------------
      🌙 DAILY LOCKOUT — AUTO-OPEN BLOOM IF DONE TODAY
   ----------------------------------------------------- */
@@ -108,7 +114,6 @@ export default function BloomRitualPage() {
     const last = localStorage.getItem("lastBloomDate");
     const today = new Date().toDateString();
 
-    // If already completed today → auto-open bloom fullscreen
     if (last === today) {
       const savedBloom = localStorage.getItem("todayBloomIndex");
       if (savedBloom !== null) {
@@ -118,7 +123,6 @@ export default function BloomRitualPage() {
       return;
     }
 
-    // NEW DAY → generate new gesture + bloom
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
 
@@ -154,7 +158,6 @@ export default function BloomRitualPage() {
         localStorage.removeItem("usedBlooms");
 
         alert("🌸 Bloom Ritual Reset (Dev Mode)");
-
         window.location.reload();
       }
     };
@@ -162,67 +165,72 @@ export default function BloomRitualPage() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* HERO */}
-      {!showBloom && !showOutro && (
-        <section className="pt-28 pb-10 text-center animate-fadeIn">
-          <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
-            Sanctuary • Bloom Ritual
-          </p>
-
-          <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-            Your Bloom Ritual
-          </h1>
-
-          <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
-            There is a place inside you where the world quiets —  
-            where your breath gathers like light on water,  
-            where the smallest kindness you offer yourself becomes a tide rising.  
-            The Bloom is not a flower on a screen.  
-            It is the reflection of your own becoming —  
-            a reminder that even the gentlest moment of care can awaken something luminous within you.
-          </p>
-        </section>
-      )}
-
-      {/* GESTURE BOX */}
-      {!showBloom && !showOutro && (
-        <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
-          <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
-            <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-              Your Moment of Nourishment
+      {/* -----------------------------------------------------
+         🌸 HERO + GESTURE BOX (only when intro is active)
+      ----------------------------------------------------- */}
+      {pageReady && !showBloom && !showCompletion && !showOutro && (
+        <>
+          {/* HERO */}
+          <section className="pt-28 pb-10 text-center animate-fadeIn">
+            <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
+              Sanctuary • Bloom Ritual
             </p>
 
-            <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
-              {gesture}
-            </p>
+            <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+              Your Bloom Ritual
+            </h1>
 
-            <button
-              onClick={() => {
-                setShowBloom(true);
-                setVideoEnded(false);
-              }}
-              className="
-                mt-4 px-10 py-3 rounded-full
-                text-[11px] tracking-[0.22em] uppercase
-                border border-white/20 text-white/80
-                hover:border-white/40 hover:text-white
-                transition-all duration-500
-                backdrop-blur-sm
-              "
-            >
-              I offered myself a moment
-            </button>
-          </div>
-        </section>
+            <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
+              There is a place inside you where the world quiets —  
+              where your breath gathers like light on water,  
+              where the smallest kindness you offer yourself becomes a tide rising.  
+              The Bloom is not a flower on a screen.  
+              It is the reflection of your own becoming —  
+              a reminder that even the gentlest moment of care can awaken something luminous within you.
+            </p>
+          </section>
+
+          {/* GESTURE BOX */}
+          <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
+            <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
+              <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
+                Your Moment of Nourishment
+              </p>
+
+              <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
+                {gesture}
+              </p>
+
+              <button
+                onClick={() => {
+                  setShowBloom(true);
+                  setVideoEnded(false);
+                }}
+                className="
+                  mt-4 px-10 py-3 rounded-full
+                  text-[11px] tracking-[0.22em] uppercase
+                  border border-white/20 text-white/80
+                  hover:border-white/40 hover:text-white
+                  transition-all duration-500
+                  backdrop-blur-sm
+                "
+              >
+                I offered myself a moment
+              </button>
+            </div>
+          </section>
+        </>
       )}
+
       {/* -----------------------------------------------------
          🌸 FULLSCREEN BLOOM REVEAL — CINEMATIC MODE
       ----------------------------------------------------- */}
-      {showBloom && (
+      {showBloom && !showCompletion && !showOutro && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
 
           {/* FULLSCREEN VIDEO */}
@@ -270,7 +278,7 @@ export default function BloomRitualPage() {
                   setShowBloom(false);
                   localStorage.setItem("todayBloomIndex", bloomIndex.toString());
                   localStorage.setItem("lastBloomDate", new Date().toDateString());
-                  setTimeout(() => setShowCompletion(true), 600);
+                  setTimeout(() => setShowCompletion(true), 300);
                 }}
                 className="
                   px-10 py-3 rounded-full 
@@ -286,10 +294,11 @@ export default function BloomRitualPage() {
           )}
         </div>
       )}
+
       {/* -----------------------------------------------------
-         🌙 COMPLETION SCREEN (your original version)
+         🌙 COMPLETION SCREEN
       ----------------------------------------------------- */}
-      {showCompletion && (
+      {showCompletion && !showOutro && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
           <div className="relative max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
 
@@ -305,7 +314,7 @@ export default function BloomRitualPage() {
             <button
               onClick={() => {
                 setShowCompletion(false);
-                setTimeout(() => setShowOutro(true), 600);
+                setTimeout(() => setShowOutro(true), 300);
               }}
               className="
                 mt-2 px-10 py-3 rounded-full 
@@ -322,7 +331,7 @@ export default function BloomRitualPage() {
       )}
 
       {/* -----------------------------------------------------
-         🌙 OUTRO SCREEN (your original version)
+         🌙 OUTRO SCREEN — RETURN TOMORROW
       ----------------------------------------------------- */}
       {showOutro && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeInSlow">
@@ -343,9 +352,10 @@ export default function BloomRitualPage() {
 
             <button
               onClick={() => {
+                // ⭐ No flicker: do NOT show intro again
                 setShowOutro(false);
-                setShowBloom(false);
-                setShowCompletion(false);
+                setShowBloom(true); // show the bloom video again
+                setVideoEnded(true); // show navigation immediately
               }}
               className="
                 mt-10 px-10 py-3 rounded-full 
