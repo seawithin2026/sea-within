@@ -150,18 +150,21 @@ export default function CommunityPage() {
     <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
 
       {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}
-      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+     <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
 
-        <img
-          src="/images/jellyfish-bg.png"
-          alt="jellyfish background"
-          className="absolute w-full h-full object-cover opacity-[0.85] animate-slowFloat"
-        />
+  {/* Bright Jellyfish Image */}
+  <img
+    src="/images/jellyfish-bg.png"
+    alt="jellyfish background"
+    className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
+  />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-[#02050a]/10 via-[#030a14]/10 to-[#05070b]/20"></div>
+  {/* Ultra-light gradient (almost invisible) */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-black/10"></div>
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.18),transparent_70%)]"></div>
-      </div>
+  {/* Soft glow to lift brightness */}
+  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_70%)]"></div>
+</div>
 
       <Navigation />
 
