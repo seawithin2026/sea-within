@@ -3,27 +3,42 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-// SEA WITHIN USERNAME RULES
+// SEA WITHIN USERNAME RULES — with gentle emoji support
 function isUsernameAllowed(username: string): boolean {
-  const clean = username.toLowerCase().trim();
+  const clean = username.trim().toLowerCase();
 
-  // No profanity, no slurs, no sexual content, no violence
-  const banned = [
-    "fuck", "shit", "bitch", "cunt", "slut", "whore",
-    "kill", "murder", "suicide", "rape",
+  if (!clean) return false;
+
+  // Block profanity, slurs, sexual content, violence
+  const bannedWords = [
+    "fuck","shit","bitch","cunt","slut","whore",
+    "dick","cock","pussy","sex","sexy","horny",
+    "kill","murder","suicide","rape","blood","violence","gun"
   ];
+  if (bannedWords.some(word => clean.includes(word))) return false;
 
-  if (banned.some((word) => clean.includes(word))) return false;
+  // Block dark / violent / sexual emojis
+  const bannedEmojis = [
+    "💀","☠️","🔪","🩸","🧟","👿","😈","🕷️",
+    "🍆","🍑","💦","🔞","😏","👅"
+  ];
+  if (bannedEmojis.some(e => username.includes(e))) return false;
 
-  // Only letters, numbers, underscores — no emojis, no symbols
-  const allowedPattern = /^[a-zA-Z0-9_]+$/;
+  // Allow letters, spaces, hyphens, apostrophes, and emojis
+  // Block numbers and symbols except gentle punctuation
+  const allowedPattern = /^[a-zA-Z\s'’-🌸✨🌿🪽🕊️💫🌙🌞🌱🌷🌻🌼🌟]+$/u;
   if (!allowedPattern.test(username)) return false;
 
+  // Word count: allow poetic names (1–4 words)
+  const words = clean.split(/\s+/);
+  if (words.length > 4) return false;
+
   // Length rules
-  if (username.length < 3 || username.length > 20) return false;
+  if (username.length < 3 || username.length > 30) return false;
 
   return true;
 }
+
 
 export default function UsernameModal({ onComplete }: { onComplete: () => void }) {
   const supabase = createClient();
