@@ -17,6 +17,12 @@ function isUsernameAllowed(username: string): boolean {
   ];
   if (bannedWords.some(word => clean.includes(word))) return false;
 
+  // Block any form of "Sea Within" — reserved for the creator
+const reserved = ["sea within", "seawithin", "sea_within", "sea-within", "the sea within"];
+if (reserved.some(r => clean.replace(/\s+/g, "") === r.replace(/\s+/g, ""))) {
+  return false;
+}
+
   // Block dark / violent / sexual emojis
   const bannedEmojis = [
     "💀","☠️","🔪","🩸","🧟","👿","😈","🕷️",
