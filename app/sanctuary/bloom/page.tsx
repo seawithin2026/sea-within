@@ -106,13 +106,21 @@ export default function BloomRitualPage() {
      🌙 DAILY LOCKOUT CHECK
   ----------------------------------------------------- */
   useEffect(() => {
-    const last = localStorage.getItem("lastBloomDate");
-    const today = new Date().toDateString();
+ const last = localStorage.getItem("lastBloomDate");
+const today = new Date().toDateString();
 
-    if (last === today) {
-      setShowOutro(true);
-      return;
-    }
+if (last === today) {
+  // They already completed today’s ritual
+  const savedBloom = localStorage.getItem("todayBloomIndex");
+
+  if (savedBloom !== null) {
+    setBloomIndex(parseInt(savedBloom));
+    setShowBloom(true); // Show the bloom viewer immediately
+  }
+
+  return;
+}
+
 
     const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
     const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
@@ -230,7 +238,9 @@ export default function BloomRitualPage() {
     <button
       onClick={() => {
         setShowBloom(false);
+        localStorage.setItem("todayBloomIndex", bloomIndex.toString());
         localStorage.setItem("lastBloomDate", new Date().toDateString());
+
         setTimeout(() => setShowCompletion(true), 600);
       }}
       className="
