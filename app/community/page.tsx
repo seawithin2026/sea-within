@@ -177,9 +177,10 @@ export default function CommunityPage() {
           <h1 className="font-display text-2xl md:text-3xl font-light text-sea-100">
             The Gathering
           </h1>
-          <p className="font-body text-sm text-white/25 mt-2">
-            A space of warmth, support, and shared light.
-          </p>
+         <p className="font-body text-sm text-white/75 mt-2">
+  A space of warmth, support, and shared light.
+</p>
+
         </ScrollReveal>
       </section>
 
