@@ -43,18 +43,12 @@ export default function CommunityPage() {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Smooth scroll
+  // Only scroll when YOU send a message
   useEffect(() => {
-    const el = messagesEndRef.current;
-    if (!el) return;
-
-    el.scrollIntoView({ behavior: 'auto' });
-
-    const timeout = setTimeout(() => {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
-
-    return () => clearTimeout(timeout);
+    if (isSubmitting) {
+      const el = messagesEndRef.current;
+      el?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   const fetchMessages = async () => {
@@ -156,15 +150,17 @@ export default function CommunityPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col">
+    <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col relative overflow-hidden">
 
-      {/* 🌊 JELLYFISH BACKGROUND */}
-      <div className="fixed inset-0 -z-10 opacity-[0.12] pointer-events-none">
+      {/* 🌊 CINEMATIC JELLYFISH BACKGROUND */}
+      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
         <img
-          src="/images/jellyfish-bg.jpg"
-          className="w-full h-full object-cover"
+          src="/images/jellyfish-bg.png"
           alt="jellyfish background"
+          className="absolute w-full h-full object-cover opacity-[0.22] animate-slowFloat"
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#02050a]/80 via-[#030a14]/60 to-[#05070b]/95"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),transparent_60%)]"></div>
       </div>
 
       <Navigation />
@@ -203,7 +199,6 @@ export default function CommunityPage() {
               className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`chat-bubble ${msg.is_own ? 'own' : ''}`}>
-                {/* EDIT MODE */}
                 {editingId === msg.id ? (
                   <>
                     <textarea
@@ -250,7 +245,7 @@ export default function CommunityPage() {
                           Edit
                         </button>
 
-                          <button
+                        <button
                           onClick={() => deleteMessage(msg.id)}
                           className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
                         >
@@ -339,6 +334,16 @@ export default function CommunityPage() {
         .chat-bubble.own:hover {
           background: rgba(229, 173, 67, 0.12);
           border-color: rgba(229, 173, 67, 0.2);
+        }
+
+        @keyframes slowFloat {
+          0% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-18px) scale(1.015); }
+          100% { transform: translateY(0px) scale(1); }
+        }
+
+        .animate-slowFloat {
+          animation: slowFloat 22s ease-in-out infinite;
         }
 
         @media (max-width: 640px) {
