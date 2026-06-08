@@ -43,15 +43,13 @@ export default function CommunityPage() {
     return () => clearInterval(interval);
   }, [user]);
 
-  // Smooth + stable scroll behavior
+  // Smooth scroll
   useEffect(() => {
     const el = messagesEndRef.current;
     if (!el) return;
 
-    // Instant scroll on first load
     el.scrollIntoView({ behavior: 'auto' });
 
-    // Smooth scroll after slight delay
     const timeout = setTimeout(() => {
       el.scrollIntoView({ behavior: 'smooth' });
     }, 50);
@@ -159,6 +157,16 @@ export default function CommunityPage() {
 
   return (
     <main className="min-h-[100dvh] bg-sanctuary-dark flex flex-col">
+
+      {/* 🌊 JELLYFISH BACKGROUND */}
+      <div className="fixed inset-0 -z-10 opacity-[0.12] pointer-events-none">
+        <img
+          src="/images/jellyfish-bg.jpg"
+          className="w-full h-full object-cover"
+          alt="jellyfish background"
+        />
+      </div>
+
       <Navigation />
 
       <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
@@ -242,7 +250,7 @@ export default function CommunityPage() {
                           Edit
                         </button>
 
-                        <button
+                          <button
                           onClick={() => deleteMessage(msg.id)}
                           className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
                         >
