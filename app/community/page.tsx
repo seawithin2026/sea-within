@@ -284,11 +284,12 @@ export default function CommunityPage() {
       )}
 
       {/* INPUT BAR */}
-      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-black/40 backdrop-blur-xl">
+      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
         <div className="max-w-3xl mx-auto">
-          <p className="font-body text-[10px] text-white/15 text-center mb-3 tracking-wide">
-            This space is for uplifting, reflective, and supportive communication.
-          </p>
+        <p className="font-body text-[10px] text-white/70 text-center mb-3 tracking-wide">
+  This space is for uplifting, reflective, and supportive communication.
+</p>
+
 
           <form onSubmit={handleSend} className="flex gap-3">
             <input
