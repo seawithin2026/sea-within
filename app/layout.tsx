@@ -36,6 +36,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
+
+      <head>
+        {/* ⭐ Preload all important background images */}
+        <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
+        <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
+        {/* Add as many as you want */}
+      </head>
+
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
         <AudioProvider>
           <Navigation />
@@ -45,4 +53,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
 
