@@ -173,24 +173,40 @@ export default function BloomRitualPage() {
       ----------------------------------------------------- */}
       {mode === "intro" && (
         <>
-          <section className="pt-28 pb-10 text-center animate-fadeIn">
-            <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
-              Sanctuary • Bloom Ritual
-            </p>
+         {/* HERO WITH CINEMATIC FLOWER BACKGROUND */}
+<section 
+  className="relative pt-28 pb-10 text-center animate-fadeIn overflow-hidden"
+>
+  {/* Background image */}
+  <div 
+    className="absolute inset-0 bg-cover bg-center opacity-[0.22] blur-[2px]"
+    style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+  ></div>
 
-            <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-              Your Bloom Ritual
-            </h1>
+  {/* Soft gradient overlay */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
 
-            <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
-              There is a place inside you where the world quiets —  
-              where your breath gathers like light on water,  
-              where the smallest kindness you offer yourself becomes a tide rising.  
-              The Bloom is not a flower on a screen.  
-              It is the reflection of your own becoming —  
-              a reminder that even the gentlest moment of care can awaken something luminous within you.
-            </p>
-          </section>
+  {/* Content */}
+  <div className="relative z-10">
+    <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
+      Sanctuary • Bloom Ritual
+    </p>
+
+    <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+      Your Bloom Ritual
+    </h1>
+
+    <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
+      There is a place inside you where the world quiets —  
+      where your breath gathers like light on water,  
+      where the smallest kindness you offer yourself becomes a tide rising.  
+      The Bloom is not a flower on a screen.  
+      It is the reflection of your own becoming —  
+      a reminder that even the gentlest moment of care can awaken something luminous within you.
+    </p>
+  </div>
+</section>
+
 
           <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
             <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
