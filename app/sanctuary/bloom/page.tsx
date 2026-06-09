@@ -189,7 +189,7 @@ export default function BloomRitualPage() {
 
   {/* Content */}
   <div className="relative z-10">
-    <p className="text-[11px] tracking-[0.28em] uppercase text-white/40">
+    <p className="text-[11px] tracking-[0.28em] uppercase text-[#3A8C8C]">
       Sanctuary • Bloom Ritual
     </p>
 
@@ -197,7 +197,7 @@ export default function BloomRitualPage() {
       Your Bloom Ritual
     </h1>
 
-    <p className="mt-6 text-sm md:text-base text-white/60 max-w-xl mx-auto leading-relaxed">
+    <p className="mt-6 text-sm md:text-base text-[#3A8C8C] max-w-xl mx-auto leading-relaxed">
       There is a place inside you where the world quiets —  
       where your breath gathers like light on water,  
       where the smallest kindness you offer yourself becomes a tide rising.  
