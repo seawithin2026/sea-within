@@ -168,17 +168,16 @@ export default function CommunityPage() {
 
       <Navigation />
 
-      {/* TITLE */}
-      <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
-        <ScrollReveal>
-      <p className="font-whisper text-sm tracking-[6px] uppercase text-[#B8860B] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
-  community circle
-</p>
+{/* TITLE */}
+<section className="pt-32 md:pt-40 pb-10 px-6 text-center">
+  <ScrollReveal>
+    <p className="font-whisper text-sm tracking-[6px] uppercase text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
+      community circle
+    </p>
 
 
 
-
-          <h1 className="font-display text-2xl md:text-3xl font-light text-sea-100">
+          <h1 className="font-display text-2xl md:text-3xl font-light text-[#A06A6A] ">
             The Gathering
           </h1>
          <p className="font-body text-sm text-white/75 mt-2">
@@ -194,10 +193,10 @@ export default function CommunityPage() {
 
     {messages.length === 0 && (
       <div className="text-center py-20">
-        <p className="font-display text-xl text-white/15 font-light">
+        <p className="font-display text-xl text-[#A06A6A] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
           The circle is open.
         </p>
-        <p className="font-body text-sm text-white/10 mt-3">
+        <p className="font-body text-sm text-[#A06A6A] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
           Be the first to share your light.
         </p>
       </div>
@@ -239,13 +238,13 @@ export default function CommunityPage() {
             <>
               {/* USERNAME */}
               {!msg.is_own && (
-                <p className="font-body text-[11px] tracking-[1px] uppercase text-[#8B6508] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+                <p className="font-body text-[11px] tracking-[1px] uppercase text-[#A06A6A] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
                   {msg.author}
                 </p>
               )}
 
               {/* MESSAGE TEXT */}
-              <p className="font-body text-sm text-[#E8D7B8] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+              <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                 {msg.message}
               </p>
 
@@ -269,7 +268,7 @@ export default function CommunityPage() {
               )}
 
               {/* TIMESTAMP */}
-          <p className="font-body text-[11px] text-[#C6A667] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
+          <p className="font-body text-[11px] text-[#A06A6A] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
   {formatTime(msg.created_at)}
 </p>
 
