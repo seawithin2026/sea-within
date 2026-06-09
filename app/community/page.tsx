@@ -309,7 +309,7 @@ export default function CommunityPage() {
               placeholder="Share something uplifting..."
               maxLength={300}
               className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
-                       font-body text-sm text-sea-100 placeholder:text-white/80
+                       font-body text-sm text-sea-100 placeholder:text-[#3A8C8C]
                        focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
                        transition-all duration-300"
             />
