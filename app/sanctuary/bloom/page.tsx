@@ -168,210 +168,230 @@ export default function BloomRitualPage() {
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* -----------------------------------------------------
-         🌸 INTRO MODE — Gesture Box
-      ----------------------------------------------------- */}
-      {mode === "intro" && (
-        <>
-         {/* HERO WITH CINEMATIC FLOWER BACKGROUND */}
-<section 
-  className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden"
->
-  {/* Background image */}
-  <div 
-  className="absolute inset-0 bg-cover bg-center"
-  style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-></div>
+{/* -----------------------------------------------------
+   🌸 INTRO MODE — Gesture Box (FIXED SPACING)
+----------------------------------------------------- */}
+{mode === "intro" && (
+  <section 
+    className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden"
+  >
+    {/* Background image */}
+    <div 
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+    ></div>
 
+    {/* Soft gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-  {/* Soft gradient overlay */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
+    {/* Content */}
+    <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
 
-  {/* Content */}
-   <div className="relative z-10 px-6 pt-32 md:pt-40 pb-10">
-    <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
-      Sanctuary • Bloom Ritual
-    </p>
+      <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
+        Sanctuary • Bloom Ritual
+      </p>
 
-    <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-      Your Bloom Ritual
-    </h1>
+      <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+        Your Bloom Ritual
+      </h1>
 
-    <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
-      There is a place inside you where the world quiets —  
-      where your breath gathers like light on water,  
-      where the smallest kindness you offer yourself becomes a tide rising.  
-      The Bloom is not a flower on a screen.  
-      It is the reflection of your own becoming —  
-      a reminder that even the gentlest moment of care can awaken something luminous within you.
-    </p>
+      <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
+        There is a place inside you where the world quiets —  
+        where your breath gathers like light on water,  
+        where the smallest kindness you offer yourself becomes a tide rising.  
+        The Bloom is not a flower on a screen.  
+        It is the reflection of your own becoming —  
+        a reminder that even the gentlest moment of care can awaken something luminous within you.
+      </p>
+
+      {/* 🔹 RECTANGLE MOVED UP — now sits right under intro text */}
+      <div className="mt-6 rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8 animate-softRise">
+
+        <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
+          Your Moment of Nourishment
+        </p>
+
+        <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
+          {gesture}
+        </p>
+
+        <button
+          onClick={() => {
+            setVideoEnded(false);
+            setMode("bloom");
+          }}
+          className="
+            mt-4 px-10 py-3 rounded-full
+            text-[11px] tracking-[0.22em] uppercase
+            border border-white/20 text-white/80
+            hover:border-white/40 hover:text-white
+            transition-all duration-500
+            backdrop-blur-sm
+          "
+        >
+          I offered myself a moment
+        </button>
+
+      </div>
+    </div>
+  </section>
+)}
+
+{/* -----------------------------------------------------
+   🌸 BLOOM MODE — Fullscreen Video
+----------------------------------------------------- */}
+{mode === "bloom" && (
+  <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+
+    <video
+      key={bloomSrc}
+      src={bloomSrc}
+      autoPlay
+      muted
+      playsInline
+      loop={false}
+      onEnded={() => setVideoEnded(true)}
+      className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+    />
+
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
+
+    {videoEnded && (
+      <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
+
+        <button
+          onClick={() => {
+            setVideoEnded(false);
+            const vid = document.querySelector("video");
+            if (vid) {
+              vid.currentTime = 0;
+              vid.play();
+            }
+          }}
+          className="
+            px-10 py-3 rounded-full 
+            text-[11px] tracking-[0.22em] uppercase
+            border border-white/40 text-white/90
+            hover:bg-white/10 transition-all duration-500
+          "
+        >
+          Replay
+        </button>
+
+        <button
+          onClick={() => {
+            localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+            localStorage.setItem("lastBloomDate", new Date().toDateString());
+            setMode("completion");
+          }}
+          className="
+            px-10 py-3 rounded-full 
+            text-[11px] tracking-[0.22em] uppercase
+            border border-white/40 text-white/90
+            hover:bg-white/10 transition-all duration-500
+          "
+        >
+          Continue
+        </button>
+
+      </div>
+    )}
   </div>
-</section>
+)}
 
+{/* -----------------------------------------------------
+   🌙 COMPLETION MODE — FIXED WITH RECTANGLE
+----------------------------------------------------- */}
+{mode === "completion" && (
+  <div className="fixed inset-0 z-40 flex items-center justify-center overflow-hidden animate-fadeIn">
 
-          <section className="mt-10 px-6 md:px-10 lg:px-16 max-w-3xl mx-auto animate-softRise">
-            <div className="rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8">
-              <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-                Your Moment of Nourishment
-              </p>
+    {/* Background image */}
+    <div 
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+    ></div>
 
-              <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
-                {gesture}
-              </p>
+    {/* Soft gradient */}
+    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-              <button
-                onClick={() => {
-                  setVideoEnded(false);
-                  setMode("bloom");
-                }}
-                className="
-                  mt-4 px-10 py-3 rounded-full
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-white/20 text-white/80
-                  hover:border-white/40 hover:text-white
-                  transition-all duration-500
-                  backdrop-blur-sm
-                "
-              >
-                I offered myself a moment
-              </button>
-            </div>
-          </section>
-        </>
-      )}
+    {/* Rectangle card */}
+    <div className="relative z-10 max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
 
-      {/* -----------------------------------------------------
-         🌸 BLOOM MODE — Fullscreen Video
-      ----------------------------------------------------- */}
-      {mode === "bloom" && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+      <h2 className="text-2xl tracking-[0.14em] uppercase text-white/90">
+        Ritual Complete
+      </h2>
 
-          <video
-            key={bloomSrc}
-            src={bloomSrc}
-            autoPlay
-            muted
-            playsInline
-            loop={false}
-            onEnded={() => setVideoEnded(true)}
-            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-          />
+      <p className="text-white/70 text-center leading-relaxed max-w-md">
+        You offered yourself a moment of nourishment.  
+        Something inside you softened, opened, and rose.
+      </p>
 
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
+      <button
+        onClick={() => setMode("outro")}
+        className="
+          mt-2 px-10 py-3 rounded-full 
+          text-[11px] tracking-[0.22em] uppercase
+          border border-white/30 text-white/80
+          hover:bg-white/10 transition-all duration-500
+        "
+      >
+        Continue
+      </button>
 
-          {videoEnded && (
-            <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
+    </div>
+  </div>
+)}
 
-              <button
-                onClick={() => {
-                  setVideoEnded(false);
-                  const vid = document.querySelector("video");
-                  if (vid) {
-                    vid.currentTime = 0;
-                    vid.play();
-                  }
-                }}
-                className="
-                  px-10 py-3 rounded-full 
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-white/40 text-white/90
-                  hover:bg-white/10 transition-all duration-500
-                "
-              >
-                Replay
-              </button>
+{/* -----------------------------------------------------
+   🌙 OUTRO MODE — FIXED (NO RECTANGLE)
+----------------------------------------------------- */}
+{mode === "outro" && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden animate-fadeInSlow">
 
-              <button
-                onClick={() => {
-                  localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-                  localStorage.setItem("lastBloomDate", new Date().toDateString());
-                  setMode("completion");
-                }}
-                className="
-                  px-10 py-3 rounded-full 
-                  text-[11px] tracking-[0.22em] uppercase
-                  border border-white/40 text-white/90
-                  hover:bg-white/10 transition-all duration-500
-                "
-              >
-                Continue
-              </button>
+    {/* Background image */}
+    <div 
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+    ></div>
 
-            </div>
-          )}
-        </div>
-      )}
+    {/* Soft gradient */}
+    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-      {/* -----------------------------------------------------
-         🌙 COMPLETION MODE
-      ----------------------------------------------------- */}
-      {mode === "completion" && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-fadeIn">
-          <div className="relative max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/40 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
+    {/* Content */}
+    <div className="relative z-10 text-center px-10 animate-softRiseSlow">
 
-            <h2 className="text-2xl tracking-[0.14em] uppercase text-white/90">
-              Ritual Complete
-            </h2>
+      <p className="text-[11px] tracking-[0.28em] uppercase text-white/70 mb-6">
+        Sanctuary • Bloom Ritual
+      </p>
 
-            <p className="text-white/70 text-center leading-relaxed max-w-md">
-              You offered yourself a moment of nourishment.  
-              Something inside you softened, opened, and rose.
-            </p>
+      <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-white mb-6">
+        Your Ritual for Today is Complete
+      </h2>
 
-            <button
-              onClick={() => setMode("outro")}
-              className="
-                mt-2 px-10 py-3 rounded-full 
-                text-[11px] tracking-[0.22em] uppercase
-                border border-white/30 text-white/80
-                hover:bg-white/10 transition-all duration-500
-              "
-            >
-              Continue
-            </button>
+      <p className="text-white text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+        Return tomorrow for your next Bloom —  
+        a new unfolding, a new breath, a new moment of becoming.
+      </p>
 
-          </div>
-        </div>
-      )}
+      <button
+        onClick={() => {
+          setVideoEnded(false);
+          setMode("sanctuary");
+        }}
+        className="
+          mt-10 px-10 py-3 rounded-full 
+          text-[11px] tracking-[0.22em] uppercase
+          border border-white/30 text-white/80
+          hover:bg-white/10 transition-all duration-500
+        "
+      >
+        Return to Sanctuary
+      </button>
 
-      {/* -----------------------------------------------------
-         🌙 OUTRO MODE — Return Tomorrow
-      ----------------------------------------------------- */}
-      {mode === "outro" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-xl animate-fadeInSlow">
-          <div className="text-center px-10 animate-softRiseSlow">
+    </div>
+  </div>
+)}
 
-            <p className="text-[11px] tracking-[0.28em] uppercase text-white/40 mb-6">
-              Sanctuary • Bloom Ritual
-            </p>
-
-            <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-white/90 mb-6">
-              Your Ritual for Today is Complete
-            </h2>
-
-            <p className="text-white/60 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-              Return tomorrow for your next Bloom —  
-              a new unfolding, a new breath, a new moment of becoming.
-            </p>
-
-            <button
-              onClick={() => {
-                setVideoEnded(false);
-                setMode("sanctuary");
-              }}
-              className="
-                mt-10 px-10 py-3 rounded-full 
-                text-[11px] tracking-[0.22em] uppercase
-                border border-white/30 text-white/80
-                hover:bg-white/10 transition-all duration-500
-              "
-            >
-              Return to Sanctuary
-            </button>
-
-          </div>
-        </div>
-      )}
 
   {/* -----------------------------------------------------
    🌟 SANCTUARY MODE — Achievement Replay (Cinematic)
