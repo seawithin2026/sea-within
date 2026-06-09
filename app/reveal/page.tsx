@@ -78,14 +78,21 @@ export default function RevealPage() {
         <ScrollReveal delay={500}>
           <h2 className="font-display text-3xl font-light mb-4">What Sea Within Is</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            Sea Within is a guided inner journey — a cinematic ritual space designed
-            to bring you back into yourself. Inside the sanctuary, you&apos;ll find
-            immersive audio descents, elemental rituals, slow sensory practices,
-            grounding reflections, and storytelling that feels like water, breath,
-            and light. Every piece is crafted to feel like stepping into a hidden
-            underwater world — quiet, glowing, intimate.
-          </p>
-        </ScrollReveal>
+  Sea Within is a sanctuary for your inner world — a cinematic ritual space you enter 
+    when life feels loud and you need a moment that feels like breath again. It isn’t 
+    another app. It isn’t a program. It isn’t something you have to “keep up with.” It’s 
+    a return. A soft, atmospheric space where your nervous system settles, your breath 
+    slows, and you feel yourself again. Inside, you move through elemental rituals, slow 
+    sensory moments, and gentle cinematic experiences that unfold like light, tide, and 
+    breath. Sea Within is for the quiet feelers, the overstimulated souls, the ones who 
+    carry so much inside but don’t always have a place to put it. Here, you don’t have to 
+    talk. You don’t have to explain. You don’t have to perform. You just enter… and the 
+    Sanctuary meets you where you are. Every ritual is crafted to feel intimate and alive 
+    — a moment of nourishment, a soft awakening, a small return to yourself. Over time, 
+    these moments become a rhythm, a cycle, a way of coming home. Sea Within isn’t about 
+    becoming someone new. It’s about remembering who you already are.
+  </p>
+</ScrollReveal>
 
         {/* Gathering Circle */}
         <ScrollReveal delay={600}>
