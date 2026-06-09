@@ -175,7 +175,7 @@ export default function BloomRitualPage() {
         <>
          {/* HERO WITH CINEMATIC FLOWER BACKGROUND */}
 <section 
-  className="relative pt-28 pb-10 text-center animate-fadeIn overflow-hidden"
+  className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden"
 >
   {/* Background image */}
   <div 
@@ -188,7 +188,7 @@ export default function BloomRitualPage() {
   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
 
   {/* Content */}
-  <div className="relative z-10">
+   <div className="relative z-10 px-6 pt-32 md:pt-40 pb-10">
     <p className="text-[11px] tracking-[0.28em] uppercase text-[#3A8C8C]">
       Sanctuary • Bloom Ritual
     </p>
