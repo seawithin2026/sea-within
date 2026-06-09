@@ -179,9 +179,10 @@ export default function BloomRitualPage() {
 >
   {/* Background image */}
   <div 
-    className="absolute inset-0 bg-cover bg-center opacity-[0.22] blur-[2px]"
-    style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-  ></div>
+  className="absolute inset-0 bg-cover bg-center"
+  style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+></div>
+
 
   {/* Soft gradient overlay */}
   <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
