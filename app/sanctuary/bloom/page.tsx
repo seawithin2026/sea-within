@@ -360,7 +360,7 @@ export default function BloomRitualPage() {
     {/* Content */}
     <div className="relative z-10 text-center px-10 animate-softRiseSlow">
 
-      <p className="text-[11px] tracking-[0.28em] uppercase text-white/70 mb-6">
+      <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF] mb-6">
         Sanctuary • Bloom Ritual
       </p>
 
@@ -381,7 +381,7 @@ export default function BloomRitualPage() {
         className="
           mt-10 px-10 py-3 rounded-full 
           text-[11px] tracking-[0.22em] uppercase
-          border border-white/30 text-white/80
+          border border-white/30 text-[#FFFFFF]
           hover:bg-white/10 transition-all duration-500
         "
       >
