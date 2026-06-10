@@ -100,11 +100,11 @@ function getNextIndex(total, storageKey) {
   // If all have been used → reset cycle
   if (used.length >= total) {
     localStorage.setItem(storageKey, JSON.stringify([]));
-    return 0;
+    return 1;
   }
 
   // Find first unused index
-  for (let i = 0; i < total; i++) {
+  for (let i = 1; i < total; i++) {
     if (!used.includes(i)) {
       used.push(i);
       localStorage.setItem(storageKey, JSON.stringify(used));
@@ -166,19 +166,22 @@ useEffect(() => {
   const handler = (e) => {
     // SHIFT + F → cycle blooms
     if (e.shiftKey && e.key.toLowerCase() === "f") {
-      const total = BLOOMS.length;
+  const total = BLOOMS.length;
 
-      let current = parseInt(localStorage.getItem("devBloomTestIndex") || "0");
-      current = (current + 1) % total;
+  let current = parseInt(localStorage.getItem("devBloomTestIndex") || "1");
 
-      localStorage.setItem("devBloomTestIndex", current.toString());
-      localStorage.setItem("todayBloomIndex", current.toString());
-      localStorage.removeItem("lastBloomDate");
+  current = current + 1;
+  if (current > total) current = 1;
 
-      alert(`🌸 Dev Bloom Test → Bloom #${current}`);
-      window.location.reload();
-      return;
-    }
+  localStorage.setItem("devBloomTestIndex", current.toString());
+  localStorage.setItem("todayBloomIndex", current.toString());
+  localStorage.removeItem("lastBloomDate");
+
+  alert(`🌸 Dev Bloom Test → Bloom #${current}`);
+  window.location.reload();
+  return;
+}
+
 
     // SHIFT + G → cycle gestures
     if (e.shiftKey && e.key.toLowerCase() === "g") {
