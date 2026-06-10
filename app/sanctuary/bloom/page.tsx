@@ -182,8 +182,7 @@ useEffect(() => {
   return;
 }
 
-
- // SHIFT + G → cycle gestures (starting at 1)
+// SHIFT + G → cycle gestures (starting at 1)
 if (e.shiftKey && e.key.toLowerCase() === "g") {
   const total = GESTURES.length;
 
@@ -206,6 +205,7 @@ if (e.shiftKey && e.key.toLowerCase() === "g") {
   window.location.reload();
   return;
 }
+
 
   };
 
