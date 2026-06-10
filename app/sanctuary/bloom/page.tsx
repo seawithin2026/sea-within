@@ -160,22 +160,35 @@ export default function BloomRitualPage() {
   /* -----------------------------------------------------
      🌸 DEV BYPASS — SHIFT + B resets the day instantly
   ----------------------------------------------------- */
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.shiftKey && e.key.toLowerCase() === "b") {
-        localStorage.removeItem("lastBloomDate");
-        localStorage.removeItem("todayBloomIndex");
-        localStorage.removeItem("usedGestures");
-        localStorage.removeItem("usedBlooms");
+/* -----------------------------------------------------
+   🌸 DEV BLOOM TEST — SHIFT + F cycles blooms quickly
+----------------------------------------------------- */
+useEffect(() => {
+  const handler = (e) => {
+    if (e.shiftKey && e.key.toLowerCase() === "f") {
+      const total = BLOOMS.length;
 
-        alert("🌸 Bloom Ritual Reset (Dev Mode)");
-        window.location.reload();
-      }
-    };
+      // Load current bloom index
+      let current = parseInt(localStorage.getItem("devBloomTestIndex") || "0");
 
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
+      // Move to next bloom
+      current = (current + 1) % total;
+
+      // Save it
+      localStorage.setItem("devBloomTestIndex", current.toString());
+
+      // Force ritual to use this bloom
+      localStorage.setItem("todayBloomIndex", current.toString());
+      localStorage.removeItem("lastBloomDate"); // bypass lockout
+
+      alert(`🌸 Dev Bloom Test → Bloom #${current}`);
+      window.location.reload();
+    }
+  };
+
+  window.addEventListener("keydown", handler);
+  return () => window.removeEventListener("keydown", handler);
+}, []);
 
 
   return (
