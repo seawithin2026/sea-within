@@ -157,38 +157,49 @@ export default function BloomRitualPage() {
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
-  /* -----------------------------------------------------
-     🌸 DEV BYPASS — SHIFT + B resets the day instantly
-  ----------------------------------------------------- */
 /* -----------------------------------------------------
-   🌸 DEV BLOOM TEST — SHIFT + F cycles blooms quickly
+   🌸 DEV SHORTCUTS — Bloom + Gesture Cycling
+   Shift + F → Next Bloom
+   Shift + G → Next Gesture
 ----------------------------------------------------- */
 useEffect(() => {
   const handler = (e) => {
+    // SHIFT + F → cycle blooms
     if (e.shiftKey && e.key.toLowerCase() === "f") {
       const total = BLOOMS.length;
 
-      // Load current bloom index
       let current = parseInt(localStorage.getItem("devBloomTestIndex") || "0");
-
-      // Move to next bloom
       current = (current + 1) % total;
 
-      // Save it
       localStorage.setItem("devBloomTestIndex", current.toString());
-
-      // Force ritual to use this bloom
       localStorage.setItem("todayBloomIndex", current.toString());
-      localStorage.removeItem("lastBloomDate"); // bypass lockout
+      localStorage.removeItem("lastBloomDate");
 
       alert(`🌸 Dev Bloom Test → Bloom #${current}`);
       window.location.reload();
+      return;
+    }
+
+    // SHIFT + G → cycle gestures
+    if (e.shiftKey && e.key.toLowerCase() === "g") {
+      const total = GESTURES.length;
+
+      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0");
+      current = (current + 1) % total;
+
+      localStorage.setItem("devGestureTestIndex", current.toString());
+      localStorage.setItem("usedGestures", JSON.stringify([current]));
+
+      alert(`🌿 Dev Gesture Test → Gesture #${current}`);
+      window.location.reload();
+      return;
     }
   };
 
   window.addEventListener("keydown", handler);
   return () => window.removeEventListener("keydown", handler);
 }, []);
+
 
 
   return (
