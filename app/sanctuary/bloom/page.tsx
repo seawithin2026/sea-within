@@ -92,13 +92,25 @@ const BLOOMS = [
 ];
 
 /* -----------------------------------------------------
-   🌙 Helper — ensures no repeats until all used
+   🌙 Helper — sequential, no repeats, supports growth
 ----------------------------------------------------- */
-function getRandomUnusedIndex(total, used) {
-  const all = Array.from({ length: total }, (_, i) => i);
-  const available = all.filter((i) => !used.includes(i));
-  if (available.length === 0) return Math.floor(Math.random() * total);
-  return available[Math.floor(Math.random() * available.length)];
+function getNextIndex(total, storageKey) {
+  const used = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+  // If all have been used → reset cycle
+  if (used.length >= total) {
+    localStorage.setItem(storageKey, JSON.stringify([]));
+    return 0;
+  }
+
+  // Find first unused index
+  for (let i = 0; i < total; i++) {
+    if (!used.includes(i)) {
+      used.push(i);
+      localStorage.setItem(storageKey, JSON.stringify(used));
+      return i;
+    }
+  }
 }
 
 export default function BloomRitualPage() {
@@ -106,7 +118,7 @@ export default function BloomRitualPage() {
   const [bloomIndex, setBloomIndex] = useState(null);
 
   // ⭐ Single mode state machine
-  const [mode, setMode] = useState("loading"); 
+  const [mode, setMode] = useState("loading");
   // modes: loading → intro → bloom → completion → outro → sanctuary
 
   const [videoEnded, setVideoEnded] = useState(false);
@@ -118,34 +130,26 @@ export default function BloomRitualPage() {
     const last = localStorage.getItem("lastBloomDate");
     const today = new Date().toDateString();
 
+    // ⭐ Already completed today → skip intro, show sanctuary
     if (last === today) {
       const savedBloom = localStorage.getItem("todayBloomIndex");
       if (savedBloom !== null) {
         setBloomIndex(parseInt(savedBloom));
-        setMode("sanctuary"); // ⭐ Directly show achievement mode
+        setMode("sanctuary");
       }
       return;
     }
 
-    // NEW DAY → generate new gesture + bloom
-    const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
-    const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
-
-    const g = getRandomUnusedIndex(GESTURES.length, usedGestures);
-    const b = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
+    // ⭐ NEW DAY → generate new gesture + bloom (sequential, no repeats)
+    const g = getNextIndex(GESTURES.length, "usedGestures");
+    const b = getNextIndex(BLOOMS.length, "usedBlooms");
 
     setGestureIndex(g);
     setBloomIndex(b);
 
-    localStorage.setItem(
-      "usedGestures",
-      JSON.stringify(usedGestures.length >= GESTURES.length ? [g] : [...usedGestures, g])
-    );
-
-    localStorage.setItem(
-      "usedBlooms",
-      JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
-    );
+    // Save bloom-of-the-day
+    localStorage.setItem("todayBloomIndex", b.toString());
+    localStorage.setItem("lastBloomDate", today);
 
     setMode("intro");
   }, []);
@@ -172,6 +176,7 @@ export default function BloomRitualPage() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
+
 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
