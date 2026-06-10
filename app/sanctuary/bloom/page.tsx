@@ -97,7 +97,7 @@ const BLOOMS = [
 function getNextIndex(total, storageKey) {
   const used = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
-  // If all used → reset
+  // If all have been used → reset cycle
   if (used.length >= total) {
     localStorage.setItem(storageKey, JSON.stringify([]));
     return 0; // FIXED (was 1)
@@ -178,12 +178,12 @@ useEffect(() => {
     if (e.shiftKey && e.key.toLowerCase() === "g") {
       const total = GESTURES.length;
 
-      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0"); // FIXED
+      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0"); // FIXED default
       current = current + 1;
-      if (current >= total) current = 0;
+      if (current >= total) current = 0; // FIXED
 
       localStorage.setItem("devGestureTestIndex", current.toString());
-      localStorage.setItem("usedGestures", JSON.stringify([current]));
+      localStorage.setItem("usedGestures", JSON.stringify([current])); // forces next gesture cleanly
 
       alert(`🌿 Dev Gesture Test → Gesture #${current + 1}`);
       window.location.reload();
