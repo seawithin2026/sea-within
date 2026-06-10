@@ -88,23 +88,23 @@ const BLOOMS = [
   "/bloom-videos/bloom-20.mp4",
   "/bloom-videos/bloom-21.mp4",
   "/bloom-videos/bloom-22.mp4",
-           
 ];
 
 /* -----------------------------------------------------
    🌙 Helper — sequential, no repeats, supports growth
+   FIXED: now 0‑based so bloom‑01 plays
 ----------------------------------------------------- */
 function getNextIndex(total, storageKey) {
   const used = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
-  // If all have been used → reset cycle
+  // If all used → reset
   if (used.length >= total) {
     localStorage.setItem(storageKey, JSON.stringify([]));
-    return 1;
+    return 0; // FIXED (was 1)
   }
 
-  // Find first unused index
-  for (let i = 1; i < total; i++) {
+  // Find first unused index (0..total-1)
+  for (let i = 0; i < total; i++) {   // FIXED (was i = 1)
     if (!used.includes(i)) {
       used.push(i);
       localStorage.setItem(storageKey, JSON.stringify(used));
@@ -117,10 +117,7 @@ export default function BloomRitualPage() {
   const [gestureIndex, setGestureIndex] = useState(null);
   const [bloomIndex, setBloomIndex] = useState(null);
 
-  // ⭐ Single mode state machine
   const [mode, setMode] = useState("loading");
-  // modes: loading → intro → bloom → completion → outro → sanctuary
-
   const [videoEnded, setVideoEnded] = useState(false);
 
   /* -----------------------------------------------------
@@ -130,7 +127,6 @@ export default function BloomRitualPage() {
     const last = localStorage.getItem("lastBloomDate");
     const today = new Date().toDateString();
 
-    // ⭐ Already completed today → skip intro, show sanctuary
     if (last === today) {
       const savedBloom = localStorage.getItem("todayBloomIndex");
       if (savedBloom !== null) {
@@ -140,14 +136,13 @@ export default function BloomRitualPage() {
       return;
     }
 
-    // ⭐ NEW DAY → generate new gesture + bloom (sequential, no repeats)
+    // ⭐ NEW DAY → generate new gesture + bloom (0‑based now)
     const g = getNextIndex(GESTURES.length, "usedGestures");
     const b = getNextIndex(BLOOMS.length, "usedBlooms");
 
     setGestureIndex(g);
     setBloomIndex(b);
 
-    // Save bloom-of-the-day
     localStorage.setItem("todayBloomIndex", b.toString());
     localStorage.setItem("lastBloomDate", today);
 
@@ -157,56 +152,43 @@ export default function BloomRitualPage() {
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
-/* -----------------------------------------------------
-   🌸 DEV SHORTCUTS — Bloom + Gesture Cycling
-   Shift + F → Next Bloom
-   Shift + G → Next Gesture
+  /* -----------------------------------------------------
+     🌸 DEV SHORTCUTS — FIXED (0‑based)
 ----------------------------------------------------- */
 useEffect(() => {
   const handler = (e) => {
     // SHIFT + F → cycle blooms
     if (e.shiftKey && e.key.toLowerCase() === "f") {
-  const total = BLOOMS.length;
+      const total = BLOOMS.length;
 
-  let current = parseInt(localStorage.getItem("devBloomTestIndex") || "1");
+      let current = parseInt(localStorage.getItem("devBloomTestIndex") || "0"); // FIXED default
+      current = current + 1;
+      if (current >= total) current = 0; // FIXED (was 1)
 
-  current = current + 1;
-  if (current > total) current = 1;
+      localStorage.setItem("devBloomTestIndex", current.toString());
+      localStorage.setItem("todayBloomIndex", current.toString());
+      localStorage.removeItem("lastBloomDate");
 
-  localStorage.setItem("devBloomTestIndex", current.toString());
-  localStorage.setItem("todayBloomIndex", current.toString());
-  localStorage.removeItem("lastBloomDate");
+      alert(`🌸 Dev Bloom Test → Bloom #${current + 1}`);
+      window.location.reload();
+      return;
+    }
 
-  alert(`🌸 Dev Bloom Test → Bloom #${current}`);
-  window.location.reload();
-  return;
-}
+    // SHIFT + G → cycle gestures
+    if (e.shiftKey && e.key.toLowerCase() === "g") {
+      const total = GESTURES.length;
 
-// SHIFT + G → cycle gestures (starting at 1)
-if (e.shiftKey && e.key.toLowerCase() === "g") {
-  const total = GESTURES.length;
+      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0"); // FIXED
+      current = current + 1;
+      if (current >= total) current = 0;
 
-  // Load current gesture index (default = 1)
-  let current = parseInt(localStorage.getItem("devGestureTestIndex") || "1");
+      localStorage.setItem("devGestureTestIndex", current.toString());
+      localStorage.setItem("usedGestures", JSON.stringify([current]));
 
-  // Move to next gesture
-  current = current + 1;
-
-  // Loop back to 1 if past total
-  if (current > total) current = 1;
-
-  // Save dev index
-  localStorage.setItem("devGestureTestIndex", current.toString());
-
-  // Force ritual to use this gesture
-  localStorage.setItem("usedGestures", JSON.stringify([current]));
-
-  alert(`🌿 Dev Gesture Test → Gesture #${current}`);
-  window.location.reload();
-  return;
-}
-
-
+      alert(`🌿 Dev Gesture Test → Gesture #${current + 1}`);
+      window.location.reload();
+      return;
+    }
   };
 
   window.addEventListener("keydown", handler);
