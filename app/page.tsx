@@ -326,12 +326,17 @@ export default function HomePage() {
             >
               Sanctuary
             </a>
-
+ <a
+              href="/bloom"
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
+            >
+              Bloom
+            </a>
             <a
               href="/wisdom-board"
               className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
             >
-              Wisdom
+              Wisdom Board
             </a>
 
             <a
