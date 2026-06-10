@@ -183,20 +183,30 @@ useEffect(() => {
 }
 
 
-    // SHIFT + G → cycle gestures
-    if (e.shiftKey && e.key.toLowerCase() === "g") {
-      const total = GESTURES.length;
+ // SHIFT + G → cycle gestures (starting at 1)
+if (e.shiftKey && e.key.toLowerCase() === "g") {
+  const total = GESTURES.length;
 
-      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0");
-      current = (current + 1) % total;
+  // Load current gesture index (default = 1)
+  let current = parseInt(localStorage.getItem("devGestureTestIndex") || "1");
 
-      localStorage.setItem("devGestureTestIndex", current.toString());
-      localStorage.setItem("usedGestures", JSON.stringify([current]));
+  // Move to next gesture
+  current = current + 1;
 
-      alert(`🌿 Dev Gesture Test → Gesture #${current}`);
-      window.location.reload();
-      return;
-    }
+  // Loop back to 1 if past total
+  if (current > total) current = 1;
+
+  // Save dev index
+  localStorage.setItem("devGestureTestIndex", current.toString());
+
+  // Force ritual to use this gesture
+  localStorage.setItem("usedGestures", JSON.stringify([current]));
+
+  alert(`🌿 Dev Gesture Test → Gesture #${current}`);
+  window.location.reload();
+  return;
+}
+
   };
 
   window.addEventListener("keydown", handler);
