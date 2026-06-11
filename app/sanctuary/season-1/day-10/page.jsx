@@ -54,7 +54,7 @@ export default function Day10Page() {
               muted
               loop
               playsInline
-              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
+              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}
             >
               <source src="/video-season1/day10-stone-seat.mp4" />
             </video>
