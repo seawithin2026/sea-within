@@ -49,7 +49,7 @@ export default function Day7Page() {
         {/* Technique 1 — Skin Listening */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}>
               <source src="/video-season1/day7-skin-listening.mp4" />
             </video>
           </div>
@@ -67,7 +67,7 @@ export default function Day7Page() {
         {/* Technique 2 — Exhale of Release */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}>
               <source src="/video-season1/day7-release.mp4" />
             </video>
           </div>
