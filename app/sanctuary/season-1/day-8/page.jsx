@@ -78,7 +78,7 @@ export default function Day8Page() {
               muted
               loop
               playsInline
-              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.2)}
+              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}
             >
               <source src="/video-season1/day8-shadow-seat.mp4" />
             </video>
