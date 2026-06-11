@@ -10,13 +10,15 @@ export default function Day7Page() {
       {/* -------------------------------------------------- */}
       <section className="day7-hero">
         <video
-          src="/video-season1/day-7.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="day7-hero-video"
-        />
+  src="/video-season1/day-7.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="day7-hero-video"
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.1)}
+/>
+
 
         <div className="day7-hero-text">
           <p className="day7-hero-tag">SEA WITHIN · DAY 7</p>
