@@ -16,7 +16,7 @@ export default function Day7Page() {
   muted
   playsInline
   className="day7-hero-video"
-  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.8)}
+  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.12)}
 />
 
 
