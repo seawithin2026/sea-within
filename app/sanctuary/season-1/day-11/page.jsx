@@ -70,7 +70,7 @@ export default function Day11Page() {
         {/* Element 2 — The Descent */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}>
               <source src="/video-season1/day11-descent.mp4" />
             </video>
           </div>
