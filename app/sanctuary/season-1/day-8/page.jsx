@@ -54,7 +54,7 @@ export default function Day8Page() {
               muted
               loop
               playsInline
-              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
+              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
             >
               <source src="/video-season1/day8-cool-skin.mp4" />
             </video>
@@ -78,7 +78,7 @@ export default function Day8Page() {
               muted
               loop
               playsInline
-              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}
+              onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.2)}
             >
               <source src="/video-season1/day8-shadow-seat.mp4" />
             </video>
