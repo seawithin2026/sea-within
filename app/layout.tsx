@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
-import Navigation from '@/components/layout/Navigation'
+import Navigation from '@/components/layout/Navigation';
 import { AudioProvider } from './providers/AudioProvider';
+import MuteButton from '@/components/MuteButton'; // ⭐ ADDED
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -38,20 +39,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
 
       <head>
-        {/* ⭐ Preload all important background images */}
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
-        {/* Add as many as you want */}
       </head>
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
+
+        {/* ⭐ GLOBAL BACKGROUND AUDIO (already plays on all pages) */}
+        <audio id="seaAudio" muted loop playsInline>
+          <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
+        </audio>
+
         <AudioProvider>
           <Navigation />
+
+          {/* ⭐ GLOBAL MUTE BUTTON — appears on EVERY page */}
+          <MuteButton />
+
           {children}
         </AudioProvider>
       </body>
     </html>
   );
 }
-
-
