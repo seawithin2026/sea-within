@@ -15,6 +15,7 @@ export default function MuteButton() {
     <button
       onClick={() => setMuted(!muted)}
       className="mute-button"
+      aria-label="Toggle sound"
     >
       {muted ? "🔇" : "🔊"}
     </button>

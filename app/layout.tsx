@@ -46,9 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
 
         {/* GLOBAL BACKGROUND AUDIO */}
-        <audio id="seaAudio" muted loop playsInline>
-          <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
-        </audio>
+        <audio id="seaAudio" muted autoPlay loop playsInline>
+  <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
+</audio>
+
 
         <AudioProvider>
           <Navigation />
