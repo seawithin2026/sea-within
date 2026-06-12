@@ -366,18 +366,18 @@ if (e.key.toLowerCase() === "r") {
 
     <div className="relative z-10 max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
 
-      <h2 className="text-2xl tracking-[0.14em] uppercase text-white/90">
+      <h2 className="text-2xl tracking-[0.14em] uppercase text-[#FFFFFF]">
         Ritual Complete
       </h2>
 
-      <p className="text-white/70 text-center leading-relaxed max-w-md">
+      <p className="text-[#FFFFFF] text-center leading-relaxed max-w-md">
         You offered yourself a moment of nourishment.  
         Something inside you softened, opened, and rose.
       </p>
 
       <button
         onClick={() => setMode("outro")}
-        className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-white/80 hover:bg-white/10 transition-all duration-500"
+        className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
       >
         Continue
       </button>
@@ -405,11 +405,11 @@ if (e.key.toLowerCase() === "r") {
         Sanctuary • Bloom Ritual
       </p>
 
-      <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-white mb-6">
+      <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-[#FFFFFF] mb-6">
         Your Ritual for Today is Complete
       </h2>
 
-      <p className="text-white text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+      <p className="text-[#FFFFFF] text-base md:text-lg max-w-xl mx-auto leading-relaxed">
         Return tomorrow for your next Bloom —  
         a new unfolding, a new breath, a new moment of becoming.
       </p>
