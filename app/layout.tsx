@@ -47,7 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* GLOBAL BACKGROUND AUDIO */}
         <audio id="seaAudio" muted autoPlay loop playsInline>
-          <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
+          <source src="/audio/narration/season-1/ambient-main.mp3" type="audio/mpeg" />
         </audio>
 
         {/* FORCE AUTOPLAY ON PAGE LOAD */}
