@@ -5,31 +5,30 @@ import { useAudio } from "@/app/providers/AudioProvider";
 
 export default function MuteButton() {
   const { ambientMuted, setAmbientMuted } = useAudio();
-  const [muted, setMuted] = useState(true);
 
-  // ⭐ Sync with saved preference on load
+  // ⭐ Default: SOUND ON
+  const [muted, setMuted] = useState(false);
+
+  // ⭐ Load saved preference
   useEffect(() => {
     const saved = localStorage.getItem("muted");
     if (saved !== null) {
       const isMuted = saved === "true";
       setMuted(isMuted);
-      setAmbientMuted(isMuted); // sync provider
+      setAmbientMuted(isMuted);
     }
   }, [setAmbientMuted]);
 
-  // ⭐ Apply mute state to global audio + keep bloom videos silent
+  // ⭐ Apply mute state + keep bloom videos muted
   useEffect(() => {
-    // Update global audio (AudioProvider)
     setAmbientMuted(muted);
 
-    // Bloom videos ALWAYS muted
-    const videos = Array.from(document.querySelectorAll("video")) as HTMLVideoElement[];
+    const videos = Array.from(document.querySelectorAll("video"));
     videos.forEach((v) => {
       v.muted = true;
       v.play().catch(() => {});
     });
 
-    // Save preference
     localStorage.setItem("muted", muted.toString());
   }, [muted, setAmbientMuted]);
 
