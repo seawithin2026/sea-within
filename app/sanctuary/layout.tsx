@@ -1,57 +1,51 @@
-import type { Metadata } from 'next';
-import { Cormorant_Garamond, Inter } from 'next/font/google';
-import './globals.css';
-import Navigation from '@/components/layout/Navigation';
-import { AudioProvider } from '@/app/providers/AudioProvider';
-import MuteButton from '@/components/MuteButton';
+"use client";
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300'],
-  style: ['normal', 'italic'],
-  display: 'swap',
-  variable: '--font-display',
-});
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import UsernameModal from "@/components/UsernameModal";
+import "../globals.css";
 
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300'],
-  display: 'swap',
-  variable: '--font-body',
-});
+export default function SanctuaryLayout({ children }: { children: React.ReactNode }) {
+  const supabase = createClient();
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-export const metadata: Metadata = {
-  title: 'Sea Within — Come Home to Yourself',
-  description:
-    'A movement for the ones who are ready to feel again. To breathe deeper. To live truer. To come home to the part of themselves they left behind.',
-  keywords: ['wellness', 'sanctuary', 'mindfulness', 'community', 'awakening', 'sea within'],
-  openGraph: {
-    title: 'Sea Within — Come Home to Yourself',
-    description: 'A movement for the ones who are ready to feel again.',
-    url: 'https://seawithinyourself.com',
-    siteName: 'Sea Within',
-    type: 'website',
-  },
-};
+  useEffect(() => {
+    async function checkUsername() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile?.username) {
+        setShowModal(true);
+      }
+
+      setLoading(false);
+    }
+
+    checkUsername();
+  }, []);
+
+  if (loading) return null;
+
   return (
-    <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
-      <head>
-        <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
-        <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
-      </head>
+    <>
+      {showModal && (
+        <UsernameModal onComplete={() => setShowModal(false)} />
+      )}
 
-      <body className="bg-sanctuary-dark text-sea-100 antialiased">
-        <AudioProvider>
-          <Navigation />
-
-          {/* GLOBAL MUTE BUTTON */}
-          <MuteButton />
-
-          {children}
-        </AudioProvider>
-      </body>
-    </html>
+      {children}
+    </>
   );
 }
