@@ -101,7 +101,7 @@ export default function Navigation() {
             ) : (
               <button
                 onClick={handleSignOut}
-                className="btn-golden text-[11px] px-6 py-2.5"
+                className="btn-golden text-[11px] px-6 py-2.5 ml-4"
               >
                 Sign Out
               </button>
