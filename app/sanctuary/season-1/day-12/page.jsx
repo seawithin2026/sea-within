@@ -67,7 +67,7 @@ export default function Day12Page() {
         {/* Element 2 — The Rising Current */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.2)}>
               <source src="/video-season1/day12-rising-current.mp4" />
             </video>
           </div>
