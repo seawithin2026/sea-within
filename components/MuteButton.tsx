@@ -22,10 +22,11 @@ export default function MuteButton() {
       if (!muted) audio.play().catch(() => {});
     }
 
-    videos.forEach(v => {
-      v.muted = muted;
-      if (!muted) v.play().catch(() => {});
-    });
+  videos.forEach(v => {
+  v.muted = true; // bloom videos ALWAYS stay muted
+  v.play().catch(() => {});
+});
+
 
     localStorage.setItem("muted", muted.toString());
   }, [muted]);
