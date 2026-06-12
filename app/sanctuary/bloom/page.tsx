@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
+import { createClient } from "@/lib/supabase/client";
 
 /* -----------------------------------------------------
    🌿 GESTURES — 20 grounding + 30 awakening (FULL SET)
@@ -91,50 +92,128 @@ const BLOOMS = [
 ];
 
 /* -----------------------------------------------------
-   🌙 NEW: PERFECT SEQUENTIAL ROTATION (NO REPEATS)
+   🌙 PERFECT SEQUENTIAL ROTATION (NO REPEATS)
 ----------------------------------------------------- */
-function getNextSequentialIndex(total, storageKey) {
-  const raw = localStorage.getItem(storageKey);
+function getNextSequentialIndex(total: number, storageKey: string) {
+  const raw = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
   const index = raw ? parseInt(raw) : 0;
 
   const next = (index + 1) % total;
 
-  localStorage.setItem(storageKey, next.toString());
+  if (typeof window !== "undefined") {
+    localStorage.setItem(storageKey, next.toString());
+  }
+
   return index;
 }
 
 export default function BloomRitualPage() {
-  const [gestureIndex, setGestureIndex] = useState(null);
-  const [bloomIndex, setBloomIndex] = useState(null);
+  const [gestureIndex, setGestureIndex] = useState<number | null>(null);
+  const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
-  const [mode, setMode] = useState("loading");
+  const [mode, setMode] = useState<"loading" | "intro" | "bloom" | "completion" | "outro" | "sanctuary">("loading");
   const [videoEnded, setVideoEnded] = useState(false);
 
+  const [supabase] = useState(() => createClient());
+  const [userId, setUserId] = useState<string | null>(null);
+
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — SAME DAY → SANCTUARY
+     🌙 DAILY LOCKOUT — SUPABASE last_completed
 ----------------------------------------------------- */
   useEffect(() => {
-    const last = localStorage.getItem("lastBloomDate");
-    const today = new Date().toDateString();
+    let isMounted = true;
 
-    if (last === today) {
-      const savedBloom = localStorage.getItem("todayBloomIndex");
-      if (savedBloom !== null) {
-        setBloomIndex(parseInt(savedBloom));
-        setMode("sanctuary");
-        return;
+    const init = async () => {
+      const todayString = new Date().toDateString();
+
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+          const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+          if (!isMounted) return;
+          setGestureIndex(g);
+          setBloomIndex(b);
+          setMode("intro");
+          return;
+        }
+
+        if (!isMounted) return;
+        setUserId(user.id);
+
+        const { data, error } = await supabase
+          .from("bloom_progress")
+          .select("last_completed")
+          .eq("user_id", user.id)
+          .single();
+
+        let lastCompleted: string | null = null;
+
+        if (!error && data?.last_completed) {
+          lastCompleted = new Date(data.last_completed).toDateString();
+        }
+
+        if (lastCompleted === todayString) {
+          const existingGestureRaw =
+            typeof window !== "undefined" ? localStorage.getItem("gestureIndex") : null;
+          const existingBloomRaw =
+            typeof window !== "undefined" ? localStorage.getItem("bloomIndex") : null;
+
+          const g =
+            existingGestureRaw !== null
+              ? parseInt(existingGestureRaw)
+              : getNextSequentialIndex(GESTURES.length, "gestureIndex");
+          const b =
+            existingBloomRaw !== null
+              ? parseInt(existingBloomRaw)
+              : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+          if (!isMounted) return;
+          setGestureIndex(g);
+          setBloomIndex(b);
+          setMode("sanctuary");
+          return;
+        }
+
+        const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+        const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+        if (!isMounted) return;
+        setGestureIndex(g);
+        setBloomIndex(b);
+        setMode("intro");
+      } catch {
+        const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+        const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+        if (!isMounted) return;
+        setGestureIndex(g);
+        setBloomIndex(b);
+        setMode("intro");
       }
-    }
+    };
 
-    // NEW DAY → rotate independently
-    const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
-    const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+    init();
 
-    setGestureIndex(g);
-    setBloomIndex(b);
+    return () => {
+      isMounted = false;
+    };
+  }, [supabase]);
 
-    setMode("intro");
-  }, []);
+  const updateLastCompleted = async () => {
+    if (!userId) return;
+
+    const now = new Date().toISOString();
+
+    await supabase.from("bloom_progress").upsert({
+      user_id: userId,
+      last_completed: now,
+    });
+  };
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
@@ -143,7 +222,7 @@ export default function BloomRitualPage() {
      🌸 DEV SHORTCUTS — PRESERVED
 ----------------------------------------------------- */
   useEffect(() => {
-    const handler = (e) => {
+    const handler = (e: KeyboardEvent) => {
       if (!e.shiftKey) return;
 
       if (e.key.toLowerCase() === "f") {
@@ -197,6 +276,19 @@ export default function BloomRitualPage() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  const handleIntroContinue = () => {
+    setVideoEnded(false);
+    setMode("bloom");
+  };
+
+  const handleBloomComplete = async () => {
+    if (bloomIndex !== null) {
+      localStorage.setItem("bloomIndex", bloomIndex.toString());
+    }
+    await updateLastCompleted();
+    setMode("completion");
+  };
+
   /* -----------------------------------------------------
      🌸 RENDER — YOUR CINEMATIC FLOW (UNCHANGED)
 ----------------------------------------------------- */
@@ -243,14 +335,7 @@ export default function BloomRitualPage() {
               </p>
 
               <button
-                onClick={() => {
-                  if (bloomIndex !== null) {
-                    localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-                    localStorage.setItem("lastBloomDate", new Date().toDateString());
-                  }
-                  setVideoEnded(false);
-                  setMode("bloom");
-                }}
+                onClick={handleIntroContinue}
                 className="mt-4 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
               >
                 I offered myself a moment
@@ -283,21 +368,17 @@ export default function BloomRitualPage() {
                   setVideoEnded(false);
                   const vid = document.querySelector("video");
                   if (vid) {
-                    vid.currentTime = 0;
-                    vid.play();
+                    (vid as HTMLVideoElement).currentTime = 0;
+                    (vid as HTMLVideoElement).play();
                   }
                 }}
-                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
+                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg.white/10 transition-all duration-500"
               >
                 Replay
               </button>
 
               <button
-                onClick={() => {
-                  localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-                  localStorage.setItem("lastBloomDate", new Date().toDateString());
-                  setMode("completion");
-                }}
+                onClick={handleBloomComplete}
                 className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
               >
                 Continue
@@ -369,7 +450,7 @@ export default function BloomRitualPage() {
               className="mt-10 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
             >
               Return to Sanctuary
-                      </button>
+            </button>
           </div>
         </div>
       )}
