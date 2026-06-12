@@ -277,16 +277,22 @@ if (e.key.toLowerCase() === "r") {
         <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
           {gesture}
         </p>
+<button
+  onClick={() => {
+    // 🔒 Activate daily lockout IMMEDIATELY
+    if (bloomIndex !== null) {
+      localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+      localStorage.setItem("lastBloomDate", new Date().toDateString());
+    }
 
-        <button
-          onClick={() => {
-            setVideoEnded(false);
-            setMode("bloom");
-          }}
-          className="mt-4 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
-        >
-          I offered myself a moment
-        </button>
+    setVideoEnded(false);
+    setMode("bloom");
+  }}
+  className="mt-4 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
+>
+  I offered myself a moment
+</button>
+
 
       </div>
     </div>
