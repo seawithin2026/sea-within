@@ -139,7 +139,7 @@ export default function VideoGrid() {
           muted
           playsInline
           className="sanctuary-card-video group-hover:scale-105 transition duration-700"
-          onLoadedMetadata={(e) => { e.currentTarget.playbackRate = 0.6; }}
+          onLoadedMetadata={(e) => { e.currentTarget.playbackRate = 0.5; }}
         />
         <div className="absolute bottom-6 left-6 z-20">
           <p className="text-xs text-slate-300">Day 7</p>
