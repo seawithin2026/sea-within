@@ -193,10 +193,10 @@ export default function CommunityPage() {
 
     {messages.length === 0 && (
       <div className="text-center py-20">
-        <p className="font-display text-xl text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
+        <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
           The circle is open.
         </p>
-        <p className="font-body text-sm text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
+        <p className="font-body text-sm text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
           Be the first to share your light.
         </p>
       </div>
