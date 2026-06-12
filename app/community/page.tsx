@@ -180,7 +180,7 @@ export default function CommunityPage() {
           <h1 className="font-display text-2xl md:text-3xl font-light text-[#7A3F45] ">
             The Gathering
           </h1>
-         <p className="font-body text-sm text-white/75 mt-2">
+         <p className="font-body text-sm text-[#FFFFFF] mt-2">
   A space of warmth, support, and shared light.
 </p>
 
@@ -296,7 +296,7 @@ export default function CommunityPage() {
       {/* INPUT BAR */}
       <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
         <div className="max-w-3xl mx-auto">
-        <p className="font-body text-[10px] text-white/70 text-center mb-3 tracking-wide">
+        <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
   This space is for uplifting, reflective, and supportive communication.
 </p>
 
