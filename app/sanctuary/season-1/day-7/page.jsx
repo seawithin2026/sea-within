@@ -51,7 +51,7 @@ export default function Day7Page() {
         {/* Technique 1 — Skin Listening */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}>
               <source src="/video-season1/day7-skin-listening.mp4" />
             </video>
           </div>
