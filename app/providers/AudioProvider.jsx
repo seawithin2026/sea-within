@@ -6,18 +6,19 @@ const AudioContextGlobal = createContext();
 
 export function AudioProvider({ children }) {
   const ambientRef = useRef(null);
-  const [ambientMuted, setAmbientMuted] = useState(true);
 
-  // ⭐ Load saved mute preference on mount
+  // ⭐ Default: SOUND ON
+  const [ambientMuted, setAmbientMuted] = useState(false);
+
+  // ⭐ Load saved preference
   useEffect(() => {
     const saved = localStorage.getItem("muted");
     if (saved !== null) {
-      const isMuted = saved === "true";
-      setAmbientMuted(isMuted);
+      setAmbientMuted(saved === "true");
     }
   }, []);
 
-  // ⭐ Initialize global audio once
+  // ⭐ Initialize audio once
   useEffect(() => {
     const audio = ambientRef.current;
     if (!audio) return;
@@ -25,11 +26,10 @@ export function AudioProvider({ children }) {
     audio.volume = 0.07;
     audio.loop = true;
 
-    // Try to autoplay (browser may block until user interacts)
     audio.play().catch(() => {});
   }, []);
 
-  // ⭐ Apply mute state to the global audio element
+  // ⭐ Apply mute state + save preference
   useEffect(() => {
     const audio = ambientRef.current;
     if (!audio) return;
@@ -40,24 +40,16 @@ export function AudioProvider({ children }) {
       audio.play().catch(() => {});
     }
 
-    // Save preference
     localStorage.setItem("muted", ambientMuted.toString());
   }, [ambientMuted]);
 
   return (
-    <AudioContextGlobal.Provider
-      value={{
-        ambientMuted,
-        setAmbientMuted,
-      }}
-    >
-      {/* GLOBAL SOUNDTRACK (the ONLY one) */}
+    <AudioContextGlobal.Provider value={{ ambientMuted, setAmbientMuted }}>
       <audio
         ref={ambientRef}
         src="/audio/narration/season-1/ambient-main.mp3"
         muted={ambientMuted}
       />
-
       {children}
     </AudioContextGlobal.Provider>
   );
