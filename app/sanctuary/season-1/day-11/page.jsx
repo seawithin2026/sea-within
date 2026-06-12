@@ -16,7 +16,7 @@ export default function Day11Page() {
           muted
           playsInline
           className="day11-hero-video"
-          onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.2)}
+          onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
         />
 
         <div className="day11-hero-text">
