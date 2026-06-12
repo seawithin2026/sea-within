@@ -123,31 +123,33 @@ export default function BloomRitualPage() {
   /* -----------------------------------------------------
      🌙 DAILY LOCKOUT — AUTO-OPEN BLOOM IF DONE TODAY
   ----------------------------------------------------- */
-  useEffect(() => {
-    const last = localStorage.getItem("lastBloomDate");
-    const today = new Date().toDateString();
+useEffect(() => {
+  const last = localStorage.getItem("lastBloomDate");
+  const today = new Date().toDateString();
 
-    if (last === today) {
-      const savedBloom = localStorage.getItem("todayBloomIndex");
-      if (savedBloom !== null) {
-        setBloomIndex(parseInt(savedBloom));
-        setMode("sanctuary");
-      }
-      return;
+  // If ritual was completed today → go straight to sanctuary
+  if (last === today) {
+    const savedBloom = localStorage.getItem("todayBloomIndex");
+    if (savedBloom !== null) {
+      setBloomIndex(parseInt(savedBloom));
+      setMode("sanctuary");
     }
+    return;
+  }
 
-    // ⭐ NEW DAY → generate new gesture + bloom (0‑based now)
-    const g = getNextIndex(GESTURES.length, "usedGestures");
-    const b = getNextIndex(BLOOMS.length, "usedBlooms");
+  // NEW DAY → generate new gesture + bloom
+  const g = getNextIndex(GESTURES.length, "usedGestures");
+  const b = getNextIndex(BLOOMS.length, "usedBlooms");
 
-    setGestureIndex(g);
-    setBloomIndex(b);
+  setGestureIndex(g);
+  setBloomIndex(b);
 
-    localStorage.setItem("todayBloomIndex", b.toString());
-    localStorage.setItem("lastBloomDate", today);
+  // ❌ DO NOT set lastBloomDate or todayBloomIndex here
+  // They are only set when the user actually completes the bloom video.
 
-    setMode("intro");
-  }, []);
+  setMode("intro");
+}, []);
+
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
