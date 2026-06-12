@@ -197,25 +197,30 @@ export default async function SanctuaryPage() {
           </Link>
 
           {/* DAY 7 */}
-          <Link
-            href="/sanctuary/season-1/day-7"
-            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-            <video
-              src="/video-season1/day-7.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
-            onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
-            />
-            <div className="absolute bottom-6 left-6 z-20">
-              <p className="text-xs text-slate-300">Day 7</p>
-              <p className="text-lg font-light">The Wind Ritual</p>
-            </div>
-          </Link>
+<Link
+  href="/sanctuary/season-1/day-7"
+  className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+>
+  <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+
+  <video
+    src="/video-season1/day-7.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+    onLoadedMetadata={(e) => {
+      e.currentTarget.playbackRate = 0.6;
+    }}
+  />
+
+  <div className="absolute bottom-6 left-6 z-20">
+    <p className="text-xs text-slate-300">Day 7</p>
+    <p className="text-lg font-light">The Wind Ritual</p>
+  </div>
+</Link>
+
 
            {/* DAY 8 */}
           <Link
@@ -278,26 +283,31 @@ export default async function SanctuaryPage() {
             </div>
           </Link>
 
-          {/* DAY 11 */}
-          <Link
-            href="/sanctuary/season-1/day-11"
-            className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
-            <video
-              src="/video-season1/day-11.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="sanctuary-card-video group-hover:scale-105 transition duration-700"
-            onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
-            />
-            <div className="absolute bottom-6 left-6 z-20">
-              <p className="text-xs text-slate-300">Day 11</p>
-              <p className="text-lg font-light">The Cold Water Ritual</p>
-            </div>
-          </Link>
+      {/* DAY 11 */}
+<Link
+  href="/sanctuary/season-1/day-11"
+  className="group relative overflow-hidden rounded-2xl border border-slate-700 hover:border-slate-300 transition"
+>
+  <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/70 z-10"></div>
+
+  <video
+    src="/video-season1/day-11.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+    onLoadedMetadata={(e) => {
+      e.currentTarget.playbackRate = 0.4;
+    }}
+  />
+
+  <div className="absolute bottom-6 left-6 z-20">
+    <p className="text-xs text-slate-300">Day 11</p>
+    <p className="text-lg font-light">The Cold Water Ritual</p>
+  </div>
+</Link>
+
 
            {/* DAY 12 */}
           <Link
