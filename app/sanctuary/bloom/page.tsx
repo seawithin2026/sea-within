@@ -410,7 +410,7 @@ export default function BloomRitualPage() {
 
             <button
               onClick={() => setMode("outro")}
-              className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
+              className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-[#FFFFFF] text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
             >
               Continue
             </button>
@@ -447,7 +447,7 @@ export default function BloomRitualPage() {
                 setVideoEnded(false);
                 setMode("sanctuary");
               }}
-              className="mt-10 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
+              className="mt-10 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-[#FFFFFF] text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
             >
               Return to Sanctuary
             </button>
