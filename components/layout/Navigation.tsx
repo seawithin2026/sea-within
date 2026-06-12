@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import SignInModal from '../SignInModal';
 
 const navLinks = [
@@ -14,15 +15,44 @@ const navLinks = [
 ];
 
 export default function Navigation() {
+  const supabase = createClient();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
+  // Detect scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Detect user session
+  useEffect(() => {
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    }
+
+    loadUser();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUser(null);
+  }
 
   return (
     <>
@@ -33,9 +63,7 @@ export default function Navigation() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          isScrolled
-            ? 'backdrop-blur-xl'
-            : 'bg-transparent'
+          isScrolled ? 'backdrop-blur-xl' : 'bg-transparent'
         }`}
         style={{
           backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
@@ -62,12 +90,22 @@ export default function Navigation() {
               </Link>
             ))}
 
-            <button
-              onClick={() => setIsSignInOpen(true)}
-              className="btn-golden text-[11px] px-6 py-2.5"
-            >
-              Join
-            </button>
+            {/* SIGN IN / SIGN OUT BUTTON */}
+            {!user ? (
+              <button
+                onClick={() => setIsSignInOpen(true)}
+                className="btn-golden text-[11px] px-6 py-2.5"
+              >
+                Join
+              </button>
+            ) : (
+              <button
+                onClick={handleSignOut}
+                className="btn-golden text-[11px] px-6 py-2.5"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -101,15 +139,28 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                <button
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsSignInOpen(true);
-                  }}
-                  className="btn-golden text-center text-[11px]"
-                >
-                  Join the Movement
-                </button>
+                {/* MOBILE SIGN IN / SIGN OUT */}
+                {!user ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsSignInOpen(true);
+                    }}
+                    className="btn-golden text-center text-[11px]"
+                  >
+                    Join the Movement
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="btn-golden text-center text-[11px]"
+                  >
+                    Sign Out
+                  </button>
+                )}
               </div>
             </motion.div>
           )}
