@@ -96,7 +96,7 @@ export default function Navigation() {
                 onClick={() => setIsSignInOpen(true)}
                 className="btn-golden text-[11px] px-6 py-2.5"
               >
-                Join
+                Sign In
               </button>
             ) : (
               <button
@@ -148,7 +148,7 @@ export default function Navigation() {
                     }}
                     className="btn-golden text-center text-[11px]"
                   >
-                    Join the Movement
+                    Sign In
                   </button>
                 ) : (
                   <button
