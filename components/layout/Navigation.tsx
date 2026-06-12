@@ -94,14 +94,14 @@ export default function Navigation() {
             {!user ? (
               <button
                 onClick={() => setIsSignInOpen(true)}
-                className="btn-golden text-[11px] px-6 py-2.5 ml-6"
+                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
               >
                 Sign In
               </button>
             ) : (
               <button
                 onClick={handleSignOut}
-                className="btn-golden text-[11px] px-6 py-2.5 ml-6"
+                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
               >
                 Sign Out
               </button>
