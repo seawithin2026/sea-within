@@ -149,6 +149,7 @@ export default function BloomRitualPage() {
 }, []);
 
 
+
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 /* -----------------------------------------------------
