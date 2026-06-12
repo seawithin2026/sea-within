@@ -45,25 +45,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
 
-        {/* GLOBAL BACKGROUND AUDIO */}
-        <audio id="seaAudio" muted autoPlay playsInline>
-          <source src="/audio/narration/season-1/ambient-main.mp3" type="audio/mpeg" />
-        </audio>
-
-        {/* FORCE AUTOPLAY ON PAGE LOAD */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              document.addEventListener("DOMContentLoaded", function () {
-                const audio = document.getElementById("seaAudio");
-                if (audio) {
-                  audio.muted = true;
-                  audio.play().catch(() => {});
-                }
-              });
-            `,
-          }}
-        />
+<audio id="seaAudio" muted autoPlay playsInline>
+  <source src="/audio/narration/season-1/ambient-main.mp3" type="audio/mpeg" />
+</audio>
 
         <AudioProvider>
           <Navigation />
