@@ -111,45 +111,43 @@ export default function BloomRitualPage() {
      🌙 DAILY LOCKOUT — FIXED
      Only activates AFTER Continue is pressed.
 ----------------------------------------------------- */
-  useEffect(() => {
-    const last = localStorage.getItem("lastBloomDate");
-    const today = new Date().toDateString();
+ useEffect(() => {
+  const last = localStorage.getItem("lastBloomDate");
+  const today = new Date().toDateString();
 
-    // SAME DAY → Sanctuary replay mode
-    if (last === today) {
-      const savedBloom = localStorage.getItem("todayBloomIndex");
-      if (savedBloom !== null) {
-        setBloomIndex(parseInt(savedBloom));
-        setMode("sanctuary");
-      }
+  // SAME DAY → Sanctuary replay mode
+  if (last === today) {
+    const savedBloom = localStorage.getItem("todayBloomIndex");
+    if (savedBloom !== null) {
+      setBloomIndex(parseInt(savedBloom));
+      setMode("sanctuary");
       return;
     }
+  }
 
-    // NEW DAY → generate new gesture + bloom
-    const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
-    const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
+  // NEW DAY → generate new gesture + bloom
+  const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
+  const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
 
-    const g = getRandomUnusedIndex(GESTURES.length, usedGestures);
-    const b = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
+  const g = getRandomUnusedIndex(GESTURES.length, usedGestures);
+  const b = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
 
-    setGestureIndex(g);
-    setBloomIndex(b);
+  setGestureIndex(g);
+  setBloomIndex(b);
 
-    // DO NOT mark day complete yet
-    // DO NOT store todayBloomIndex yet
+  localStorage.setItem(
+    "usedGestures",
+    JSON.stringify(usedGestures.length >= GESTURES.length ? [g] : [...usedGestures, g])
+  );
 
-    localStorage.setItem(
-      "usedGestures",
-      JSON.stringify(usedGestures.length >= GESTURES.length ? [g] : [...usedGestures, g])
-    );
+  localStorage.setItem(
+    "usedBlooms",
+    JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
+  );
 
-    localStorage.setItem(
-      "usedBlooms",
-      JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
-    );
+  setMode("intro");
+}, []);
 
-    setMode("intro");
-  }, []);
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
@@ -195,19 +193,19 @@ useEffect(() => {
       return;
     }
 
-    /* ⭐ SHIFT + R → Full Reset */
-    if (e.key.toLowerCase() === "r") {
-      localStorage.removeItem("lastBloomDate");
-      localStorage.removeItem("todayBloomIndex");
-      localStorage.removeItem("usedGestures");
-      localStorage.removeItem("usedBlooms");
-      localStorage.removeItem("devBloomTestIndex");
-      localStorage.removeItem("devGestureTestIndex");
+ /* ⭐ SHIFT + R → Full Reset (FINAL VERSION) */
+if (e.key.toLowerCase() === "r") {
+  localStorage.setItem("todayBloomIndex", "0");
+  localStorage.setItem("lastBloomDate", new Date().toDateString());
+  localStorage.setItem("usedGestures", JSON.stringify([]));
+  localStorage.setItem("usedBlooms", JSON.stringify([]));
+  localStorage.removeItem("devBloomTestIndex");
+  localStorage.removeItem("devGestureTestIndex");
 
-      alert("🔄 Full Reset Complete");
-      window.location.reload();
-      return;
-    }
+  alert("🔄 Full Reset → Bloom #1");
+  window.location.reload();
+  return;
+}
 
     /* ⭐ SHIFT + 1 → Jump to Bloom #1 */
     if (e.key === "1") {
