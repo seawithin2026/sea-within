@@ -209,6 +209,7 @@ export default async function SanctuaryPage() {
               muted
               playsInline
               className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
             />
             <div className="absolute bottom-6 left-6 z-20">
               <p className="text-xs text-slate-300">Day 7</p>
@@ -290,6 +291,7 @@ export default async function SanctuaryPage() {
               muted
               playsInline
               className="sanctuary-card-video group-hover:scale-105 transition duration-700"
+            onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
             />
             <div className="absolute bottom-6 left-6 z-20">
               <p className="text-xs text-slate-300">Day 11</p>
