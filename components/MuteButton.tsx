@@ -34,11 +34,37 @@ export default function MuteButton() {
 
   return (
     <button
-      onClick={() => setMuted(!muted)}
-      className="mute-button"
-      aria-label="Toggle sound"
+  onClick={() => setMuted(!muted)}
+  className="mute-button"
+  aria-label="Toggle sound"
+>
+  {muted ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className="icon"
     >
-      {muted ? "🔇" : "🔊"}
-    </button>
+      <path d="M9 9l6 6M15 9l-6 6" />
+      <path d="M5 9v6h4l5 5V4l-5 5H5z" />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      className="icon"
+    >
+      <path d="M5 9v6h4l5 5V4l-5 5H5z" />
+      <path d="M15 8.5a4.5 4.5 0 010 7" />
+      <path d="M17.5 6a7 7 0 010 12" />
+    </svg>
+  )}
+</button>
+
   );
 }
