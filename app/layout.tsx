@@ -3,7 +3,7 @@ import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
 import { AudioProvider } from './providers/AudioProvider';
-import MuteButton from '@/components/MuteButton'; // ⭐ ADDED
+import MuteButton from '@/components/MuteButton';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
 
-        {/* ⭐ GLOBAL BACKGROUND AUDIO (already plays on all pages) */}
+        {/* GLOBAL BACKGROUND AUDIO */}
         <audio id="seaAudio" muted loop playsInline>
           <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
         </audio>
@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AudioProvider>
           <Navigation />
 
-          {/* ⭐ GLOBAL MUTE BUTTON — appears on EVERY page */}
+          {/* GLOBAL MUTE BUTTON */}
           <MuteButton />
 
           {children}

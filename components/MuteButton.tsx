@@ -5,7 +5,7 @@ export default function MuteButton() {
   const [muted, setMuted] = useState(true);
 
   useEffect(() => {
-    const audio = document.getElementById("seaAudio") as HTMLAudioElement;
+    const audio = document.getElementById("seaAudio") as HTMLAudioElement | null;
     if (audio) {
       audio.muted = muted;
     }
@@ -14,9 +14,9 @@ export default function MuteButton() {
   return (
     <button
       onClick={() => setMuted(!muted)}
-      className="fixed bottom-6 right-6 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm text-sea-100 hover:bg-white/20 transition"
+      className="mute-button"
     >
-      {muted ? "Unmute" : "Mute"}
+      {muted ? "🔇" : "🔊"}
     </button>
   );
 }
