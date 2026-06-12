@@ -527,23 +527,37 @@ body {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  z-index: 999999; /* always above videos/images */
+  z-index: 999999;
 
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  border: none;
-  padding: 12px 14px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  font-size: 18px;
+  border: none;
+
+  background: radial-gradient(circle at 30% 30%, #ffffffcc, #00000055);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  color: white;
   cursor: pointer;
 
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  /* Soft breathing glow */
+  animation: pearlGlow 4.5s ease-in-out infinite;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
 
-  transition: background 0.25s ease, transform 0.25s ease;
+@keyframes pearlGlow {
+  0% { box-shadow: 0 0 10px #ffffff33; }
+  50% { box-shadow: 0 0 22px #ffffffaa; }
+  100% { box-shadow: 0 0 10px #ffffff33; }
 }
 
 .mute-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.08);
+  transform: scale(1.1);
+  background: radial-gradient(circle at 30% 30%, #ffffffdd, #00000066);
 }
