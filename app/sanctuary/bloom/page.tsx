@@ -91,414 +91,355 @@ const BLOOMS = [
 ];
 
 /* -----------------------------------------------------
-   🌙 Helper — ensures no repeats until all used
+   🌙 NEW: PERFECT SEQUENTIAL ROTATION (NO REPEATS)
 ----------------------------------------------------- */
-function getRandomUnusedIndex(total, used) {
-  const all = Array.from({ length: total }, (_, i) => i);
-  const available = all.filter((i) => !used.includes(i));
-  if (available.length === 0) return Math.floor(Math.random() * total);
-  return available[Math.floor(Math.random() * available.length)];
+function getNextSequentialIndex(total, storageKey) {
+  const raw = localStorage.getItem(storageKey);
+  const index = raw ? parseInt(raw) : 0;
+
+  const next = (index + 1) % total;
+
+  localStorage.setItem(storageKey, next.toString());
+  return index;
 }
 
 export default function BloomRitualPage() {
   const [gestureIndex, setGestureIndex] = useState(null);
   const [bloomIndex, setBloomIndex] = useState(null);
 
-  const [mode, setMode] = useState("loading"); 
+  const [mode, setMode] = useState("loading");
   const [videoEnded, setVideoEnded] = useState(false);
 
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — FIXED
-     Only activates AFTER Continue is pressed.
+     🌙 DAILY LOCKOUT — SAME DAY → SANCTUARY
 ----------------------------------------------------- */
- useEffect(() => {
-  const last = localStorage.getItem("lastBloomDate");
-  const today = new Date().toDateString();
+  useEffect(() => {
+    const last = localStorage.getItem("lastBloomDate");
+    const today = new Date().toDateString();
 
-  // SAME DAY → Sanctuary replay mode
-  if (last === today) {
-    const savedBloom = localStorage.getItem("todayBloomIndex");
-    if (savedBloom !== null) {
-      setBloomIndex(parseInt(savedBloom));
-      setMode("sanctuary");
-      return;
+    if (last === today) {
+      const savedBloom = localStorage.getItem("todayBloomIndex");
+      if (savedBloom !== null) {
+        setBloomIndex(parseInt(savedBloom));
+        setMode("sanctuary");
+        return;
+      }
     }
-  }
 
-  // NEW DAY → generate new gesture + bloom
-  const usedGestures = JSON.parse(localStorage.getItem("usedGestures") || "[]");
-  const usedBlooms = JSON.parse(localStorage.getItem("usedBlooms") || "[]");
+    // NEW DAY → rotate independently
+    const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+    const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
-  const g = getRandomUnusedIndex(GESTURES.length, usedGestures);
-  const b = getRandomUnusedIndex(BLOOMS.length, usedBlooms);
+    setGestureIndex(g);
+    setBloomIndex(b);
 
-  setGestureIndex(g);
-  setBloomIndex(b);
-
-  localStorage.setItem(
-    "usedGestures",
-    JSON.stringify(usedGestures.length >= GESTURES.length ? [g] : [...usedGestures, g])
-  );
-
-  localStorage.setItem(
-    "usedBlooms",
-    JSON.stringify(usedBlooms.length >= BLOOMS.length ? [b] : [...usedBlooms, b])
-  );
-
-  setMode("intro");
-}, []);
-
-
+    setMode("intro");
+  }, []);
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
-/* -----------------------------------------------------
-   🌸 DEV SHORTCUTS — HP SAFE
-   Shift + F → Next Bloom
-   Shift + G → Next Gesture
-   Shift + R → Full Reset
-   Shift + 1 → Jump to Bloom #1
-   Shift + 2 → Jump to Bloom #2
+
+  /* -----------------------------------------------------
+     🌸 DEV SHORTCUTS — PRESERVED
 ----------------------------------------------------- */
-useEffect(() => {
-  const handler = (e) => {
-    if (!e.shiftKey) return;
+  useEffect(() => {
+    const handler = (e) => {
+      if (!e.shiftKey) return;
 
-    /* ⭐ SHIFT + F → Next Bloom */
-    if (e.key.toLowerCase() === "f") {
-      const total = BLOOMS.length;
-      let current = parseInt(localStorage.getItem("devBloomTestIndex") || "0");
-      current = (current + 1) % total;
+      if (e.key.toLowerCase() === "f") {
+        let current = parseInt(localStorage.getItem("bloomIndex") || "0");
+        current = (current + 1) % BLOOMS.length;
+        localStorage.setItem("bloomIndex", current.toString());
+        localStorage.removeItem("lastBloomDate");
+        alert(`🌸 Dev Bloom Test → Bloom #${current}`);
+        window.location.reload();
+        return;
+      }
 
-      localStorage.setItem("devBloomTestIndex", current.toString());
-      localStorage.setItem("todayBloomIndex", current.toString());
-      localStorage.removeItem("lastBloomDate");
+      if (e.key.toLowerCase() === "g") {
+        let current = parseInt(localStorage.getItem("gestureIndex") || "0");
+        current = (current + 1) % GESTURES.length;
+        localStorage.setItem("gestureIndex", current.toString());
+        localStorage.removeItem("lastBloomDate");
+        alert(`🌿 Dev Gesture Test → Gesture #${current}`);
+        window.location.reload();
+        return;
+      }
 
-      alert(`🌸 Dev Bloom Test → Bloom #${current}`);
-      window.location.reload();
-      return;
-    }
+      if (e.key.toLowerCase() === "r") {
+        localStorage.removeItem("todayBloomIndex");
+        localStorage.removeItem("lastBloomDate");
+        localStorage.removeItem("gestureIndex");
+        localStorage.removeItem("bloomIndex");
+        alert("🔄 Full Reset → Bloom #1");
+        window.location.reload();
+        return;
+      }
 
-    /* ⭐ SHIFT + G → Next Gesture */
-    if (e.key.toLowerCase() === "g") {
-      const total = GESTURES.length;
-      let current = parseInt(localStorage.getItem("devGestureTestIndex") || "0");
-      current = (current + 1) % total;
+      if (e.key === "1") {
+        localStorage.setItem("bloomIndex", "0");
+        localStorage.removeItem("lastBloomDate");
+        alert("🌸 Jumped to Bloom #1");
+        window.location.reload();
+        return;
+      }
 
-      localStorage.setItem("devGestureTestIndex", current.toString());
-      localStorage.setItem("usedGestures", JSON.stringify([current]));
-      localStorage.removeItem("lastBloomDate");
+      if (e.key === "2") {
+        localStorage.setItem("bloomIndex", "1");
+        localStorage.removeItem("lastBloomDate");
+        alert("🌸 Jumped to Bloom #2");
+        window.location.reload();
+        return;
+      }
+    };
 
-      alert(`🌿 Dev Gesture Test → Gesture #${current}`);
-      window.location.reload();
-      return;
-    }
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
- /* ⭐ SHIFT + R → Full Reset (FINAL VERSION) */
-if (e.key.toLowerCase() === "r") {
-  localStorage.setItem("todayBloomIndex", "0");
-  localStorage.setItem("lastBloomDate", new Date().toDateString());
-  localStorage.setItem("usedGestures", JSON.stringify([]));
-  localStorage.setItem("usedBlooms", JSON.stringify([]));
-  localStorage.removeItem("devBloomTestIndex");
-  localStorage.removeItem("devGestureTestIndex");
-
-  alert("🔄 Full Reset → Bloom #1");
-  window.location.reload();
-  return;
-}
-
-    /* ⭐ SHIFT + 1 → Jump to Bloom #1 */
-    if (e.key === "1") {
-      localStorage.setItem("todayBloomIndex", "0");
-      localStorage.removeItem("lastBloomDate");
-      alert("🌸 Jumped to Bloom #1");
-      window.location.reload();
-      return;
-    }
-
-    /* ⭐ SHIFT + 2 → Jump to Bloom #2 */
-    if (e.key === "2") {
-      localStorage.setItem("todayBloomIndex", "1");
-      localStorage.removeItem("lastBloomDate");
-      alert("🌸 Jumped to Bloom #2");
-      window.location.reload();
-      return;
-    }
-  };
-
-  window.addEventListener("keydown", handler);
-  return () => window.removeEventListener("keydown", handler);
-}, []);
-
+  /* -----------------------------------------------------
+     🌸 RENDER — YOUR CINEMATIC FLOW (UNCHANGED)
+----------------------------------------------------- */
 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-{/* -----------------------------------------------------
-   🌸 INTRO MODE
------------------------------------------------------ */}
-{mode === "intro" && (
-  <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
+      {/* INTRO MODE */}
+      {mode === "intro" && (
+        <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+          ></div>
 
-    <div 
-      className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-    ></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
+          <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
+            <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
+              Sanctuary • Bloom Ritual • Part 1/3
+            </p>
 
-    <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
+            <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+              Your Bloom Ritual
+            </h1>
 
-      <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
-        Sanctuary • Bloom Ritual • Part 1/3
-      </p>
+            <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
+              There is a place inside you where the world quiets —  
+              where your breath gathers like light on water,  
+              where the smallest kindness you offer yourself becomes a tide rising.  
+              The Bloom is not a flower on a screen.  
+              It is the reflection of your own becoming —  
+              a reminder that even the gentlest moment of care can awaken something luminous within you.
+            </p>
 
-      <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-        Your Bloom Ritual
-      </h1>
+            <div className="mt-6 rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8 animate-softRise">
+              <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
+                Your Moment of Nourishment
+              </p>
 
-      <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
-        There is a place inside you where the world quiets —  
-        where your breath gathers like light on water,  
-        where the smallest kindness you offer yourself becomes a tide rising.  
-        The Bloom is not a flower on a screen.  
-        It is the reflection of your own becoming —  
-        a reminder that even the gentlest moment of care can awaken something luminous within you.
-      </p>
+              <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
+                {gesture}
+              </p>
 
-      <div className="mt-6 rounded-3xl border border-white/10 bg-black/30 px-10 py-12 shadow-[0_0_60px_rgba(0,0,0,0.7)] backdrop-blur-xl flex flex-col items-center gap-8 animate-softRise">
+              <button
+                onClick={() => {
+                  if (bloomIndex !== null) {
+                    localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+                    localStorage.setItem("lastBloomDate", new Date().toDateString());
+                  }
+                  setVideoEnded(false);
+                  setMode("bloom");
+                }}
+                className="mt-4 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
+              >
+                I offered myself a moment
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
-        <p className="uppercase text-[11px] tracking-[0.22em] text-white/40">
-          Your Moment of Nourishment
-        </p>
+      {/* BLOOM MODE */}
+      {mode === "bloom" && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+          <video
+            key={bloomSrc}
+            src={bloomSrc}
+            autoPlay
+            muted
+            playsInline
+            loop={false}
+            onEnded={() => setVideoEnded(true)}
+            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+          />
 
-        <p className="text-base md:text-lg text-white/75 text-center max-w-xl leading-relaxed">
-          {gesture}
-        </p>
-<button
-  onClick={() => {
-    // 🔒 Activate daily lockout IMMEDIATELY
-    if (bloomIndex !== null) {
-      localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-      localStorage.setItem("lastBloomDate", new Date().toDateString());
-    }
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
 
-    setVideoEnded(false);
-    setMode("bloom");
-  }}
-  className="mt-4 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
->
-  I offered myself a moment
-</button>
+          {videoEnded && (
+            <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
+              <button
+                onClick={() => {
+                  setVideoEnded(false);
+                  const vid = document.querySelector("video");
+                  if (vid) {
+                    vid.currentTime = 0;
+                    vid.play();
+                  }
+                }}
+                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
+              >
+                Replay
+              </button>
 
-
-      </div>
-    </div>
-  </section>
-)}
-
-{/* -----------------------------------------------------
-   🌸 BLOOM MODE
------------------------------------------------------ */}
-{mode === "bloom" && (
-  <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
-
-    <video
-      key={bloomSrc}
-      src={bloomSrc}
-      autoPlay
-      muted
-      playsInline
-      loop={false}
-      onEnded={() => setVideoEnded(true)}
-      className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-    />
-
-    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_70%)] pointer-events-none"></div>
-
-    {videoEnded && (
-      <div className="absolute bottom-14 w-full flex flex-col items-center gap-5 animate-softRise">
-
-        <button
-          onClick={() => {
-            setVideoEnded(false);
-            const vid = document.querySelector("video");
-            if (vid) {
-              vid.currentTime = 0;
-              vid.play();
-            }
-          }}
-          className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
-        >
-          Replay
-        </button>
-
-        <button
-          onClick={() => {
-            localStorage.setItem("todayBloomIndex", bloomIndex.toString());
-            localStorage.setItem("lastBloomDate", new Date().toDateString());
-            setMode("completion");
-          }}
-          className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
-        >
-          Continue
-        </button>
-
-      </div>
-    )}
-  </div>
-)}
-
-{/* -----------------------------------------------------
-   🌙 COMPLETION MODE
------------------------------------------------------ */}
-{mode === "completion" && (
-  <div className="fixed inset-0 z-40 flex items-center justify-center overflow-hidden animate-fadeIn">
-
-    <div 
-      className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-    ></div>
-
-    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
-
-    <div className="relative z-10 max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
-
-      <h2 className="text-2xl tracking-[0.14em] uppercase text-[#FFFFFF]">
-        Ritual Complete
-      </h2>
-
-      <p className="text-[#FFFFFF] text-center leading-relaxed max-w-md">
-        You offered yourself a moment of nourishment.  
-        Something inside you softened, opened, and rose.
-      </p>
-
-      <button
-        onClick={() => setMode("outro")}
-        className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
-      >
-        Continue
-      </button>
-
-    </div>
-  </div>
-)}
-
-{/* -----------------------------------------------------
-   🌙 OUTRO MODE
------------------------------------------------------ */}
-{mode === "outro" && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden animate-fadeInSlow">
-
-    <div 
-      className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-    ></div>
-
-    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
-
-    <div className="relative z-10 text-center px-10 animate-softRiseSlow">
-
-      <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF] mb-6">
-        Sanctuary • Bloom Ritual
-      </p>
-
-      <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-[#FFFFFF] mb-6">
-        Your Ritual for Today is Complete
-      </h2>
-
-      <p className="text-[#FFFFFF] text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-        Return tomorrow for your next Bloom —  
-        a new unfolding, a new breath, a new moment of becoming.
-      </p>
-
-      <button
-        onClick={() => {
-          setVideoEnded(false);
-          setMode("sanctuary");
-        }}
-        className="mt-10 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
-      >
-        Return to Sanctuary
-      </button>
-
-    </div>
-  </div>
-)}
-
-{/* -----------------------------------------------------
-   🌟 SANCTUARY MODE — One-time playback
------------------------------------------------------ */}
-{mode === "sanctuary" && (
-  <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
-
-    <video
-      key={bloomSrc}
-      src={bloomSrc}
-      autoPlay
-      muted
-      playsInline
-      loop={false}
-      onEnded={() => setVideoEnded(true)}
-      className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-    />
-
-    {videoEnded && (
-      <>
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
-
-        <div className="absolute bottom-8 left-10 animate-softRiseSlow">
-          <p className="text-[#C6A667] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
-            You bloomed today.
-          </p>
+              <button
+                onClick={() => {
+                  localStorage.setItem("todayBloomIndex", bloomIndex.toString());
+                  localStorage.setItem("lastBloomDate", new Date().toDateString());
+                  setMode("completion");
+                }}
+                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
+              >
+                Continue
+              </button>
+            </div>
+          )}
         </div>
-      </>
-    )}
-  </div>
-)}
+      )}
 
-{/* -----------------------------------------------------
-   🌟 ANIMATIONS
------------------------------------------------------ */}
-<style jsx>{`
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+      {/* COMPLETION MODE */}
+      {mode === "completion" && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center overflow-hidden animate-fadeIn">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+          ></div>
 
-  @keyframes softRise {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-  @keyframes fadeInSlow {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+          <div className="relative z-10 max-w-lg w-full mx-6 rounded-3xl border border-white/10 bg-black/30 shadow-[0_0_80px_rgba(0,0,0,0.9)] px-10 py-14 flex flex-col items-center gap-8 animate-softRise">
+            <h2 className="text-2xl tracking-[0.14em] uppercase text-[#FFFFFF]">
+              Ritual Complete
+            </h2>
 
-   @keyframes softRiseSlow {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+            <p className="text-[#FFFFFF] text-center leading-relaxed max-w-md">
+              You offered yourself a moment of nourishment.  
+              Something inside you softened, opened, and rose.
+            </p>
 
-  .animate-fadeIn {
-    animation: fadeIn 1s ease forwards;
-  }
+            <button
+              onClick={() => setMode("outro")}
+              className="mt-2 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
 
-  .animate-softRise {
-    animation: softRise 1.2s ease forwards;
-  }
+      {/* OUTRO MODE */}
+      {mode === "outro" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden animate-fadeInSlow">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+          ></div>
 
-  .animate-fadeInSlow {
-    animation: fadeInSlow 2.2s ease forwards;
-  }
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
-  .animate-softRiseSlow {
-    animation: softRiseSlow 2.4s ease forwards;
-  }
-`}</style>
+          <div className="relative z-10 text-center px-10 animate-softRiseSlow">
+            <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF] mb-6">
+              Sanctuary • Bloom Ritual
+            </p>
+
+            <h2 className="text-3xl md:text-4xl tracking-[0.14em] uppercase text-[#FFFFFF] mb-6">
+              Your Ritual for Today is Complete
+            </h2>
+
+            <p className="text-[#FFFFFF] text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+              Return tomorrow for your next Bloom —  
+              a new unfolding, a new breath, a new moment of becoming.
+            </p>
+
+            <button
+              onClick={() => {
+                setVideoEnded(false);
+                setMode("sanctuary");
+              }}
+              className="mt-10 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/30 text-[#FFFFFF] hover:bg-white/10 transition-all duration-500"
+            >
+              Return to Sanctuary
+                      </button>
+          </div>
+        </div>
+      )}
+
+      {/* SANCTUARY MODE */}
+      {mode === "sanctuary" && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+          <video
+            key={bloomSrc}
+            src={bloomSrc}
+            autoPlay
+            muted
+            playsInline
+            loop={false}
+            onEnded={() => setVideoEnded(true)}
+            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+          />
+
+          {videoEnded && (
+            <>
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+
+              <div className="absolute bottom-8 left-10 animate-softRiseSlow">
+                <p className="text-[#C6A667] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
+                  You bloomed today.
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ANIMATIONS */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes softRise {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInSlow {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes softRiseSlow {
+          from { opacity: 0; transform: translateY(40px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 1s ease forwards;
+        }
+
+        .animate-softRise {
+          animation: softRise 1.2s ease forwards;
+        }
+
+        .animate-fadeInSlow {
+          animation: fadeInSlow 2.2s ease forwards;
+        }
+
+        .animate-softRiseSlow {
+          animation: softRiseSlow 2.4s ease forwards;
+        }
+      `}</style>
     </div>
   );
 }
