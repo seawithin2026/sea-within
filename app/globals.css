@@ -529,35 +529,28 @@ body {
   right: 24px;
   z-index: 999999;
 
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 
-  background: radial-gradient(circle at 30% 30%, #ffffffcc, #00000055);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.45); /* sleek translucent black */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 22px;
-  color: white;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85); /* soft white, not harsh */
   cursor: pointer;
 
-  /* Soft breathing glow */
-  animation: pearlGlow 4.5s ease-in-out infinite;
-  transition: transform 0.25s ease, background 0.25s ease;
-}
-
-@keyframes pearlGlow {
-  0% { box-shadow: 0 0 10px #ffffff33; }
-  50% { box-shadow: 0 0 22px #ffffffaa; }
-  100% { box-shadow: 0 0 10px #ffffff33; }
+  transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease;
 }
 
 .mute-button:hover {
-  transform: scale(1.1);
-  background: radial-gradient(circle at 30% 30%, #ffffffdd, #00000066);
+  background: rgba(0, 0, 0, 0.65); /* darker on hover */
+  transform: scale(1.08);
+  color: white; /* crisp white on hover */
 }
