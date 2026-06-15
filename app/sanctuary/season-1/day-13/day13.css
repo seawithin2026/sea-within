@@ -7,6 +7,15 @@
 /* -------------------------------------------------- */
 /* DAY 13 — FULL-SCREEN HERO (MATCHES DAY 1) */
 /* -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* PAGE WRAPPER — MATCHES DAY 1 */
+/* -------------------------------------------------- */
+.day13-wrapper {
+  width: 100%;
+  background: radial-gradient(circle at top, #151a30 0, #05060a 60%, #020308 100%);
+  padding-bottom: 80px;
+}
+
 .day13-hero {
   position: relative;
   width: 100vw;
