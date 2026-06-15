@@ -10,21 +10,16 @@ export default function Day13Page() {
       {/* 1. CINEMATIC HERO (FULL WIDTH, 80VH) */}
       {/* -------------------------------------------------- */}
       <section className="day13-hero">
-        <video className="day13-hero-video" autoPlay muted loop playsInline>
-          <source src="/video-season1/day-13.mp4" type="video/mp4" />
-        </video>
+  <video className="day13-hero-video" autoPlay muted loop playsInline>
+    <source src="/video-season1/day-13.mp4" type="video/mp4" />
+  </video>
 
-        {/* OVERLAY CONTENT */}
-        <div className="day13-hero-overlay">
-          <div className="day13-circle">
-            <p className="day13-season">SEA WITHIN · DAY 13</p>
-            <h1 className="day13-title">The Ceremonial Rebirth</h1>
-            <p className="day13-tagline">
-              Release what no longer serves you and become who you were destined to be
-            </p>
-          </div>
-        </div>
-      </section>
+  <div className="day13-hero-overlay">
+    <p className="day13-hero-tag">SEA WITHIN · DAY 13</p>
+    <h1 className="day13-hero-title">The Ceremonial Rebirth</h1>
+    <p className="day13-hero-subtitle">Return to Your Luminous Self</p>
+  </div>
+</section>
 
       {/* -------------------------------------------------- */}
       {/* 2. MAIN CONTENT (CENTERED CONTAINER) */}
