@@ -18,8 +18,8 @@ export default function Day1Page() {
         <div className="day1-hero-overlay">
           <div className="day1-circle">
             <p className="day1-season">SEASON 1 — DAY 1</p>
-            <h1 className="day1-title">Water Purification Ritual</h1>
-            <p className="day1-tagline">A return to clarity, softness, and release</p>
+            <h1 className="day1-title">The Ceremonial Rebirth</h1>
+            <p className="day1-tagline">Release what no longer serves you and become who you were destined to be</p>
           </div>
         </div>
       </section>
@@ -76,7 +76,7 @@ export default function Day1Page() {
 
               </div>
               <p className="elementTitle">Moon‑Infused Water</p>
-              <p className="elementText">Place another bowl in the moonlight at night — also covered, held softly under the sky.</p>
+              <p className="elementText">Place another bowl in the moonlight at night — covered, so only the light touches it.</p>
             </div>
 
             {/* 3 — Flower Petals */}
