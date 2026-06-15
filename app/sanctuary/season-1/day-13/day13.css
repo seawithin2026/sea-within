@@ -1,12 +1,13 @@
 /* -------------------------------------------------- */
 /* 1. CINEMATIC HERO */
 /* -------------------------------------------------- */
-
+/* -------------------------------------------------- */
+/* HERO — MATCHES OTHER DAYS (NO CIRCLE) */
+/* -------------------------------------------------- */
 .day13-hero {
   position: relative;
   width: 100vw;
-  height: 80vh; /* cinematic height */
-  margin-top: 6rem; /* breathing room under nav */
+  height: 100vh;
   overflow: hidden;
 }
 
@@ -15,54 +16,43 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  pointer-events: none;
 }
 
 .day13-hero-overlay {
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: center;   /* centered horizontally */
-  align-items: flex-end;      /* lower third */
-  padding-bottom: 22vh;       /* your perfect height */
-  pointer-events: none;
-}
-
-.day13-circle {
-  width: 260px;
-  height: 260px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(120,180,255,0.35), rgba(0,0,0,0.6));
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.15);
-  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  pointer-events: auto;
+  padding: 0 20px;
+  color: white;
 }
 
-.day13-season {
-  font-size: 0.7rem;
-  letter-spacing: 0.25em;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 8px;
+/* Tag (SEASON 1 · DAY 13) */
+.day13-hero-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
 }
 
-.day13-title {
-  font-size: 1.4rem;
+/* Title (The Ceremonial Rebirth) */
+.day13-hero-title {
+  font-size: 3rem;
   font-weight: 300;
-  color: #e8faff;
-  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
 }
 
-.day13-tagline {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.75);
-  max-width: 180px;
-  line-height: 1.4;
+/* Subtitle */
+.day13-hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.85;
 }
+
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
