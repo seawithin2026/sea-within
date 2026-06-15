@@ -176,12 +176,6 @@ export default function Day13Page() {
           </div>
         </section>
 
-        {/* BATH HERO */}
-        <section className="bathHero">
-          <video className="bathVideo" autoPlay muted loop playsInline>
-            <source src="/video-season1/day13-bath.mp4" type="video/mp4" />
-          </video>
-        </section>
 
         {/* RITUAL TEXT */}
         <section className="ritualText">
