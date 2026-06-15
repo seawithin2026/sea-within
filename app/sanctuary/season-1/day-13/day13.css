@@ -4,6 +4,9 @@
 /* -------------------------------------------------- */
 /* HERO — MATCHES OTHER DAYS (NO CIRCLE) */
 /* -------------------------------------------------- */
+/* -------------------------------------------------- */
+/* DAY 13 — FULL-SCREEN HERO (MATCHES DAY 1) */
+/* -------------------------------------------------- */
 .day13-hero {
   position: relative;
   width: 100vw;
@@ -23,14 +26,13 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* center vertically */
+  align-items: center;     /* center horizontally */
   text-align: center;
   padding: 0 20px;
   color: white;
 }
 
-/* Tag (SEASON 1 · DAY 13) */
 .day13-hero-tag {
   font-size: 0.75rem;
   letter-spacing: 0.28em;
@@ -39,7 +41,6 @@
   text-transform: uppercase;
 }
 
-/* Title (The Ceremonial Rebirth) */
 .day13-hero-title {
   font-size: 3rem;
   font-weight: 300;
@@ -47,12 +48,10 @@
   margin-bottom: 1rem;
 }
 
-/* Subtitle */
 .day13-hero-subtitle {
   font-size: 1.1rem;
   opacity: 0.85;
 }
-
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 600px) {
