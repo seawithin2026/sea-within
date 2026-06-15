@@ -1,269 +1,111 @@
 "use client";
-
-import React from "react";
 import "./day1.css";
 
 export default function Day1Page() {
   return (
-    <>
+    <div className="day1-wrapper">
+
       {/* -------------------------------------------------- */}
-      {/* 1. CINEMATIC HERO (FULL WIDTH, 80VH) */}
+      {/* 1. FULL-SCREEN HERO */}
       {/* -------------------------------------------------- */}
       <section className="day1-hero">
-        <video className="day1-hero-video" autoPlay muted loop playsInline>
-          <source src="/video-season1/day-1.mp4" type="video/mp4" />
-        </video>
+        <video
+          src="/video-season1/day-1.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="day1-hero-video"
+        />
 
-        {/* OVERLAY CONTENT */}
         <div className="day1-hero-overlay">
-          <div className="day1-circle">
-            <p className="day1-season">SEASON 1 — DAY 1</p>
-            <h1 className="day1-title">The Ceremonial Rebirth</h1>
-            <p className="day1-tagline">Release what no longer serves you and become who you were destined to be</p>
-          </div>
+          <p className="day1-hero-tag">SEA WITHIN · DAY 1</p>
+          <h1 className="day1-hero-title">The Cleansing Ritual</h1>
+          <p className="day1-hero-subtitle">Mind · Body · Spirit</p>
         </div>
       </section>
 
       {/* -------------------------------------------------- */}
-      {/* 2. MAIN CONTENT (CENTERED CONTAINER) */}
+      {/* 2. OPENING POETIC TEXT — NEW BEGINNING ENERGY */}
       {/* -------------------------------------------------- */}
-      <div className="day1-content">
-        <section className="ritualElements">
-          <h2 className="elementsTitle">The Elements You Bring Into the Water</h2>
+      <section className="opening cinematic-opening">
+        <span>Every journey begins in the quiet before the first step.</span>
+        <span>The moment where the world softens and you finally hear yourself again.</span>
+        <span>The ancients believed that before any path could open, the self had to be cleared.</span>
+        <span className="mt">Not purified — simply returned to its natural clarity.</span>
+        <span>Today, you begin by making space for what is meant to come.</span>
+      </section>
 
-          <div className="elementsGrid">
+      {/* -------------------------------------------------- */}
+      {/* 3. ANCIENT CLEANSING TECHNIQUES GRID */}
+      {/* -------------------------------------------------- */}
+      <section className="day1-grid">
 
-            {/* 1 — Sun‑Infused Water */}
-            <div className="element">
-              <div className="elementMedia">
-             <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
-  style={{
-    objectFit: "cover",
-    objectPosition: "50% 20%", // shift view upward
-  }}
->
-  <source src="/ritual-elements/day1/sun-infused-water.mp4" />
-</video>
-
-
-              </div>
-              <p className="elementTitle">Sun‑Infused Water</p>
-              <p className="elementText">Place one bowl of water in the sun for the day — covered, so only the light touches it.</p>
-            </div>
-
-            {/* 2 — Moon‑Infused Water */}
-            <div className="element">
-              <div className="elementMedia">
-                <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
-  style={{
-    objectFit: "cover",
-    objectPosition: "50% 20%", // shift view upward
-  }}
->
-  <source src="/ritual-elements/day1/moon-infused-water.mp4" />
-</video>
-
-
-              </div>
-              <p className="elementTitle">Moon‑Infused Water</p>
-              <p className="elementText">Place another bowl in the moonlight — covered, so only the light touches it.</p>
-            </div>
-
-            {/* 3 — Flower Petals */}
-           <div className="element">
-  <div className="elementMedia">
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      style={{
-        filter: "brightness(0.85) contrast(1.05) saturate(0.9)",
-      }}
-    >
-      <source src="/ritual-elements/day1/flower-petals.mp4" />
-    </video>
-  </div>
-  <p className="elementTitle">Flower Petals</p>
-  <p className="elementText">A soft offering to the water — beauty returning to beauty.</p>
-</div>
-
-            {/* 4 — Epsom Salt */}
-     <div className="element">
-  <div className="elementMedia">
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
-    >
-      <source src="/ritual-elements/day1/epsom-salt.mp4" />
-    </video>
-  </div>
-  <p className="elementTitle">Epsom Salt</p>
-  <p className="elementText">Mineral release. A quiet unburdening.</p>
-</div>
-
-
-
-            {/* 5 — Bath Oil */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/bath-oil.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">Bath Oil</p>
-              <p className="elementText">A touch of nourishment for the skin.</p>
-            </div>
-
-            {/* 6 — Favorite Scent */}
-            <div className="element">
-              <div className="elementMedia">
-                <video autoPlay muted loop playsInline>
-                  <source src="/ritual-elements/day1/favorite-scent.mp4" />
-                </video>
-              </div>
-              <p className="elementTitle">Your Favorite Scent</p>
-              <p className="elementText">A fragrance that feels like home.</p>
-            </div>
-
-            {/* 7 — Safe Light */}
-         <div className="element">
-  <div className="elementMedia">
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}
-    >
-      <source src="/ritual-elements/day1/safe-light.mp4" />
-    </video>
-  </div>
-  <p className="elementTitle">A Light That Doesn’t Burn</p>
-  <p className="elementText">A soft, flameless glow — safe for any space.</p>
-</div>
-
-
-            {/* 8 — Music */}
-         <div className="element">
-  <div className="elementMedia">
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.6)}
-    >
-      <source src="/ritual-elements/day1/music-ambience.mp4" />
-    </video>
-  </div>
-  <p className="elementTitle">Music</p>
-  <p className="elementText">A soundscape to soften the world around you.</p>
-</div>
-
-
+        {/* BODY — SILT-WASHING RITE */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day1-body.mp4" />
+            </video>
           </div>
-        </section>
+          <p className="grid-title water">THE SILT‑WASHING RITE</p>
+          <p className="grid-text">A body cleansing once practiced by the river‑keepers of the First Valleys.</p>
 
-        {/* BATH HERO */}
-        <section className="bathHero">
-          <video className="bathVideo" autoPlay muted loop playsInline>
-            <source src="/video-season1/day1-bath.mp4" type="video/mp4" />
-          </video>
-        </section>
+          <div className="element-paragraph">
+            <p>Bring your hands to your shoulders and sweep downward slowly.</p>
+            <p>Imagine ancient river silt — soft, cool, memory‑holding — brushing away the weight you’ve carried.</p>
+            <p>The river‑keepers believed silt absorbed heaviness the way earth absorbs rain.</p>
+            <p>Let the sweep unburden you. Let the old weight fall away like dust returning home.</p>
+          </div>
+        </div>
 
-     <section className="ritualText">
-  <div className="ritualTextInner">
-    <h2 className="ritualHeading">The Ceremonial Rebirth</h2>
+        {/* MIND — SKY-LISTENING BREATH */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day1-mind.mp4" />
+            </video>
+          </div>
+          <p className="grid-title fire">THE SKY‑LISTENING BREATH</p>
+          <p className="grid-text">A mind‑clearing ritual used by the early sky‑watchers of the high plains.</p>
 
-    <p className="ritualParagraph">
-      Step into the warm bath and let the water settle around you. 
-      This is your sanctuary — a quiet, glowing space where the world softens 
-      and you return to yourself.
-    </p>
+          <div className="element-paragraph">
+            <p>Lift your chin slightly. Inhale upward, as if receiving something from above.</p>
+            <p>Exhale downward, letting your thoughts settle like dust returning to still ground.</p>
+            <p>The sky‑watchers believed clarity came not from thinking — but from listening.</p>
+            <p>Let the breath open your mind. Let the sky quiet your inner noise.</p>
+          </div>
+        </div>
 
-    <p className="ritualParagraph">
-      Beside you rests the bowl you prepared: one part warmed by the sun, 
-      one part softened by the moon. Covered as they infused, touched only by light, 
-      the water now carries the memory of both worlds.
-    </p>
+        {/* SPIRIT — LUMEN THREAD RELEASE */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season1/day1-spirit.mp4" />
+            </video>
+          </div>
+          <p className="grid-title earth">THE LUMEN THREAD RELEASE</p>
+          <p className="grid-text">A spirit‑cleansing ritual from the hearth‑weavers of the Northern Valleys.</p>
 
-    <p className="ritualParagraph">
-      Lift the bowl gently. Before you pour, let a single drop of the 
-      <strong>sun‑infused water</strong> fall onto the crown of your head.
-      This drop cleanses the <strong>body</strong> — releasing tension, heaviness, 
-      and everything your skin has carried for too long.
-    </p>
+          <div className="element-paragraph">
+            <p>Place your hand over your chest or belly.</p>
+            <p>Imagine a glowing thread inside you — your lumen thread — warm, bright, alive.</p>
+            <p>The hearth‑weavers believed burdens tangled this inner light, dimming the spirit.</p>
+            <p>With a gentle motion, “untangle” the thread. Feel your inner light flow freely again.</p>
+          </div>
+        </div>
 
-    <p className="ritualParagraph">
-      Then let a single drop of the <strong>moon‑infused water</strong> fall.
-      This drop cleanses the <strong>mind</strong> — softening old thoughts, 
-      quieting doubt, clearing the inner sky.
-    </p>
+      </section>
 
-    <p className="ritualParagraph">
-      When sun and moon have touched you, let a third drop fall — 
-      the two waters now united.  
-      This drop cleanses the <strong>spirit</strong> — the deepest part of you, 
-      the part that remembers who you truly are.
-    </p>
+      {/* -------------------------------------------------- */}
+      {/* 4. CLOSING TEXT — SOFT, BEGINNING ENERGY */}
+      {/* -------------------------------------------------- */}
+      <footer className="closing">
+        <span>You are clear.</span>
+        <span>You are open.</span>
+        <span>The journey begins.</span>
+      </footer>
 
-    <p className="ritualParagraph">
-      Now raise the bowl fully. The surface shimmers — day and night woven together, 
-      strength and softness in perfect balance.
-    </p>
-
-    <p className="ritualParagraph">
-      As the water pours over you, it moves like a blessing — warm, gentle, alive.  
-      Let it carry away the heaviness you’ve outgrown, the stories you’ve shed, 
-      the versions of you that no longer fit.
-    </p>
-
-    <p className="ritualParagraph">
-      Each droplet is a release. A soft unbinding. A quiet return to your truest self.  
-      You feel lighter. Clearer. Brighter — as if something inside you has finally exhaled.
-    </p>
-
-    <p className="ritualParagraph">
-      You are not breaking open — you are unfolding.  
-      You are not changing — you are remembering.  
-      You are not becoming someone new — you are becoming someone true.
-    </p>
-
-    <p className="ritualParagraph">
-      In this warm, glowing moment, something rises within you with the gentleness of dawn.  
-      A new steadiness. A new softness. A new light that feels unmistakably yours.
-    </p>
-
-    <p className="ritualParagraph">
-      You emerge from this ritual renewed, luminous, unmistakably alive —  
-      a self that walks with clarity, breathes with confidence, and knows its own worth.
-    </p>
-
-    <p className="ritualParagraph">
-      <strong>You rise from the water reborn — radiant, whole, and beautifully unstoppable.</strong>
-    </p>
-    <p className="ritualParagraph">
-  <strong>Welcome home, beautiful soul.</strong>
-</p>
-  </div>
-</section>
-
-
-      </div>
-    </>
+    </div>
   );
 }
