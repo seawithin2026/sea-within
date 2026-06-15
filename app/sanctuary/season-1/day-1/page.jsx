@@ -53,7 +53,7 @@ export default function Day1Page() {
 
               </div>
               <p className="elementTitle">Sun‑Infused Water</p>
-              <p className="elementText">Water warmed by the day, carrying the memory of light.</p>
+              <p className="elementText">Place one bowl of water in the sun for the day — covered, so only the light touches it.</p>
             </div>
 
             {/* 2 — Moon‑Infused Water */}
@@ -76,7 +76,7 @@ export default function Day1Page() {
 
               </div>
               <p className="elementTitle">Moon‑Infused Water</p>
-              <p className="elementText">Water cooled by the night, carrying the memory of calm.</p>
+              <p className="elementText">Place another bowl in the moonlight at night — also covered, held softly under the sky.</p>
             </div>
 
             {/* 3 — Flower Petals */}
@@ -185,59 +185,84 @@ export default function Day1Page() {
           </video>
         </section>
 
-        {/* RITUAL TEXT */}
-        <section className="ritualText">
-          <div className="ritualTextInner">
-            <h2 className="ritualHeading">The Rebirth</h2>
+     <section className="ritualText">
+  <div className="ritualTextInner">
+    <h2 className="ritualHeading">The Ceremonial Rebirth</h2>
 
-            <p className="ritualParagraph">
-              The water glows in your hands, holding the last traces of who you were
-              before this moment found you.
-            </p>
+    <p className="ritualParagraph">
+      Step into the warm bath and let the water settle around you. 
+      This is your sanctuary — a quiet, glowing space where the world softens 
+      and you return to yourself.
+    </p>
 
-            <p className="ritualParagraph">
-              The room is silent now. Even the air seems to wait.
-            </p>
+    <p className="ritualParagraph">
+      Beside you rests the bowl you prepared: one part warmed by the sun, 
+      one part softened by the moon. Covered as they infused, touched only by light, 
+      the water now carries the memory of both worlds.
+    </p>
 
-            <p className="ritualParagraph">
-              You lift the bowl slowly, as if raising an offering to something ancient
-              that has been watching you from the beginning.
-            </p>
+    <p className="ritualParagraph">
+      Lift the bowl gently. Before you pour, let a single drop of the 
+      <strong>sun‑infused water</strong> fall onto the crown of your head.
+      This drop cleanses the <strong>body</strong> — releasing tension, heaviness, 
+      and everything your skin has carried for too long.
+    </p>
 
-            <p className="ritualParagraph">
-              And when the bowl reaches the space above your head, the world holds its breath.
-            </p>
+    <p className="ritualParagraph">
+      Then let a single drop of the <strong>moon‑infused water</strong> fall.
+      This drop cleanses the <strong>mind</strong> — softening old thoughts, 
+      quieting doubt, clearing the inner sky.
+    </p>
 
-            <p className="ritualParagraph">
-              Droplets fall in slow motion — each one a piece of the past breaking away
-              from your body, falling back into the earth where it can no longer follow you.
-            </p>
+    <p className="ritualParagraph">
+      When sun and moon have touched you, let a third drop fall — 
+      the two waters now united.  
+      This drop cleanses the <strong>spirit</strong> — the deepest part of you, 
+      the part that remembers who you truly are.
+    </p>
 
-            <p className="ritualParagraph">
-              In this suspended moment, something inside you cracks open. Not in pain —
-              in revelation.
-            </p>
+    <p className="ritualParagraph">
+      Now raise the bowl fully. The surface shimmers — day and night woven together, 
+      strength and softness in perfect balance.
+    </p>
 
-            <p className="ritualParagraph">
-              You feel yourself returning to the raw, unfiltered version of you that
-              existed before the world named you, before expectations shaped you, before
-              you learned to dim your own light.
-            </p>
+    <p className="ritualParagraph">
+      As the water pours over you, it moves like a blessing — warm, gentle, alive.  
+      Let it carry away the heaviness you’ve outgrown, the stories you’ve shed, 
+      the versions of you that no longer fit.
+    </p>
 
-            <p className="ritualParagraph">
-              Here, in the glow of this rebirth, you are untouched. Unburdened. Unmasked.
-            </p>
+    <p className="ritualParagraph">
+      Each droplet is a release. A soft unbinding. A quiet return to your truest self.  
+      You feel lighter. Clearer. Brighter — as if something inside you has finally exhaled.
+    </p>
 
-            <p className="ritualParagraph">
-              You are born again into a new light — a light that recognizes you, a light
-              that has been waiting.
-            </p>
+    <p className="ritualParagraph">
+      You are not breaking open — you are unfolding.  
+      You are not changing — you are remembering.  
+      You are not becoming someone new — you are becoming someone true.
+    </p>
 
-            <p className="ritualParagraph">
-              <strong>Welcome, beautiful Soul. The world will never see you the same way again.</strong>
-            </p>
-          </div>
-        </section>
+    <p className="ritualParagraph">
+      In this warm, glowing moment, something rises within you with the gentleness of dawn.  
+      A new steadiness. A new softness. A new light that feels unmistakably yours.
+    </p>
+
+    <p className="ritualParagraph">
+      You emerge from this ritual renewed, luminous, unmistakably alive —  
+      a self that walks with clarity, breathes with confidence, and knows its own worth.
+    </p>
+
+    <p className="ritualParagraph">
+      <strong>You rise from the water reborn — radiant, whole, and beautifully unstoppable.</strong>
+    </p>
+    <p className="ritualParagraph">
+  <strong>Welcome home, beautiful soul.</strong>
+</p>
+  </div>
+</section>
+
+
       </div>
     </>
   );
