@@ -76,7 +76,7 @@ export default function Day1Page() {
 
               </div>
               <p className="elementTitle">Moon‑Infused Water</p>
-              <p className="elementText">Place another bowl in the moonlight at night — covered, so only the light touches it.</p>
+              <p className="elementText">Place another bowl in the moonlight — covered, so only the light touches it.</p>
             </div>
 
             {/* 3 — Flower Petals */}
