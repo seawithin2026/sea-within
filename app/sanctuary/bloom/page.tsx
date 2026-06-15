@@ -475,7 +475,7 @@ export default function BloomRitualPage() {
   <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
 
   <div className="absolute bottom-8 left-10 animate-softRiseSlow">
-    <p className="text-[#B08C4F] text-sm md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
+    <p className="text-golden-400 text-m md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
       You bloomed today.
     </p>
   </div>
