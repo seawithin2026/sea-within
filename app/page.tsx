@@ -54,12 +54,14 @@ export default function HomePage() {
       {/* =============================================
           SECTION 1 — OCEAN SURFACE
       ============================================= */}
-      <CinematicSection
-        id="surface"
-        videoSrc="/videos/ocean-surface.mp4"
-        overlayOpacity={0.18}
-      >
-        <div className="flex flex-col items-center justify-center text-center px-6">
+     <CinematicSection
+  id="surface"
+  videoSrc="/videos/ocean-surface.mp4"
+  overlayOpacity={0.18}
+  className="flex items-center justify-center"
+>
+  <div className="flex flex-col items-center justify-center text-center px-6">
+
           <ScrollReveal delay={1000} duration={2000}>
             <div className="animate-[breathPulse_10s_ease-in-out_infinite]">
               <BreathingCircle size={100} />
@@ -78,9 +80,10 @@ export default function HomePage() {
           SECTION 2 — THE DESCENT
       ============================================= */}
       <CinematicSection
-        id="descent"
-        videoSrc="/videos/the-descent.mp4"
-        overlayOpacity={0.18}
+  id="descent"
+  videoSrc="/videos/the-descent.mp4"
+  overlayOpacity={0.18}
+  className="flex items-center justify-center"
       >
         <div className="text-center px-6 max-w-4xl">
           <ScrollReveal delay={200}>
