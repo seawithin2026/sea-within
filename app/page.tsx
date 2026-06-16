@@ -57,7 +57,7 @@ export default function HomePage() {
       <CinematicSection
         id="surface"
         videoSrc="/videos/ocean-surface.mp4"
-        overlayOpacity={0.2}
+        overlayOpacity={0.18}
       >
         <div className="flex flex-col items-center justify-center text-center px-6">
           <ScrollReveal delay={1000} duration={2000}>
@@ -80,7 +80,7 @@ export default function HomePage() {
       <CinematicSection
         id="descent"
         videoSrc="/videos/the-descent.mp4"
-        overlayOpacity={0.45}
+        overlayOpacity={0.18}
       >
         <div className="text-center px-6 max-w-4xl">
           <ScrollReveal delay={200}>
@@ -150,7 +150,7 @@ export default function HomePage() {
       <CinematicSection
         id="interwoven"
         videoSrc="/videos/interwoven-humanity.mp4"
-        overlayOpacity={0.35}
+        overlayOpacity={0.18}
       >
         <div className="text-center px-6 max-w-4xl">
           <ScrollReveal delay={300}>
@@ -176,7 +176,7 @@ export default function HomePage() {
       <CinematicSection
         id="humanity"
         videoSrc="/videos/humanity-joy.mp4"
-        overlayOpacity={0.25}
+        overlayOpacity={0.18}
       >
         <div className="text-center px-6 max-w-3xl">
           <ScrollReveal delay={400}>
@@ -202,7 +202,7 @@ export default function HomePage() {
       <CinematicSection
         id="doorway"
         videoSrc="/videos/the-doorway.mp4"
-        overlayOpacity={0.4}
+        overlayOpacity={0.18}
       >
         <div className="text-center px-6 max-w-3xl">
           <ScrollReveal delay={300}>

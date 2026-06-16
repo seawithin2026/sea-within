@@ -60,7 +60,7 @@ export default async function SanctuaryPage() {
               opacity: 0.95,
             }}
           >
-            Season 1 — Living is Feeling.
+            Living is Feeling.
           </p>
         </div>
       </section>
