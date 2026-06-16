@@ -119,24 +119,46 @@ export default function BloomRitualPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — SUPABASE last_completed
------------------------------------------------------ */
+     🌙 DAILY LOCKOUT — SUPABASE + LOCAL STORAGE
+  ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
 
     const init = async () => {
-      const todayString = new Date().toDateString();
+      const today = new Date();
+      const todayKey = today.toISOString().split("T")[0]; // YYYY-MM-DD
+
+      const storedDate = typeof window !== "undefined" ? localStorage.getItem("lastBloomDate") : null;
+      const storedBloom = typeof window !== "undefined" ? localStorage.getItem("todayBloomIndex") : null;
+      const storedGesture = typeof window !== "undefined" ? localStorage.getItem("todayGestureIndex") : null;
+
+      // If local state already knows today is complete → go straight to sanctuary
+      if (storedDate === todayKey && storedBloom && storedGesture) {
+        if (!isMounted) return;
+        setBloomIndex(parseInt(storedBloom));
+        setGestureIndex(parseInt(storedGesture));
+        setMode("sanctuary");
+        return;
+      }
 
       try {
         const {
           data: { user },
         } = await supabase.auth.getUser();
 
+        // Guest user → rotate daily, no Supabase
         if (!user) {
           const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
           const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
           if (!isMounted) return;
+
+          if (typeof window !== "undefined") {
+            localStorage.setItem("todayBloomIndex", b.toString());
+            localStorage.setItem("todayGestureIndex", g.toString());
+            localStorage.setItem("lastBloomDate", todayKey);
+          }
+
           setGestureIndex(g);
           setBloomIndex(b);
           setMode("intro");
@@ -155,35 +177,57 @@ export default function BloomRitualPage() {
         let lastCompleted: string | null = null;
 
         if (!error && data?.last_completed) {
-          lastCompleted = new Date(data.last_completed).toDateString();
+          lastCompleted = new Date(data.last_completed).toISOString().split("T")[0];
         }
 
-        if (lastCompleted === todayString) {
-          const existingGestureRaw =
-            typeof window !== "undefined" ? localStorage.getItem("gestureIndex") : null;
-          const existingBloomRaw =
-            typeof window !== "undefined" ? localStorage.getItem("bloomIndex") : null;
-
-          const g =
-            existingGestureRaw !== null
-              ? parseInt(existingGestureRaw)
-              : getNextSequentialIndex(GESTURES.length, "gestureIndex");
-          const b =
-            existingBloomRaw !== null
-              ? parseInt(existingBloomRaw)
-              : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
-
+        // If Supabase says user bloomed today → sanctuary
+        if (lastCompleted === todayKey) {
           if (!isMounted) return;
-          setGestureIndex(g);
-          setBloomIndex(b);
+
+          if (storedBloom && storedGesture) {
+            setBloomIndex(parseInt(storedBloom));
+            setGestureIndex(parseInt(storedGesture));
+          } else {
+            const existingGestureRaw =
+              typeof window !== "undefined" ? localStorage.getItem("gestureIndex") : null;
+            const existingBloomRaw =
+              typeof window !== "undefined" ? localStorage.getItem("bloomIndex") : null;
+
+            const g =
+              existingGestureRaw !== null
+                ? parseInt(existingGestureRaw)
+                : getNextSequentialIndex(GESTURES.length, "gestureIndex");
+            const b =
+              existingBloomRaw !== null
+                ? parseInt(existingBloomRaw)
+                : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+            if (typeof window !== "undefined") {
+              localStorage.setItem("todayBloomIndex", b.toString());
+              localStorage.setItem("todayGestureIndex", g.toString());
+              localStorage.setItem("lastBloomDate", todayKey);
+            }
+
+            setGestureIndex(g);
+            setBloomIndex(b);
+          }
+
           setMode("sanctuary");
           return;
         }
 
+        // New day → rotate
         const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
         if (!isMounted) return;
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("todayBloomIndex", b.toString());
+          localStorage.setItem("todayGestureIndex", g.toString());
+          localStorage.setItem("lastBloomDate", todayKey);
+        }
+
         setGestureIndex(g);
         setBloomIndex(b);
         setMode("intro");
@@ -192,6 +236,13 @@ export default function BloomRitualPage() {
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
         if (!isMounted) return;
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem("todayBloomIndex", b.toString());
+          localStorage.setItem("todayGestureIndex", g.toString());
+          localStorage.setItem("lastBloomDate", todayKey);
+        }
+
         setGestureIndex(g);
         setBloomIndex(b);
         setMode("intro");
@@ -221,7 +272,7 @@ export default function BloomRitualPage() {
 
   /* -----------------------------------------------------
      🌸 DEV SHORTCUTS — PRESERVED
------------------------------------------------------ */
+  ----------------------------------------------------- */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (!e.shiftKey) return;
@@ -286,13 +337,18 @@ export default function BloomRitualPage() {
     if (bloomIndex !== null) {
       localStorage.setItem("bloomIndex", bloomIndex.toString());
     }
+    if (gestureIndex !== null) {
+      localStorage.setItem("todayBloomIndex", bloomIndex!.toString());
+      localStorage.setItem("todayGestureIndex", gestureIndex!.toString());
+      localStorage.setItem("lastBloomDate", new Date().toISOString().split("T")[0]);
+    }
     await updateLastCompleted();
     setMode("completion");
   };
 
   /* -----------------------------------------------------
      🌸 RENDER — YOUR CINEMATIC FLOW (UNCHANGED)
------------------------------------------------------ */
+  ----------------------------------------------------- */
 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
@@ -471,16 +527,15 @@ export default function BloomRitualPage() {
           />
 
           {videoEnded && (
-        <>
-  <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+            <>
+              <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
 
-  <div className="absolute bottom-8 left-10 animate-softRiseSlow">
-    <p className="text-golden-400 text-m md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
-      You bloomed today.
-    </p>
-  </div>
-</>
-
+              <div className="absolute bottom-8 left-10 animate-softRiseSlow">
+                <p className="text-golden-400 text-m md:text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
+                  You bloomed today.
+                </p>
+              </div>
+            </>
           )}
         </div>
       )}
