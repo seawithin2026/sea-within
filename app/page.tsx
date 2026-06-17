@@ -240,11 +240,13 @@ export default function HomePage() {
       {/* =============================================
           SECTION 7 — THE INVITATION
       ============================================= */}
-      <CinematicSection
-        id="invitation"
-        videoSrc="/videos/the-invitation.mp4"
-        overlayOpacity={0.55}
-      >
+     <CinematicSection
+  id="invitation"
+  videoSrc="/videos/the-invitation.mp4"
+  overlayOpacity={0.55}
+  className="!h-auto !min-h-screen !overflow-visible"
+>
+
         <div className="text-center px-6 max-w-3xl">
 
           <ScrollReveal delay={200}>
