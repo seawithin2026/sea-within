@@ -183,13 +183,12 @@
 }
 
 /* -------------------------------------------------- */
-/* 4. RITUAL TEXT */
+/* 4. RITUAL TEXT — MASTERPIECE VERSION */
 /* -------------------------------------------------- */
 
-
 .ritualText {
-  padding: 60px 20px; /* lifted closer to the grid */
-  max-width: 900px;
+  padding: 60px 20px;
+  max-width: 780px;          /* perfect reading width */
   margin: 0 auto;
 }
 
@@ -199,12 +198,33 @@
   margin-bottom: 40px;
   color: #dff7ff;
   letter-spacing: 1px;
+  text-align: center;
 }
 
 .ritualParagraph {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: rgba(255,255,255,0.75);
-  margin-bottom: 30px;
-  text-shadow: 0 0 10px rgba(0, 150, 255, 0.2);
+  font-size: 1.12rem;         /* slightly larger for readability */
+  line-height: 1.85;          /* cinematic spacing */
+  color: rgba(255,255,255,0.78);
+  margin-bottom: 28px;        /* perfect paragraph rhythm */
+  letter-spacing: 0.2px;
+  text-shadow: 0 0 10px rgba(0, 150, 255, 0.18);
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 600px) {
+  .ritualText {
+    padding: 40px 18px;
+    max-width: 92%;           /* prevents edge-to-edge text */
+  }
+
+  .ritualParagraph {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    margin-bottom: 24px;
+  }
+
+  .ritualHeading {
+    font-size: 1.7rem;
+    margin-bottom: 30px;
+  }
 }
