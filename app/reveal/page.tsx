@@ -2,7 +2,7 @@
 
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import Navigation from '@/components/layout/Navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function RevealPage() {
   const [loading, setLoading] = useState(false);
@@ -23,6 +23,36 @@ export default function RevealPage() {
 
     setLoading(false);
   };
+
+  /* -----------------------------------------------------
+     ⭐ VIDEO AUDIO CONTROL — ONLY ADDITION
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const marketingVideo = document.getElementById("marketingVideo") as HTMLVideoElement | null;
+    const seaAudio = document.getElementById("seaAudio") as HTMLAudioElement | null;
+
+    if (!marketingVideo || !seaAudio) return;
+
+    // Pause global audio when video starts
+    marketingVideo.addEventListener("play", () => {
+      seaAudio.pause();
+    });
+
+    // Unmute video only after user interacts (mobile requirement)
+    const enableSound = () => {
+      marketingVideo.muted = false;
+      window.removeEventListener("touchstart", enableSound);
+      window.removeEventListener("click", enableSound);
+    };
+
+    window.addEventListener("touchstart", enableSound);
+    window.addEventListener("click", enableSound);
+
+    // Resume global audio when video ends
+    marketingVideo.addEventListener("ended", () => {
+      seaAudio.play();
+    });
+  }, []);
 
   return (
     <main className="min-h-screen bg-sanctuary-dark text-sea-100">
@@ -78,21 +108,21 @@ export default function RevealPage() {
         <ScrollReveal delay={500}>
           <h2 className="font-display text-3xl font-light mb-4">What Sea Within Is</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-  Sea Within is a sanctuary for your inner world — a cinematic ritual space you enter 
-    when life feels loud and you need a moment that feels like breath again. It isn’t 
-    another app. It isn’t a program. It isn’t something you have to “keep up with.” It’s 
-    a return. A soft, atmospheric space where your nervous system settles, your breath 
-    slows, and you feel yourself again. Inside, you move through elemental rituals, slow 
-    sensory moments, and gentle cinematic experiences that unfold like light, tide, and 
-    breath. Sea Within is for the quiet feelers, the overstimulated souls, the ones who 
-    carry so much inside but don’t always have a place to put it. Here, you don’t have to 
-    talk. You don’t have to explain. You don’t have to perform. You just enter… and the 
-    Sanctuary meets you where you are. Every ritual is crafted to feel intimate and alive 
-    — a moment of nourishment, a soft awakening, a small return to yourself. Over time, 
-    these moments become a rhythm, a cycle, a way of coming home. Sea Within isn’t about 
-    becoming someone new. It’s about remembering who you already are.
-  </p>
-</ScrollReveal>
+            Sea Within is a sanctuary for your inner world — a cinematic ritual space you enter 
+            when life feels loud and you need a moment that feels like breath again. It isn’t 
+            another app. It isn’t a program. It isn’t something you have to “keep up with.” It’s 
+            a return. A soft, atmospheric space where your nervous system settles, your breath 
+            slows, and you feel yourself again. Inside, you move through elemental rituals, slow 
+            sensory moments, and gentle cinematic experiences that unfold like light, tide, and 
+            breath. Sea Within is for the quiet feelers, the overstimulated souls, the ones who 
+            carry so much inside but don’t always have a place to put it. Here, you don’t have to 
+            talk. You don’t have to explain. You don’t have to perform. You just enter… and the 
+            Sanctuary meets you where you are. Every ritual is crafted to feel intimate and alive 
+            — a moment of nourishment, a soft awakening, a small return to yourself. Over time, 
+            these moments become a rhythm, a cycle, a way of coming home. Sea Within isn’t about 
+            becoming someone new. It’s about remembering who you already are.
+          </p>
+        </ScrollReveal>
 
         {/* Gathering Circle */}
         <ScrollReveal delay={600}>
@@ -130,26 +160,37 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-  {/* Invitation + Buttons */}
-<ScrollReveal delay={900}>
-  <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
-  <p className="font-body text-white/60 leading-relaxed mb-8">
-    If something in you is leaning forward — if something in you is quietly
-    whispering yes — the sanctuary is open. Membership is available for{' '}
-    <span className="text-golden-400">$77.77/month</span>, cancel anytime, enter immediately.
-    This is your doorway.
-  </p>
+        {/* ⭐ CINEMATIC MARKETING VIDEO — ONLY ADDITION */}
+        <section className="w-full relative overflow-hidden bg-black mb-20">
+          <video
+            id="marketingVideo"
+            src="/videos/marketing.mp4"
+            autoPlay
+            muted
+            playsInline
+            className="w-full h-auto object-cover"
+          />
+        </section>
 
-  {/* MONTHLY */}
-  <button
-    onClick={() => handleJoin('monthly')}
-    disabled={loading}
-    className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
-  >
-    {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77.77/month'}
-  </button>
-</ScrollReveal>
+        {/* Invitation + Buttons */}
+        <ScrollReveal delay={900}>
+          <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
+          <p className="font-body text-white/60 leading-relaxed mb-8">
+            If something in you is leaning forward — if something in you is quietly
+            whispering yes — the sanctuary is open. Membership is available for{' '}
+            <span className="text-golden-400">$77.77/month</span>, cancel anytime, enter immediately.
+            This is your doorway.
+          </p>
 
+          {/* MONTHLY */}
+          <button
+            onClick={() => handleJoin('monthly')}
+            disabled={loading}
+            className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
+          >
+            {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77.77/month'}
+          </button>
+        </ScrollReveal>
 
       </section>
     </main>
