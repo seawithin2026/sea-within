@@ -5,38 +5,20 @@ import VideoGrid from './VideoGrid';
 export default async function SanctuaryPage() {
   const supabase = createServerSupabaseClient();
 
-  // ⭐ 1. Get logged-in user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // 1. Must be signed in
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/reveal');
 
-  if (!user) {
-    redirect('/login');
-  }
-
-  // ⭐ 2. Fetch profile (membership + username)
+  // 2. Must be a member
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_member, username')
+    .select('is_member')
     .eq('id', user.id)
     .single();
 
-  // ⭐ 3. If no profile found → force login again
-  if (!profile) {
-    redirect('/login');
-  }
+  if (!profile || !profile.is_member) redirect('/reveal');
 
-  // ⭐ 4. If no username → force username creation
-  if (!profile.username) {
-    redirect('/create-username');
-  }
-
-  // ⭐ 5. If not a member → send to paywall
-  if (!profile.is_member) {
-    redirect('/reveal');
-  }
-
-  // ⭐ If all checks pass → allow entry
+  // 3. Signed in + member → show the page
   return (
     <main className="min-h-screen bg-black text-white sanctuary-root">
 
@@ -103,7 +85,6 @@ export default async function SanctuaryPage() {
           Your Ritual Journey Into Self
         </h2>
 
-        {/* CLIENT COMPONENT */}
         <VideoGrid />
       </section>
 
