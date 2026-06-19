@@ -181,7 +181,6 @@
     gap: 30px;
   }
 }
-
 /* -------------------------------------------------- */
 /* 4. RITUAL TEXT — MASTERPIECE VERSION */
 /* -------------------------------------------------- */
@@ -189,6 +188,11 @@
 .ritualText {
   padding: 60px 20px;
   max-width: 780px;          /* perfect reading width */
+  margin: 0 auto;
+}
+
+.ritualBody {
+  max-width: 780px;
   margin: 0 auto;
 }
 
@@ -215,6 +219,10 @@
   .ritualText {
     padding: 40px 18px;
     max-width: 92%;           /* prevents edge-to-edge text */
+  }
+
+  .ritualBody {
+    max-width: 92%;
   }
 
   .ritualParagraph {

@@ -162,84 +162,52 @@ export default function Day13Page() {
           </div>
         </section>
 
-        {/* -------------------------------------------------- */}
-        {/* 3. RITUAL TEXT */}
-        {/* -------------------------------------------------- */}
-        <section className="ritualText">
-          <h2 className="ritualHeading">The Ceremonial Rebirth</h2>
+{/* -------------------------------------------------- */}
+{/* 3. RITUAL TEXT */}
+{/* -------------------------------------------------- */}
+<section className="ritualText">
+  <h2 className="ritualHeading">The Ceremonial Rebirth</h2>
 
-          <div className="ritualText">
-            <p>
-              Step into the warm bath and let the water rise around you, quiet and luminous.
-              This is your sanctuary, a place where the world loosens its grip and you return
-              to the center of yourself.
-            </p>
+  <div className="ritualBody">
 
-            <p>
-              Beside you rest the two bowls you prepared: one warmed beneath the sun, one
-              softened under the moon. Covered as they infused, touched only by light, each
-              bowl carries its own memory, its own quiet power.
-            </p>
+    <p className="ritualParagraph">
+      Settle into the warm bath you prepared for yourself — a space filled with intention,
+      comfort, and the ingredients that felt right for this moment. The water holds you gently,
+      steady and present. Beside you, the two infused bowls wait in quiet readiness.
+    </p>
 
-            <p>
-              Lift the sun bowl first. Before you pour, let a single drop fall onto the crown
-              of your head. Feel it move through you. It cleanses the body, releasing the
-              weight you have carried, the tension you forgot you were holding, the heaviness
-              that settled into you without permission.
-            </p>
+    <p className="ritualParagraph">
+      Take the sun‑infused bowl first. Hold it with both hands and slowly lift it above your head.
+      Feel its warmth gathering in your palms. Then tilt it with intention, letting the water flow
+      in a slow, steady release. Let it move over you like a soft unraveling — carrying away
+      everything that no longer serves you, clearing the weight, the stories, and the versions of
+      yourself you are ready to release. The sun frees the body.
+    </p>
 
-            <p>
-              Lift the moon bowl next. Let a single drop fall. It cleanses the mind, softening
-              the thoughts that have grown sharp, quieting the doubts that echo too loudly,
-              clearing the sky within you so something gentler can breathe again.
-            </p>
+    <p className="ritualParagraph">
+      Now lift the moon‑infused bowl. Bring it above your head with the same calm presence.
+      As you gently release the water, feel its coolness settle into your skin in a soft,
+      silvery stream. Let it soothe your mind, quiet your thoughts, and awaken a deep sense of
+      calm and inner confidence. This is the moment you return to your raw, honest, beautifully
+      grounded self. The moon steadies the mind and strengthens the spirit.
+    </p>
 
-            <p>
-              When both waters have touched you, combine them into a single bowl. As they meet,
-              the surface shimmers as if day and night have woven themselves together, strength
-              and softness held in perfect balance.
-            </p>
+    <p className="ritualParagraph">
+      You emerge from this ritual renewed, radiant, alive in a way that feels deeper
+      than breath. You step forward as a self who walks with clarity, moves with
+      intention, and knows the worth that has always lived within you.
+    </p>
 
-            <p>
-              Raise the unified bowl. As the water pours over you, it moves like a blessing,
-              warm, gentle, alive. It carries away the stories you have outgrown, the versions
-              of yourself you no longer need, the echoes of old chapters that no longer belong
-              to the person you are becoming.
-            </p>
+    <p className="ritualParagraph">
+      You rise from the water reborn, whole, luminous, beautifully unstoppable.
+    </p>
 
-            <p>
-              Each droplet becomes a release. A soft unbinding. A quiet return to the truth of
-              your being. You feel lighter, clearer, brighter, as though something inside you
-              has finally unclenched and let the light in.
-            </p>
+    <p className="ritualParagraph">
+      Welcome home, beautiful soul.
+    </p>
 
-            <p>
-              You are not breaking open. You are unfolding.
-              You are not changing. You are remembering.
-              You are not becoming someone new. You are becoming someone true.
-            </p>
-
-            <p>
-              In this warm, glowing moment, something rises within you with the gentleness of
-              dawn. A steadiness you can trust. A softness that feels like strength. A light
-              that belongs to you alone.
-            </p>
-
-            <p>
-              You emerge from this ritual renewed, radiant, alive in a way that feels deeper
-              than breath. You step forward as a self who walks with clarity, moves with
-              intention, and knows the worth that has always lived within you.
-            </p>
-
-            <p>
-              You rise from the water reborn, whole, luminous, beautifully unstoppable.
-            </p>
-
-            <p>
-              Welcome home, beautiful soul.
-            </p>
-          </div>
-        </section>
+  </div>
+</section>
       </div>
     </>
   );
