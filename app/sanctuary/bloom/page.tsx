@@ -109,10 +109,53 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
+
+  /* -----------------------------------------------------
+     ⭐ MEMBERSHIP GATE (ONLY ADDITION)
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setIsAllowed(false);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile || !profile.is_member) return setIsAllowed(false);
+
+      setIsAllowed(true);
+    };
+
+    checkAccess();
+  }, []);
+
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
+
+  if (isAllowed === null) {
+    return <div className="text-white p-10">Loading...</div>;
+  }
+
+  /* -----------------------------------------------------
+     🌙 ORIGINAL BLOOM LOGIC (UNCHANGED)
+  ----------------------------------------------------- */
+
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
-  const [mode, setMode] = useState<"loading" | "intro" | "bloom" | "completion" | "outro" | "sanctuary">("loading");
+  const [mode, setMode] = useState<
+    "loading" | "intro" | "bloom" | "completion" | "outro" | "sanctuary"
+  >("loading");
+
   const [videoEnded, setVideoEnded] = useState(false);
 
   const [supabase] = useState(() => createClient());
@@ -126,8 +169,7 @@ export default function BloomRitualPage() {
 
     const init = async () => {
       const today = new Date();
-      const todayKey = today.toISOString().split("T")[0]; // YYYY-MM-DD
-
+      const todayKey = today.toISOString().split("T")[0];
       const storedDate = typeof window !== "undefined" ? localStorage.getItem("lastBloomDate") : null;
       const storedBloom = typeof window !== "undefined" ? localStorage.getItem("todayBloomIndex") : null;
       const storedGesture = typeof window !== "undefined" ? localStorage.getItem("todayGestureIndex") : null;
@@ -401,6 +443,7 @@ export default function BloomRitualPage() {
           </div>
         </section>
       )}
+
 
       {/* BLOOM MODE */}
       {mode === "bloom" && (
