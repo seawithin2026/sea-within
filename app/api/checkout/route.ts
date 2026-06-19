@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -8,7 +9,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // Replace these with YOUR real Price IDs
 const PRICE_IDS = {
   monthly: "price_1TTQaIDpMHFesd6pbMIHDkvB",
-  yearly: "price_1TTQcfDpMHFesd6pViruLFrV",
 };
 
 export async function POST(req: NextRequest) {

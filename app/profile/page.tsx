@@ -20,21 +20,75 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
 
+  // ⭐ LOAD USER + PROFILE
   useEffect(() => {
-    // TODO: Fetch user profile from Supabase
-    // const profile = await getCurrentUser();
-    // if (profile) setUser(profile);
+    async function loadProfile() {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      // Get logged-in user
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+
+      if (!authUser) {
+        window.location.href = '/login';
+        return;
+      }
+
+      // Fetch profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, bio, is_member')
+        .eq('id', authUser.id)
+        .single();
+
+      if (profile) {
+        setUser({
+          full_name: profile.full_name || '',
+          email: authUser.email,
+          bio: profile.bio || '',
+          membership_tier: profile.is_member ? 'explorer' : 'free',
+          avatar_url: '',
+        });
+      }
+    }
+
+    loadProfile();
   }, []);
 
+  // ⭐ SAVE PROFILE
   const handleSave = async () => {
     setIsSaving(true);
+    setMessage('');
+
     try {
-      // TODO: Update profile via API
-      // await updateProfile(user.id, { full_name, bio, avatar_url });
-      setMessage('Your profile has been updated.');
-      setIsEditing(false);
-    } catch (err) {
-      setMessage('Something went wrong. Please try again.');
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+
+      if (!authUser) {
+        setMessage('You must be signed in.');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: user.full_name,
+          bio: user.bio,
+        })
+        .eq('id', authUser.id);
+
+      if (error) {
+        setMessage('Something went wrong. Please try again.');
+      } else {
+        setMessage('Your profile has been updated.');
+        setIsEditing(false);
+      }
     } finally {
       setIsSaving(false);
     }
@@ -186,7 +240,15 @@ export default function ProfilePage() {
         {/* Danger Zone */}
         <ScrollReveal delay={600}>
           <div className="mt-12 text-center">
-            <button className="font-body text-[11px] text-white/15 hover:text-white/30 transition-colors tracking-[1px]">
+            <button
+              onClick={async () => {
+                const { createClient } = await import('@/lib/supabase/client');
+                const supabase = createClient();
+                await supabase.auth.signOut();
+                window.location.href = '/';
+              }}
+              className="font-body text-[11px] text-white/15 hover:text-white/30 transition-colors tracking-[1px]"
+            >
               Sign Out
             </button>
           </div>

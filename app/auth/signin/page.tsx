@@ -16,17 +16,48 @@ export default function SignInPage() {
     e.preventDefault();
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
+    // 1. Sign in user
+    const { data: auth, error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      setError(error.message);
+    if (signInError) {
+      setError(signInError.message);
       return;
     }
 
-    router.push('/sanctuary');
+    const user = auth.user;
+
+    // 2. Fetch profile (automatic)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('is_member, username')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      setError('Unable to load your profile.');
+      return;
+    }
+
+    // 3. Store membership locally for fast gating
+    localStorage.setItem('isMember', profile.is_member ? 'true' : 'false');
+
+    // 4. If no username → force username creation
+    if (!profile.username) {
+      router.push('/create-username');
+      return;
+    }
+
+    // 5. If member → unlock ecosystem
+    if (profile.is_member) {
+      router.push('/sanctuary');
+      return;
+    }
+
+    // 6. If not member → paywall
+    router.push('/paywall');
   };
 
   return (

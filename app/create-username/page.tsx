@@ -4,53 +4,58 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
-export default function SignUpPage() {
+export default function CreateUsernamePage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async (e) => {
+  const saveUsername = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (error) {
-      setError(error.message);
+    if (!user) {
+      setError('You must be signed in.');
+      setLoading(false);
       return;
     }
 
-    router.push('/auth/signin');
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ username })
+      .eq('id', user.id);
+
+    if (updateError) {
+      setError('This name is already taken.');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+    router.push('/sanctuary');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
       <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
         <h1 className="text-golden-400 font-display text-xl tracking-[3px] mb-6 text-center">
-          Create Account
+          Choose Your Sanctuary Name
         </h1>
 
-        <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+        <form onSubmit={saveUsername} className="flex flex-col gap-4">
           <input
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Your chosen name"
             className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
 
           {error && (
@@ -59,9 +64,10 @@ export default function SignUpPage() {
 
           <button
             type="submit"
+            disabled={loading || username.trim().length < 3}
             className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
           >
-            Create Account
+            {loading ? 'Saving...' : 'Save Name'}
           </button>
         </form>
       </div>

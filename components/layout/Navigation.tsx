@@ -90,14 +90,23 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* SIGN IN / SIGN OUT BUTTON */}
+            {/* JOIN SANCTUARY + SIGN IN / SIGN OUT */}
             {!user ? (
-              <button
-                onClick={() => setIsSignInOpen(true)}
-                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-              >
-                Sign In
-              </button>
+              <div className="flex items-center gap-4 ml-8">
+                <button
+                  onClick={() => (window.location.href = '/join')}
+                  className="btn-golden text-[11px] px-6 py-2.5"
+                >
+                  Join Sanctuary
+                </button>
+
+                <button
+                  onClick={() => setIsSignInOpen(true)}
+                  className="text-white/60 hover:text-golden-400 text-[11px] tracking-[2px]"
+                >
+                  Sign In
+                </button>
+              </div>
             ) : (
               <button
                 onClick={handleSignOut}
@@ -139,17 +148,29 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE SIGN IN / SIGN OUT */}
+                {/* MOBILE JOIN + SIGN IN / SIGN OUT */}
                 {!user ? (
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setIsSignInOpen(true);
-                    }}
-                    className="btn-golden text-center text-[11px]"
-                  >
-                    Sign In
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = '/join';
+                      }}
+                      className="btn-golden text-center text-[11px]"
+                    >
+                      Join Sanctuary
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setIsSignInOpen(true);
+                      }}
+                      className="text-white/60 hover:text-golden-400 text-[11px]"
+                    >
+                      Sign In
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => {

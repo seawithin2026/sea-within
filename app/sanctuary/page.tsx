@@ -4,10 +4,39 @@ import VideoGrid from './VideoGrid';
 
 export default async function SanctuaryPage() {
   const supabase = createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
 
-  // if (!user) redirect('/login');
+  // ⭐ 1. Get logged-in user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
+  if (!user) {
+    redirect('/login');
+  }
+
+  // ⭐ 2. Fetch profile (membership + username)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_member, username')
+    .eq('id', user.id)
+    .single();
+
+  // ⭐ 3. If no profile found → force login again
+  if (!profile) {
+    redirect('/login');
+  }
+
+  // ⭐ 4. If no username → force username creation
+  if (!profile.username) {
+    redirect('/create-username');
+  }
+
+  // ⭐ 5. If not a member → send to paywall
+  if (!profile.is_member) {
+    redirect('/reveal');
+  }
+
+  // ⭐ If all checks pass → allow entry
   return (
     <main className="min-h-screen bg-black text-white sanctuary-root">
 
