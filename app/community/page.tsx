@@ -15,6 +15,50 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
+
+  /* -----------------------------------------------------
+     ⭐ MEMBERSHIP GATE — ONLY ADDITION
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setIsAllowed(false);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile || !profile.is_member) return setIsAllowed(false);
+
+      setIsAllowed(true);
+    };
+
+    checkAccess();
+  }, []);
+
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
+
+  if (isAllowed === null) {
+    return (
+      <main className="min-h-screen bg-black flex items-center justify-center text-white">
+        Checking membership…
+      </main>
+    );
+  }
+
+  /* -----------------------------------------------------
+     🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
+  ----------------------------------------------------- */
+
   const supabase = createClient();
 
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -150,139 +194,127 @@ export default function CommunityPage() {
     <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
 
       {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}
-     <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-
-  {/* Bright Jellyfish Image */}
-  <img
-    src="/images/jellyfish-bg.jpg"
-    alt="jellyfish background"
-    className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
-  />
-
-  {/* Ultra-light gradient (almost invisible) */}
-  <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-black/10"></div>
-
-  {/* Soft glow to lift brightness */}
-  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_70%)]"></div>
-</div>
+      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+        <img
+          src="/images/jellyfish-bg.jpg"
+          alt="jellyfish background"
+          className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-black/10"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_70%)]"></div>
+      </div>
 
       <Navigation />
 
-{/* TITLE */}
-<section className="pt-32 md:pt-40 pb-10 px-6 text-center">
-  <ScrollReveal>
-    <p className="font-whisper text-sm tracking-[6px] uppercase text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
-      community circle
-    </p>
-
-
+      {/* TITLE */}
+      <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
+        <ScrollReveal>
+          <p className="font-whisper text-sm tracking-[6px] uppercase text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
+            community circle
+          </p>
 
           <h1 className="font-display text-2xl md:text-3xl font-light text-[#7A3F45] ">
             The Gathering
           </h1>
-         <p className="font-body text-sm text-[#FFFFFF] mt-2">
-  A space of warmth, support, and shared light.
-</p>
-
+          <p className="font-body text-sm text-[#FFFFFF] mt-2">
+            A space of warmth, support, and shared light.
+          </p>
         </ScrollReveal>
       </section>
 
-     {/* CHAT MESSAGES */}
-<section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
-  <div className="space-y-4 pb-24">
+      {/* CHAT MESSAGES */}
+      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
+        <div className="space-y-4 pb-24">
 
-    {messages.length === 0 && (
-      <div className="text-center py-20">
-        <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
-          The circle is open.
-        </p>
-        <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
-          Be the first to share your light.
-        </p>
-      </div>
-    )}
-
-    {messages.map((msg) => (
-      <div
-        key={msg.id}
-        className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
-      >
-        <div className={`chat-bubble ${msg.is_own ? 'own' : ''} bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}>
-
-          {editingId === msg.id ? (
-            <>
-              <textarea
-                value={editingContent}
-                onChange={(e) => setEditingContent(e.target.value)}
-                rows={3}
-                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-[#E8D7B8] text-sm"
-              />
-
-              <div className="flex gap-4 mt-3">
-                <button
-                  onClick={saveEdit}
-                  className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                >
-                  Save
-                </button>
-
-                <button
-                  onClick={() => setEditingId(null)}
-                  className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* USERNAME */}
-              {!msg.is_own && (
-                <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                  {msg.author}
-                </p>
-              )}
-
-              {/* MESSAGE TEXT */}
-              <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
-                {msg.message}
+          {messages.length === 0 && (
+            <div className="text-center py-20">
+              <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
+                The circle is open.
               </p>
-
-              {/* OWN MESSAGE ACTIONS */}
-              {msg.is_own && (
-                <div className="flex gap-4 mt-3">
-                  <button
-                    onClick={() => startEditing(msg)}
-                    className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() => deleteMessage(msg.id)}
-                    className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-
-              {/* TIMESTAMP */}
-          <p className="font-body text-[11px] text-[#7A3F45] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
-  {formatTime(msg.created_at)}
-</p>
-
-
-            </>
+              <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
+                Be the first to share your light.
+              </p>
+            </div>
           )}
+
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`chat-bubble ${msg.is_own ? 'own' : ''} bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}>
+
+                {editingId === msg.id ? (
+                  <>
+                    <textarea
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      rows={3}
+                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-[#E8D7B8] text-sm"
+                    />
+
+                    <div className="flex gap-4 mt-3">
+                      <button
+                        onClick={saveEdit}
+                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                      >
+                        Save
+                      </button>
+
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* USERNAME */}
+                    {!msg.is_own && (
+                      <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+                        {msg.author}
+                      </p>
+                    )}
+
+                    {/* MESSAGE TEXT */}
+                    <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+                      {msg.message}
+                    </p>
+
+                    {/* OWN MESSAGE ACTIONS */}
+                    {msg.is_own && (
+                      <div className="flex gap-4 mt-3">
+                        <button
+                          onClick={() => startEditing(msg)}
+                          className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => deleteMessage(msg.id)}
+                          className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+
+                    {/* TIMESTAMP */}
+                    <p className="font-body text-[11px] text-[#7A3F45] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
+                      {formatTime(msg.created_at)}
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+
+          <div ref={messagesEndRef} />
         </div>
-      </div>
-    ))}
-
-    <div ref={messagesEndRef} />
-  </div>
-</section>
-
+      </section>
 
       {/* FEEDBACK */}
       {feedback && (
@@ -296,10 +328,9 @@ export default function CommunityPage() {
       {/* INPUT BAR */}
       <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
         <div className="max-w-3xl mx-auto">
-        <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
-  This space is for uplifting, reflective, and supportive communication.
-</p>
-
+          <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
+            This space is for uplifting, reflective, and supportive communication.
+          </p>
 
           <form onSubmit={handleSend} className="flex gap-3">
             <input
