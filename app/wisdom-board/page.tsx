@@ -2,6 +2,7 @@
 
 import { useState, useEffect, type FormEvent } from "react";
 import Navigation from "@/components/layout/Navigation";
+import { createClient } from "@/lib/supabase/client";
 
 interface WisdomPost {
   id: string;
@@ -15,6 +16,50 @@ interface DailyMessage {
 }
 
 export default function WisdomBoardPage() {
+
+  /* -----------------------------------------------------
+     ⭐ MEMBERSHIP GATE — ONLY ADDITION
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setIsAllowed(false);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile || !profile.is_member) return setIsAllowed(false);
+
+      setIsAllowed(true);
+    };
+
+    checkAccess();
+  }, []);
+
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
+
+  if (isAllowed === null) {
+    return (
+      <main className="min-h-screen bg-sanctuary-dark flex items-center justify-center text-white">
+        Checking membership…
+      </main>
+    );
+  }
+
+  /* -----------------------------------------------------
+     🌊 ORIGINAL WISDOM BOARD LOGIC (UNCHANGED)
+  ----------------------------------------------------- */
+
   const [posts, setPosts] = useState<WisdomPost[]>([]);
   const [newPost, setNewPost] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,23 +79,22 @@ export default function WisdomBoardPage() {
   }, []);
 
   const fetchDailyMessage = async () => {
-  try {
-    const res = await fetch("/api/daily-affirmation");
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/daily-affirmation");
+      const data = await res.json();
 
-  setDailyMessage({
-  message: data.message,
-  attribution: data.attribution || ""
-});
-  } catch (err) {
-    console.error("Failed to fetch daily message", err);
-    setDailyMessage({
-      message: "A new message will arrive soon.",
-      attribution: "",
-    });
-  }
-};
-
+      setDailyMessage({
+        message: data.message,
+        attribution: data.attribution || ""
+      });
+    } catch (err) {
+      console.error("Failed to fetch daily message", err);
+      setDailyMessage({
+        message: "A new message will arrive soon.",
+        attribution: "",
+      });
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -152,7 +196,7 @@ export default function WisdomBoardPage() {
 
             <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
 
-              {/* DAILY AFFIRMATION ON TOP */}
+              {/* DAILY AFFIRMATION */}
               <p className="paper-reveal text-3xl leading-relaxed mb-6 max-w-md">
                 {dailyMessage?.message || "Loading..."}
               </p>
@@ -163,18 +207,16 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
-             {/* SPACING BETWEEN DAILY MESSAGE + WRITE SECTION */}
-            <div className="mt-14"></div>
+              <div className="mt-14"></div>
 
-              {/* WRITING FORM BELOW DAILY MESSAGE */}
-<             form onSubmit={handleSubmit} className="w-full max-w-md">
-               <textarea
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
-               className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
+              {/* FORM */}
+              <form onSubmit={handleSubmit} className="w-full max-w-md">
+                <textarea
+                  value={newPost}
+                  onChange={(e) => setNewPost(e.target.value)}
+                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
+                  className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
-
 
                 <button
                   type="submit"
@@ -196,10 +238,10 @@ export default function WisdomBoardPage() {
                 </p>
               )}
 
-              <p className="mt-4 text-xs text-stone-700/85">
-                Your message will be shared anonymously with the community, along with your
-                country and today&apos;s date.
-              </p>
+             <p className="mt-4 text-xs text-stone-700/85">
+  Your message will be shared with the community along with your username, country, and today&apos;s date.
+</p>
+
             </div>
           </div>
         </div>
