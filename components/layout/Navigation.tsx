@@ -90,27 +90,18 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* JOIN SANCTUARY + SIGN IN / SIGN OUT */}
+            {/* SIGN IN / SIGN OUT ONLY */}
             {!user ? (
-              <div className="flex items-center gap-4 ml-8">
-                <button
-                  onClick={() => (window.location.href = '/join')}
-                  className="btn-golden text-[11px] px-6 py-2.5"
-                >
-                  Join Sanctuary
-                </button>
-
-                <button
-                  onClick={() => setIsSignInOpen(true)}
-                  className="text-white/60 hover:text-golden-400 text-[11px] tracking-[2px]"
-                >
-                  Sign In
-                </button>
-              </div>
+              <button
+                onClick={() => setIsSignInOpen(true)}
+                className="text-[12px] tracking-[2.5px] uppercase text-white/80 hover:text-golden-400 transition-colors ml-8"
+              >
+                Sign In
+              </button>
             ) : (
               <button
                 onClick={handleSignOut}
-                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+                className="text-[12px] tracking-[2.5px] uppercase text-golden-400 hover:text-golden-300 transition-colors ml-8"
               >
                 Sign Out
               </button>
@@ -148,36 +139,24 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE JOIN + SIGN IN / SIGN OUT */}
+                {/* MOBILE SIGN IN / SIGN OUT ONLY */}
                 {!user ? (
-                  <>
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = '/join';
-                      }}
-                      className="btn-golden text-center text-[11px]"
-                    >
-                      Join Sanctuary
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        setIsSignInOpen(true);
-                      }}
-                      className="text-white/60 hover:text-golden-400 text-[11px]"
-                    >
-                      Sign In
-                    </button>
-                  </>
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsSignInOpen(true);
+                    }}
+                    className="text-white/80 hover:text-golden-400 text-[12px] tracking-[2.5px] uppercase"
+                  >
+                    Sign In
+                  </button>
                 ) : (
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       handleSignOut();
                     }}
-                    className="btn-golden text-center text-[11px]"
+                    className="text-golden-400 hover:text-golden-300 text-[12px] tracking-[2.5px] uppercase"
                   >
                     Sign Out
                   </button>
