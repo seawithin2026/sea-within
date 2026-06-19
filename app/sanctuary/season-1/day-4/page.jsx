@@ -21,6 +21,7 @@ export default function Day4Page() {
         <div className="day4-hero-overlay">
           <p className="day4-hero-tag">SEA WITHIN · DAY 4</p>
           <h1 className="day4-hero-title">The Protection Ritual</h1>
+          <p className="day4-hero-subtitle">Seal your inner power in a dome of light.</p>
         </div>
       </section>
 

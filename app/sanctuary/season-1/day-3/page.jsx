@@ -21,6 +21,7 @@ export default function Day3Page() {
         <div className="day3-hero-overlay">
           <p className="day3-hero-tag">SEA WITHIN · DAY 3</p>
           <h1 className="day3-hero-title">The Grounding Ritual</h1>
+        <p className="day3-hero-subtitle">Return to the body. Return to the Earth.</p>
         </div>
       </section>
 
