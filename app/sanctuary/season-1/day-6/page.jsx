@@ -48,7 +48,7 @@ export default function Day6Page() {
         <div className="grid-element">
           <div className="grid-media">
             <video autoPlay muted loop playsInline>
-              <source src="/video-season1/day6-arrival.mp4" />
+              <source src="/video-season1/day6-arrival-new.mp4" />
             </video>
           </div>
 
