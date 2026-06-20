@@ -162,7 +162,7 @@ export default function RevealPage() {
 
         
 {/* CINEMATIC FULL‑BLEED VIDEO */}
-<div className="w-screen h-[100vh] overflow-hidden relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+<div className="w-screen h-[120vh] overflow-hidden relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
   <video
     src="/videos/marketing.mp4"
   playsInline
