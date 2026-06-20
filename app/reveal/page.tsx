@@ -175,10 +175,10 @@ export default function RevealPage() {
         <ScrollReveal delay={900}>
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-8">
-            If something in you is leaning forward — if something in you is quietly
-            whispering yes — the sanctuary is open. Membership is available for{' '}
-            <span className="text-golden-400">$77.77/month</span>, cancel anytime, enter immediately.
-            This is your doorway.
+           If something in you is leaning forward — if something in you is quietly
+whispering yes — the sanctuary is open. Membership is available for
+<span className="text-golden-400">$77.77/month</span>, cancel anytime.
+This is your opportunity to sea within yourself. 
           </p>
 
           {/* MONTHLY */}
