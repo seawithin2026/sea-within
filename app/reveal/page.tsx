@@ -164,7 +164,7 @@ export default function RevealPage() {
 {/* FULL-WIDTH VIDEO SECTION */}
 <div className="w-full h-[80vh] overflow-hidden mt-12">
   <video
-    src="/marketing.mp4"
+    src="/video/marketing.mp4"
     autoPlay
     muted
     playsInline
