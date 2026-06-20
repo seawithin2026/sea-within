@@ -160,17 +160,17 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-        {/* ⭐ CINEMATIC MARKETING VIDEO — ONLY ADDITION */}
-{/* FULL-WIDTH VIDEO SECTION */}
-<div className="w-full h-[80vh] overflow-hidden mt-12">
+        
+{/* CINEMATIC FULL‑BLEED VIDEO */}
+<div className="w-screen h-[92vh] overflow-hidden relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
   <video
     src="/videos/marketing.mp4"
-    autoPlay
-    muted
-    playsInline
+  playsInline
     className="w-full h-full object-cover"
+    controls
   />
 </div>
+
         {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
