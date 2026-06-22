@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function SuccessPage() {
   return (
@@ -13,7 +13,7 @@ export default function SuccessPage() {
 
       <Link
         href="/auth/signup"
-        className="px-6 py-3 bg-white/10 rounded-lg tracking-[2px] text-[12px] hover:bg-white/20 transition"
+        className="btn-golden w-full py-3 text-[12px] tracking-[2px] text-center block"
       >
         Create Account
       </Link>
