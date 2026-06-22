@@ -173,6 +173,7 @@ export default function RevealPage() {
 
         {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
+           <div className="mt-12"></div> {/* This creates the gap below the video */}
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-8">
            If something in you is leaning forward — if something in you is quietly
