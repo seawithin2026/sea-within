@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
-// Replace these with YOUR real Price IDs
+// Your real price IDs
 const PRICE_IDS = {
   monthly: "price_1TTQaIDpMHFesd6pbMIHDkvB",
 };
@@ -31,11 +31,13 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+
+      // ⭐ FIXED: Redirect to YOUR success page, not Stripe’s default
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/join/success?session_id={CHECKOUT_SESSION_ID}`,
+
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
 
-    // ⭐ LOG THE SESSION URL SO WE CAN SEE IF STRIPE IS WORKING
     console.log("SESSION URL:", session.url);
 
     return NextResponse.json({ url: session.url });
