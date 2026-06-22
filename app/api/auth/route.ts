@@ -36,17 +36,6 @@ export async function POST(request: NextRequest) {
           full_name: fullName,
           membership_tier: 'free',
         });
-
-        // Send welcome email (non-blocking)
-        fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/emails`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'welcome',
-            to: email,
-            name: fullName,
-          }),
-        }).catch(() => {});
       }
 
       return NextResponse.json({
