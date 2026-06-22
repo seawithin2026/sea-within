@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
-import { AudioProvider } from './providers/AudioProvider';
-import MuteButton from '@/components/MuteButton';
+
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -45,14 +44,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
 
-        <AudioProvider>
+  
           <Navigation />
 
-          {/* GLOBAL MUTE BUTTON */}
-          <MuteButton />
-
+    
           {children}
-        </AudioProvider>
+
       </body>
     </html>
   );
