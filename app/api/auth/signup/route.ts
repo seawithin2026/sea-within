@@ -9,7 +9,7 @@ import { createAdminClient } from '@/lib/supabase/server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, fullName, tier } = body;
+    const { email, password, fullName } = body;
 
     if (!email || !password || !fullName) {
       return NextResponse.json(
@@ -36,15 +36,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update profile with membership tier
+    // Create profile (no tier)
     if (authData.user) {
       await supabase
         .from('profiles')
-        .update({ membership_tier: tier?.toLowerCase() || 'free' })
+        .update({
+          membership_tier: 'free', // optional, or remove entirely
+        })
         .eq('id', authData.user.id);
     }
 
-    
     return NextResponse.json({
       success: true,
       user: { id: authData.user?.id, email },
