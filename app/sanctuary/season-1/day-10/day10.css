@@ -51,9 +51,11 @@
 .day10-hero-tag {
   font-size: 0.75rem;
   letter-spacing: 0.28em;
-  opacity: 0.85;
+  color: #FFFFFF; /* pure white */
+  opacity: 1; /* full brightness */
   margin-bottom: 1rem;
   text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65); /* cinematic contrast */
 }
 
 .day10-hero-title {
