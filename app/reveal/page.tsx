@@ -162,14 +162,16 @@ export default function RevealPage() {
 
         
 {/* CINEMATIC FULL‑BLEED VIDEO */}
-<div className="w-screen h-[120vh] overflow-hidden relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+<div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
   <video
+    id="marketingVideo"
     src="/videos/marketing.mp4"
-  playsInline
-    className="w-full h-full object-cover"
+    playsInline
+    className="w-full h-auto object-contain"
     controls
   />
 </div>
+
 
         {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
