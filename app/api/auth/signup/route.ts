@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
-import { sendWelcomeEmail } from '@/lib/emails/sender';
+
 
 /**
  * POST /api/auth/signup
- * Creates a new user account and sends the automated welcome email.
+ * Creates a new user account.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -44,32 +44,7 @@ export async function POST(request: NextRequest) {
         .eq('id', authData.user.id);
     }
 
-    // Send automated welcome email
-    await sendWelcomeEmail(email, fullName);
-
-    // Log the email
-    await supabase.from('email_log').insert({
-      user_id: authData.user?.id,
-      email_type: 'welcome',
-      to_email: email,
-      subject: 'Welcome to Sea Within',
-      status: 'sent',
-    });
-
-    // If paid tier, record in tax tracking
-    if (tier && tier !== 'Explorer') {
-      const amount = tier === 'Guardian' ? 44.00 : 22.00;
-      await supabase.from('tax_records').insert({
-        category: 'membership_revenue',
-        amount,
-        currency: 'CAD',
-        description: `New ${tier} membership — ${fullName}`,
-        is_revenue: true,
-        tax_year: new Date().getFullYear(),
-        tax_month: new Date().getMonth() + 1,
-      });
-    }
-
+    
     return NextResponse.json({
       success: true,
       user: { id: authData.user?.id, email },
