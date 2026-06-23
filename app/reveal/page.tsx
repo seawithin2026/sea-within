@@ -7,7 +7,8 @@ import { useState, useEffect } from 'react';
 export default function RevealPage() {
   const [loading, setLoading] = useState(false);
 
-  const handleJoin = async (plan: 'monthly' | 'yearly') => {
+  // Yearly plan removed — function kept untouched for structure
+  const handleJoin = async (plan: 'monthly') => {
     setLoading(true);
 
     const res = await fetch('/api/checkout', {
@@ -160,7 +161,6 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-        
 {/* CINEMATIC FULL‑BLEED VIDEO */}
 <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
   <video
@@ -172,26 +172,25 @@ export default function RevealPage() {
   />
 </div>
 
-
         {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
-           <div className="mt-12"></div> {/* This creates the gap below the video */}
+          <div className="mt-12"></div>
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-8">
-           If something in you is leaning forward — if something in you is quietly
-whispering yes — the sanctuary is open. Membership is available for
-<span className="text-golden-400">$77.77/month</span>, cancel anytime.
-This is your opportunity to sea within yourself. 
+            If something in you is leaning forward — if something in you is quietly
+            whispering yes — the sanctuary is open. Membership is available for
+            <span className="text-golden-400">$77.77/month</span>, cancel anytime.
+            This is your opportunity to sea within yourself.
           </p>
 
-          {/* MONTHLY */}
-          <button
-            onClick={() => handleJoin('monthly')}
-            disabled={loading}
-            className="btn-golden w-full text-center py-4 text-lg disabled:opacity-50"
+          {/* MONTHLY — FINAL FIX */}
+          <a
+            href="https://buy.stripe.com/test_14AeVdcNK97p2OxcAuc3m00"
+            className="btn-golden w-full text-center py-4 text-lg block"
           >
-            {loading ? 'Opening the door…' : 'Enter the Sanctuary — $77.77/month'}
-          </button>
+            Enter the Sanctuary — $77.77/month
+          </a>
+
         </ScrollReveal>
 
       </section>
