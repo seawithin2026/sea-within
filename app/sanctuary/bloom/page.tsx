@@ -109,9 +109,7 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
-  /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE — FIXED (WAIT FOR SESSION)
-  ----------------------------------------------------- */
+
   /* -----------------------------------------------------
    ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
 ----------------------------------------------------- */
@@ -166,6 +164,7 @@ if (isAllowed === false) {
 if (isAllowed === null) {
   return <div className="text-white p-10">Loading...</div>;
 }
+
 
 
   /* -----------------------------------------------------
