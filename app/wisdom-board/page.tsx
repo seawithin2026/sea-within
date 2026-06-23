@@ -1,6 +1,6 @@
 "use client";
 
-import { redirect } from "next/navigation";
+
 import Navigation from "@/components/layout/Navigation";
 import { useState, useEffect, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -18,7 +18,7 @@ interface DailyMessage {
 
 export default function WisdomBoardPage() {
   const supabase = createClient();
-
+ 
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   // ⭐ CLIENT MEMBERSHIP GATE
