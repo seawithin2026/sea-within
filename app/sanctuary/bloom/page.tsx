@@ -111,7 +111,7 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 export default function BloomRitualPage() {
  
 /* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — FIXED (WAIT FOR SESSION)
+   ⭐ MEMBERSHIP GATE — FINAL FIX (WAIT FOR SESSION)
 ----------------------------------------------------- */
 const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
@@ -149,7 +149,17 @@ useEffect(() => {
   };
 
   checkAccess();
- }, []);
+}, []);
+
+// ⭐ Redirect non‑members or non‑users
+if (isAllowed === false) {
+  if (typeof window !== "undefined") window.location.href = "/reveal";
+  return null;
+}
+
+// ⭐ Wait for membership check
+if (isAllowed === null) return null;
+
 
   /* -----------------------------------------------------
      🌙 ORIGINAL BLOOM LOGIC
