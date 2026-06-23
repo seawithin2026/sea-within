@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Navigation from '@/components/layout/Navigation';
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import { createClient } from '@/lib/supabase/client';
+import { useState, useEffect, useRef } from "react";
+import Navigation from "@/components/layout/Navigation";
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import { createClient } from "@/lib/supabase/client";
 
 interface ChatMsg {
   id: string;
@@ -15,196 +15,195 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
+  /* -----------------------------------------------------
+     ⭐ MEMBERSHIP GATE — STABLE + NO HOOK ORDER CRASH
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
+
+      // 1. Wait for session hydration
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setIsAllowed(false);
+        return;
+      }
+
+      // 2. Get user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setIsAllowed(false);
+        return;
+      }
+
+      // 3. Check membership
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile?.is_member) {
+        setIsAllowed(false);
+        return;
+      }
+
+      setIsAllowed(true);
+    };
+
+    checkAccess();
+  }, []);
+
+  // ⭐ EARLY RETURN BEFORE ANY OTHER HOOKS (prevents React #310)
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
+
+  if (isAllowed === null) return null;
 
   /* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — STABLE, NO FALSE BLOCKS
------------------------------------------------------ */
-const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
-const [hydrating, setHydrating] = useState(true);
+     🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
+  ----------------------------------------------------- */
 
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
+  const supabase = createClient();
 
-    // 1. Wait for session hydration
-    const { data: sessionData } = await supabase.auth.getSession();
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [user, setUser] = useState<any>(null);
 
-    if (!sessionData.session) {
-      setHydrating(false);
-      setIsAllowed(false);
-      return;
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  /* LOAD USER */
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+    });
+  }, []);
+
+  /* FETCH MESSAGES */
+  useEffect(() => {
+    if (!user) return;
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  /* SCROLL ONLY WHEN YOU SEND */
+  useEffect(() => {
+    if (isSubmitting) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
+  }, [messages]);
 
-    // 2. Get user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setHydrating(false);
-      setIsAllowed(false);
-      return;
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch("/api/messages?type=chat");
+      const data = await res.json();
+
+      if (data.messages) {
+        const withOwnership = data.messages.map((msg: ChatMsg) => ({
+          ...msg,
+          is_own: user && msg.user_id === user.id,
+        }));
+        setMessages(withOwnership);
+      }
+    } catch {
+      console.error("Failed to fetch messages");
     }
-
-    // 3. Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
-
-    setHydrating(false);
-    setIsAllowed(profile?.is_member === true);
   };
 
-  checkAccess();
-}, []);
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
 
-// ⭐ While hydrating → show nothing (prevents false redirects)
-if (hydrating) return null;
+    setIsSubmitting(true);
+    setFeedback("");
 
-// ⭐ If confirmed NOT allowed → redirect
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
- 
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newMessage, type: "chat" }),
+      });
 
+      const data = await res.json();
 
-/* -----------------------------------------------------
-   🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
------------------------------------------------------ */
+      if (!res.ok) {
+        if (res.status === 401) {
+          setFeedback("Please sign in to share your light with the circle.");
+        } else {
+          setFeedback(
+            data.suggestion ||
+              "This space is for uplifting, reflective, and supportive communication."
+          );
+        }
+        return;
+      }
 
-const supabase = createClient();
-
-const [messages, setMessages] = useState<ChatMsg[]>([]);
-const [newMessage, setNewMessage] = useState('');
-const [isSubmitting, setIsSubmitting] = useState(false);
-const [feedback, setFeedback] = useState('');
-const [user, setUser] = useState<any>(null);
-
-const [editingId, setEditingId] = useState<string | null>(null);
-const [editingContent, setEditingContent] = useState('');
-
-const messagesEndRef = useRef<HTMLDivElement>(null);
-
-/* LOAD USER */
-useEffect(() => {
-  supabase.auth.getUser().then(({ data }) => {
-    setUser(data.user);
-  });
-}, []);
-
-/* FETCH MESSAGES */
-useEffect(() => {
-  if (!user) return;
-  fetchMessages();
-  const interval = setInterval(fetchMessages, 5000);
-  return () => clearInterval(interval);
-}, [user]);
-
-/* SCROLL ONLY WHEN YOU SEND */
-useEffect(() => {
-  if (isSubmitting) {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }
-}, [messages]);
-
-const fetchMessages = async () => {
-  try {
-    const res = await fetch('/api/messages?type=chat');
-    const data = await res.json();
-
-    if (data.messages) {
-      const withOwnership = data.messages.map((msg: ChatMsg) => ({
-        ...msg,
-        is_own: user && msg.user_id === user.id,
-      }));
-      setMessages(withOwnership);
+      setNewMessage("");
+      fetchMessages();
+    } catch {
+      setFeedback("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch {
-    console.error('Failed to fetch messages');
-  }
-};
+  };
 
-const handleSend = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!newMessage.trim()) return;
+  const startEditing = (msg: ChatMsg) => {
+    setEditingId(msg.id);
+    setEditingContent(msg.message);
+  };
 
-  setIsSubmitting(true);
-  setFeedback('');
+  const saveEdit = async () => {
+    if (!editingId) return;
 
-  try {
-    const res = await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: newMessage, type: 'chat' }),
+    await fetch("/api/messages", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: editingId,
+        content: editingContent,
+        type: "chat",
+      }),
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        setFeedback('Please sign in to share your light with the circle.');
-      } else {
-        setFeedback(
-          data.suggestion ||
-            'This space is for uplifting, reflective, and supportive communication.'
-        );
-      }
-      return;
-    }
-
-    setNewMessage('');
+    setEditingId(null);
+    setEditingContent("");
     fetchMessages();
-  } catch {
-    setFeedback('Something went wrong. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
-const startEditing = (msg: ChatMsg) => {
-  setEditingId(msg.id);
-  setEditingContent(msg.message);
-};
+  const deleteMessage = async (id: string) => {
+    if (!confirm("Delete this message?")) return;
 
-const saveEdit = async () => {
-  if (!editingId) return;
+    await fetch(`/api/messages?id=${id}&type=chat`, {
+      method: "DELETE",
+    });
 
-  await fetch('/api/messages', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      id: editingId,
-      content: editingContent,
-      type: 'chat',
-    }),
-  });
+    fetchMessages();
+  };
 
-  setEditingId(null);
-  setEditingContent('');
-  fetchMessages();
-};
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString("en-CA", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
 
-const deleteMessage = async (id: string) => {
-  if (!confirm('Delete this message?')) return;
-
-  await fetch(`/api/messages?id=${id}&type=chat`, {
-    method: 'DELETE',
-  });
-
-  fetchMessages();
-};
-
-const formatTime = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleTimeString('en-CA', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-};
-
-return (
-  <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+  return (
+    <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+      
 
 
       {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}

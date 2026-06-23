@@ -109,61 +109,63 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
- 
-/* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — STABLE, NO FALSE BLOCKS
------------------------------------------------------ */
-const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
-const [hydrating, setHydrating] = useState(true);
+  /* -----------------------------------------------------
+     ⭐ MEMBERSHIP GATE — FIXED (WAIT FOR SESSION)
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
 
-    // 1. Wait for session hydration
-    const { data: sessionData } = await supabase.auth.getSession();
+      // 1. Wait for session to hydrate
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setIsAllowed(false);
+        return;
+      }
 
-    if (!sessionData.session) {
-      setHydrating(false);
-      setIsAllowed(false);
-      return;
-    }
+      // 2. Now safely get the user
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setIsAllowed(false);
+        return;
+      }
 
-    // 2. Get user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setHydrating(false);
-      setIsAllowed(false);
-      return;
-    }
+      // 3. Check membership
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
 
-    // 3. Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
+      if (!profile?.is_member) {
+        setIsAllowed(false);
+        return;
+      }
 
-    setHydrating(false);
-    setIsAllowed(profile?.is_member === true);
-  };
+      setIsAllowed(true);
+    };
 
-  checkAccess();
-}, []);
+    checkAccess();
+  }, []);
 
-// ⭐ While hydrating → show nothing (prevents false redirects)
-if (hydrating) return null;
+  // Block rendering until membership is known
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
 
-// ⭐ If confirmed NOT allowed → redirect
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
- 
+  if (isAllowed === null) {
+    return <div className="text-white p-10">Loading...</div>;
+  }
+
   /* -----------------------------------------------------
      🌙 ORIGINAL BLOOM LOGIC
   ----------------------------------------------------- */
- 
+
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
@@ -329,6 +331,9 @@ if (isAllowed === false) {
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
+
+  // …your existing JSX render for BloomRitualPage goes here (unchanged)…
+
 
   /* -----------------------------------------------------
      🌸 DEV SHORTCUTS — PRESERVED
