@@ -17,9 +17,12 @@ export default function CreateUsernamePage() {
     setError('');
     setLoading(true);
 
+    // ⭐ FIX: use getSession instead of getUser
     const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const user = session?.user;
 
     if (!user) {
       setError('You must be signed in.');
