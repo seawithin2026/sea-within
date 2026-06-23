@@ -42,7 +42,22 @@ export default function SignUpPage() {
       return;
     }
 
-    // 3. Redirect to username creation
+    // ⭐ 3. UPDATE PROFILE (make them a member + set country)
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({
+          is_member: true,
+          country: 'Canada', // or auto-detect later
+        })
+        .eq('id', user.id);
+    }
+
+    // 4. Redirect to username creation
     router.push('/create-username');
   };
 
