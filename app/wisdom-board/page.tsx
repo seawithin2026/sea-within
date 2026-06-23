@@ -1,10 +1,6 @@
-"use client"; // ⭐ MUST BE FIRST LINE
+"use client";
 
-// ===============================
-// SERVER + CLIENT COMPONENT (allowed because "use client" is first)
-// ===============================
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import Navigation from "@/components/layout/Navigation";
 import { useState, useEffect, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -20,26 +16,36 @@ interface DailyMessage {
   attribution?: string;
 }
 
-export default async function WisdomBoardPage() {
-  /* -----------------------------------------------------
-     ⭐ SERVER MEMBERSHIP GATE (STILL WORKS)
-  ----------------------------------------------------- */
-  const supabase = createServerSupabaseClient();
+export default function WisdomBoardPage() {
+  const supabase = createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/reveal");
+  const [allowed, setAllowed] = useState<boolean | null>(null);
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_member")
-    .eq("id", user.id)
-    .single();
+  // ⭐ CLIENT MEMBERSHIP GATE
+  useEffect(() => {
+    const check = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setAllowed(false);
 
-  if (!profile || !profile.is_member) redirect("/reveal");
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
 
-  /* -----------------------------------------------------
-     🌊 ORIGINAL WISDOM BOARD LOGIC (UNCHANGED)
-  ----------------------------------------------------- */
+      if (!profile?.is_member) return setAllowed(false);
+
+      setAllowed(true);
+    };
+
+    check();
+  }, []);
+
+  if (allowed === null) return null;
+  if (allowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
 
   return <ClientWisdomBoard />;
 }
@@ -79,8 +85,7 @@ function ClientWisdomBoard() {
         message: data.message,
         attribution: data.attribution || "",
       });
-    } catch (err) {
-      console.error("Failed to fetch daily message", err);
+    } catch {
       setDailyMessage({
         message: "A new message will arrive soon.",
         attribution: "",
