@@ -10,13 +10,15 @@ export default function SuccessPage() {
       <p className="text-white/70 mb-8 max-w-sm">
         Your membership is active. Create your account to continue.
       </p>
+<div className="text-center">
+  <Link
+    href="/auth/signup"
+    className="btn-golden py-3 text-[12px] tracking-[2px] text-center px-8 inline-block"
+  >
+    CREATE ACCOUNT
+  </Link>
+</div>
 
-    <Link
-  href="/auth/signup"
-  className="btn-golden w-full py-3 text-[12px] tracking-[2px] text-center block"
->
-  CREATE ACCOUNT
-</Link>
 
     </div>
   );
