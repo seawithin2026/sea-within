@@ -1,5 +1,5 @@
-'use client';
-
+import { redirect } from "next/navigation";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { useState, useEffect, type FormEvent } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -15,48 +15,34 @@ interface DailyMessage {
   attribution?: string;
 }
 
-export default function WisdomBoardPage() {
-
+export default async function WisdomBoardPage() {
   /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE — ONLY ADDITION
+     ⭐ SERVER MEMBERSHIP GATE (CORRECT FOR THIS PAGE)
   ----------------------------------------------------- */
- const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+  const supabase = createServerSupabaseClient();
 
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/reveal");
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return setIsAllowed(false);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_member")
+    .eq("id", user.id)
+    .single();
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || !profile.is_member) return setIsAllowed(false);
-
-    setIsAllowed(true);
-  };
-
-  checkAccess();
-}, []);
-
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
-
-if (isAllowed === null) {
-  return <div className="text-white p-10">Loading...</div>;
-}
-
+  if (!profile || !profile.is_member) redirect("/reveal");
 
   /* -----------------------------------------------------
      🌊 ORIGINAL WISDOM BOARD LOGIC (UNCHANGED)
   ----------------------------------------------------- */
 
+  return <ClientWisdomBoard />;
+}
+
+/* -----------------------------------------------------
+   ⭐ CLIENT COMPONENT FOR INTERACTIVITY
+----------------------------------------------------- */
+function ClientWisdomBoard() {
   const [posts, setPosts] = useState<WisdomPost[]>([]);
   const [newPost, setNewPost] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,7 +68,7 @@ if (isAllowed === null) {
 
       setDailyMessage({
         message: data.message,
-        attribution: data.attribution || ""
+        attribution: data.attribution || "",
       });
     } catch (err) {
       console.error("Failed to fetch daily message", err);
@@ -166,10 +152,10 @@ if (isAllowed === null) {
         </video>
       </section>
 
-      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT WITH DAILY AFFIRMATION + MESSAGE FORM */}
+      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-
+        
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
@@ -183,7 +169,7 @@ if (isAllowed === null) {
             </video>
           </div>
 
-          {/* RIGHT — PARCHMENT WITH DAILY AFFIRMATION + TEXTAREA */}
+          {/* RIGHT — PARCHMENT */}
           <div className="relative h-full w-full">
             <img
               src="/images/paper-texture.png"
@@ -191,9 +177,8 @@ if (isAllowed === null) {
               className="absolute inset-0 w-full h-full object-cover opacity-100 pointer-events-none"
             />
 
-            <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
-
-              {/* DAILY AFFIRMATION */}
+            
+          <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-10 text-center">
               <p className="paper-reveal text-3xl leading-relaxed mb-6 max-w-md">
                 {dailyMessage?.message || "Loading..."}
               </p>
@@ -224,7 +209,7 @@ if (isAllowed === null) {
                 </button>
               </form>
 
-              {/* FEEDBACK */}
+
               {feedback && (
                 <p
                   className={`mt-4 text-sm ${
@@ -235,10 +220,9 @@ if (isAllowed === null) {
                 </p>
               )}
 
-             <p className="mt-4 text-xs text-stone-700/85">
-  Your message will be shared with the community along with your username, country, and today&apos;s date.
-</p>
-
+              <p className="mt-4 text-xs text-stone-700/85">
+                Your message will be shared with the community along with your username, country, and today&apos;s date.
+              </p>
             </div>
           </div>
         </div>
@@ -252,10 +236,8 @@ if (isAllowed === null) {
           color: #4a2e1a;
           opacity: 0;
           animation: paperFade 3.5s ease forwards;
-          text-shadow:
-            0 1px 0 rgba(0, 0, 0, 0.12),
-            0 2px 1px rgba(0, 0, 0, 0.1),
-            0 0 8px rgba(0, 0, 0, 0.08);
+          text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12),
+            0 2px 1px rgba(0, 0, 0, 0.1), 0 0 8px rgba(0, 0, 0, 0.08);
           filter: brightness(0.9) contrast(1.12) saturate(0.85);
         }
 
@@ -284,8 +266,7 @@ if (isAllowed === null) {
           opacity: 0;
           animation: inkReveal 3.2s ease forwards;
           letter-spacing: 0.3px;
-          text-shadow:
-            0 0 1px rgba(30, 18, 10, 0.5),
+          text-shadow: 0 0 1px rgba(30, 18, 10, 0.5),
             0 1px 2px rgba(30, 18, 10, 0.35),
             0 2px 4px rgba(30, 18, 10, 0.25),
             0 0 12px rgba(30, 18, 10, 0.15);
