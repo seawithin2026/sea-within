@@ -110,41 +110,46 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 
 export default function BloomRitualPage() {
  
-  /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE
-  ----------------------------------------------------- */
-  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+/* -----------------------------------------------------
+   ⭐ MEMBERSHIP GATE — FIXED (WAIT FOR SESSION)
+----------------------------------------------------- */
+const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
 useEffect(() => {
   const checkAccess = async () => {
     const supabase = createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return setIsAllowed(false);
+    // 1. Wait for session to hydrate
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      setIsAllowed(false);
+      return;
+    }
 
+    // 2. Now safely get the user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsAllowed(false);
+      return;
+    }
+
+    // 3. Check membership
     const { data: profile } = await supabase
       .from("profiles")
       .select("is_member")
       .eq("id", user.id)
       .single();
 
-    if (!profile || !profile.is_member) return setIsAllowed(false);
+    if (!profile?.is_member) {
+      setIsAllowed(false);
+      return;
+    }
 
     setIsAllowed(true);
   };
 
   checkAccess();
-}, []);
-
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
-
-if (isAllowed === null) {
-  return <div className="text-white p-10">Loading...</div>;
-}
-
+ }, []);
 
   /* -----------------------------------------------------
      🌙 ORIGINAL BLOOM LOGIC
