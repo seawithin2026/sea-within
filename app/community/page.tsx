@@ -15,8 +15,9 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
-/* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
+
+  /* -----------------------------------------------------
+   ⭐ MEMBERSHIP GATE — STABLE VERSION
 ----------------------------------------------------- */
 const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
@@ -24,26 +25,18 @@ useEffect(() => {
   const checkAccess = async () => {
     const supabase = createClient();
 
-    // 1. Wait for session hydration
-    const { data: sessionData } = await supabase.auth.getSession();
-
-    // ⭐ FIX: If session is null → user is NOT logged in → block
-    if (sessionData.session === null) {
-      setIsAllowed(false);
-      return;
-    }
-
-    // 2. Now safely get the user
+    // 1. Get user directly
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
+    // Not logged in → block
     if (!user) {
       setIsAllowed(false);
       return;
     }
 
-    // 3. Check membership
+    // 2. Check membership
     const { data: profile } = await supabase
       .from("profiles")
       .select("is_member")
@@ -55,7 +48,7 @@ useEffect(() => {
       return;
     }
 
-    // 4. All good → allow access
+    // 3. All good → allow
     setIsAllowed(true);
   };
 
