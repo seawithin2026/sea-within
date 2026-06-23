@@ -15,56 +15,57 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
-  /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE — STABLE + NO HOOK ORDER CRASH
-  ----------------------------------------------------- */
-  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+  
+/* -----------------------------------------------------
+   ⭐ UNIVERSAL MEMBERSHIP GATE — FINAL VERSION
+----------------------------------------------------- */
+const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    const checkAccess = async () => {
-      const supabase = createClient();
+useEffect(() => {
+  const checkAccess = async () => {
+    const supabase = createClient();
 
-      // 1. Wait for session hydration
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
-        setIsAllowed(false);
-        return;
-      }
+    // 1. Check session
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
+      setIsAllowed(false);
+      return;
+    }
 
-      // 2. Get user
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setIsAllowed(false);
-        return;
-      }
+    // 2. Check user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setIsAllowed(false);
+      return;
+    }
 
-      // 3. Check membership
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_member")
-        .eq("id", user.id)
-        .single();
+    // 3. Check membership
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_member")
+      .eq("id", user.id)
+      .single();
 
-      if (!profile?.is_member) {
-        setIsAllowed(false);
-        return;
-      }
+    if (!profile?.is_member) {
+      setIsAllowed(false);
+      return;
+    }
 
-      setIsAllowed(true);
-    };
+    // 4. All good → allow
+    setIsAllowed(true);
+  };
 
-    checkAccess();
-  }, []);
+  checkAccess();
+}, []);
 
-  // ⭐ EARLY RETURN BEFORE ANY OTHER HOOKS (prevents React #310)
-  if (isAllowed === false) {
-    if (typeof window !== "undefined") window.location.href = "/reveal";
-    return null;
-  }
+// ⭐ EARLY RETURN — prevents React crashes + flicker
+if (isAllowed === false) {
+  if (typeof window !== "undefined") window.location.href = "/reveal";
+  return null;
+}
 
-  if (isAllowed === null) return null;
+if (isAllowed === null) return null;
+
 
   /* -----------------------------------------------------
      🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
