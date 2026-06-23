@@ -1,16 +1,28 @@
+"use client"; // ⭐ MUST BE FIRST LINE
+
 // ===============================
-// SERVER COMPONENT
+// SERVER + CLIENT COMPONENT (allowed because "use client" is first)
 // ===============================
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import Navigation from "@/components/layout/Navigation";
+import { useState, useEffect, type FormEvent } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-// ❗ IMPORTANT: No useState/useEffect imports here
-// ❗ This file is a Server Component until we switch to the client component
+interface WisdomPost {
+  id: string;
+  content: string;
+  created_at: string;
+}
+
+interface DailyMessage {
+  message: string;
+  attribution?: string;
+}
 
 export default async function WisdomBoardPage() {
   /* -----------------------------------------------------
-     ⭐ SERVER MEMBERSHIP GATE (CORRECT)
+     ⭐ SERVER MEMBERSHIP GATE (STILL WORKS)
   ----------------------------------------------------- */
   const supabase = createServerSupabaseClient();
 
@@ -26,30 +38,15 @@ export default async function WisdomBoardPage() {
   if (!profile || !profile.is_member) redirect("/reveal");
 
   /* -----------------------------------------------------
-     ⭐ RENDER CLIENT COMPONENT
+     🌊 ORIGINAL WISDOM BOARD LOGIC (UNCHANGED)
   ----------------------------------------------------- */
+
   return <ClientWisdomBoard />;
 }
 
-// ===============================
-// CLIENT COMPONENT
-// ===============================
-"use client";
-
-import { useState, useEffect, type FormEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-interface WisdomPost {
-  id: string;
-  content: string;
-  created_at: string;
-}
-
-interface DailyMessage {
-  message: string;
-  attribution?: string;
-}
-
+/* -----------------------------------------------------
+   ⭐ CLIENT COMPONENT FOR INTERACTIVITY
+----------------------------------------------------- */
 function ClientWisdomBoard() {
   const [posts, setPosts] = useState<WisdomPost[]>([]);
   const [newPost, setNewPost] = useState("");
@@ -82,7 +79,8 @@ function ClientWisdomBoard() {
         message: data.message,
         attribution: data.attribution || "",
       });
-    } catch {
+    } catch (err) {
+      console.error("Failed to fetch daily message", err);
       setDailyMessage({
         message: "A new message will arrive soon.",
         attribution: "",
