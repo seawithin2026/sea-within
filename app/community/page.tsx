@@ -57,143 +57,154 @@ useEffect(() => {
   checkAccess();
 }, []);
 
-  /* -----------------------------------------------------
-     🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
-  ----------------------------------------------------- */
+// Redirect non‑members or non‑users
+if (isAllowed === false) {
+  if (typeof window !== "undefined") window.location.href = "/reveal";
+  return null;
+}
 
-  const supabase = createClient();
+// Wait for membership check
+if (isAllowed === null) return null;
 
-  const [messages, setMessages] = useState<ChatMsg[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState('');
-  const [user, setUser] = useState<any>(null);
 
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingContent, setEditingContent] = useState('');
+/* -----------------------------------------------------
+   🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
+----------------------------------------------------- */
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+const supabase = createClient();
 
-  /* LOAD USER */
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
-    });
-  }, []);
+const [messages, setMessages] = useState<ChatMsg[]>([]);
+const [newMessage, setNewMessage] = useState('');
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [feedback, setFeedback] = useState('');
+const [user, setUser] = useState<any>(null);
 
-  /* FETCH MESSAGES */
-  useEffect(() => {
-    if (!user) return;
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
-  }, [user]);
+const [editingId, setEditingId] = useState<string | null>(null);
+const [editingContent, setEditingContent] = useState('');
 
-  /* SCROLL ONLY WHEN YOU SEND */
-  useEffect(() => {
-    if (isSubmitting) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+const messagesEndRef = useRef<HTMLDivElement>(null);
+
+/* LOAD USER */
+useEffect(() => {
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user);
+  });
+}, []);
+
+/* FETCH MESSAGES */
+useEffect(() => {
+  if (!user) return;
+  fetchMessages();
+  const interval = setInterval(fetchMessages, 5000);
+  return () => clearInterval(interval);
+}, [user]);
+
+/* SCROLL ONLY WHEN YOU SEND */
+useEffect(() => {
+  if (isSubmitting) {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+}, [messages]);
+
+const fetchMessages = async () => {
+  try {
+    const res = await fetch('/api/messages?type=chat');
+    const data = await res.json();
+
+    if (data.messages) {
+      const withOwnership = data.messages.map((msg: ChatMsg) => ({
+        ...msg,
+        is_own: user && msg.user_id === user.id,
+      }));
+      setMessages(withOwnership);
     }
-  }, [messages]);
+  } catch {
+    console.error('Failed to fetch messages');
+  }
+};
 
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch('/api/messages?type=chat');
-      const data = await res.json();
+const handleSend = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!newMessage.trim()) return;
 
-      if (data.messages) {
-        const withOwnership = data.messages.map((msg: ChatMsg) => ({
-          ...msg,
-          is_own: user && msg.user_id === user.id,
-        }));
-        setMessages(withOwnership);
-      }
-    } catch {
-      console.error('Failed to fetch messages');
-    }
-  };
+  setIsSubmitting(true);
+  setFeedback('');
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
-
-    setIsSubmitting(true);
-    setFeedback('');
-
-    try {
-      const res = await fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newMessage, type: 'chat' }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          setFeedback('Please sign in to share your light with the circle.');
-        } else {
-          setFeedback(
-            data.suggestion ||
-              'This space is for uplifting, reflective, and supportive communication.'
-          );
-        }
-        return;
-      }
-
-      setNewMessage('');
-      fetchMessages();
-    } catch {
-      setFeedback('Something went wrong. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const startEditing = (msg: ChatMsg) => {
-    setEditingId(msg.id);
-    setEditingContent(msg.message);
-  };
-
-  const saveEdit = async () => {
-    if (!editingId) return;
-
-    await fetch('/api/messages', {
-      method: 'PUT',
+  try {
+    const res = await fetch('/api/messages', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: editingId,
-        content: editingContent,
-        type: 'chat',
-      }),
+      body: JSON.stringify({ content: newMessage, type: 'chat' }),
     });
 
-    setEditingId(null);
-    setEditingContent('');
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        setFeedback('Please sign in to share your light with the circle.');
+      } else {
+        setFeedback(
+          data.suggestion ||
+            'This space is for uplifting, reflective, and supportive communication.'
+        );
+      }
+      return;
+    }
+
+    setNewMessage('');
     fetchMessages();
-  };
+  } catch {
+    setFeedback('Something went wrong. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
-  const deleteMessage = async (id: string) => {
-    if (!confirm('Delete this message?')) return;
+const startEditing = (msg: ChatMsg) => {
+  setEditingId(msg.id);
+  setEditingContent(msg.message);
+};
 
-    await fetch(`/api/messages?id=${id}&type=chat`, {
-      method: 'DELETE',
-    });
+const saveEdit = async () => {
+  if (!editingId) return;
 
-    fetchMessages();
-  };
+  await fetch('/api/messages', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      id: editingId,
+      content: editingContent,
+      type: 'chat',
+    }),
+  });
 
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString('en-CA', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
+  setEditingId(null);
+  setEditingContent('');
+  fetchMessages();
+};
 
-  return (
-    <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+const deleteMessage = async (id: string) => {
+  if (!confirm('Delete this message?')) return;
+
+  await fetch(`/api/messages?id=${id}&type=chat`, {
+    method: 'DELETE',
+  });
+
+  fetchMessages();
+};
+
+const formatTime = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleTimeString('en-CA', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
+
+return (
+  <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+
 
       {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}
       <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
