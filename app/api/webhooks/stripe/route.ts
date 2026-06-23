@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
   );
 
   // Country name resolver
-  const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+  const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
 
   // ============================================
   // CHECKOUT COMPLETED → CREATE USER + MARK MEMBER
   // ============================================
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
-
+  
+  const session = event.data.object;
 
     const email = session.customer_details?.email;
     const countryCode = session.customer_details?.address?.country || "Unknown";
@@ -77,9 +77,8 @@ export async function POST(req: NextRequest) {
             membership_status: "active",
           })
           .eq("id", userId);
-
-          
-      }
+ 
+        }
     }
   }
 
@@ -88,7 +87,10 @@ export async function POST(req: NextRequest) {
   // ============================================
   if (event.type === "invoice.payment_succeeded") {
     const invoice = event.data.object;
-    const email = invoice.customer_email;
+
+    // Stripe does NOT guarantee invoice.customer_email
+    const customer = await stripe.customers.retrieve(invoice.customer as string);
+    const email = (customer as any).email;
 
     if (email) {
       await supabase
@@ -107,18 +109,18 @@ export async function POST(req: NextRequest) {
   if (event.type === "customer.subscription.updated") {
     const subscription = event.data.object;
 
-    if (subscription.cancel_at_period_end) {
-      const email = subscription.customer_email;
+    // Stripe does NOT send customer_email reliably
+    const customer = await stripe.customers.retrieve(subscription.customer as string);
+    const email = (customer as any).email;
 
-      if (email) {
-        await supabase
-          .from("profiles")
-          .update({
-            membership_status: "cancel_at_period_end",
-            // keep is_member = true
-          })
-          .eq("email", email);
-      }
+    if (subscription.cancel_at_period_end && email) {
+      await supabase
+        .from("profiles")
+        .update({
+          membership_status: "cancel_at_period_end",
+          // keep is_member = true
+        })
+        .eq("email", email);
     }
   }
 
@@ -127,7 +129,9 @@ export async function POST(req: NextRequest) {
   // ============================================
   if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object;
-    const email = subscription.customer_email;
+
+    const customer = await stripe.customers.retrieve(subscription.customer as string);
+    const email = (customer as any).email;
 
     if (email) {
       await supabase
