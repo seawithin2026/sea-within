@@ -1,0 +1,77 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function SignUpPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, fullName }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || 'Signup failed');
+      return;
+    }
+
+    router.push('/create-username');
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
+        <h1 className="text-golden-400 font-display text-xl tracking-[3px] mb-6 text-center">
+          Create Account
+        </h1>
+
+        <form onSubmit={handleSignup} className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
+
+          <input
+            type="email"
+            placeholder="Email"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+
+          <button
+            type="submit"
+            className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
+          >
+            Create Account
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
