@@ -64,7 +64,7 @@ const GESTURES = [
 ];
 
 /* -----------------------------------------------------
-   🌸 BLOOM VIDEOS — 22 total
+   🌸 BLOOM VIDEOS — 23 total
 ----------------------------------------------------- */
 const BLOOMS = [
   "/bloom-videos/bloom-01.mp4",
@@ -109,9 +109,9 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
-
+ 
   /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE (ONLY ADDITION)
+     ⭐ MEMBERSHIP GATE
   ----------------------------------------------------- */
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
@@ -119,7 +119,9 @@ export default function BloomRitualPage() {
     const checkAccess = async () => {
       const supabase = createClient();
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return setIsAllowed(false);
 
       const { data: profile } = await supabase
@@ -146,9 +148,9 @@ export default function BloomRitualPage() {
   }
 
   /* -----------------------------------------------------
-     🌙 ORIGINAL BLOOM LOGIC (UNCHANGED)
+     🌙 ORIGINAL BLOOM LOGIC
   ----------------------------------------------------- */
-
+ 
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
@@ -170,9 +172,12 @@ export default function BloomRitualPage() {
     const init = async () => {
       const today = new Date();
       const todayKey = today.toISOString().split("T")[0];
-      const storedDate = typeof window !== "undefined" ? localStorage.getItem("lastBloomDate") : null;
-      const storedBloom = typeof window !== "undefined" ? localStorage.getItem("todayBloomIndex") : null;
-      const storedGesture = typeof window !== "undefined" ? localStorage.getItem("todayGestureIndex") : null;
+      const storedDate =
+        typeof window !== "undefined" ? localStorage.getItem("lastBloomDate") : null;
+      const storedBloom =
+        typeof window !== "undefined" ? localStorage.getItem("todayBloomIndex") : null;
+      const storedGesture =
+        typeof window !== "undefined" ? localStorage.getItem("todayGestureIndex") : null;
 
       // If local state already knows today is complete → go straight to sanctuary
       if (storedDate === todayKey && storedBloom && storedGesture) {
@@ -389,9 +394,9 @@ export default function BloomRitualPage() {
   };
 
   /* -----------------------------------------------------
-     🌸 RENDER — YOUR CINEMATIC FLOW (UNCHANGED)
+     🌸 RENDER — CINEMATIC FLOW
   ----------------------------------------------------- */
-
+  
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
@@ -472,7 +477,7 @@ export default function BloomRitualPage() {
                     (vid as HTMLVideoElement).play();
                   }
                 }}
-                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg.white/10 transition-all duration-500"
+                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
               >
                 Replay
               </button>
@@ -586,23 +591,43 @@ export default function BloomRitualPage() {
       {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
         @keyframes softRise {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         @keyframes fadeInSlow {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
         @keyframes softRiseSlow {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .animate-fadeIn {
