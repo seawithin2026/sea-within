@@ -15,9 +15,9 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
-  
+
 /* -----------------------------------------------------
-   ⭐ UNIVERSAL MEMBERSHIP GATE — FINAL VERSION
+   ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
 ----------------------------------------------------- */
 const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
@@ -25,15 +25,20 @@ useEffect(() => {
   const checkAccess = async () => {
     const supabase = createClient();
 
-    // 1. Check session
+    // 1. Wait for session hydration
     const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData.session) {
-      setIsAllowed(false);
-      return;
+
+    // ❗ FIX: Do NOT return here. Just wait.
+    if (sessionData.session === null) {
+      // do nothing — let hydration continue
+      return; 
     }
 
-    // 2. Check user
-    const { data: { user } } = await supabase.auth.getUser();
+    // 2. Now safely get the user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       setIsAllowed(false);
       return;
@@ -51,20 +56,15 @@ useEffect(() => {
       return;
     }
 
-    // 4. All good → allow
+    
     setIsAllowed(true);
   };
 
   checkAccess();
 }, []);
 
-// ⭐ EARLY RETURN — prevents React crashes + flicker
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
 
-if (isAllowed === null) return null;
+
 
 
   /* -----------------------------------------------------
