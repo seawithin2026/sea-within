@@ -2,9 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
 
 export default function SignUpPage() {
   const router = useRouter();
+  const supabase = createClient();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -14,6 +17,7 @@ export default function SignUpPage() {
     e.preventDefault();
     setError('');
 
+    // 1. Create user via your admin API
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -27,6 +31,18 @@ export default function SignUpPage() {
       return;
     }
 
+    // ⭐ 2. SIGN THE USER IN (required)
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (loginError) {
+      setError('Account created, but login failed.');
+      return;
+    }
+
+    // 3. Redirect to username creation
     router.push('/create-username');
   };
 
