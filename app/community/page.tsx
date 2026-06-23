@@ -16,10 +16,11 @@ interface ChatMsg {
 
 export default function CommunityPage() {
 
-/* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — FINAL FIX (WAIT FOR SESSION)
+  /* -----------------------------------------------------
+   ⭐ MEMBERSHIP GATE — STABLE, NO FALSE BLOCKS
 ----------------------------------------------------- */
 const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+const [hydrating, setHydrating] = useState(true);
 
 useEffect(() => {
   const checkAccess = async () => {
@@ -27,14 +28,17 @@ useEffect(() => {
 
     // 1. Wait for session hydration
     const { data: sessionData } = await supabase.auth.getSession();
+
     if (!sessionData.session) {
+      setHydrating(false);
       setIsAllowed(false);
       return;
     }
 
-    // 2. Now safely get the user
+    // 2. Get user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
+      setHydrating(false);
       setIsAllowed(false);
       return;
     }
@@ -46,25 +50,22 @@ useEffect(() => {
       .eq("id", user.id)
       .single();
 
-    if (!profile?.is_member) {
-      setIsAllowed(false);
-      return;
-    }
-
-    setIsAllowed(true);
+    setHydrating(false);
+    setIsAllowed(profile?.is_member === true);
   };
 
   checkAccess();
 }, []);
 
-// Redirect non‑members or non‑users
+// ⭐ While hydrating → show nothing (prevents false redirects)
+if (hydrating) return null;
+
+// ⭐ If confirmed NOT allowed → redirect
 if (isAllowed === false) {
   if (typeof window !== "undefined") window.location.href = "/reveal";
   return null;
 }
-
-// Wait for membership check
-if (isAllowed === null) return null;
+ 
 
 
 /* -----------------------------------------------------
