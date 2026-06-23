@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/client";
    🌿 GESTURES — 20 grounding + 30 awakening (FULL SET)
 ----------------------------------------------------- */
 const GESTURES = [
-  // Grounding 20
   "Take a warm shower and feel the water on your skin for one slow breath.",
   "Drink a glass of water and notice the coolness moving through you.",
   "Step outside and let the air touch your face for a moment.",
@@ -29,8 +28,6 @@ const GESTURES = [
   "Look at something beautiful and let your eyes rest there.",
   "Place both feet flat on the floor and feel their weight.",
   "Sit quietly and notice the rhythm of your breathing.",
-
-  // Awakening 30
   "Take a slow breath and feel your chest open just a little more than usual.",
   "Place your hand on your collarbone and feel the gentle rise beneath your touch.",
   "Stand tall for a moment and feel your whole body wake up.",
@@ -96,7 +93,8 @@ const BLOOMS = [
    🌙 PERFECT SEQUENTIAL ROTATION (NO REPEATS)
 ----------------------------------------------------- */
 function getNextSequentialIndex(total: number, storageKey: string) {
-  const raw = typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
+  const raw =
+    typeof window !== "undefined" ? localStorage.getItem(storageKey) : null;
   const index = raw ? parseInt(raw) : 0;
 
   const next = (index + 1) % total;
@@ -109,63 +107,56 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
-
   /* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
------------------------------------------------------ */
-const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+     ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
+  ----------------------------------------------------- */
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
+  useEffect(() => {
+    const checkAccess = async () => {
+      const supabase = createClient();
 
-    // 1. Wait for session hydration
-    const { data: sessionData } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabase.auth.getSession();
 
-    // ❗ FIX: If session is null, DO NOT block — just wait
-    if (sessionData.session === null) {
-      return; // let hydration continue
-    }
+      if (sessionData.session === null) {
+        return;
+      }
 
-    // 2. Now safely get the user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      setIsAllowed(false);
-      return;
-    }
+      if (!user) {
+        setIsAllowed(false);
+        return;
+      }
 
-    // 3. Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member")
+        .eq("id", user.id)
+        .single();
 
-    if (!profile?.is_member) {
-      setIsAllowed(false);
-      return;
-    }
+      if (!profile?.is_member) {
+        setIsAllowed(false);
+        return;
+      }
 
-    setIsAllowed(true);
-  };
+      setIsAllowed(true);
+    };
 
-  checkAccess();
-}, []);
+    checkAccess();
+  }, []);
 
-// Rendering logic
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
+  // ⭐ REQUIRED: Prevent rendering until membership is known
+  if (isAllowed === false) {
+    if (typeof window !== "undefined") window.location.href = "/reveal";
+    return null;
+  }
 
-if (isAllowed === null) {
-  return <div className="text-white p-10">Loading...</div>;
-}
-
-
+  if (isAllowed === null) {
+    return <div className="text-white p-10">Loading...</div>;
+  }
 
   /* -----------------------------------------------------
      🌙 ORIGINAL BLOOM LOGIC
@@ -192,14 +183,20 @@ if (isAllowed === null) {
     const init = async () => {
       const today = new Date();
       const todayKey = today.toISOString().split("T")[0];
-      const storedDate =
-        typeof window !== "undefined" ? localStorage.getItem("lastBloomDate") : null;
-      const storedBloom =
-        typeof window !== "undefined" ? localStorage.getItem("todayBloomIndex") : null;
-      const storedGesture =
-        typeof window !== "undefined" ? localStorage.getItem("todayGestureIndex") : null;
 
-      // If local state already knows today is complete → go straight to sanctuary
+      const storedDate =
+        typeof window !== "undefined"
+          ? localStorage.getItem("lastBloomDate")
+          : null;
+      const storedBloom =
+        typeof window !== "undefined"
+          ? localStorage.getItem("todayBloomIndex")
+          : null;
+      const storedGesture =
+        typeof window !== "undefined"
+          ? localStorage.getItem("todayGestureIndex")
+          : null;
+
       if (storedDate === todayKey && storedBloom && storedGesture) {
         if (!isMounted) return;
         setBloomIndex(parseInt(storedBloom));
@@ -213,7 +210,6 @@ if (isAllowed === null) {
           data: { user },
         } = await supabase.auth.getUser();
 
-        // Guest user → rotate daily, no Supabase
         if (!user) {
           const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
           const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
@@ -244,10 +240,11 @@ if (isAllowed === null) {
         let lastCompleted: string | null = null;
 
         if (!error && data?.last_completed) {
-          lastCompleted = new Date(data.last_completed).toISOString().split("T")[0];
+          lastCompleted = new Date(data.last_completed)
+            .toISOString()
+            .split("T")[0];
         }
 
-        // If Supabase says user bloomed today → sanctuary
         if (lastCompleted === todayKey) {
           if (!isMounted) return;
 
@@ -256,9 +253,13 @@ if (isAllowed === null) {
             setGestureIndex(parseInt(storedGesture));
           } else {
             const existingGestureRaw =
-              typeof window !== "undefined" ? localStorage.getItem("gestureIndex") : null;
+              typeof window !== "undefined"
+                ? localStorage.getItem("gestureIndex")
+                : null;
             const existingBloomRaw =
-              typeof window !== "undefined" ? localStorage.getItem("bloomIndex") : null;
+              typeof window !== "undefined"
+                ? localStorage.getItem("bloomIndex")
+                : null;
 
             const g =
               existingGestureRaw !== null
@@ -283,7 +284,6 @@ if (isAllowed === null) {
           return;
         }
 
-        // New day → rotate
         const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
@@ -337,7 +337,6 @@ if (isAllowed === null) {
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
-  // …your existing JSX render for BloomRitualPage goes here (unchanged)…
 
 
   /* -----------------------------------------------------
