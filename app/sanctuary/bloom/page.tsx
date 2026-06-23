@@ -107,56 +107,63 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
+
   /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
-  ----------------------------------------------------- */
-  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+   ⭐ MEMBERSHIP GATE — FINAL FIXED VERSION
+----------------------------------------------------- */
+const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    const checkAccess = async () => {
-      const supabase = createClient();
+useEffect(() => {
+  const checkAccess = async () => {
+    const supabase = createClient();
 
-      const { data: sessionData } = await supabase.auth.getSession();
+    // 1. Wait for session hydration
+    const { data: sessionData } = await supabase.auth.getSession();
 
-      if (sessionData.session === null) {
-        return;
-      }
+    // ⭐ FIX: If session is null → user is NOT logged in → block
+    if (sessionData.session === null) {
+      setIsAllowed(false);
+      return;
+    }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    // 2. Now safely get the user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      if (!user) {
-        setIsAllowed(false);
-        return;
-      }
+    if (!user) {
+      setIsAllowed(false);
+      return;
+    }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_member")
-        .eq("id", user.id)
-        .single();
+    // 3. Check membership
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_member")
+      .eq("id", user.id)
+      .single();
 
-      if (!profile?.is_member) {
-        setIsAllowed(false);
-        return;
-      }
+    if (!profile?.is_member) {
+      setIsAllowed(false);
+      return;
+    }
 
-      setIsAllowed(true);
-    };
+    // 4. All good → allow access
+    setIsAllowed(true);
+  };
 
-    checkAccess();
-  }, []);
+  checkAccess();
+}, []);
 
-  // ⭐ REQUIRED: Prevent rendering until membership is known
-  if (isAllowed === false) {
-    if (typeof window !== "undefined") window.location.href = "/reveal";
-    return null;
-  }
+// ⭐ REQUIRED: Prevent rendering until membership is known
+if (isAllowed === false) {
+  if (typeof window !== "undefined") window.location.href = "/reveal";
+  return null;
+}
 
-  if (isAllowed === null) {
-    return <div className="text-white p-10">Loading...</div>;
-  }
+if (isAllowed === null) {
+  return <div className="text-white p-10">Loading...</div>;
+}
 
   /* -----------------------------------------------------
      🌙 ORIGINAL BLOOM LOGIC
