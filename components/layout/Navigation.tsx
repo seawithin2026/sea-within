@@ -49,11 +49,7 @@ export default function Navigation() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    setUser(null);
-  }
-
+  
   return (
     <>
       <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
@@ -90,23 +86,24 @@ export default function Navigation() {
               </Link>
             ))}
 
-       {/* SIGN IN / SIGN OUT BUTTON */}
-{!user ? (
-  <button
-    onClick={() => setIsSignInOpen(true)}
-    className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-  >
-    Sign In
-  </button>
-) : (
-  <button
-    onClick={handleSignOut}
-    className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-  >
-    Sign Out
-  </button>
-)}
-
+            {/* SIGN IN / SIGN OUT BUTTON */}
+            {!user ? (
+              <button
+                onClick={() => setIsSignInOpen(true)}
+                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+              >
+                Sign In
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  window.location.href = '/logout';
+                }}
+                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+              >
+                Sign Out
+              </button>
+            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -140,29 +137,28 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-             {/* MOBILE SIGN IN / SIGN OUT BUTTON */}
-{!user ? (
-  <button
-    onClick={() => {
-      setIsMobileMenuOpen(false);
-      setIsSignInOpen(true);
-    }}
-    className="btn-golden text-[11px] px-6 py-2.5"
-  >
-    Sign In
-  </button>
-) : (
-  <button
-    onClick={() => {
-      setIsMobileMenuOpen(false);
-      handleSignOut();
-    }}
-    className="btn-golden text-[11px] px-6 py-2.5"
-  >
-    Sign Out
-  </button>
-)}
-
+                {/* MOBILE SIGN IN / SIGN OUT BUTTON */}
+                {!user ? (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsSignInOpen(true);
+                    }}
+                    className="btn-golden text-[11px] px-6 py-2.5"
+                  >
+                    Sign In
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      window.location.href = '/logout';
+                    }}
+                    className="btn-golden text-[11px] px-6 py-2.5"
+                  >
+                    Sign Out
+                  </button>
+                )}
               </div>
             </motion.div>
           )}
