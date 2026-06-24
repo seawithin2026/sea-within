@@ -1,15 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Navigation from '@/components/layout/Navigation'
+import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // ⭐ Load remembered email on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('rememberedEmail');
+    if (saved) {
+      setFormData((prev) => ({ ...prev, email: saved }));
+      setRemember(true);
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +27,13 @@ export default function LoginPage() {
     setError('');
 
     try {
+      // ⭐ Save or clear remembered email
+      if (remember) {
+        localStorage.setItem('rememberedEmail', formData.email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
 
@@ -74,7 +91,9 @@ export default function LoginPage() {
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="input-sanctuary"
                   placeholder="you@example.com"
                 />
@@ -86,11 +105,24 @@ export default function LoginPage() {
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   className="input-sanctuary"
                   placeholder="Your password"
                 />
               </div>
+
+              {/* ⭐ REMEMBER MY EMAIL */}
+              <label className="flex items-center gap-2 text-white/60 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="accent-sea-glow"
+                />
+                Remember my email
+              </label>
 
               <div className="flex justify-end">
                 <Link
@@ -111,7 +143,10 @@ export default function LoginPage() {
 
               <p className="text-center text-white/30 text-xs mt-6">
                 Not a member yet?{' '}
-                <Link href="/join" className="text-sea-glow/60 hover:text-sea-glow transition-colors">
+                <Link
+                  href="/join"
+                  className="text-sea-glow/60 hover:text-sea-glow transition-colors"
+                >
                   Join the movement
                 </Link>
               </p>
