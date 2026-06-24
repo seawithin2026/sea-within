@@ -7,14 +7,19 @@ import { createClient } from '@/lib/supabase/client';
 export default function LogoutPage() {
   const supabase = createClient();
 
-  // Sign out immediately when entering this page
+  
   useEffect(() => {
+    // Sign out immediately
     supabase.auth.signOut();
+
+    // Slow down the video playback
+    const vid = document.querySelector("video");
+    if (vid) vid.playbackRate = 0.6; // warm, slow, cinematic
 
     // Redirect after cinematic moment
     const timer = setTimeout(() => {
       window.location.href = '/';
-    }, 1800); // 1.8 seconds
+    }, 3500); // 3.5 seconds
 
     return () => clearTimeout(timer);
   }, []);
@@ -53,7 +58,7 @@ export default function LogoutPage() {
           Return when you are ready.
         </motion.p>
 
-        {/* GOLDEN LINE */}
+
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
