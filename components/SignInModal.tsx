@@ -29,14 +29,16 @@ export default function SignInModal({ isOpen, onClose }) {
               Sign in to access your sanctuary.
             </p>
 
+            {/* ⭐ FIXED: Modal now closes before navigating */}
             <Link
               href="/auth/signin"
+              onClick={onClose}
               className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
             >
               Sign In
             </Link>
 
-            {/* FORGOT PASSWORD BUTTON — ADDED FIX */}
+   
             <button
               onClick={() => {
                 window.location.href = "/forgot-password";
