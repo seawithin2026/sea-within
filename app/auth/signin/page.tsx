@@ -1,20 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client'; // <-- IMPORTANT
+import { createClient } from '@/lib/supabase/client';
 
 export default function SignInPage() {
   const router = useRouter();
-  const supabase = createClient(); // <-- CREATE THE CLIENT HERE
+  const supabase = createClient();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  // ⭐ Load remembered email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError('');
+
+    // ⭐ Save email for next time
+    localStorage.setItem('rememberedEmail', email);
 
     // 1. Sign in user
     const { data: auth, error: signInError } = await supabase.auth.signInWithPassword({
@@ -29,7 +40,7 @@ export default function SignInPage() {
 
     const user = auth.user;
 
-    // 2. Fetch profile (automatic)
+    // 2. Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('is_member, username')
@@ -41,16 +52,16 @@ export default function SignInPage() {
       return;
     }
 
-    // 3. Store membership locally for fast gating
+    // 3. Store membership locally
     localStorage.setItem('isMember', profile.is_member ? 'true' : 'false');
 
-    // 4. If no username → force username creation
+    // 4. If no username → create username
     if (!profile.username) {
       router.push('/create-username');
       return;
     }
 
-    // 5. If member → unlock ecosystem
+    // 5. If member → sanctuary
     if (profile.is_member) {
       router.push('/sanctuary');
       return;
