@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { createClient } from "@/lib/supabase/client";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 /* -----------------------------------------------------
    🌿 GESTURES — 20 grounding + 30 awakening (FULL SET)
@@ -107,59 +108,18 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
+  return (
+    <ProtectedRoute>
+      <BloomContent />
+    </ProtectedRoute>
+  );
+}
 
 /* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — STABLE VERSION
+   🌸 BLOOM CONTENT — CLEAN, STABLE, NO MEMBERSHIP LOGIC
 ----------------------------------------------------- */
-const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
-
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
-
-    // 1. Get user directly
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Not logged in → block
-    if (!user) {
-      setIsAllowed(false);
-      return;
-    }
-
-    // 2. Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile?.is_member) {
-      setIsAllowed(false);
-      return;
-    }
-
-    // 3. All good → allow
-    setIsAllowed(true);
-  };
-
-  checkAccess();
-}, []);
-
-// ⭐ REQUIRED: Prevent rendering until membership is known
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
-}
-
-if (isAllowed === null) {
-  return <div className="text-white p-10">Loading...</div>;
-}
-
-  /* -----------------------------------------------------
-     🌙 ORIGINAL BLOOM LOGIC
-  ----------------------------------------------------- */
+function BloomContent() {
+  const supabase = createClient();
 
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
@@ -169,8 +129,7 @@ if (isAllowed === null) {
   >("loading");
 
   const [videoEnded, setVideoEnded] = useState(false);
-
-  const [supabase] = useState(() => createClient());
+  
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
@@ -335,9 +294,7 @@ if (isAllowed === null) {
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
-
-
-
+  
   /* -----------------------------------------------------
      🌸 DEV SHORTCUTS — PRESERVED
   ----------------------------------------------------- */
@@ -408,7 +365,10 @@ if (isAllowed === null) {
     if (gestureIndex !== null) {
       localStorage.setItem("todayBloomIndex", bloomIndex!.toString());
       localStorage.setItem("todayGestureIndex", gestureIndex!.toString());
-      localStorage.setItem("lastBloomDate", new Date().toISOString().split("T")[0]);
+      localStorage.setItem(
+        "lastBloomDate",
+        new Date().toISOString().split("T")[0]
+      );
     }
     await updateLastCompleted();
     setMode("completion");

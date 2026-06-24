@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { createClient } from "@/lib/supabase/client";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface ChatMsg {
   id: string;
@@ -15,60 +16,14 @@ interface ChatMsg {
 }
 
 export default function CommunityPage() {
-
-  /* -----------------------------------------------------
-   ⭐ MEMBERSHIP GATE — STABLE VERSION
------------------------------------------------------ */
-const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
-
-useEffect(() => {
-  const checkAccess = async () => {
-    const supabase = createClient();
-
-    // 1. Get user directly
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    // Not logged in → block
-    if (!user) {
-      setIsAllowed(false);
-      return;
-    }
-
-    // 2. Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile?.is_member) {
-      setIsAllowed(false);
-      return;
-    }
-
-    // 3. All good → allow
-    setIsAllowed(true);
-  };
-
-  checkAccess();
-}, []);
-
-// ⭐ REQUIRED: Prevent rendering until membership is known
-if (isAllowed === false) {
-  if (typeof window !== "undefined") window.location.href = "/reveal";
-  return null;
+  return (
+    <ProtectedRoute>
+      <CommunityContent />
+    </ProtectedRoute>
+  );
 }
 
-if (isAllowed === null) {
-  return <div className="text-white p-10">Loading...</div>;
-}
-
-  /* -----------------------------------------------------
-     🌊 ORIGINAL COMMUNITY PAGE LOGIC (UNCHANGED)
-  ----------------------------------------------------- */
-
+function CommunityContent() {
   const supabase = createClient();
 
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -82,7 +37,7 @@ if (isAllowed === null) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  /* LOAD USER */
+  /* LOAD USER ONCE */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
@@ -92,12 +47,13 @@ if (isAllowed === null) {
   /* FETCH MESSAGES */
   useEffect(() => {
     if (!user) return;
+
     fetchMessages();
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
   }, [user]);
 
-  /* SCROLL ONLY WHEN YOU SEND */
+  /* SCROLL WHEN SENDING */
   useEffect(() => {
     if (isSubmitting) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
