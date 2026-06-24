@@ -37,29 +37,14 @@ function CommunityContent() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  /* LOAD USER ONCE */
+  /* LOAD USER */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
   }, []);
 
-  /* FETCH MESSAGES */
-  useEffect(() => {
-    if (!user) return;
-
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
-  }, [user]);
-
-  /* SCROLL WHEN SENDING */
-  useEffect(() => {
-    if (isSubmitting) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
+  /* FETCH MESSAGES ONCE */
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/messages?type=chat");
@@ -77,6 +62,32 @@ function CommunityContent() {
     }
   };
 
+  /* INITIAL FETCH + REALTIME SUBSCRIPTION */
+  useEffect(() => {
+    if (!user) return;
+
+    fetchMessages();
+
+    const channel = supabase
+      .channel("community-chat")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "chat_messages" },
+        () => fetchMessages()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  /* SCROLL ON NEW MESSAGES */
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  /* SEND MESSAGE */
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -99,14 +110,14 @@ function CommunityContent() {
         } else {
           setFeedback(
             data.suggestion ||
-              "This space is for uplifting, reflective, and supportive communication."
+              "Your message didn’t meet the circle’s guidelines. Try something softer or more reflective."
           );
         }
         return;
       }
 
       setNewMessage("");
-      fetchMessages();
+ 
     } catch {
       setFeedback("Something went wrong. Please try again.");
     } finally {
@@ -114,6 +125,7 @@ function CommunityContent() {
     }
   };
 
+  /* EDITING */
   const startEditing = (msg: ChatMsg) => {
     setEditingId(msg.id);
     setEditingContent(msg.message);
@@ -133,20 +145,21 @@ function CommunityContent() {
     });
 
     setEditingId(null);
-    setEditingContent("");
-    fetchMessages();
+ 
+   setEditingContent("");
   };
 
+  /* DELETE */
   const deleteMessage = async (id: string) => {
     if (!confirm("Delete this message?")) return;
 
     await fetch(`/api/messages?id=${id}&type=chat`, {
       method: "DELETE",
-    });
-
-    fetchMessages();
+ 
+   });
   };
 
+  /* TIME FORMAT */
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString("en-CA", {
@@ -158,10 +171,7 @@ function CommunityContent() {
 
   return (
     <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
-      
-
-
-      {/* 🌊 BRIGHT CINEMATIC BACKGROUND */}
+      {/* BACKGROUND */}
       <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
         <img
           src="/images/jellyfish-bg.jpg"
@@ -190,10 +200,10 @@ function CommunityContent() {
         </ScrollReveal>
       </section>
 
-      {/* CHAT MESSAGES */}
+      {/* CHAT */}
       <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
-        <div className="space-y-4 pb-24">
-
+     
+       <div className="space-y-4 pb-24">
           {messages.length === 0 && (
             <div className="text-center py-20">
               <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
@@ -208,10 +218,13 @@ function CommunityContent() {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex ${msg.is_own ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.is_own ? "justify-end" : "justify-start"}`}
             >
-              <div className={`chat-bubble ${msg.is_own ? 'own' : ''} bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}>
-
+              <div
+                className={`chat-bubble ${
+                  msg.is_own ? "own" : ""
+                } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
+              >
                 {editingId === msg.id ? (
                   <>
                     <textarea
@@ -238,20 +251,20 @@ function CommunityContent() {
                     </div>
                   </>
                 ) : (
-                  <>
-                    {/* USERNAME */}
+          
+          <>
                     {!msg.is_own && (
                       <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
                         {msg.author}
                       </p>
                     )}
 
-                    {/* MESSAGE TEXT */}
+
                     <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                       {msg.message}
                     </p>
 
-                    {/* OWN MESSAGE ACTIONS */}
+
                     {msg.is_own && (
                       <div className="flex gap-4 mt-3">
                         <button
@@ -270,7 +283,7 @@ function CommunityContent() {
                       </div>
                     )}
 
-                    {/* TIMESTAMP */}
+
                     <p className="font-body text-[11px] text-[#7A3F45] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
                       {formatTime(msg.created_at)}
                     </p>
@@ -320,15 +333,16 @@ function CommunityContent() {
                        uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
                        disabled:opacity-40"
             >
-              {isSubmitting ? '...' : 'Send'}
+              {isSubmitting ? "..." : "Send"}
             </button>
           </form>
         </div>
       </section>
 
       {/* STYLES */}
+
       <style>{`
-        /* HIDE SCROLLBAR */
+
         .chat-scroll::-webkit-scrollbar {
           width: 0px;
           background: transparent;
