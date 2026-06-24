@@ -117,10 +117,10 @@ export function moderateContent(content: string): ModerationResult {
     };
   }
 
-  // 🚫 5. BLOCK personal data
+  // 🚫 5. BLOCK personal data (FIXED — strict email regex)
   const personalDataPatterns = [
     /\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b/, // phone numbers
-    /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}\b/i, // emails
+    /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/, // strict email (FIXED)
     /\b\d{1,5}\s[A-Za-z]+\s(?:street|st|road|rd|avenue|ave|boulevard|blvd)\b/i, // addresses
   ];
 
