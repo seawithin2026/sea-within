@@ -36,6 +36,16 @@ export default function SignInModal({ isOpen, onClose }) {
               Sign In
             </Link>
 
+            {/* FORGOT PASSWORD BUTTON — ADDED FIX */}
+            <button
+              onClick={() => {
+                window.location.href = "/forgot-password";
+              }}
+              className="mt-4 text-white/50 hover:text-golden-400 text-[11px] tracking-[2px] transition-colors"
+            >
+              Forgot your password
+            </button>
+
             <button
               onClick={onClose}
               className="mt-6 text-white/40 hover:text-white/60 text-xs tracking-[2px]"
