@@ -8,16 +8,28 @@ export default function SignUpPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [confirmEmail, setConfirmEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
 
-    // 1. Create user via your admin API
+    // ⭐ 1. FRONTEND VALIDATION — DOUBLE EMAIL CHECK
+    if (!email || !confirmEmail || !password || !fullName) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    if (email.trim().toLowerCase() !== confirmEmail.trim().toLowerCase()) {
+      setError('Emails do not match.');
+      return;
+    }
+
+    // 2. Create user via your admin API
     const res = await fetch('/api/auth/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,7 +43,7 @@ export default function SignUpPage() {
       return;
     }
 
-    // ⭐ 2. SIGN THE USER IN (required)
+    // ⭐ 3. SIGN THE USER IN
     const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -42,7 +54,7 @@ export default function SignUpPage() {
       return;
     }
 
-    // ⭐ 3. UPDATE PROFILE (make them a member + set country)
+    // ⭐ 4. UPDATE PROFILE (make them a member + set country)
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -52,12 +64,12 @@ export default function SignUpPage() {
         .from('profiles')
         .update({
           is_member: true,
-          country: 'Canada', // or auto-detect later
+          country: 'Canada',
         })
         .eq('id', user.id);
     }
 
-    // 4. Redirect to username creation
+    // 5. Redirect to username creation
     router.push('/create-username');
   };
 
@@ -83,6 +95,14 @@ export default function SignUpPage() {
             className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="email"
+            placeholder="Confirm Email"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
           />
 
           <input
