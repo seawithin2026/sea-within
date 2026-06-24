@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { createClient } from "@/lib/supabase/client";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -133,7 +133,7 @@ function BloomContent() {
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — SUPABASE + LOCAL STORAGE
+     🌙 DAILY LOCKOUT — FIXED VERSION
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -155,6 +155,7 @@ function BloomContent() {
           ? localStorage.getItem("todayGestureIndex")
           : null;
 
+      // If already bloomed today → go to sanctuary
       if (storedDate === todayKey && storedBloom && storedGesture) {
         if (!isMounted) return;
         setBloomIndex(parseInt(storedBloom));
@@ -163,115 +164,100 @@ function BloomContent() {
         return;
       }
 
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+      // Load user session
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-        if (!user) {
-          const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
-          const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+      // ⭐ FIX: Wait for Supabase to finish loading session
+      if (user === undefined) return;
 
-          if (!isMounted) return;
+      // ⭐ Guest logic (only when truly logged out)
+      if (user === null) {
+        const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+        const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
-          if (typeof window !== "undefined") {
-            localStorage.setItem("todayBloomIndex", b.toString());
-            localStorage.setItem("todayGestureIndex", g.toString());
-            localStorage.setItem("lastBloomDate", todayKey);
-          }
+        if (!isMounted) return;
+
+        localStorage.setItem("todayBloomIndex", b.toString());
+        localStorage.setItem("todayGestureIndex", g.toString());
+        localStorage.setItem("lastBloomDate", todayKey);
+
+        setGestureIndex(g);
+        setBloomIndex(b);
+        setMode("intro");
+        return;
+      }
+
+      // Authenticated user
+      if (!isMounted) return;
+      setUserId(user.id);
+
+      const { data, error } = await supabase
+        .from("bloom_progress")
+        .select("last_completed")
+        .eq("user_id", user.id)
+        .single();
+
+      let lastCompleted: string | null = null;
+
+      if (!error && data?.last_completed) {
+        lastCompleted = new Date(data.last_completed)
+          .toISOString()
+          .split("T")[0];
+      }
+
+      // Already bloomed today
+      if (lastCompleted === todayKey) {
+        if (!isMounted) return;
+
+        if (storedBloom && storedGesture) {
+          setBloomIndex(parseInt(storedBloom));
+          setGestureIndex(parseInt(storedGesture));
+        } else {
+          const existingGestureRaw =
+            typeof window !== "undefined"
+              ? localStorage.getItem("gestureIndex")
+              : null;
+          const existingBloomRaw =
+            typeof window !== "undefined"
+              ? localStorage.getItem("bloomIndex")
+              : null;
+
+          const g =
+            existingGestureRaw !== null
+              ? parseInt(existingGestureRaw)
+              : getNextSequentialIndex(GESTURES.length, "gestureIndex");
+          const b =
+            existingBloomRaw !== null
+              ? parseInt(existingBloomRaw)
+              : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+          localStorage.setItem("todayBloomIndex", b.toString());
+          localStorage.setItem("todayGestureIndex", g.toString());
+          localStorage.setItem("lastBloomDate", todayKey);
 
           setGestureIndex(g);
           setBloomIndex(b);
-          setMode("intro");
-          return;
         }
 
-        if (!isMounted) return;
-        setUserId(user.id);
-
-        const { data, error } = await supabase
-          .from("bloom_progress")
-          .select("last_completed")
-          .eq("user_id", user.id)
-          .single();
-
-        let lastCompleted: string | null = null;
-
-        if (!error && data?.last_completed) {
-          lastCompleted = new Date(data.last_completed)
-            .toISOString()
-            .split("T")[0];
-        }
-
-        if (lastCompleted === todayKey) {
-          if (!isMounted) return;
-
-          if (storedBloom && storedGesture) {
-            setBloomIndex(parseInt(storedBloom));
-            setGestureIndex(parseInt(storedGesture));
-          } else {
-            const existingGestureRaw =
-              typeof window !== "undefined"
-                ? localStorage.getItem("gestureIndex")
-                : null;
-            const existingBloomRaw =
-              typeof window !== "undefined"
-                ? localStorage.getItem("bloomIndex")
-                : null;
-
-            const g =
-              existingGestureRaw !== null
-                ? parseInt(existingGestureRaw)
-                : getNextSequentialIndex(GESTURES.length, "gestureIndex");
-            const b =
-              existingBloomRaw !== null
-                ? parseInt(existingBloomRaw)
-                : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
-
-            if (typeof window !== "undefined") {
-              localStorage.setItem("todayBloomIndex", b.toString());
-              localStorage.setItem("todayGestureIndex", g.toString());
-              localStorage.setItem("lastBloomDate", todayKey);
-            }
-
-            setGestureIndex(g);
-            setBloomIndex(b);
-          }
-
-          setMode("sanctuary");
-          return;
-        }
-
-        const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
-        const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
-
-        if (!isMounted) return;
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("todayBloomIndex", b.toString());
-          localStorage.setItem("todayGestureIndex", g.toString());
-          localStorage.setItem("lastBloomDate", todayKey);
-        }
-
-        setGestureIndex(g);
-        setBloomIndex(b);
-        setMode("intro");
-      } catch {
-        const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
-        const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
-
-        if (!isMounted) return;
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("todayBloomIndex", b.toString());
-          localStorage.setItem("todayGestureIndex", g.toString());
-          localStorage.setItem("lastBloomDate", todayKey);
-        }
-
-        setGestureIndex(g);
-        setBloomIndex(b);
-        setMode("intro");
+        setMode("sanctuary");
+        return;
       }
+
+      // New bloom for today
+      const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
+      const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+
+      if (!isMounted) return;
+
+      localStorage.setItem("todayBloomIndex", b.toString());
+      localStorage.setItem("todayGestureIndex", g.toString());
+      localStorage.setItem("lastBloomDate", todayKey);
+
+      setGestureIndex(g);
+      setBloomIndex(b);
+      setMode("intro");
     };
 
     init();
@@ -294,7 +280,7 @@ function BloomContent() {
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
-  
+
   /* -----------------------------------------------------
      🌸 DEV SHORTCUTS — PRESERVED
   ----------------------------------------------------- */
@@ -377,7 +363,7 @@ function BloomContent() {
   /* -----------------------------------------------------
      🌸 RENDER — CINEMATIC FLOW
   ----------------------------------------------------- */
-  
+ 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
@@ -458,7 +444,7 @@ function BloomContent() {
                     (vid as HTMLVideoElement).play();
                   }
                 }}
-                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
+                       className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
               >
                 Replay
               </button>
