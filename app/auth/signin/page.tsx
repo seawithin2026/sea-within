@@ -105,6 +105,15 @@ export default function SignInPage() {
           >
             Enter Sanctuary
           </button>
+
+          {/* ⭐ Forgot Password placed directly under the button */}
+          <button
+            type="button"
+            onClick={() => router.push('/forgot-password')}
+            className="mt-3 text-white/50 hover:text-golden-400 text-[11px] tracking-[2px] transition-colors text-center"
+          >
+            Forgot your password?
+          </button>
         </form>
       </div>
     </div>
