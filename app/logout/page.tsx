@@ -13,7 +13,7 @@ export default function LogoutPage() {
 
     // Redirect after cinematic moment
     const timer = setTimeout(() => {
-      window.location.href = '/login';
+      window.location.href = '/';
     }, 1800); // 1.8 seconds
 
     return () => clearTimeout(timer);
