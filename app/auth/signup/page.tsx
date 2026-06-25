@@ -113,6 +113,35 @@ export default function SignUpPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {/* ⭐ TERMS + PRIVACY CHECKBOX */}
+          <div className="flex items-start space-x-3 mt-2">
+            <input
+              type="checkbox"
+              required
+              id="terms"
+              className="mt-1 h-4 w-4 rounded border-white/30 bg-transparent text-golden-400 focus:ring-golden-400"
+            />
+            <label
+              htmlFor="terms"
+              className="text-white/60 text-xs leading-relaxed"
+            >
+              By creating an account, you agree to our{' '}
+              <a
+                href="/terms"
+                className="text-golden-400 hover:text-golden-300 underline"
+              >
+                Terms of Service
+              </a>{' '}
+              and{' '}
+              <a
+                href="/privacy"
+                className="text-golden-400 hover:text-golden-300 underline"
+              >
+                Privacy Policy
+              </a>.
+            </label>
+          </div>
+
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
           <button
