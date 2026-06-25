@@ -32,7 +32,8 @@ export default function ProfilePage() {
       } = await supabase.auth.getUser();
 
       if (!authUser) {
-        window.location.href = '/login';
+        window.location.href = '/auth/signin';
+
         return;
       }
 
