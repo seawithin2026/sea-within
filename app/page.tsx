@@ -43,25 +43,18 @@ export default function HomePage() {
 
   return (
     <main className="relative">
-
-      {/* BACKGROUND AUDIO */}
-      <audio id="seaAudio" muted loop playsInline>
-        <source src="/audio/warm-memory.mp3" type="audio/mpeg" />
-      </audio>
-
-      <Navigation />
+      
 
       {/* =============================================
           SECTION 1 — OCEAN SURFACE
       ============================================= */}
-     <CinematicSection
-  id="surface"
-  videoSrc="/videos/ocean-surface.mp4"
-  overlayOpacity={0.18}
-  className="flex items-center justify-center"
->
-  <div className="flex flex-col items-center justify-center text-center px-6">
-
+      <CinematicSection
+        id="surface"
+        videoSrc="/videos/ocean-surface.mp4"
+        overlayOpacity={0.18}
+        className="flex items-center justify-center"
+      >
+        <div className="flex flex-col items-center justify-center text-center px-6">
           <ScrollReveal delay={1000} duration={2000}>
             <div className="animate-[breathPulse_10s_ease-in-out_infinite]">
               <BreathingCircle size={100} />
@@ -80,10 +73,10 @@ export default function HomePage() {
           SECTION 2 — THE DESCENT
       ============================================= */}
       <CinematicSection
-  id="descent"
-  videoSrc="/videos/the-descent.mp4"
-  overlayOpacity={0.18}
-  className="flex items-center justify-center"
+        id="descent"
+        videoSrc="/videos/the-descent.mp4"
+        overlayOpacity={0.18}
+        className="flex items-center justify-center"
       >
         <div className="text-center px-6 max-w-4xl">
           <ScrollReveal delay={200}>
@@ -111,7 +104,7 @@ export default function HomePage() {
       {/* =============================================
           SECTION 3 — ELEMENTAL JOURNEY
       ============================================= */}
-
+     
       <ElementSection
         element="earth"
         videoSrc="/videos/element-earth.mp4"
@@ -223,7 +216,7 @@ export default function HomePage() {
             </h2>
           </ScrollReveal>
 
-          {/* BUTTON → REVEAL PAGE */}
+      
           <ScrollReveal delay={1000}>
             <div className="mt-12">
               <a
@@ -240,13 +233,12 @@ export default function HomePage() {
       {/* =============================================
           SECTION 7 — THE INVITATION
       ============================================= */}
-     <CinematicSection
-  id="invitation"
-  videoSrc="/videos/the-invitation.mp4"
-  overlayOpacity={0.55}
-  className="!h-auto !min-h-screen !overflow-visible"
->
-
+      <CinematicSection
+        id="invitation"
+        videoSrc="/videos/the-invitation.mp4"
+        overlayOpacity={0.55}
+        className="!h-auto !min-h-screen !overflow-visible"
+      >
         <div className="text-center px-6 max-w-3xl">
 
           <ScrollReveal delay={200}>
@@ -298,7 +290,7 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-          {/* BUTTON → REVEAL PAGE */}
+   
           <ScrollReveal delay={2000}>
             <div className="mt-16">
               <a
@@ -313,10 +305,12 @@ export default function HomePage() {
       </CinematicSection>
 
       {/* =============================================
-          FOOTER
+          FOOTER — UPDATED WITH LEGAL LINKS
       ============================================= */}
       <footer className="relative bg-sanctuary-dark border-t border-white/5 py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
+
+          {/* Brand */}
           <p className="font-display text-xl tracking-[4px] text-golden-400/60">
             SEA WITHIN
           </p>
@@ -324,41 +318,45 @@ export default function HomePage() {
             come home to yourself
           </p>
 
-          <div className="flex justify-center gap-8 mt-10">
-            <a
-              href="/sanctuary"
-              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
-            >
+          {/* Navigation */}
+          <div className="flex justify-center flex-wrap gap-8 mt-10">
+            <a href="/sanctuary" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Sanctuary
             </a>
- <a
-              href="/bloom"
-              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
-            >
+            <a href="/bloom" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Bloom
             </a>
-            <a
-              href="/wisdom-board"
-              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
-            >
+            <a href="/wisdom-board" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Wisdom Board
             </a>
-
-            <a
-              href="/community"
-              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
-            >
+            <a href="/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Community
             </a>
-
-            <a
-              href="/reveal"
-              className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
-            >
+            <a href="/join" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Join
             </a>
           </div>
 
+          {/* Legal */}
+          <div className="flex justify-center flex-wrap gap-8 mt-10">
+            <a href="/privacy" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
+              Terms of Service
+            </a>
+            <a href="/refund" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
+              Refund Policy
+            </a>
+            <a href="/guidelines" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
+              Community Guidelines
+            </a>
+            <a href="/accessibility" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
+              Accessibility
+            </a>
+          </div>
+
+          {/* Copyright */}
           <p className="font-body text-[11px] text-white/15 mt-12">
             &copy; {new Date().getFullYear()} Sea Within. All rights reserved.
           </p>
