@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
               Reset Your Password
             </h1>
             <p className="font-whisper text-xl text-white/50">
-              A gentle step back into your sanctuary.
+              Enter your email to restore access to your sanctuary.
             </p>
           </motion.div>
 
