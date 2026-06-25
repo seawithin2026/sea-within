@@ -4,15 +4,16 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { moderateContent } from '@/lib/moderation';
 
+//
+// ⭐ GET — wisdom, ritual, chat
+//
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const type = searchParams.get('type');
 
   const supabase = createServerSupabaseClient();
 
-  //
-  // ⭐ WISDOM BOARD — includes username
-  //
+  // WISDOM BOARD
   if (type === 'wisdom') {
     const { data, error } = await supabase
       .from('wisdom_posts')
@@ -37,12 +38,10 @@ export async function GET(req: Request) {
     return NextResponse.json({ posts });
   }
 
-  //
-  // ⭐ BLOOMING RITUAL
-  //
+  // BLOOMING RITUAL
   if (type === 'ritual') {
     const { data, error } = await supabase
-      .from('ritual_entries') // ← your new table name
+      .from('ritual_entries')
       .select(`
         id,
         content,
@@ -64,9 +63,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ posts });
   }
 
-  //
-  // ⭐ COMMUNITY CIRCLE CHAT — includes username
-  //
+  // COMMUNITY CHAT
   if (type === 'chat') {
     const { data: auth } = await supabase.auth.getUser();
 
@@ -98,7 +95,7 @@ export async function GET(req: Request) {
 }
 
 //
-// ⭐ POST — now supports wisdom, ritual, chat
+// ⭐ POST — wisdom, ritual, chat
 //
 export async function POST(req: Request) {
   const body = await req.json();
@@ -111,6 +108,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
+  // Moderation
   const moderation = moderateContent(content);
   if (!moderation.approved) {
     return NextResponse.json(
@@ -124,15 +122,17 @@ export async function POST(req: Request) {
     );
   }
 
-  let table = '';
+  // Base payload — ONLY user_id for all tables
   let payload: any = {
     user_id: auth.user.id,
-    is_approved: true,
+    content,
   };
 
+  let table = '';
+
   if (type === 'wisdom') {
-    table = 'wisdom_posts';
-    payload.content = content;
+ 
+   table = 'wisdom_posts';
 
     // Dual-write to affirmation pool
     await supabase.from("affirmation_pool").insert({
@@ -142,13 +142,12 @@ export async function POST(req: Request) {
   }
 
   if (type === 'ritual') {
-    table = 'ritual_entries'; // ← new table
-    payload.content = content;
+    table = 'ritual_entries';
   }
 
   if (type === 'chat') {
     table = 'chat_messages';
-    payload.content = content;
+    // ❗ DO NOT add is_approved here — chat_messages does NOT have that column
   }
 
   if (!table) {
@@ -172,7 +171,7 @@ export async function POST(req: Request) {
 }
 
 //
-// ⭐ PUT — supports wisdom + ritual
+// ⭐ PUT — wisdom + ritual
 //
 export async function PUT(req: Request) {
   const body = await req.json();
@@ -212,7 +211,7 @@ export async function PUT(req: Request) {
 }
 
 //
-// ⭐ DELETE — supports wisdom + ritual
+// ⭐ DELETE — wisdom + ritual
 //
 export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
