@@ -1,122 +1,59 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Navigation from '@/components/layout/Navigation';
-import Footer from '@/components/layout/Footer';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ForgotPasswordPage() {
+  const supabase = createClient();
   const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleReset = async (e: React.FormEvent) => {
+  
+  const handleReset = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setMessage('');
 
-    try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
 
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-        email,
-        {
-          redirectTo: `${window.location.origin}/reset-password`,
-        }
-      );
-
-      if (resetError) {
-        setError('Unable to send reset email. Please try again.');
-      } else {
-        setSent(true);
-      }
-    } catch {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+    if (error) {
+      setError(error.message);
+      return;
     }
+
+    setMessage('A reset link has been sent to your email.');
   };
 
   return (
-    <div className="min-h-screen bg-sea-deep">
-      <Navigation />
+    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
+        <h1 className="text-golden-400 font-display text-xl tracking-[3px] mb-6 text-center">
+          Forgot Password
+        </h1>
 
-      <section className="pt-32 pb-32 px-6">
-        <div className="max-w-md mx-auto">
-          {/* HEADER */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="text-center mb-12"
+        <form onSubmit={handleReset} className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {message && <p className="text-green-400 text-sm text-center">{message}</p>}
+
+          <button
+            type="submit"
+            className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
           >
-            <h1 className="font-display text-4xl text-white mb-4">
-              Reset Your Password
-            </h1>
-            <p className="font-whisper text-xl text-white/50">
-              Enter your email to restore access to your sanctuary.
-            </p>
-          </motion.div>
-
-          {/* CARD */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="card-sanctuary"
-          >
-            {/* SUCCESS STATE */}
-            {sent ? (
-              <div className="text-center py-10">
-                <p className="text-sea-glow text-lg mb-4">
-                  Check your email
-                </p>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  A link to reset your password has been sent to{' '}
-                  <span className="text-white">{email}</span>.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleReset} className="space-y-6">
-                {/* ERROR */}
-                {error && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-                    <p className="text-red-400 text-sm font-body">{error}</p>
-                  </div>
-                )}
-
-                {/* EMAIL FIELD */}
-                <div>
-                  <label className="block font-body text-white/60 text-sm mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input-sanctuary"
-                    placeholder="you@example.com"
-                  />
-                </div>
-
-                {/* SUBMIT */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-sanctuary-gold w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Sending...' : 'Send Reset Link'}
-                </button>
-              </form>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
+            Send Reset Link
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

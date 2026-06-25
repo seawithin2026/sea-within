@@ -1,147 +1,57 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import Navigation from '@/components/layout/Navigation';
-import Footer from '@/components/layout/Footer';
+import { createClient } from '@/lib/supabase/client';
 
 export default function ResetPasswordPage() {
+  const supabase = createClient();
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const handleReset = async (e: React.FormEvent) => {
+  
+  const handleUpdate = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setMessage('');
 
-    if (password !== confirm) {
-      setError('Passwords do not match.');
-      setLoading(false);
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      setError(error.message);
       return;
     }
 
-    try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
-
-      const { error: updateError } = await supabase.auth.updateUser({
-        password,
-      });
-
-      if (updateError) {
-        setError('Unable to reset password. Please try again.');
-      } else {
-        setSuccess(true);
-      }
-    } catch {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    setMessage('Your password has been updated.');
   };
 
   return (
-    <div className="min-h-screen bg-sea-deep">
-      <Navigation />
+    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
+        <h1 className="text-golden-400 font-display text-xl tracking-[3px] mb-6 text-center">
+          Reset Password
+        </h1>
 
-      <section className="pt-32 pb-32 px-6">
-        <div className="max-w-md mx-auto">
-          {/* HEADER */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="text-center mb-12"
+        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+          <input
+            type="password"
+            placeholder="New Password"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {message && <p className="text-green-400 text-sm text-center">{message}</p>}
+
+          <button
+            type="submit"
+            className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
           >
-            <h1 className="font-display text-4xl text-white mb-4">
-              Create a New Password
-            </h1>
-            <p className="font-whisper text-xl text-white/50">
-              A fresh key to your sanctuary.
-            </p>
-          </motion.div>
-
-          {/* CARD */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="card-sanctuary"
-          >
-            {/* SUCCESS STATE */}
-            {success ? (
-              <div className="text-center py-10">
-                <p className="text-sea-glow text-lg mb-4">
-                  Your password has been reset
-                </p>
-                <p className="text-white/60 text-sm leading-relaxed mb-6">
-                  You may now return to your sanctuary.
-                </p>
-
-                <a
-                  href="/login"
-                  className="btn-sanctuary-gold inline-block px-10 py-3"
-                >
-                  Sign In
-                </a>
-              </div>
-            ) : (
-              <form onSubmit={handleReset} className="space-y-6">
-                {/* ERROR */}
-                {error && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-                    <p className="text-red-400 text-sm font-body">{error}</p>
-                  </div>
-                )}
-
-                {/* NEW PASSWORD */}
-                <div>
-                  <label className="block font-body text-white/60 text-sm mb-2">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-sanctuary"
-                    placeholder="Enter new password"
-                  />
-                </div>
-
-                {/* CONFIRM PASSWORD */}
-                <div>
-                  <label className="block font-body text-white/60 text-sm mb-2">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
-                    className="input-sanctuary"
-                    placeholder="Confirm new password"
-                  />
-                </div>
-
-                {/* SUBMIT */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="btn-sanctuary-gold w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Updating...' : 'Reset Password'}
-                </button>
-              </form>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
+            Update Password
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
