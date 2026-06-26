@@ -11,10 +11,10 @@ export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
 
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [password, setPassword] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   // STEP 1 — exchange the code for a session
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
   }, [code, supabase]);
 
   // STEP 2 — update password
-  const handleUpdate = async (e) => {
+  const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setMessage('');
