@@ -1,15 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const code = searchParams.get('code');
+
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  
+  // STEP 1 — exchange the code for a session
+  useEffect(() => {
+    async function exchange() {
+      if (!code) {
+        setError('Invalid or missing reset code.');
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+      if (error) {
+        setError(error.message);
+      }
+
+      setLoading(false);
+    }
+
+    exchange();
+  }, [code, supabase]);
+
+  // STEP 2 — update password
   const handleUpdate = async (e) => {
     e.preventDefault();
     setError('');
@@ -24,6 +50,14 @@ export default function ResetPasswordPage() {
 
     setMessage('Your password has been updated.');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Verifying reset link...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
