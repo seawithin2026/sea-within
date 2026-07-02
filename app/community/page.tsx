@@ -10,8 +10,7 @@ interface ChatMsg {
   id: string;
   message: string;
   author: string;
-  country: string; // ⭐ ADDED
-  user_id: string;
+ user_id: string;
   created_at: string;
   is_own?: boolean;
 }
@@ -117,8 +116,8 @@ function CommunityContent() {
         return;
       }
 
-      setNewMessage("");
-   
+  
+    setNewMessage("");
     } catch {
       setFeedback("Something went wrong. Please try again.");
     } finally {
@@ -154,8 +153,8 @@ function CommunityContent() {
     if (!confirm("Delete this message?")) return;
 
     await fetch(`/api/messages?id=${id}&type=chat`, {
-      method: "DELETE",
-
+ 
+     method: "DELETE",
     });
   };
 
@@ -243,15 +242,13 @@ function CommunityContent() {
                   <>
                     {!msg.is_own && (
                       <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                        {msg.author} — {msg.country}
+                        {msg.author}
                       </p>
-    
-    )}
+                    )}
 
                     <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                       {msg.message}
-      
-                  </p>
+                    </p>
 
                     {msg.is_own && (
                       <div className="flex gap-4 mt-3">
@@ -268,9 +265,9 @@ function CommunityContent() {
                         >
                           Delete
                         </button>
-                      </div>
-                    )}
-    
+   
+                     </div>
+     )}
                   </>
                 )}
               </div>
@@ -324,10 +321,9 @@ function CommunityContent() {
       </section>
 
       {/* STYLES */}
-   
+    
       <style>{`
-   
-   .chat-scroll::-webkit-scrollbar {
+        .chat-scroll::-webkit-scrollbar {
           width: 0px;
           background: transparent;
         }
