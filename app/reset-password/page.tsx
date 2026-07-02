@@ -1,4 +1,5 @@
 "use client";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -19,7 +20,7 @@ function ResetPasswordPage() {
   const params = useSearchParams();
 
   const [email, setEmail] = useState("");
-
+ 
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,9 +36,7 @@ function ResetPasswordPage() {
     setFeedback("");
     setIsSubmitting(true);
 
-    const { data, error } = await supabase.auth.updateUser({
-      email,
-  
+    const { error } = await supabase.auth.updateUser({
       password,
     });
 
