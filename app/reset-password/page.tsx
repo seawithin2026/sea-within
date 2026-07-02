@@ -1,105 +1,100 @@
 "use client";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-import { useState, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function ResetPasswordPage() {
+export default function Page() {
+  return (
+    <Suspense>
+      <ResetPasswordPage />
+    </Suspense>
+  );
+}
+
+function ResetPasswordPage() {
   const supabase = createClient();
   const params = useSearchParams();
 
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ Prefill email from redirect
+  // Load email from URL
   useEffect(() => {
-    const emailParam = params.get("email");
-    if (emailParam) setEmail(emailParam);
+    const e = params.get("email");
+    if (e) setEmail(e);
   }, [params]);
 
-  const handleSubmit = async (e) => {
+  const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
+    setIsSubmitting(true);
 
-    // ⭐ Verify OTP code
-    const { error: otpError } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.updateUser({
       email,
-      token: code,
-      type: "recovery",
-    });
-
-    if (otpError) {
-      setFeedback("Invalid or expired code. Please try again.");
-      return;
-    }
-
-    // ⭐ Update password
-    const { error: pwError } = await supabase.auth.updateUser({
+  
       password,
     });
 
-    if (pwError) {
-      setFeedback("Could not update password. Try again.");
+    if (error) {
+      setFeedback("Something went wrong. Please try again.");
+      setIsSubmitting(false);
       return;
     }
 
-    setFeedback("Your password has been reset successfully.");
+    setFeedback("Your password has been updated. You may now sign in.");
+    setIsSubmitting(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
-      <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
-        <h1 className="text-golden-400 font-display text-xl tracking-[3px] mb-4 text-center">
+    <main className="min-h-screen flex items-center justify-center px-6 py-20 bg-transparent">
+      <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
+        <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
           Reset Password
         </h1>
 
-        <p className="text-center text-sm text-[#3A8C8C] mb-6">
-          A reset code has been sent to your email.  
-          Enter it below to continue.
-        </p>
+        <form onSubmit={handleReset} className="space-y-5">
+          <div>
+            <label className="block text-sm text-[#E8D7B8] mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              readOnly
+              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
+            />
+          </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Reset code"
-            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="New password"
-            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div>
+            <label className="block text-sm text-[#E8D7B8] mb-2">
+              New Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your new password"
+              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
+            />
+          </div>
 
           {feedback && (
-            <p className="text-center text-golden-300 text-sm">{feedback}</p>
+            <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
           <button
             type="submit"
-            className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
+            disabled={isSubmitting || !password.trim()}
+            className="w-full bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark rounded-lg py-3 font-body text-sm tracking-[2px] uppercase disabled:opacity-40"
           >
-            Reset Password
+            {isSubmitting ? "..." : "Update Password"}
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }
