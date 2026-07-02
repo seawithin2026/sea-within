@@ -63,7 +63,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ posts });
   }
 
-  // ⭐ COMMUNITY CHAT — FIXED
+  // ⭐ COMMUNITY CHAT — username only
   if (type === 'chat') {
     const { data: auth } = await supabase.auth.getUser();
 
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Base payload — ONLY user_id for all tables
+  // Base payload — ONLY user_id + content
   let payload: any = {
     user_id: auth.user.id,
     content,
