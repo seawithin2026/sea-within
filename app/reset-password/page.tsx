@@ -1,35 +1,25 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function Page() {
-  return (
-    <Suspense>
-      <ResetPasswordPage />
-    </Suspense>
-  );
-}
-
-function ResetPasswordPage() {
+export default function ResetPasswordPage() {
   const supabase = createClient();
-  const params = useSearchParams();
-
+  
   const [email, setEmail] = useState("");
  
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load email from URL
+  // Read email from URL on client only
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
     const e = params.get("email");
     if (e) setEmail(e);
-  }, [params]);
+  }, []);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
