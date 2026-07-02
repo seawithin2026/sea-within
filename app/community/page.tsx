@@ -10,6 +10,7 @@ interface ChatMsg {
   id: string;
   message: string;
   author: string;
+  country: string; // ⭐ ADDED
   user_id: string;
   created_at: string;
   is_own?: boolean;
@@ -44,7 +45,7 @@ function CommunityContent() {
     });
   }, []);
 
-  /* FETCH MESSAGES ONCE */
+  /* FETCH MESSAGES */
   const fetchMessages = async () => {
     try {
       const res = await fetch("/api/messages?type=chat");
@@ -62,7 +63,7 @@ function CommunityContent() {
     }
   };
 
-  /* INITIAL FETCH + REALTIME SUBSCRIPTION */
+  /* REALTIME */
   useEffect(() => {
     if (!user) return;
 
@@ -82,12 +83,12 @@ function CommunityContent() {
     };
   }, [user]);
 
-  /* SCROLL ON NEW MESSAGES */
+  /* SCROLL */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* SEND MESSAGE */
+  /* SEND */
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -117,7 +118,7 @@ function CommunityContent() {
       }
 
       setNewMessage("");
- 
+   
     } catch {
       setFeedback("Something went wrong. Please try again.");
     } finally {
@@ -125,7 +126,7 @@ function CommunityContent() {
     }
   };
 
-  /* EDITING */
+  /* EDIT */
   const startEditing = (msg: ChatMsg) => {
     setEditingId(msg.id);
     setEditingContent(msg.message);
@@ -145,8 +146,7 @@ function CommunityContent() {
     });
 
     setEditingId(null);
- 
-   setEditingContent("");
+    setEditingContent("");
   };
 
   /* DELETE */
@@ -155,17 +155,7 @@ function CommunityContent() {
 
     await fetch(`/api/messages?id=${id}&type=chat`, {
       method: "DELETE",
- 
-   });
-  };
 
-  /* TIME FORMAT */
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString("en-CA", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
     });
   };
 
@@ -202,8 +192,7 @@ function CommunityContent() {
 
       {/* CHAT */}
       <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
-     
-       <div className="space-y-4 pb-24">
+        <div className="space-y-4 pb-24">
           {messages.length === 0 && (
             <div className="text-center py-20">
               <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
@@ -251,19 +240,18 @@ function CommunityContent() {
                     </div>
                   </>
                 ) : (
-          
-          <>
+                  <>
                     {!msg.is_own && (
                       <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                        {msg.author}
+                        {msg.author} — {msg.country}
                       </p>
-                    )}
-
+    
+    )}
 
                     <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                       {msg.message}
-                    </p>
-
+      
+                  </p>
 
                     {msg.is_own && (
                       <div className="flex gap-4 mt-3">
@@ -282,11 +270,7 @@ function CommunityContent() {
                         </button>
                       </div>
                     )}
-
-
-                    <p className="font-body text-[11px] text-[#7A3F45] drop-shadow-[0_0_5px_rgba(0,0,0,0.55)] mt-2 text-right">
-                      {formatTime(msg.created_at)}
-                    </p>
+    
                   </>
                 )}
               </div>
@@ -340,10 +324,10 @@ function CommunityContent() {
       </section>
 
       {/* STYLES */}
-
+   
       <style>{`
-
-        .chat-scroll::-webkit-scrollbar {
+   
+   .chat-scroll::-webkit-scrollbar {
           width: 0px;
           background: transparent;
         }
