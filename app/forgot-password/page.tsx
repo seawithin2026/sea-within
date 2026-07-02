@@ -2,18 +2,20 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export default function ForgotPasswordPage() {
   const supabase = createClient();
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  
   const [error, setError] = useState('');
 
-  
   const handleReset = async (e) => {
     e.preventDefault();
     setError('');
-    setMessage('');
+
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -24,7 +26,8 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    setMessage('A reset link has been sent to your email.');
+    // ⭐ OPTION C: Redirect immediately to reset page
+    router.push(`/reset-password?email=${encodeURIComponent(email)}`);
   };
 
   return (
@@ -43,14 +46,14 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-          {message && <p className="text-green-400 text-sm text-center">{message}</p>}
+          
+        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
           <button
             type="submit"
             className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
           >
-            Send Reset Link
+            Send Reset Code
           </button>
         </form>
       </div>
