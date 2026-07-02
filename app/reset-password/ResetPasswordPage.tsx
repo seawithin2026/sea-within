@@ -2,65 +2,49 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
-  const searchParams = useSearchParams();
-  const code = searchParams.get('code');
 
-  const [password, setPassword] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
-  const [error, setError] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  // STEP 1 — exchange the code for a session
-  useEffect(() => {
-    async function exchange() {
-      if (!code) {
-        setError('Invalid or missing reset code.');
-        setLoading(false);
-        return;
-      }
-
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-      if (error) {
-        setError(error.message);
-      }
-
-      setLoading(false);
-    }
-
-    exchange();
-  }, [code, supabase]);
-
-  // STEP 2 — update password
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleReset = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
-    const { error } = await supabase.auth.updateUser({ password });
+    // STEP 1 — verify OTP
+    const { error: otpError } = await supabase.auth.verifyOtp({
+      type: 'recovery',
+      token: otp,
+      email: email, // REQUIRED for OTP recovery
+    });
 
-    if (error) {
-      setError(error.message);
+    if (otpError) {
+      setError(otpError.message);
+      return;
+    }
+
+    // STEP 2 — update password
+    const { error: updateError } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (updateError) {
+      setError(updateError.message);
       return;
     }
 
     setMessage('Your password has been updated.');
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Verifying reset link...
-      </div>
-    );
-  }
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A1628] px-6">
       <div className="bg-white/5 border border-white/10 rounded-xl p-10 max-w-sm w-full backdrop-blur-xl">
@@ -68,7 +52,24 @@ export default function ResetPasswordPage() {
           Reset Password
         </h1>
 
-        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+        <form onSubmit={handleReset} className="flex flex-col gap-4">
+
+          <input
+            type="email"
+            placeholder="Email"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Enter the code from your email"
+            className="bg-white/10 text-white px-4 py-3 rounded-md outline-none"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+
           <input
             type="password"
             placeholder="New Password"

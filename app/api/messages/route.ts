@@ -63,7 +63,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ posts });
   }
 
-  // COMMUNITY CHAT
+  // ⭐ COMMUNITY CHAT — FIXED
   if (type === 'chat') {
     const { data: auth } = await supabase.auth.getUser();
 
@@ -131,8 +131,7 @@ export async function POST(req: Request) {
   let table = '';
 
   if (type === 'wisdom') {
- 
-   table = 'wisdom_posts';
+    table = 'wisdom_posts';
 
     // Dual-write to affirmation pool
     await supabase.from("affirmation_pool").insert({
@@ -147,7 +146,7 @@ export async function POST(req: Request) {
 
   if (type === 'chat') {
     table = 'chat_messages';
-    // ❗ DO NOT add is_approved here — chat_messages does NOT have that column
+  
   }
 
   if (!table) {
