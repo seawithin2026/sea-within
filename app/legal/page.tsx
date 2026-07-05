@@ -368,53 +368,55 @@ export default function LegalPage() {
             </p>
           </section>
         </div>
+{/* ========================= */}
+{/*   ACCESSIBILITY STATEMENT */}
+{/* ========================= */}
 
-        {/* ========================= */}
-        {/*   ACCESSIBILITY STATEMENT */}
-        {/* ========================= */}
+<h1 className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
+  Accessibility Statement
+</h1>
 
-        <h1 className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
-          Accessibility Statement
-        <p className="text-xs text-white/40 text-center mb-10">
-          Last updated: June 2026
-        </p>
+<p className="text-xs text-white/40 text-center mb-10">
+  Last updated: June 2026
+</p>
 
-        <div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
+<div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
 
-          {/* ACCESSIBILITY SECTIONS */}
-          <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">1. Commitment</h2>
-            <p>
-              Sea Within is committed to creating a sanctuary that is accessible to as many people
-              as possible. We aim to provide an inclusive, intuitive experience for all users.
-            </p>
-          </section>
+  {/* ACCESSIBILITY SECTIONS */}
+  <section>
+    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">1. Commitment</h2>
+    <p>
+      Sea Within is committed to creating a sanctuary that is accessible to as many people
+      as possible. We aim to provide an inclusive, intuitive experience for all users.
+    </p>
+  </section>
 
-          <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">2. Ongoing Improvements</h2>
-            <p>
-              Accessibility is an ongoing effort. We continue refining design, navigation, and
-              compatibility with assistive technologies.
-            </p>
-          </section>
+  <section>
+    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">2. Ongoing Improvements</h2>
+    <p>
+      Accessibility is an ongoing effort. We continue refining design, navigation, and
+      compatibility with assistive technologies.
+    </p>
+  </section>
 
-          <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">3. Known Limitations</h2>
-            <p>
-              Some areas may not yet fully meet accessibility standards. We are actively improving
-              contrast, keyboard navigation, and screen‑reader support.
-            </p>
-          </section>
+  <section>
+    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">3. Known Limitations</h2>
+    <p>
+      Some areas may not yet fully meet accessibility standards. We are actively improving
+      contrast, keyboard navigation, and screen‑reader support.
+    </p>
+  </section>
 
-          <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">4. Feedback</h2>
-            <p>
-              If you encounter accessibility barriers, contact{' '}
-              <span className="text-golden-300">seawithinyourself@gmail.com</span>. Your feedback
-              helps us improve.
-            </p>
-          </section>
-        </div>
+  <section>
+    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">4. Feedback</h2>
+    <p>
+      If you encounter accessibility barriers, contact{' '}
+      <span className="text-golden-300">seawithinyourself@gmail.com</span>. Your feedback
+      helps us improve.
+    </p>
+  </section>
+</div>
+
       </div>
     </div>
   );
