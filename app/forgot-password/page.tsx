@@ -1,21 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+ import { createClient } from '@/lib/supabase/client';
 
 export default function ForgotPasswordPage() {
-  const supabase = createClient();
-  const router = useRouter();
+   const supabase = createClient();
 
   const [email, setEmail] = useState('');
-  
-  const [error, setError] = useState('');
+   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleReset = async (e) => {
     e.preventDefault();
     setError('');
-
+    setMessage('');
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -26,8 +24,8 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    // ⭐ OPTION C: Redirect immediately to reset page
-    router.push(`/reset-password?email=${encodeURIComponent(email)}`);
+    // ⭐ DO NOT REDIRECT
+    setMessage("Check your email for the reset link.");
   };
 
   return (
@@ -46,8 +44,8 @@ export default function ForgotPasswordPage() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          
-        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {error && <p className="text-red-400 text-sm text-center">{error}</p>}
+          {message && <p className="text-green-400 text-sm text-center">{message}</p>}
 
           <button
             type="submit"
