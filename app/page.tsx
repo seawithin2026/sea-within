@@ -337,24 +337,15 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Legal */}
-          <div className="flex justify-center flex-wrap gap-8 mt-10">
-            <a href="/privacy" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
-              Privacy Policy
-            </a>
-            <a href="/terms" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
-              Terms of Service
-            </a>
-            <a href="/refund" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
-              Refund Policy
-            </a>
-            <a href="/guidelines" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
-              Community Guidelines
-            </a>
-            <a href="/accessibility" className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors">
-              Accessibility
-            </a>
-          </div>
+     {/* Legal */}
+<div className="flex justify-center flex-wrap gap-8 mt-10">
+  <a
+    href="/legal"
+    className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
+  >
+    Legal
+  </a>
+</div>
 
           {/* Copyright */}
           <p className="font-body text-[11px] text-white/15 mt-12">
