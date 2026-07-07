@@ -1,38 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
+  const params = useSearchParams();
 
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
 
+  // ⭐ 1. Capture recovery token from URL and exchange it for a session
+  useEffect(() => {
+    const type = params.get("type");
+    const access_token = params.get("access_token");
+
+    // If no token → no session → show error immediately
+    if (type !== "recovery" || !access_token) {
+      setFeedback("Auth session missing!");
+      return;
+    }
+
+    const exchange = async () => {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(access_token);
+
+      if (error) {
+        setFeedback(error.message || "Invalid or expired reset link.");
+        return;
+      }
+
+      // Session is now active → allow password update
+      setSessionReady(true);
+    };
+
+    exchange();
+  }, [params, supabase]);
+
+  // ⭐ 2. Handle password update
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
     setIsSubmitting(true);
+
+    if (!sessionReady) {
+      setFeedback("Auth session missing!");
+      setIsSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.auth.updateUser({
       password,
     });
 
     if (error) {
-      // Show Supabase's actual error message
+      // Supabase automatically blocks reusing the same password
       setFeedback(error.message || "Something went wrong. Please try again.");
       setIsSubmitting(false);
       return;
     }
 
-    // Success message
+   
     setFeedback("Your password has been updated. Redirecting...");
     setIsSubmitting(false);
 
-    // Redirect after 2 seconds
+   
     setTimeout(() => {
       router.push("/sign-in");
     }, 2000);
@@ -46,7 +81,7 @@ export default function ResetPasswordPage() {
         </h1>
 
         <form onSubmit={handleReset} className="space-y-5">
-       
+        
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
@@ -58,6 +93,11 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
+
+            {/* ⭐ UI reminder */}
+            <p className="text-xs text-[#E8D7B8]/70 mt-1">
+              Your new password must be different from your old one.
+            </p>
           </div>
 
           {feedback && (
@@ -66,7 +106,7 @@ export default function ResetPasswordPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting || !password.trim()}
+            disabled={isSubmitting || !password.trim() || !sessionReady}
             className="w-full bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark rounded-lg py-3 font-body text-sm tracking-[2px] uppercase disabled:opacity-40"
           >
             {isSubmitting ? "..." : "Update Password"}
