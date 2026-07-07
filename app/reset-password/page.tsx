@@ -2,15 +2,16 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
+  const router = useRouter();
 
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
@@ -21,13 +22,20 @@ export default function ResetPasswordPage() {
     });
 
     if (error) {
-      setFeedback("Something went wrong. Please try again.");
+      // Show Supabase's actual error message
+      setFeedback(error.message || "Something went wrong. Please try again.");
       setIsSubmitting(false);
       return;
     }
 
-    setFeedback("Your password has been updated. You may now sign in.");
+    // Success message
+    setFeedback("Your password has been updated. Redirecting...");
     setIsSubmitting(false);
+
+    // Redirect after 2 seconds
+    setTimeout(() => {
+      router.push("/sign-in");
+    }, 2000);
   };
 
   return (
@@ -38,8 +46,7 @@ export default function ResetPasswordPage() {
         </h1>
 
         <form onSubmit={handleReset} className="space-y-5">
-
-
+       
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
