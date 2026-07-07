@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ Token persistence
+  // ⭐ Token persistence (NEVER lose token)
   const [token, setToken] = useState<string | null>(null);
   const [tokenType, setTokenType] = useState<string | null>(null);
 
@@ -25,10 +25,10 @@ export default function ResetPasswordPage() {
     const type = params.get("type");
     const access_token = params.get("access_token");
 
-    // If token already stored, do NOT read URL again
+    // If already stored → do NOT re-read URL
     if (token && tokenType) return;
 
-    // If URL has no token AND none stored → fail immediately
+    // If URL has no token → fail immediately
     if (type !== "recovery" || !access_token) {
       setFeedback("Auth session missing!");
       return;
@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
         return;
       }
 
-  
+      // ⭐ Session is now valid
       setSessionReady(true);
     };
 
@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
     });
 
     if (error) {
-     
+  
       setFeedback(error.message || "Something went wrong. Please try again.");
       setIsSubmitting(false);
       return;
@@ -99,7 +99,7 @@ export default function ResetPasswordPage() {
         </h1>
 
         <form onSubmit={handleReset} className="space-y-5">
-          
+    
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
