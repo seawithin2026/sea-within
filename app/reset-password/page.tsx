@@ -1,94 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
-  const params = useSearchParams();
+
 
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ Token persistence (NEVER lose token)
-  const [token, setToken] = useState<string | null>(null);
-  const [tokenType, setTokenType] = useState<string | null>(null);
-
-  // ⭐ Session state
-  const [sessionReady, setSessionReady] = useState(false);
-
-  // ⭐ Capture token ONCE before hydration wipes URL
-  useEffect(() => {
-    const type = params.get("type");
-    const access_token = params.get("access_token");
-
-    // If already stored → do NOT re-read URL
-    if (token && tokenType) return;
-
-    // If URL has no token → fail immediately
-    if (type !== "recovery" || !access_token) {
-      setFeedback("Auth session missing!");
-      return;
-    }
-
-    // Store token so hydration cannot erase it
-    setToken(access_token);
-    setTokenType(type);
-
-    const exchange = async () => {
-      const { data, error } = await supabase.auth.exchangeCodeForSession(access_token);
-
-      if (error) {
-        setFeedback(error.message || "Invalid or expired reset link.");
-        return;
-      }
-
-      // ⭐ Session is now valid
-      setSessionReady(true);
-    };
-
-    exchange();
-  }, [params, supabase, token, tokenType]);
-
-  // ⭐ Automatic fallback: if token disappears → show error
-  useEffect(() => {
-    if (!sessionReady && !token) {
-      setFeedback("Auth session missing!");
-    }
-  }, [sessionReady, token]);
-
-  // ⭐ Handle password update
+  
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
     setIsSubmitting(true);
 
-    if (!sessionReady) {
-      setFeedback("Auth session missing!");
-      setIsSubmitting(false);
-      return;
-    }
+    
 
     const { error } = await supabase.auth.updateUser({
       password,
     });
 
-    if (error) {
-  
-      setFeedback(error.message || "Something went wrong. Please try again.");
+    // ⭐ If they try to reuse the same old password
+    if (error?.message?.includes("same as the old password")) {
+      setFeedback("You will need to place a password never used before.");
       setIsSubmitting(false);
       return;
     }
 
-    setFeedback("Your password has been updated. Redirecting...");
+    if (error) {
+      setFeedback("Something went wrong. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    setFeedback("Your password has been updated. You may now sign in.");
     setIsSubmitting(false);
 
+    // ⭐ Redirect to sign-in after success
     setTimeout(() => {
       router.push("/sign-in");
-    }, 2000);
+    }, 1500);
   };
 
   return (
@@ -98,8 +54,9 @@ export default function ResetPasswordPage() {
           Reset Password
         </h1>
 
-        <form onSubmit={handleReset} className="space-y-5">
     
+      <form onSubmit={handleReset} className="space-y-5">
+  
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
@@ -110,12 +67,8 @@ export default function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
-            />
-
-
-            <p className="text-xs text-[#E8D7B8]/70 mt-1">
-              Your new password must be different from your old one.
-            </p>
+     
+     />
           </div>
 
           {feedback && (
@@ -124,7 +77,7 @@ export default function ResetPasswordPage() {
 
           <button
             type="submit"
-            disabled={isSubmitting || !password.trim() || !sessionReady}
+            disabled={isSubmitting || !password.trim()}
             className="w-full bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark rounded-lg py-3 font-body text-sm tracking-[2px] uppercase disabled:opacity-40"
           >
             {isSubmitting ? "..." : "Update Password"}
