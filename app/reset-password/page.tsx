@@ -14,22 +14,26 @@ export default function ResetPasswordPage() {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ Exchange Supabase recovery token for a valid session
+  // 1. Exchange recovery token for a valid session
   useEffect(() => {
     const code = searchParams.get("code");
-    if (!code) return;
+    if (!code) {
+      setFeedback("Your reset link is missing its secure code. Please request a new one.");
+      return;
+    }
 
     supabase.auth.exchangeCodeForSession(code).catch(() => {
-      setFeedback("Your reset link has expired. Please request a new one.");
+      setFeedback("Your reset link has expired or is invalid. Please request a new one.");
     });
   }, [searchParams, supabase]);
 
+  // 2. Handle password reset
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
     setIsSubmitting(true);
 
-    // ⭐ Validation — only shown when user messes up
+ 
     if (password.length < 6) {
       setFeedback("Password must be at least 6 characters long.");
       setIsSubmitting(false);
@@ -42,7 +46,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // ⭐ Attempt password update
+  
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
@@ -54,23 +58,23 @@ export default function ResetPasswordPage() {
         msg.includes("old") ||
         msg.includes("reused")
       ) {
-        setFeedback("You must use a password you have never used before.");
+        setFeedback("Choose a password you’ve never used here before.");
       } else {
-        setFeedback("Something went wrong. Please try again.");
+        setFeedback("Something went wrong while updating your password. Please try again.");
       }
 
       setIsSubmitting(false);
       return;
     }
 
-    // ⭐ Success
-    setFeedback("Your password has been updated. Redirecting…");
+    setFeedback("Your password has been updated. Redirecting to sign in…");
 
     setTimeout(() => {
       router.push("/sign-in");
     }, 1500);
   };
 
+  // 3. Sea Within UI
   return (
     <main className="min-h-screen flex items-center justify-center px-6 py-20 bg-transparent">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
@@ -78,9 +82,12 @@ export default function ResetPasswordPage() {
           Reset Password
         </h1>
 
- 
+        <p className="text-xs text-center text-[#E8D7B8]/70 mb-4">
+          Choose a new password to continue your journey within.
+        </p>
+
         <form onSubmit={handleReset} className="space-y-5">
- 
+          {/* Password field */}
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
@@ -92,14 +99,14 @@ export default function ResetPasswordPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your new password"
-                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
+                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] placeholder-[#E8D7B8]/40 focus:outline-none focus:border-[#E8D7B8]/60 transition-all duration-300"
               />
 
-              {/* ⭐ Elegant Sea Within eye icon */}
+              {/* Single, centered eye icon */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-[#E8D7B8]/70"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#E8D7B8]/70 hover:text-[#E8D7B8] transition-colors duration-200"
               >
                 {showPassword ? (
                   // Eye-off (hide)
@@ -142,18 +149,24 @@ export default function ResetPasswordPage() {
                 )}
               </button>
             </div>
+
+            <p className="mt-2 text-xs text-[#E8D7B8]/60">
+              Use at least 6 characters. Avoid reusing old passwords.
+            </p>
           </div>
 
+          {/* Feedback */}
           {feedback && (
             <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting || !password.trim()}
             className="w-full bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark rounded-lg py-3 font-body text-sm tracking-[2px] uppercase disabled:opacity-40"
           >
-            {isSubmitting ? "..." : "Update Password"}
+            {isSubmitting ? "Updating…" : "Update Password"}
           </button>
         </form>
       </div>
