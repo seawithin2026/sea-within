@@ -10,6 +10,7 @@ export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
 
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,7 +33,6 @@ export default function ResetPasswordPage() {
 
     const { error } = await supabase.auth.updateUser({ password });
 
-   
     if (error) {
       setFeedback("Something went wrong. Please try again.");
       setIsSubmitting(false);
@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
     setFeedback("Your password has been updated. You may now sign in.");
     setIsSubmitting(false);
 
-
+    
     setTimeout(() => {
       router.push("/sign-in");
     }, 1500);
@@ -60,14 +60,56 @@ export default function ResetPasswordPage() {
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your new password"
-              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
-            />
-     
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your new password"
+                className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
+              />
+
+              {/* ⭐ Elegant eye toggle */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-[#E8D7B8]/70"
+              >
+                {showPassword ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.02.152-2.005.435-2.94m3.07-3.07A9.958 9.958 0 0112 3c5.523 0 10 4.477 10 10 0 1.02-.152 2.005-.435 2.94M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M3 3l18 18M10.477 10.477A3 3 0 0113.5 13.5m-1.477 1.477A3 3 0 0110.5 10.5m9.5 1.5c0 1.02-.152 2.005-.435 2.94a9.958 9.958 0 01-3.07 3.07M6.005 6.005A9.958 9.958 0 003 12c0 5.523 4.477 10 10 10 1.02 0 2.005-.152 2.94-.435"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+
             <p className="text-xs text-[#E8D7B8]/70 mt-1">
               Minimum password length is 6 characters.
             </p>
