@@ -1,36 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
-
+  const searchParams = useSearchParams();
 
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ⭐ Exchange the reset code for a session
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (!code) return;
+
+    supabase.auth
+      .exchangeCodeForSession(code)
+      .catch(() => {
+        setFeedback("Your reset link has expired. Please request a new one.");
+      });
+  }, [searchParams, supabase]);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
     setIsSubmitting(true);
 
+    const { error } = await supabase.auth.updateUser({ password });
 
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
-
-    // ⭐ Supabase often returns a generic error for reused passwords.
-    //    If password is long enough, assume it's the reused-password case.
+   
     if (error) {
-      if (password.length >= 6) {
-        setFeedback("You will need to place a password never used before.");
-      } else {
-        setFeedback("Minimum password length is 6 characters.");
-      }
+      setFeedback("Something went wrong. Please try again.");
       setIsSubmitting(false);
       return;
     }
@@ -38,7 +42,7 @@ export default function ResetPasswordPage() {
     setFeedback("Your password has been updated. You may now sign in.");
     setIsSubmitting(false);
 
-    // ⭐ Redirect to sign-in after success
+
     setTimeout(() => {
       router.push("/sign-in");
     }, 1500);
@@ -63,8 +67,7 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
-
-            {/* ⭐ Minimum password length */}
+     
             <p className="text-xs text-[#E8D7B8]/70 mt-1">
               Minimum password length is 6 characters.
             </p>
