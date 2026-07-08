@@ -130,8 +130,7 @@ export default function RevealPage() {
           <h2 className="font-display text-3xl font-light mb-4">The Gathering Circle</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
             You walk your inner world alone — but you don&apos;t have to feel alone
-            inside it. The Gathering Circle is a quiet room of similar souls. Not a
-            community platform. Not a chatroom. Not noise. A circle. A place where
+            inside it. The Gathering Circle is a quiet room of similar souls. A place where
             people who feel deeply, move gently, and crave meaning sit together in
             the same soft light. Each person in their own inner journey. Each person
             returning to themselves. Together. A belonging you&apos;ve been craving
@@ -145,8 +144,7 @@ export default function RevealPage() {
           <p className="font-body text-white/60 leading-relaxed mb-14">
             You don&apos;t receive content — you receive experiences. Moments that
             soften you. Rituals that anchor you. Words that open you. Practices that
-            bring you back into your body. Each month, a new descent. A new element.
-            A new doorway into yourself.
+            bring you back into your body. A new doorway into yourself.
           </p>
         </ScrollReveal>
 
