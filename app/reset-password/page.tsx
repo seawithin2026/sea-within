@@ -8,7 +8,7 @@ export default function ResetPasswordPage() {
   const supabase = createClient();
   const router = useRouter();
 
-  
+
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,21 +23,14 @@ export default function ResetPasswordPage() {
       password,
     });
 
-    // ⭐ Universal check for reused password
-    if (
-      error?.message?.includes("different from the old password") ||
-      error?.message?.includes("cannot be reused") ||
-      error?.message?.includes("previously used") ||
-      error?.message?.includes("same as the old password") ||
-      error?.message?.includes("must be different")
-    ) {
-      setFeedback("You will need to place a password never used before.");
-      setIsSubmitting(false);
-      return;
-    }
-
+    // ⭐ Supabase often returns a generic error for reused passwords.
+    //    If password is long enough, assume it's the reused-password case.
     if (error) {
-      setFeedback("Something went wrong. Please try again.");
+      if (password.length >= 6) {
+        setFeedback("You will need to place a password never used before.");
+      } else {
+        setFeedback("Minimum password length is 6 characters.");
+      }
       setIsSubmitting(false);
       return;
     }
@@ -45,7 +38,7 @@ export default function ResetPasswordPage() {
     setFeedback("Your password has been updated. You may now sign in.");
     setIsSubmitting(false);
 
-
+    // ⭐ Redirect to sign-in after success
     setTimeout(() => {
       router.push("/sign-in");
     }, 1500);
