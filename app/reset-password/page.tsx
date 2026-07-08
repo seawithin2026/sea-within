@@ -23,7 +23,7 @@ export default function ResetPasswordPage() {
       password,
     });
 
-    // ⭐ Universal check for reused password (covers all Supabase messages)
+    // ⭐ Universal check for reused password
     if (
       error?.message?.includes("different from the old password") ||
       error?.message?.includes("cannot be reused") ||
@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
     setFeedback("Your password has been updated. You may now sign in.");
     setIsSubmitting(false);
 
-    // ⭐ Redirect to sign-in after success
+
     setTimeout(() => {
       router.push("/sign-in");
     }, 1500);
@@ -70,6 +70,11 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
+
+            {/* ⭐ Minimum password length */}
+            <p className="text-xs text-[#E8D7B8]/70 mt-1">
+              Minimum password length is 6 characters.
+            </p>
           </div>
 
           {feedback && (
