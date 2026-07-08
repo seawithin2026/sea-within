@@ -14,7 +14,7 @@ export default function ResetPasswordPage() {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ Exchange Supabase recovery code for a valid session
+  // ⭐ Exchange Supabase recovery token for a valid session
   useEffect(() => {
     const code = searchParams.get("code");
     if (!code) return;
@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
     setFeedback("");
     setIsSubmitting(true);
 
-    // ⭐ Dynamic validation — ONLY shown when user messes up
+    // ⭐ Validation — only shown when user messes up
     if (password.length < 6) {
       setFeedback("Password must be at least 6 characters long.");
       setIsSubmitting(false);
@@ -78,8 +78,9 @@ export default function ResetPasswordPage() {
           Reset Password
         </h1>
 
+ 
         <form onSubmit={handleReset} className="space-y-5">
-     
+ 
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
@@ -94,43 +95,49 @@ export default function ResetPasswordPage() {
                 className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
               />
 
-              {/* ⭐ Elegant Sea Within eye toggle */}
+              {/* ⭐ Elegant Sea Within eye icon */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-3 text-[#E8D7B8]/70"
               >
                 {showPassword ? (
-                  // Eye-off icon
+                  // Eye-off (hide)
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    strokeWidth="1.5"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M3 3l18 18M10.477 10.477A3 3 0 0113.5 13.5m-1.477 1.477A3 3 0 0110.5 10.5m9.5 1.5c0 1.02-.152 2.005-.435 2.94a9.958 9.958 0 01-3.07 3.07M6.005 6.005A9.958 9.958 0 003 12c0 5.523 4.477 10 10 10 1.02 0 2.005-.152 2.94-.435"
+                      d="M3 3l18 18M2.25 12s3.75-6 9.75-6c2.01 0 3.84.53 5.4 1.39M21.75 12s-3.75 6-9.75 6c-2.01 0-3.84-.53-5.4-1.39"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.88 9.88A3 3 0 0114.12 14.12"
                     />
                   </svg>
                 ) : (
-                  // Eye icon
+                  // Eye (show)
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    strokeWidth="1.5"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.02.152-2.005.435-2.94m3.07-3.07A9.958 9.958 0 0112 3c5.523 0 10 4.477 10 10 0 1.02-.152 2.005-.435 2.94M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      d="M2.25 12s3.75-6 9.75-6 9.75 6 9.75 6-3.75 6-9.75 6-9.75-6-9.75-6z"
                     />
+                    <circle cx="12" cy="12" r="3" />
                   </svg>
                 )}
               </button>
