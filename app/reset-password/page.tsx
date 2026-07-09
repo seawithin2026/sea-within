@@ -1,28 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
-  
-  const [email, setEmail] = useState("");
- 
-  const [password, setPassword] = useState("");
 
+  const [password, setPassword] = useState("");
+  
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Read email from URL on client only
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const params = new URLSearchParams(window.location.search);
-    const e = params.get("email");
-    if (e) setEmail(e);
-  }, []);
-
+  
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
@@ -53,15 +43,7 @@ export default function ResetPasswordPage() {
 
 
         <form onSubmit={handleReset} className="space-y-5">
-          <div>
-            <label className="block text-sm text-[#E8D7B8] mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              readOnly
-              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
-            />
-          </div>
+
 
           <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
@@ -76,12 +58,10 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-      
           {feedback && (
             <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
-       
           <button
             type="submit"
             disabled={isSubmitting || !password.trim()}
