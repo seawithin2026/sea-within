@@ -95,14 +95,24 @@ export default function Navigation() {
                 Sign In
               </button>
             ) : (
-              <button
-                onClick={() => {
-                  window.location.href = '/logout';
-                }}
-                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-              >
-                Sign Out
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    window.location.href = '/logout';
+                  }}
+                  className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+                >
+                  Sign Out
+                </button>
+
+                {/* ACCOUNT BUTTON (added to the RIGHT of Sign Out) */}
+                <Link
+                  href="/account"
+                  className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
+                >
+                  Account
+                </Link>
+              </>
             )}
           </div>
 
@@ -149,15 +159,26 @@ export default function Navigation() {
                     Sign In
                   </button>
                 ) : (
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      window.location.href = '/logout';
-                    }}
-                    className="btn-golden text-[11px] px-6 py-2.5"
-                  >
-                    Sign Out
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = '/logout';
+                      }}
+                      className="btn-golden text-[11px] px-6 py-2.5"
+                    >
+                      Sign Out
+                    </button>
+
+                    {/* ACCOUNT BUTTON (added to the RIGHT of Sign Out) */}
+                    <Link
+                      href="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
+                    >
+                      Account
+                    </Link>
+                  </>
                 )}
               </div>
             </motion.div>

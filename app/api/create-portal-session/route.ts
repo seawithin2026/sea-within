@@ -18,13 +18,11 @@ export async function GET() {
     );
   }
 
-  // Stripe client
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2023-10-16",
-  });
+  // Initialize Stripe (no apiVersion needed)
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
   // Get the Stripe customer ID from user metadata
-  const stripeCustomerId = user.user_metadata.stripe_customer_id;
+  const stripeCustomerId = user.user_metadata?.stripe_customer_id;
 
   if (!stripeCustomerId) {
     return NextResponse.json(
