@@ -24,6 +24,7 @@ export default function ResetPasswordPage() {
     }
 
     const run = async () => {
+      // MUST be awaited — this was the root cause
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -31,7 +32,7 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      // Verify session exists
+      // Verify Supabase actually created a session
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
         setFeedback("Unable to activate your secure session. Please request a new reset link.");
@@ -39,7 +40,7 @@ export default function ResetPasswordPage() {
     };
 
     run();
-  }, []);
+  }, []); // IMPORTANT: empty array — prevents double execution
 
   // 2. Handle password reset
   const handleReset = async (e: React.FormEvent) => {
@@ -47,7 +48,7 @@ export default function ResetPasswordPage() {
     setFeedback("");
     setIsSubmitting(true);
 
-    // Validate length only when user submits
+    // Validate only when submitting
     if (password.length < 6) {
       setFeedback("Password must be at least 6 characters long.");
       setIsSubmitting(false);
@@ -129,8 +130,7 @@ export default function ResetPasswordPage() {
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#E8D7B8]/70 hover:text-[#E8D7B8] transition-colors duration-200"
               >
                 {showPassword ? (
-          
-          <svg
+                  <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
                     fill="none"
@@ -143,10 +143,10 @@ export default function ResetPasswordPage() {
                       strokeLinejoin="round"
                       d="M3 3l18 18M2.25 12s3.75-6 9.75-6c2.01 0 3.84.53 5.4 1.39M21.75 12s-3.75 6-9.75 6c-2.01 0-3.84-.53-5.4-1.39"
                     />
-          
+       
                   </svg>
                 ) : (
-           
+       
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"
@@ -165,7 +165,7 @@ export default function ResetPasswordPage() {
                 )}
               </button>
             </div>
-     
+      
           </div>
 
           {/* Feedback */}
