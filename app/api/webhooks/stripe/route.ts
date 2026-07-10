@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "nodejs";        // ⭐ REQUIRED — prevents 307 redirect
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -22,27 +22,27 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  // Supabase admin client
+  
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Country name resolver
+ 
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
 
   // ============================================
   // CHECKOUT COMPLETED → CREATE USER + MARK MEMBER
   // ============================================
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object;
+    const session = event.data.object as Stripe.Checkout.Session;
 
     const email = session.customer_details?.email;
     const countryCode = session.customer_details?.address?.country || "Unknown";
     const country = regionNames.of(countryCode) || countryCode;
 
     if (email) {
-      // 1. Check if user exists
+      // 1. Check if profile exists
       const { data: existingUser } = await supabase
         .from("profiles")
         .select("id")
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
       let userId = existingUser?.id;
 
-      // 2. Create user if not existing
+      // 2. Create Supabase auth user if not existing
       if (!userId) {
         const { data: userData, error: userError } =
           await supabase.auth.admin.createUser({
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
         userId = userData?.user?.id;
       }
 
-      // 3. Update profile
+      // 3. Update profile with membership + Stripe customer ID
       if (userId) {
         await supabase
           .from("profiles")
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
             country,
             is_member: true,
             membership_status: "active",
+            stripe_customer_id: session.customer, // ⭐ CRITICAL
           })
           .eq("id", userId);
       }
@@ -85,39 +86,42 @@ export async function POST(req: NextRequest) {
   // RENEWAL → KEEP USER ACTIVE
   // ============================================
   if (event.type === "invoice.payment_succeeded") {
-    const invoice = event.data.object;
+    const invoice = event.data.object as Stripe.Invoice;
 
-   const customer = await stripe.customers.retrieve(invoice.customer as string);
-    const email = (customer as any).email;
+    // Use customer ID as anchor, not email
+    const customerId = invoice.customer as string;
 
-    if (email) {
-      await supabase
-        .from("profiles")
-        .update({
-          is_member: true,
-          membership_status: "active",
-        })
-        .eq("email", email);
-    }
+    await supabase
+      .from("profiles")
+      .update({
+        is_member: true,
+        membership_status: "active",
+      })
+      .eq("stripe_customer_id", customerId);
   }
 
   // ============================================
   // USER CLICKED "CANCEL" → KEEP ACCESS UNTIL PERIOD END
   // ============================================
   if (event.type === "customer.subscription.updated") {
-    const subscription = event.data.object;
+    const subscription = event.data.object as Stripe.Subscription;
 
-  const customer = await stripe.customers.retrieve(subscription.customer as string);
-    const email = (customer as any).email;
-
-    if (subscription.cancel_at_period_end && email) {
+    if (subscription.cancel_at_period_end) {
       await supabase
         .from("profiles")
         .update({
           membership_status: "cancel_at_period_end",
- 
         })
-        .eq("email", email);
+        .eq("stripe_customer_id", subscription.customer as string);
+    } else if (subscription.status === "active") {
+      // If user resumed or still active
+      await supabase
+        .from("profiles")
+        .update({
+          is_member: true,
+          membership_status: "active",
+        })
+        .eq("stripe_customer_id", subscription.customer as string);
     }
   }
 
@@ -125,21 +129,16 @@ export async function POST(req: NextRequest) {
   // SUBSCRIPTION ENDED → REMOVE ACCESS
   // ============================================
   if (event.type === "customer.subscription.deleted") {
-    const subscription = event.data.object;
+    const subscription = event.data.object as Stripe.Subscription;
 
-    const customer = await stripe.customers.retrieve(subscription.customer as string);
-    const email = (customer as any).email;
-
-    if (email) {
-      await supabase
-        .from("profiles")
-        .update({
-          is_member: false,
-          membership_status: "canceled",
-          membership_tier: "free",
-        })
-        .eq("email", email);
-    }
+    await supabase
+      .from("profiles")
+      .update({
+        is_member: false,
+        membership_status: "canceled",
+        membership_tier: "free",
+      })
+      .eq("stripe_customer_id", subscription.customer as string);
   }
 
   return new NextResponse("OK", { status: 200 });
