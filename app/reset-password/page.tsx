@@ -10,7 +10,7 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   const [password, setPassword] = useState("");
-
+ 
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -45,9 +45,7 @@ export default function ResetPasswordPage() {
 
     const { error } = await supabase.auth.updateUser({ password });
 
-
-
-  if (error) {
+    if (error) {
       let message = error.message || "Something went wrong.";
 
       if (message.includes("6 characters")) {
@@ -98,7 +96,7 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
-      
+         
           </div>
 
           {feedback && (
