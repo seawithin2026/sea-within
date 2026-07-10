@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -10,9 +10,14 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // REQUIRED: load session from reset link
+  useEffect(() => {
+    supabase.auth.exchangeCodeForSession(window.location.href);
+  }, []);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +29,7 @@ export default function ResetPasswordPage() {
     if (error) {
       let message = error.message || "Something went wrong.";
 
-      // Supabase default password rules (2026)
+
       if (message.includes("6 characters")) {
         message = "Your password must be at least 6 characters long.";
       }
@@ -42,7 +47,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // Success
+    
     setFeedback("Your password has been updated. Redirecting to sign in…");
     setIsSubmitting(false);
 
@@ -57,42 +62,34 @@ export default function ResetPasswordPage() {
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
         <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
           Reset Password
+       
         </h1>
 
 
 
         <form onSubmit={handleReset} className="space-y-5">
 
-          {/* Password Field with Eye Toggle */}
-          <div className="relative">
+          <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
             </label>
 
             <input
-              type={showPassword ? "text" : "password"}
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
-              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] pr-12"
+              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
-
-            {/* Eye Toggle */}
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-[38px] text-[#E8D7B8]/70 hover:text-[#E8D7B8]"
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
+      
           </div>
 
-          {/* Feedback */}
+     
           {feedback && (
             <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
-          {/* Submit */}
+
           <button
             type="submit"
             disabled={isSubmitting || !password.trim()}
