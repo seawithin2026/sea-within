@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
- import { createClient } from '@/lib/supabase/client';
+import { useState } from "react";
 
 export default function ForgotPasswordPage() {
-   const supabase = createClient();
-
-  const [email, setEmail] = useState('');
-   const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleReset = async (e) => {
     e.preventDefault();
-    setError('');
-    setMessage('');
+    setError("");
+    setMessage("");
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+    const res = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     });
 
-    if (error) {
-      setError(error.message);
+    const data = await res.json();
+
+    if (data.error) {
+      setError(data.error);
       return;
     }
 
-    // ⭐ DO NOT REDIRECT
+    
     setMessage("Check your email for the reset link.");
   };
 
@@ -45,7 +45,9 @@ export default function ForgotPasswordPage() {
           />
 
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-          {message && <p className="text-green-400 text-sm text-center">{message}</p>}
+          {message && (
+            <p className="text-green-400 text-sm text-center">{message}</p>
+          )}
 
           <button
             type="submit"
