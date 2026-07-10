@@ -1,26 +1,30 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  // ⭐ FIX: No apiVersion field
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+  // Supabase server client (reads user from cookies)
+  const supabase = createClient();
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
-  // Get logged-in user
+  // Get the logged-in user
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Not authenticated" },
+      { status: 401 }
+    );
   }
 
-  // Fetch Stripe customer ID
+  // Stripe client with API version (required)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2024-04-10",
+});
+
+
+  // Fetch Stripe customer ID from your profiles table
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_customer_id")
@@ -29,16 +33,17 @@ export async function GET() {
 
   if (!profile?.stripe_customer_id) {
     return NextResponse.json(
-      { error: "No Stripe customer found" },
+      { error: "Stripe customer ID missing" },
       { status: 400 }
     );
   }
 
-  // Create billing portal session
-  const session = await stripe.billingPortal.sessions.create({
+  // Create the billing portal session
+  const portalSession = await stripe.billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
     return_url: "https://www.seawithinyourself.com/account",
   });
 
-  return NextResponse.redirect(session.url);
+  // Return JSON so your frontend can redirect
+  return NextResponse.json({ url: portalSession.url });
 }
