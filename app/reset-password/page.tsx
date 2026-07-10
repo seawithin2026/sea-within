@@ -10,11 +10,11 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ FIXED: Extract ONLY the token, not the full URL
+  // ⭐ PERFECT: Extract ONLY the token, not the full URL
   useEffect(() => {
     const run = async () => {
       const params = new URLSearchParams(window.location.search);
@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      // ⭐ FIXED: Pass ONLY the code to Supabase
+      // ⭐ PERFECT: Exchange ONLY the code (Supabase 2026 requirement)
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
     run();
   }, []);
 
-  // ⭐ PASSWORD RESET
+  // ⭐ PERFECT: Handle password update
   const handleReset = async (e) => {
     e.preventDefault();
     setFeedback("");
@@ -45,8 +45,9 @@ export default function ResetPasswordPage() {
 
     const { error } = await supabase.auth.updateUser({ password });
 
-    if (error) {
-  
+
+
+  if (error) {
       let message = error.message || "Something went wrong.";
 
       if (message.includes("6 characters")) {
@@ -79,35 +80,31 @@ export default function ResetPasswordPage() {
     <main className="min-h-screen flex items-center justify-center px-6 py-20 bg-transparent">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
         <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
-       
-         Reset Password
+          Reset Password
         </h1>
 
 
 
         <form onSubmit={handleReset} className="space-y-5">
-        
-          <div className="relative">
+          <div>
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
             </label>
 
             <input
-              type={showPassword ? "text" : "password"}
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
-              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] pr-12"
+              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
-         
+      
           </div>
 
-       
           {feedback && (
             <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
-       
           <button
             type="submit"
             disabled={isSubmitting || !password.trim()}
