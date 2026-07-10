@@ -9,8 +9,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
+  // ⭐ HARD-CODED REDIRECT — REQUIRED FOR NEW SUPABASE VERSION
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+    redirectTo: "https://www.seawithinyourself.com/reset-password",
   });
 
   if (error) {

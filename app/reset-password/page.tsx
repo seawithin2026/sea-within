@@ -10,24 +10,24 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   const [password, setPassword] = useState("");
-  
+ 
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ⭐ SURGICAL FIX: Validate BOTH type=recovery AND code
+  // Validate recovery token + exchange session
   useEffect(() => {
     const run = async () => {
       const params = new URLSearchParams(window.location.search);
       const type = params.get("type");
       const code = params.get("code");
 
-      // If either is missing → Supabase rejects the token
+  
       if (type !== "recovery" || !code) {
         setFeedback("Your reset link is invalid or expired. Please request a new one.");
         return;
       }
 
-      // ⭐ REQUIRED: Exchange the recovery code for a session
+
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -39,7 +39,7 @@ export default function ResetPasswordPage() {
     run();
   }, []);
 
-  // ⭐ Handle password update after session is created
+
   const handleReset = async (e) => {
     e.preventDefault();
     setFeedback("");
@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
             />
-   
+    
           </div>
 
           {feedback && (
