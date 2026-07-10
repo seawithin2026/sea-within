@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Eye, EyeOff } from "lucide-react"; // adjust or remove if you use different icons
+import { Eye, EyeOff } from "lucide-react"; // swap if you use different icons
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
@@ -14,11 +14,25 @@ export default function ResetPasswordPage() {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load session from reset link to avoid "auth session missing"
+  // 1. EXCHANGE RESET LINK FOR SESSION (fixes auth.missing)
   useEffect(() => {
-    supabase.auth.exchangeCodeForSession(window.location.href);
+    const run = async () => {
+      const { error } = await supabase.auth.exchangeCodeForSession(
+        window.location.href
+      );
+
+      if (error) {
+        console.error("Exchange error:", error);
+        setFeedback(
+          "Your reset link is invalid or expired. Please request a new one."
+        );
+      }
+    };
+
+    run();
   }, [supabase]);
 
+  // 2. HANDLE PASSWORD RESET
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback("");
@@ -27,9 +41,10 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
+   
       let message = error.message || "Something went wrong.";
 
-
+      
       if (message.includes("6 characters")) {
         message = "Your password must be at least 6 characters long.";
       }
@@ -61,7 +76,7 @@ export default function ResetPasswordPage() {
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
         <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
           Reset Password
-  
+
         </h1>
 
 
@@ -81,7 +96,7 @@ export default function ResetPasswordPage() {
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] pr-12"
             />
 
-
+        
           </div>
 
           {/* Feedback */}
