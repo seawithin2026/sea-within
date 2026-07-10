@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Eye, EyeOff } from "lucide-react"; // swap if you use different icons
+
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
@@ -14,26 +14,31 @@ export default function ResetPasswordPage() {
   const [feedback, setFeedback] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. EXCHANGE RESET LINK FOR SESSION (fixes auth.missing)
+  // ⭐ FIXED: Extract ONLY the token, not the full URL
   useEffect(() => {
     const run = async () => {
-      const { error } = await supabase.auth.exchangeCodeForSession(
-        window.location.href
-      );
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      if (!code) {
+        setFeedback("Your reset link is invalid or expired. Please request a new one.");
+        return;
+      }
+
+      // ⭐ FIXED: Pass ONLY the code to Supabase
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
         console.error("Exchange error:", error);
-        setFeedback(
-          "Your reset link is invalid or expired. Please request a new one."
-        );
+        setFeedback("Your reset link is invalid or expired. Please request a new one.");
       }
     };
 
     run();
-  }, [supabase]);
+  }, []);
 
-  // 2. HANDLE PASSWORD RESET
-  const handleReset = async (e: React.FormEvent) => {
+  // ⭐ PASSWORD RESET
+  const handleReset = async (e) => {
     e.preventDefault();
     setFeedback("");
     setIsSubmitting(true);
@@ -41,10 +46,9 @@ export default function ResetPasswordPage() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-   
+  
       let message = error.message || "Something went wrong.";
 
-      
       if (message.includes("6 characters")) {
         message = "Your password must be at least 6 characters long.";
       }
@@ -75,14 +79,14 @@ export default function ResetPasswordPage() {
     <main className="min-h-screen flex items-center justify-center px-6 py-20 bg-transparent">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
         <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
-          Reset Password
-
+       
+         Reset Password
         </h1>
 
 
 
         <form onSubmit={handleReset} className="space-y-5">
-          {/* Password field with eye toggle */}
+        
           <div className="relative">
             <label className="block text-sm text-[#E8D7B8] mb-2">
               New Password
@@ -95,16 +99,15 @@ export default function ResetPasswordPage() {
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] pr-12"
             />
-
-        
+         
           </div>
 
-          {/* Feedback */}
+       
           {feedback && (
             <p className="text-center text-sm text-golden-300">{feedback}</p>
           )}
 
-          {/* Submit */}
+       
           <button
             type="submit"
             disabled={isSubmitting || !password.trim()}
