@@ -37,7 +37,7 @@ export default function AccountPage() {
   }, []);
 
   const handleManageSubscription = async () => {
-    const res = await fetch("/api/create-portal-session");
+    const res = await fetch("/api/stripe/portal");
     const { url } = await res.json();
     window.location.href = url;
   };
