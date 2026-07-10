@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
     if (error) {
       let message = error.message || "Something went wrong.";
 
-      
+
       if (message.includes("6 characters")) {
         message = "Your password must be at least 6 characters long.";
       }
@@ -81,13 +81,7 @@ export default function ResetPasswordPage() {
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8] pr-12"
             />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-[38px] text-[#E8D7B8]/70 hover:text-[#E8D7B8]"
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+
           </div>
 
           {/* Feedback */}
