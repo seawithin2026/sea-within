@@ -14,6 +14,9 @@ export default function ForgotPasswordPage() {
 
     const res = await fetch("/api/auth/forgot-password", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ email }),
     });
 
@@ -24,7 +27,6 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    
     setMessage("Check your email for the reset link.");
   };
 

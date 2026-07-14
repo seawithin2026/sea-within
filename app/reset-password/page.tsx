@@ -81,9 +81,8 @@ export default function ResetPasswordPage() {
       <div className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20">
         <h1 className="font-display text-2xl text-center text-[#E8D7B8] mb-6">
           Reset Password
-        </h1>
-
-
+       
+       </h1>
 
         <form onSubmit={handleReset} className="space-y-5">
           <div>
@@ -97,8 +96,8 @@ export default function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
-            />
-    
+        
+        />
           </div>
 
           {feedback && (
