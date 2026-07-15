@@ -20,10 +20,17 @@ export default function ForgotPasswordPage() {
       redirectTo: "https://www.seawithinyourself.com/auth-redirect",
     });
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+ if (error) {
+  if (error.message === "email rate limit exceeded") {
+    setError("Technical rate limit was exceeded. Try again in an hour.");
+    return;
+  }
+
+  // All other errors
+  setError(error.message);
+  return;
+}
+
 
     setMessage("Check your email for the reset link.");
   }
