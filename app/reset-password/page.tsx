@@ -6,10 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 export default function ResetPassword() {
   const supabase = createClient();
 
- 
+  
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
+
+  // Supabase's only real rule: minimum 6 characters
+  const tooShort = password.length > 0 && password.length < 6;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -39,6 +42,12 @@ export default function ResetPassword() {
   }, []);
 
   async function handleReset() {
+    // Block short passwords BEFORE sending to Supabase
+    if (tooShort) {
+      setStatus("Password must be at least 6 characters long.");
+      return;
+    }
+
     setStatus("Updating password...");
 
     const { error } = await supabase.auth.updateUser({
@@ -82,6 +91,13 @@ export default function ResetPassword() {
                 placeholder="Enter your new password"
                 className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
               />
+
+              {/* Short password message */}
+              {tooShort && (
+                <p className="text-red-400 text-sm mt-2">
+                  Password must be at least 6 characters long.
+                </p>
+              )}
             </div>
 
             <button
