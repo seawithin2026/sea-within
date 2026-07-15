@@ -6,10 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 export default function ResetPassword() {
   const supabase = createClient();
 
-  
+ 
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
+
+  // Store token so hydration cannot erase it
+  const [storedToken, setStoredToken] = useState<string | null>(null);
 
   // Supabase's only real rule: minimum 6 characters
   const tooShort = password.length > 0 && password.length < 6;
@@ -20,17 +23,23 @@ export default function ResetPassword() {
     const token = params.get("token") || params.get("code");
     const type = params.get("type");
 
+    // If token already stored, do NOT read URL again
+    if (storedToken) return;
+
     if (!token || type !== "recovery") {
       setStatus("Invalid or missing recovery token.");
       return;
     }
+
+    // Store token permanently for this session
+    setStoredToken(token);
 
     async function startSession() {
       const { error } = await supabase.auth.exchangeCodeForSession(token);
 
       if (error) {
         console.error(error);
-        setStatus("Error starting recovery session.");
+        setStatus("Invalid or expired recovery link.");
         return;
       }
 
@@ -39,10 +48,10 @@ export default function ResetPassword() {
     }
 
     startSession();
-  }, []);
+  }, [storedToken, supabase]);
 
   async function handleReset() {
-    // Block short passwords BEFORE sending to Supabase
+   
     if (tooShort) {
       setStatus("Password must be at least 6 characters long.");
       return;
@@ -92,7 +101,7 @@ export default function ResetPassword() {
                 className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
               />
 
-              {/* Short password message */}
+     
               {tooShort && (
                 <p className="text-red-400 text-sm mt-2">
                   Password must be at least 6 characters long.
