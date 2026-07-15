@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 export default function ResetPassword() {
   const supabase = createClient();
 
- 
+  
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
@@ -18,6 +18,30 @@ export default function ResetPassword() {
   const tooShort = password.length > 0 && password.length < 6;
 
   useEffect(() => {
+    // ⭐ AUTH‑REDIRECT FIX — read from localStorage first
+    if (!storedToken) {
+      const savedCode = localStorage.getItem("supabase_recovery_code");
+      const savedType = localStorage.getItem("supabase_recovery_type");
+
+      if (savedCode && savedType === "recovery") {
+        setStoredToken(savedCode);
+
+        supabase.auth.exchangeCodeForSession(savedCode).then(({ error }) => {
+          if (error) {
+            console.error(error);
+            setStatus("Invalid or expired recovery link.");
+            return;
+          }
+
+          setSessionReady(true);
+          setStatus("Enter your new password.");
+        });
+
+        return; // stop here — token already handled
+      }
+    }
+
+    // ⭐ ORIGINAL LOGIC — fallback to URL params
     const params = new URLSearchParams(window.location.search);
 
     const token = params.get("token") || params.get("code");
@@ -51,7 +75,7 @@ export default function ResetPassword() {
   }, [storedToken, supabase]);
 
   async function handleReset() {
-   
+    
     if (tooShort) {
       setStatus("Password must be at least 6 characters long.");
       return;
@@ -101,7 +125,6 @@ export default function ResetPassword() {
                 className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-3 text-[#E8D7B8]"
               />
 
-     
               {tooShort && (
                 <p className="text-red-400 text-sm mt-2">
                   Password must be at least 6 characters long.

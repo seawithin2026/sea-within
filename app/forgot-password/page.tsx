@@ -16,7 +16,8 @@ export default function ForgotPasswordPage() {
     setMessage("");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://www.seawithinyourself.com/reset-password?type=recovery",
+      // ⭐ FIX: redirect to auth-redirect instead of reset-password
+      redirectTo: "https://www.seawithinyourself.com/auth-redirect",
     });
 
     if (error) {
