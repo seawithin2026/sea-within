@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
+
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<"loading" | "allowed" | "blocked">("loading");
 
   useEffect(() => {
     const run = async () => {
-      const supabase = createClient();
 
       // 1. Get user
       const { data: { user } } = await supabase.auth.getUser();

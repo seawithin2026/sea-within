@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
+
 
 export default function LogoutPage() {
-  const supabase = createClient();
-
+  
   
   useEffect(() => {
     // Sign out immediately
