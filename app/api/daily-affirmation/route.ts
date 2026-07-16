@@ -1,6 +1,8 @@
+export const dynamic = "force-dynamic"; // prevent prerender crash
+
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import affirmations from "@/data/affirmations";
+import affirmations from "@/data/affirmations"; // ⭐ REQUIRED IMPORT
 
 export async function GET() {
   // Use service role for server-side logic (no cookies, no session)
