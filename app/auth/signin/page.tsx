@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export default function SignInPage() {
   const router = useRouter();
-  const supabase = createClient();
 
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -106,7 +106,7 @@ export default function SignInPage() {
             Enter Sanctuary
           </button>
 
-          {/* ⭐ Forgot Password placed directly under the button */}
+         
           <button
             type="button"
             onClick={() => router.push('/forgot-password')}
