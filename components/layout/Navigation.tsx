@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from "@/lib/supabase/client";
 import SignInModal from '../SignInModal';
 
 const navLinks = [
@@ -15,7 +15,6 @@ const navLinks = [
 ];
 
 export default function Navigation() {
-  const supabase = createClient();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
