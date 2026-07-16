@@ -23,8 +23,7 @@ export default function ProfilePage() {
   // ⭐ LOAD USER + PROFILE
   useEffect(() => {
     async function loadProfile() {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const { supabase } = await import('@/lib/supabase/client');
 
       // Get logged-in user
       const {
@@ -33,7 +32,7 @@ export default function ProfilePage() {
 
       if (!authUser) {
         window.location.href = '/auth/signin';
-
+   
         return;
       }
 
@@ -64,8 +63,7 @@ export default function ProfilePage() {
     setMessage('');
 
     try {
-      const { createClient } = await import('@/lib/supabase/client');
-      const supabase = createClient();
+      const { supabase } = await import('@/lib/supabase/client');
 
       const {
         data: { user: authUser },
@@ -243,8 +241,7 @@ export default function ProfilePage() {
           <div className="mt-12 text-center">
             <button
               onClick={async () => {
-                const { createClient } = await import('@/lib/supabase/client');
-                const supabase = createClient();
+                const { supabase } = await import('@/lib/supabase/client');
                 await supabase.auth.signOut();
                 window.location.href = '/';
               }}
