@@ -7,6 +7,7 @@ export default function AuthRedirect() {
   const router = useRouter();
 
   useEffect(() => {
+    // Read query params from the URL
     const params = new URLSearchParams(window.location.search);
 
     const code = params.get("code");
@@ -22,12 +23,12 @@ export default function AuthRedirect() {
     localStorage.setItem("supabase_recovery_code", code);
     localStorage.setItem("supabase_recovery_type", type);
 
-    // Force redirect to the real reset page
-    router.replace("/reset-password");
+    // ✅ FIX: pass the token forward to the reset page
+    router.replace(`/reset-password?code=${code}`);
   }, [router]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
+    <main className="min-h-screen flex items-center justify-center bg-[#0A1628]">
       <p className="text-white/80 text-center">
         Redirecting securely…
       </p>
