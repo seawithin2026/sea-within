@@ -1,6 +1,4 @@
-import { createClient } from './supabase/client';
-
-const supabase = createClient();
+import { supabase } from './supabase/client';
 
 // ============================================
 // SEA WITHIN — Authentication

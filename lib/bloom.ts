@@ -1,9 +1,10 @@
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from './supabase/client';
+
 
 const BLOOM_MAX_DAY = 12; // change if needed
 
 export async function getBloomProgress() {
-  const supabase = createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -36,7 +37,7 @@ export async function getBloomProgress() {
 }
 
 export async function completeTodayBloom(progress: any) {
-  const supabase = createClient();
+
   const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
   let nextDay = progress.current_day + 1;
@@ -65,7 +66,7 @@ export async function completeTodayBloom(progress: any) {
 }
 
 export async function resetBloomCycle(progress: any) {
-  const supabase = createClient();
+
 
   const { data, error } = await supabase
     .from('bloom_progress')
