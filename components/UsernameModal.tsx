@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 // SEA WITHIN USERNAME RULES — with gentle emoji support
 function isUsernameAllowed(username: string): boolean {
@@ -47,7 +47,7 @@ if (reserved.some(r => clean.replace(/\s+/g, "") === r.replace(/\s+/g, ""))) {
 
 
 export default function UsernameModal({ onComplete }: { onComplete: () => void }) {
-  const supabase = createClient();
+  
 
   const [username, setUsername] = useState("");
   const [feedback, setFeedback] = useState("");

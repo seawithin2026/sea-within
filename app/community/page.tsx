@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface ChatMsg {
@@ -24,8 +24,8 @@ export default function CommunityPage() {
 }
 
 function CommunityContent() {
-  const supabase = createClient();
 
+  
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import UsernameModal from "@/components/UsernameModal";
 import "../globals.css";
 
 export default function SanctuaryLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient();
+
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 

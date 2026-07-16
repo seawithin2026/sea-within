@@ -3,7 +3,7 @@
 
 import Navigation from "@/components/layout/Navigation";
 import { useState, useEffect, type FormEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 
 interface WisdomPost {
   id: string;
@@ -17,7 +17,7 @@ interface DailyMessage {
 }
 
 export default function WisdomBoardPage() {
-  const supabase = createClient();
+
  
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
@@ -61,8 +61,7 @@ function ClientWisdomBoard() {
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
-
-  const supabase = createClient();
+  
 
   /* Slow bottle video */
   useEffect(() => {

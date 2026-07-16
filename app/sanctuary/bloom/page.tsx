@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 /* -----------------------------------------------------
@@ -119,7 +119,6 @@ export default function BloomRitualPage() {
    🌸 BLOOM CONTENT — CLEAN, STABLE, NO MEMBERSHIP LOGIC
 ----------------------------------------------------- */
 function BloomContent() {
-  const supabase = createClient();
 
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
