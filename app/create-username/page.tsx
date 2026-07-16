@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
+
 
 export default function CreateUsernamePage() {
   const router = useRouter();
-  const supabase = createClient();
 
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
