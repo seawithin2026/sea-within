@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase/client';
 
 export default function SignUpPage() {
   const router = useRouter();
-  const supabase = createClient();
 
+  
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [confirmEmail, setConfirmEmail] = useState('');
@@ -113,7 +113,7 @@ export default function SignUpPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          {/* ⭐ TERMS + PRIVACY CHECKBOX */}
+    
           <div className="flex items-start space-x-3 mt-2">
             <input
               type="checkbox"
