@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
-  const supabase = createClient();
+
   const router = useRouter();
 
   const [user, setUser] = useState(null);
@@ -14,19 +14,20 @@ export default function AccountPage() {
 
   useEffect(() => {
     const load = async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
         router.push("/sign-in");
         return;
       }
 
-      setUser(userData.user);
+      setUser(user);
 
-      // Fetch membership status from your profiles table
+ 
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_member")
-        .eq("id", userData.user.id)
+        .eq("id", user.id)
         .single();
 
       setIsMember(profile?.is_member || false);
@@ -35,6 +36,7 @@ export default function AccountPage() {
 
     load();
   }, []);
+
 
   const handleManageSubscription = async () => {
     const res = await fetch("/api/stripe/portal");
