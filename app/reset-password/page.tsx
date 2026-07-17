@@ -1,26 +1,36 @@
 "use client";
-        
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState("Waiting for recovery event...");
+  const [status, setStatus] = useState("Waiting for recovery code...");
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event) => {
-        if (event === "PASSWORD_RECOVERY") {
-          setReady(true);
-          setStatus("Enter your new password.");
-        }
-      }
-    );
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-    return () => listener.subscription.unsubscribe();
+    if (!code) {
+      setStatus("Invalid or missing recovery code.");
+      return;
+    }
+
+    async function start() {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+      if (error) {
+        setStatus("Error starting recovery session.");
+        return;
+      }
+
+      setReady(true);
+      setStatus("Enter your new password.");
+    }
+
+    start();
   }, []);
 
   async function handleUpdate() {
