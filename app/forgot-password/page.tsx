@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
     setStatus("Sending reset email...");
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://your-domain.com/reset-password",
+      redirectTo: "https://www.seawithinyourself.com/reset-password",
     });
 
     if (error) {
