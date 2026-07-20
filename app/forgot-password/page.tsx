@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase/client";
+
 
 export default function ForgotPasswordPage() {
  
@@ -11,16 +11,20 @@ export default function ForgotPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-  
+
     setLoading(true);
     setStatus("Sending reset email...");
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://www.seawithinyourself.com/reset-password",
+    const res = await fetch("/api/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
 
-    if (error) {
-      setStatus(error.message);
+    const data = await res.json();
+
+    if (!res.ok) {
+      setStatus(data.error);
     } else {
       setStatus("Check your email for the reset link.");
     }
@@ -30,7 +34,10 @@ export default function ForgotPasswordPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-6 py-20">
-      <form className="max-w-md w-full p-8 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20" onSubmit={handleSubmit}>
+      <form
+        className="max-w-md w-full p-8 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20"
+        onSubmit={handleSubmit}
+      >
         <h1 className="text-2xl mb-4">Forgot Password</h1>
 
         <input

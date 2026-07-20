@@ -1,9 +1,12 @@
-import { supabase } from './supabase/client';
-
-// ============================================
-// SEA WITHIN — Authentication
+// ============================================// SEA WITHIN — Authentication
 // ============================================
 
+// ❗ Only import the client for functions that actually use it
+import { supabase } from "./supabase/client";
+
+// --------------------------------------------
+// SIGN UP
+// --------------------------------------------
 export async function signUp(email: string, password: string, fullName: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -17,19 +20,22 @@ export async function signUp(email: string, password: string, fullName: string) 
 
   if (error) throw error;
 
-  // Create profile in profiles table
+
   if (data.user) {
-    await supabase.from('profiles').insert({
+    await supabase.from("profiles").insert({
       id: data.user.id,
       email,
       full_name: fullName,
-      membership_tier: 'free',
+      membership_tier: "free",
     });
   }
 
   return data;
 }
 
+// --------------------------------------------
+// SIGN IN
+// --------------------------------------------
 export async function signIn(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
@@ -40,32 +46,55 @@ export async function signIn(email: string, password: string) {
   return data;
 }
 
+// --------------------------------------------
+// SIGN OUT
+// --------------------------------------------
 export async function signOut() {
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 
+// --------------------------------------------
+// ⭐ FIXED: RESET PASSWORD (server route)
+// --------------------------------------------
+// This now calls your API route instead of Supabase directly.
+// This is the ONLY way redirectTo works correctly.
 export async function resetPassword(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`,
+  const res = await fetch("/api/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
   });
 
-  if (error) throw error;
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error);
+  }
 }
 
+// --------------------------------------------
+// GET CURRENT USER
+// --------------------------------------------
 export async function getCurrentUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) return null;
 
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
     .single();
 
   return profile;
 }
 
+// --------------------------------------------
+// UPDATE PROFILE
+// --------------------------------------------
 export async function updateProfile(
   userId: string,
   updates: Partial<{
@@ -75,9 +104,9 @@ export async function updateProfile(
   }>
 ) {
   const { data, error } = await supabase
-    .from('profiles')
+    .from("profiles")
     .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq('id', userId)
+    .eq("id", userId)
     .select()
     .single();
 
