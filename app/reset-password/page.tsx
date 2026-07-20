@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    async function start() {
+    async function startRecovery() {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -26,11 +26,12 @@ export default function ResetPasswordPage() {
         return;
       }
 
-      setReady(true);
+     
       setStatus("Enter your new password.");
+      setReady(true);
     }
 
-    start();
+    startRecovery();
   }, []);
 
   async function handleUpdate() {
@@ -46,11 +47,14 @@ export default function ResetPasswordPage() {
 
     if (error) {
       setStatus(error.message);
-    } else {
-      setStatus("Password updated! You can now sign in.");
+      setLoading(false);
+      return;
     }
 
-    setLoading(false);
+    setStatus("Password updated! Redirecting...");
+    setTimeout(() => {
+      window.location.href = "/sign-in";
+    }, 1500);
   }
 
   return (
