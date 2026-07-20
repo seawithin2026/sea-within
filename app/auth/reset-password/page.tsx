@@ -21,6 +21,10 @@ export default function ResetPasswordPage() {
     }
 
     async function startRecovery() {
+      // ⭐ IMPORTANT: Prevent auto-login from old sessions or recovery link
+      await supabase.auth.signOut();
+
+      // ⭐ Now safely exchange the recovery code
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
@@ -28,7 +32,6 @@ export default function ResetPasswordPage() {
         return;
       }
 
-     
       setStatus("Enter your new password.");
       setReady(true);
     }
