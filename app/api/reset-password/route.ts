@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const supabase = createAdminClient();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://www.seawithinyourself.com/reset-password",
+    redirectTo: "https://www.seawithinyourself.com/auth/reset-password",
   });
 
   if (error) {
