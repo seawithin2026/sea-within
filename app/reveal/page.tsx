@@ -183,7 +183,7 @@ export default function RevealPage() {
 
           {/* MONTHLY — FINAL FIX */}
           <a
-            href="https://buy.stripe.com/test_14AeVdcNK97p2OxcAuc3m00"
+            href="https://buy.stripe.com/14AeVdcNK97p2OxcAuc3m00"
             className="btn-golden w-full text-center py-4 text-lg block"
           >
             Enter the Sanctuary — $77.77/month
