@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // Redirect to YOUR success page
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/join/success?session_id={CHECKOUT_SESSION_ID}`,
+      // ⭐ Redirect to your Magic Link sign-in page
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/sign-in?session_id={CHECKOUT_SESSION_ID}`,
 
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
