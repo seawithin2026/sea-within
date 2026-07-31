@@ -32,9 +32,10 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // ⭐ Redirect to your Magic Link sign-in page
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/sign-in?session_id={CHECKOUT_SESSION_ID}`,
+      // ⭐ Redirect to your callback page after payment
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
 
+      // ⭐ If they cancel checkout
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
 
