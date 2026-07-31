@@ -32,8 +32,8 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // ⭐ Redirect to your callback page after payment
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      // ⭐ FIXED: Stripe MUST receive the session_id placeholder
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?session_id={CHECKOUT_SESSION_ID}`,
 
       // ⭐ If they cancel checkout
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
