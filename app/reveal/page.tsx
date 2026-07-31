@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 export default function RevealPage() {
   const [loading, setLoading] = useState(false);
 
-  // Yearly plan removed — function kept untouched for structure
+  // ⭐ Correct Stripe Checkout trigger
   const handleJoin = async (plan: 'monthly') => {
     setLoading(true);
 
@@ -19,7 +19,7 @@ export default function RevealPage() {
 
     const data = await res.json();
     if (data.url) {
-      window.location.href = data.url;
+      window.location.href = data.url; // 🔹 Opens Stripe Checkout
     }
 
     setLoading(false);
@@ -34,12 +34,12 @@ export default function RevealPage() {
 
     if (!marketingVideo || !seaAudio) return;
 
-    // Pause global audio when video starts
+    
     marketingVideo.addEventListener("play", () => {
       seaAudio.pause();
     });
 
-    // Unmute video only after user interacts (mobile requirement)
+
     const enableSound = () => {
       marketingVideo.muted = false;
       window.removeEventListener("touchstart", enableSound);
@@ -49,7 +49,7 @@ export default function RevealPage() {
     window.addEventListener("touchstart", enableSound);
     window.addEventListener("click", enableSound);
 
-    // Resume global audio when video ends
+
     marketingVideo.addEventListener("ended", () => {
       seaAudio.play();
     });
@@ -159,16 +159,16 @@ export default function RevealPage() {
           </p>
         </ScrollReveal>
 
-{/* CINEMATIC FULL‑BLEED VIDEO */}
-<div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
-  <video
-    id="marketingVideo"
-    src="/videos/marketing.mp4"
-    playsInline
-    className="w-full h-auto object-contain"
-    controls
-  />
-</div>
+        {/* CINEMATIC FULL‑BLEED VIDEO */}
+        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
+          <video
+            id="marketingVideo"
+            src="/videos/marketing.mp4"
+            playsInline
+            className="w-full h-auto object-contain"
+            controls
+          />
+        </div>
 
         {/* Invitation + Buttons */}
         <ScrollReveal delay={900}>
@@ -181,13 +181,14 @@ export default function RevealPage() {
             This is your opportunity to sea within yourself.
           </p>
 
-          {/* MONTHLY — FINAL FIX */}
-          <a
-            href="https://buy.stripe.com/14AeVdcNK97p2OxcAuc3m00"
-            className="btn-golden w-full text-center py-4 text-lg block"
+          {/* ⭐ FIXED — Stripe Checkout Button */}
+          <button
+            onClick={() => handleJoin('monthly')}
+            disabled={loading}
+            className="btn-golden w-full text-center py-4 text-lg block disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Enter the Sanctuary — $77.77/month
-          </a>
+            {loading ? 'Opening Stripe…' : 'Enter the Sanctuary — $77.77/month'}
+          </button>
 
         </ScrollReveal>
 
