@@ -9,16 +9,18 @@ export default async function SanctuaryPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/reveal');
 
-  // 2. Must be a member
+  // 2. Must be an active member
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_member')
+    .select('membership_status')
     .eq('id', user.id)
     .single();
 
-  if (!profile || !profile.is_member) redirect('/reveal');
+  if (!profile || profile.membership_status !== 'active') {
+    redirect('/reveal');
+  }
 
-  // 3. Signed in + member → show the page
+  // 3. Signed in + active member → show the page
   return (
     <main className="min-h-screen bg-black text-white sanctuary-root">
 
