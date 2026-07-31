@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 // Your real price IDs
 const PRICE_IDS = {
-  monthly: "price_1TTQaIDpMHFesd6pbMIHDkvB",
+  monthly: "price_1Tk3G1DdlqSxXxUFu0NH3PAV",
 };
 
 export async function POST(req: NextRequest) {
