@@ -31,27 +31,31 @@ export default function ProfilePage() {
       } = await supabase.auth.getUser();
 
       if (!authUser) {
-    
-      window.location.href = '/auth/signin';
+        window.location.href = '/auth/signin';
         return;
       }
 
       // Fetch profile
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, bio, is_member, membership_status')
+        .select('full_name, bio, membership_status')
         .eq('id', authUser.id)
         .single();
 
       if (profile) {
+        const status = profile.membership_status;
+
+        // ⭐ Active OR cancel_at_period_end → Explorer
+        const tier =
+          status === 'active' || status === 'cancel_at_period_end'
+            ? 'explorer'
+            : 'free';
+
         setUser({
           full_name: profile.full_name || '',
           email: authUser.email,
           bio: profile.bio || '',
-          membership_tier:
-            profile.membership_status === 'active'
-              ? 'explorer'
-              : 'free',
+          membership_tier: tier,
           avatar_url: '',
         });
       }
