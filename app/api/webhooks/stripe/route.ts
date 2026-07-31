@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -83,12 +83,29 @@ export async function POST(req: NextRequest) {
   }
 
   // ============================================
+  // SUBSCRIPTION CREATED → STORE SUBSCRIPTION ID + PERIOD END
+  // ============================================
+  if (event.type === "customer.subscription.created") {
+    const subscription = event.data.object as Stripe.Subscription;
+
+    await supabase
+      .from("profiles")
+      .update({
+        stripe_subscription_id: subscription.id,
+        current_period_end: new Date(subscription.current_period_end * 1000),
+        membership_status: subscription.status,
+        is_member: true,
+      })
+      .eq("stripe_customer_id", subscription.customer as string);
+  }
+
+  // ============================================
   // RENEWAL → KEEP USER ACTIVE
   // ============================================
   if (event.type === "invoice.payment_succeeded") {
     const invoice = event.data.object as Stripe.Invoice;
 
-    // Use customer ID as anchor, not email
+   
     const customerId = invoice.customer as string;
 
     await supabase
@@ -111,15 +128,17 @@ export async function POST(req: NextRequest) {
         .from("profiles")
         .update({
           membership_status: "cancel_at_period_end",
+          current_period_end: new Date(subscription.current_period_end * 1000),
         })
         .eq("stripe_customer_id", subscription.customer as string);
     } else if (subscription.status === "active") {
-      // If user resumed or still active
+   
       await supabase
         .from("profiles")
         .update({
           is_member: true,
           membership_status: "active",
+          current_period_end: new Date(subscription.current_period_end * 1000),
         })
         .eq("stripe_customer_id", subscription.customer as string);
     }
@@ -136,7 +155,7 @@ export async function POST(req: NextRequest) {
       .update({
         is_member: false,
         membership_status: "canceled",
-        membership_tier: "free",
+ 
       })
       .eq("stripe_customer_id", subscription.customer as string);
   }
