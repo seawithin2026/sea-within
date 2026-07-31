@@ -31,15 +31,15 @@ export default function ProfilePage() {
       } = await supabase.auth.getUser();
 
       if (!authUser) {
-        window.location.href = '/auth/signin';
-   
+    
+      window.location.href = '/auth/signin';
         return;
       }
 
       // Fetch profile
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, bio, is_member')
+        .select('full_name, bio, is_member, membership_status')
         .eq('id', authUser.id)
         .single();
 
@@ -48,7 +48,10 @@ export default function ProfilePage() {
           full_name: profile.full_name || '',
           email: authUser.email,
           bio: profile.bio || '',
-          membership_tier: profile.is_member ? 'explorer' : 'free',
+          membership_tier:
+            profile.membership_status === 'active'
+              ? 'explorer'
+              : 'free',
           avatar_url: '',
         });
       }
