@@ -8,18 +8,17 @@ export default function SuccessPage() {
       </h1>
 
       <p className="text-white/70 mb-8 max-w-sm">
-        Your membership is active. Create your account to continue.
+        Your membership is active. Continue to complete your sign‑in.
       </p>
-<div className="text-center">
-  <Link
-    href="/auth/signup"
-    className="btn-golden py-3 text-[12px] tracking-[2px] text-center px-8 inline-block"
-  >
-    CREATE ACCOUNT
-  </Link>
-</div>
 
-
+      <div className="text-center">
+        <Link
+          href="/auth/callback"
+          className="btn-golden py-3 text-[12px] tracking-[2px] text-center px-8 inline-block"
+        >
+          CONTINUE
+        </Link>
+      </div>
     </div>
   );
 }
