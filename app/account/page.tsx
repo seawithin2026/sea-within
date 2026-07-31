@@ -23,7 +23,7 @@ export default function AccountPage() {
 
       setUser(user);
 
- 
+    
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_member")
@@ -37,11 +37,30 @@ export default function AccountPage() {
     load();
   }, []);
 
-
+  /* -----------------------------------------------------
+     ⭐ FIXED MANAGE SUBSCRIPTION FUNCTION
+  ----------------------------------------------------- */
   const handleManageSubscription = async () => {
-    const res = await fetch("/api/stripe/portal");
-    const { url } = await res.json();
-    window.location.href = url;
+    try {
+      const response = await fetch("/api/stripe/portal", {
+        method: "GET",
+      });
+
+      const data = await response.json();
+
+      console.log("Portal response:", data); // Debugging: shows what backend returned
+
+      if (!data.url) {
+        alert("Could not open subscription portal.");
+        return;
+      }
+
+      window.location.href = data.url;
+
+    } catch (error) {
+      console.error("Error opening portal:", error);
+      alert("Something went wrong.");
+    }
   };
 
   const handleSignOut = async () => {
