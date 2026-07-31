@@ -23,14 +23,21 @@ export default function AccountPage() {
 
       setUser(user);
 
-    
+      // ⭐ UPDATED: use membership_status instead of is_member
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_member")
+        .select("membership_status")
         .eq("id", user.id)
         .single();
 
-      setIsMember(profile?.is_member || false);
+      const status = profile?.membership_status;
+
+      // ⭐ Active OR cancel_at_period_end = still a member
+      setIsMember(
+        status === "active" ||
+        status === "cancel_at_period_end"
+      );
+
       setLoading(false);
     };
 
@@ -48,7 +55,7 @@ export default function AccountPage() {
 
       const data = await response.json();
 
-      console.log("Portal response:", data); // Debugging: shows what backend returned
+      console.log("Portal response:", data);
 
       if (!data.url) {
         alert("Could not open subscription portal.");
