@@ -17,7 +17,7 @@ export default function AccountPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        router.push("/sign-in");
+        router.push("/signin");
         return;
       }
 
@@ -72,7 +72,7 @@ export default function AccountPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/sign-in");
+    router.push("/signin");
   };
 
   if (loading) {

@@ -15,7 +15,7 @@ export default function CallbackPage() {
       } = await supabase.auth.getSession();
 
       if (!session) {
-        router.push("/auth/sign-in");
+        router.push("/auth/signin");
         return;
       }
 
@@ -29,7 +29,7 @@ export default function CallbackPage() {
         .single();
 
       if (error || !profile) {
-        router.push("/auth/sign-in");
+        router.push("/auth/signin");
         return;
       }
 
@@ -57,7 +57,7 @@ export default function CallbackPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white">
-      <p className="text-center opacity-70">Completing sign-in...</p>
+      <p className="text-center opacity-70">Completing signin...</p>
     </div>
   );
 }
