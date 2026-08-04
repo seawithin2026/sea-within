@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 "use client";
 
 import { useEffect } from "react";
@@ -22,7 +23,7 @@ export default function CallbackPage() {
 
       const user = session.user;
 
-      // ⭐ 2. Ensure profile exists (CRITICAL FIX)
+      // ⭐ 2. Ensure profile exists
       await supabase
         .from("profiles")
         .upsert({
@@ -31,11 +32,21 @@ export default function CallbackPage() {
           joined_at: new Date().toISOString(),
         });
 
-      // 3. Get session_id from URL
-      const sessionId = searchParams.get("session_id");
+      // 3. Get session_id from URL OR localStorage
+      let sessionId = searchParams.get("session_id");
 
+      if (!sessionId) {
+        sessionId = localStorage.getItem("stripe_session_id");
+      }
+
+      // ⭐ Save session_id for future callback runs
       if (sessionId) {
-        // 4. Fetch Stripe Checkout Session from backend
+        localStorage.setItem("stripe_session_id", sessionId);
+      }
+
+      // 4. Fetch Stripe Checkout Session
+      if (sessionId) {
+  
         const res = await fetch(
           "/api/stripe/get-session?session_id=" + sessionId
         );
