@@ -22,18 +22,27 @@ export default function CallbackPage() {
 
       const user = session.user;
 
-      // 2. Get session_id from URL
+      // ⭐ 2. Ensure profile exists (CRITICAL FIX)
+      await supabase
+        .from("profiles")
+        .upsert({
+          id: user.id,
+          email: user.email,
+          joined_at: new Date().toISOString(),
+        });
+
+      // 3. Get session_id from URL
       const sessionId = searchParams.get("session_id");
 
       if (sessionId) {
-        // 3. Fetch Stripe Checkout Session from backend
+        // 4. Fetch Stripe Checkout Session from backend
         const res = await fetch(
           "/api/stripe/get-session?session_id=" + sessionId
         );
         const stripeSession = await res.json();
 
         if (stripeSession?.customer) {
-          // 4. Save Stripe customer ID into profile
+          // ⭐ 5. Save Stripe customer ID into profile
           await supabase
             .from("profiles")
             .update({
@@ -43,7 +52,7 @@ export default function CallbackPage() {
         }
       }
 
-      // 5. Fetch updated profile
+      // 6. Fetch updated profile
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("is_member, username")
@@ -55,22 +64,22 @@ export default function CallbackPage() {
         return;
       }
 
-      // 6. Store membership locally
+      // 7. Store membership locally
       localStorage.setItem("isMember", profile.is_member ? "true" : "false");
 
-      // 7. Username flow
+      // 8. Username flow
       if (!profile.username) {
         router.push("/create-username");
         return;
       }
 
-      // 8. Member → sanctuary
+      // 9. Member → sanctuary
       if (profile.is_member) {
         router.push("/sanctuary");
         return;
       }
 
-      // 9. Not a member → reveal page
+      // 10. Not a member → reveal page
       router.push("/reveal");
     }
 
