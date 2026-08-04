@@ -1,10 +1,9 @@
-
+"use client";
 
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
-
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -38,20 +37,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
-
+      
       <head>
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
       </head>
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
-
-  
-          <Navigation />
-
-    
-          {children}
-
+        <Navigation />
+        {children}
       </body>
     </html>
   );
