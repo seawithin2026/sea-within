@@ -1,6 +1,6 @@
 "use client";
 
-import type { Metadata } from 'next';
+
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
@@ -20,24 +20,10 @@ const inter = Inter({
   variable: '--font-body',
 });
 
-export const metadata: Metadata = {
-  title: 'Sea Within — Come Home to Yourself',
-  description:
-    'A movement for the ones who are ready to feel again. To breathe deeper. To live truer. To come home to the part of themselves they left behind.',
-  keywords: ['wellness', 'sanctuary', 'mindfulness', 'community', 'awakening', 'sea within'],
-  openGraph: {
-    title: 'Sea Within — Come Home to Yourself',
-    description: 'A movement for the ones who are ready to feel again.',
-    url: 'https://seawithinyourself.com',
-    siteName: 'Sea Within',
-    type: 'website',
-  },
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
-      
+  
       <head>
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
