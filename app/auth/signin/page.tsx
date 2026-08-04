@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
 export default function SignInPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
@@ -25,11 +26,22 @@ export default function SignInPage() {
     // Save email locally
     localStorage.setItem("rememberedEmail", email);
 
-    // Send magic link
+    // ⭐ Save Stripe session_id from URL (CRITICAL)
+    const sessionId = searchParams.get("session_id");
+    if (sessionId) {
+      localStorage.setItem("stripe_session_id", sessionId);
+    }
+
+    // ⭐ Build redirect URL including session_id (CRITICAL)
+    const redirectUrl = `https://www.seawithinyourself.com/auth/callback?session_id=${localStorage.getItem(
+      "stripe_session_id"
+    )}`;
+
+    // Send magic link with session_id preserved
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: "https://www.seawithinyourself.com/auth/callback",
+        emailRedirectTo: redirectUrl,
       },
     });
 
