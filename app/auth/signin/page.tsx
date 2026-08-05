@@ -1,7 +1,4 @@
-"use client";
-
 export const dynamic = "force-dynamic";
-
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -29,13 +26,13 @@ export default function SignInPage() {
     // Save email locally
     localStorage.setItem("rememberedEmail", email);
 
-    // ⭐ Save Stripe session_id from URL (CRITICAL)
+    // Save Stripe session_id from URL
     const sessionId = searchParams.get("session_id");
     if (sessionId) {
       localStorage.setItem("stripe_session_id", sessionId);
     }
 
-    // ⭐ Build redirect URL including session_id (CRITICAL)
+    // Build redirect URL including session_id
     const redirectUrl = `https://www.seawithinyourself.com/auth/callback?session_id=${localStorage.getItem(
       "stripe_session_id"
     )}`;
@@ -90,3 +87,4 @@ export default function SignInPage() {
     </div>
   );
 }
+
