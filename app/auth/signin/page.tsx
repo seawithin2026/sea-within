@@ -1,8 +1,8 @@
-export const dynamic = "force-dynamic";
-
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+
+export const dynamic = "force-dynamic";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function SignInPage() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Load remembered email
+
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
     if (savedEmail) setEmail(savedEmail);
@@ -23,21 +23,21 @@ export default function SignInPage() {
     setStatus("");
     setLoading(true);
 
-    // Save email locally
+
     localStorage.setItem("rememberedEmail", email);
 
-    // Save Stripe session_id from URL
+ 
     const sessionId = searchParams.get("session_id");
     if (sessionId) {
       localStorage.setItem("stripe_session_id", sessionId);
     }
 
-    // Build redirect URL including session_id
+ 
     const redirectUrl = `https://www.seawithinyourself.com/auth/callback?session_id=${localStorage.getItem(
       "stripe_session_id"
     )}`;
 
-    // Send magic link with session_id preserved
+  
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
