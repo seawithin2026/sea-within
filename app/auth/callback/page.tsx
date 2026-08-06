@@ -1,8 +1,10 @@
-export const dynamic = "force-dynamic";
+"use client";
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
+
+export const dynamic = "force-dynamic";
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -10,7 +12,7 @@ export default function CallbackPage() {
 
   useEffect(() => {
     async function finishMagicLink() {
-      // 1. Wait for Supabase session
+  
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -22,7 +24,7 @@ export default function CallbackPage() {
 
       const user = session.user;
 
-      // 2. Ensure profile exists
+
       await supabase
         .from("profiles")
         .upsert({
@@ -31,28 +33,29 @@ export default function CallbackPage() {
           joined_at: new Date().toISOString(),
         });
 
-      // 3. Get session_id from URL OR localStorage
-      let sessionId = searchParams.get("session_id");
+   
+        let sessionId = searchParams.get("session_id");
 
       if (!sessionId) {
         sessionId = localStorage.getItem("stripe_session_id");
       }
 
-      // Save session_id for future callback runs
+  
       if (sessionId) {
         localStorage.setItem("stripe_session_id", sessionId);
       }
 
-      // 4. Fetch Stripe Checkout Session
+  
       if (sessionId) {
-     
+   
         const res = await fetch(
           "/api/stripe/get-session?session_id=" + sessionId
         );
         const stripeSession = await res.json();
 
+  
         if (stripeSession?.customer) {
-          // 5. Save Stripe customer ID into profile
+    
           await supabase
             .from("profiles")
             .update({
@@ -62,7 +65,7 @@ export default function CallbackPage() {
         }
       }
 
-      // 6. Fetch updated profile
+
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("is_member, username")
@@ -74,22 +77,22 @@ export default function CallbackPage() {
         return;
       }
 
-      // 7. Store membership locally
+
       localStorage.setItem("isMember", profile.is_member ? "true" : "false");
 
-      // 8. Username flow
+
       if (!profile.username) {
         router.push("/create-username");
         return;
       }
 
-      // 9. Member → sanctuary
+
       if (profile.is_member) {
         router.push("/sanctuary");
         return;
       }
 
-      // 10. Not a member → reveal page
+ 
       router.push("/reveal");
     }
 
