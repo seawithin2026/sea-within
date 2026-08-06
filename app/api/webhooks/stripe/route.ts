@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
 
   // ============================================
-  // CHECKOUT COMPLETED → MARK MEMBER
+  // CHECKOUT COMPLETED → CREATE/UPDATE PROFILE + MARK MEMBER
   // ============================================
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
@@ -42,15 +42,34 @@ export async function POST(req: NextRequest) {
     const country = regionNames.of(countryCode) || countryCode;
 
     if (email) {
-      await supabase
+      // Check if profile exists
+      const { data: existingProfile } = await supabase
         .from("profiles")
-        .update({
+        .select("email")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        // CREATE PROFILE ROW (no auth user yet)
+        await supabase.from("profiles").insert({
+          email,
           country,
           is_member: true,
           membership_status: "active",
           stripe_customer_id: session.customer,
-        })
-        .eq("email", email); // ⭐ FIXED: match by email
+        });
+      } else {
+        // UPDATE EXISTING PROFILE
+        await supabase
+          .from("profiles")
+          .update({
+            country,
+            is_member: true,
+            membership_status: "active",
+            stripe_customer_id: session.customer,
+          })
+          .eq("email", email);
+      }
     }
   }
 
@@ -103,7 +122,7 @@ export async function POST(req: NextRequest) {
         })
         .eq("stripe_customer_id", subscription.customer as string);
     } else if (subscription.status === "active") {
-    
+ 
       await supabase
         .from("profiles")
         .update({
