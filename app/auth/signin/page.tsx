@@ -2,18 +2,17 @@
 
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+
 import { supabase } from "@/lib/supabase/client";
 
 
 
 export default function SignInPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
- 
+
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -29,14 +28,7 @@ export default function SignInPage() {
 
     localStorage.setItem("rememberedEmail", email);
 
-    const sessionId = searchParams.get("session_id");
-    if (sessionId) {
-      localStorage.setItem("stripe_session_id", sessionId);
-    }
-
-    const redirectUrl = `https://www.seawithinyourself.com/auth/callback?session_id=${localStorage.getItem(
-      "stripe_session_id"
-    )}`;
+    const redirectUrl = "https://www.seawithinyourself.com/auth/callback";
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
