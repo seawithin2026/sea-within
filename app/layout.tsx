@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
@@ -23,7 +25,7 @@ const inter = Inter({
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
-  
+     
       <head>
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
