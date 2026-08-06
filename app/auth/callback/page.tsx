@@ -1,10 +1,13 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
-export const dynamic = "force-dynamic";
+
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -33,29 +36,25 @@ export default function CallbackPage() {
           joined_at: new Date().toISOString(),
         });
 
-   
-        let sessionId = searchParams.get("session_id");
+      let sessionId = searchParams.get("session_id");
 
       if (!sessionId) {
         sessionId = localStorage.getItem("stripe_session_id");
       }
 
-  
       if (sessionId) {
         localStorage.setItem("stripe_session_id", sessionId);
       }
 
-  
       if (sessionId) {
-   
+    
         const res = await fetch(
           "/api/stripe/get-session?session_id=" + sessionId
         );
         const stripeSession = await res.json();
 
-  
         if (stripeSession?.customer) {
-    
+     
           await supabase
             .from("profiles")
             .update({
@@ -92,7 +91,6 @@ export default function CallbackPage() {
         return;
       }
 
- 
       router.push("/reveal");
     }
 
