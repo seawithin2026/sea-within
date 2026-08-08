@@ -2,20 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+/** ⭐ REQUIRED FOR NEXT.JS APP ROUTER */
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const preferredRegion = "auto";
 
+/** ⭐ STRIPE CLIENT */
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
 export async function POST(req: NextRequest) {
+  /** ⭐ RAW BODY REQUIRED FOR SIGNATURE VERIFICATION */
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
- 
+  
   let event;
 
   try {
@@ -28,18 +29,18 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-
+  /** ⭐ SUPABASE SERVICE CLIENT */
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Helper: update profile safely
+  /** ⭐ Helper: update profile */
   async function updateProfile(userId: string, fields: any) {
     await supabase.from("profiles").update(fields).eq("id", userId);
   }
 
-  // Helper: find profile by Stripe customer ID
+  /** ⭐ Helper: find profile by Stripe customer ID */
   async function findProfileByCustomer(customerId: string) {
     const { data } = await supabase
       .from("profiles")
@@ -49,14 +50,14 @@ export async function POST(req: NextRequest) {
     return data;
   }
 
-  // ---------------------------
-  // ⭐ HANDLE EVENTS
-  // ---------------------------
+  // -------------------------------------------------
+  // ⭐ HANDLE STRIPE EVENTS
+  // -------------------------------------------------
 
   switch (event.type) {
-    // ---------------------------
+    // -------------------------------------------------
     // ⭐ Subscription Created
-    // ---------------------------
+    // -------------------------------------------------
     case "customer.subscription.created": {
       const sub = event.data.object;
       const customerId = sub.customer as string;
@@ -73,10 +74,9 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // ---------------------------
-    // ⭐ Subscription Updated
-    // (includes cancel_at_period_end)
-    // ---------------------------
+    // -------------------------------------------------
+    // ⭐ Subscription Updated (includes cancel_at_period_end)
+    // -------------------------------------------------
     case "customer.subscription.updated": {
       const sub = event.data.object;
       const customerId = sub.customer as string;
@@ -85,13 +85,13 @@ export async function POST(req: NextRequest) {
       if (!profile) break;
 
       if (sub.cancel_at_period_end) {
-        // User clicked "Cancel" in Stripe portal
+ 
         await updateProfile(profile.id, {
           is_member: true, // still active until period ends
           membership_status: "cancelling",
         });
       } else {
-        // Normal update (renewal, plan change)
+
         await updateProfile(profile.id, {
           is_member: true,
           membership_status: "active",
@@ -101,10 +101,9 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // ---------------------------
-    // ⭐ Subscription Deleted
-    // (billing period ended)
-    // ---------------------------
+    // -------------------------------------------------
+    // ⭐ Subscription Deleted (billing period ended)
+    // -------------------------------------------------
     case "customer.subscription.deleted": {
       const sub = event.data.object;
       const customerId = sub.customer as string;
@@ -112,7 +111,7 @@ export async function POST(req: NextRequest) {
       const profile = await findProfileByCustomer(customerId);
       if (!profile) break;
 
-      // Access removed ONLY when Stripe ends the subscription
+
       await updateProfile(profile.id, {
         is_member: false,
         membership_status: "expired",
@@ -122,9 +121,9 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // ---------------------------
+    // -------------------------------------------------
     // ⭐ Invoice Paid
-    // ---------------------------
+    // -------------------------------------------------
     case "invoice.paid": {
       const invoice = event.data.object;
       const customerId = invoice.customer as string;
@@ -140,9 +139,9 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // ---------------------------
+    // -------------------------------------------------
     // ⭐ Invoice Payment Failed
-    // ---------------------------
+    // -------------------------------------------------
     case "invoice.payment_failed": {
       const invoice = event.data.object;
       const customerId = invoice.customer as string;
@@ -157,12 +156,11 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-    // ---------------------------
-    // ⭐ Customer Created
-    // ---------------------------
+    // -------------------------------------------------
+    // ⭐ Customer Created (optional)
+    // -------------------------------------------------
     case "customer.created": {
-      const customer = event.data.object;
-
+   
       // You may store customer.id if needed
       break;
     }
