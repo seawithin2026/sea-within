@@ -53,7 +53,7 @@ export default function Navigation() {
     <>
       <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
 
-      {/* ⭐ TEMPORARY FIX APPLIED HERE */}
+      {/* ⭐ TEMPORARY FIX: NAV BACKGROUND DOES NOT BLOCK CLICKS */}
       <motion.nav
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -65,7 +65,7 @@ export default function Navigation() {
           backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
         }}
       >
-        {/* ⭐ Interactive content restored here */}
+        {/* ⭐ ALL INTERACTIVE CONTENT RE-ENABLED */}
         <div className="pointer-events-auto max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Brand */}
@@ -106,7 +106,7 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
-                {/* ACCOUNT BUTTON */}
+  
                 <Link
                   href="/account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
@@ -148,7 +148,7 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE SIGN IN / SIGN OUT BUTTON */}
+
                 {!user ? (
                   <button
                     onClick={() => {
@@ -171,7 +171,6 @@ export default function Navigation() {
                       Sign Out
                     </button>
 
-   
                     <Link
                       href="/account"
                       onClick={() => setIsMobileMenuOpen(false)}
