@@ -31,18 +31,43 @@ export async function POST(req: NextRequest) {
   
   const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
 
-  // ============================================
+
   // CHECKOUT COMPLETED → CREATE/UPDATE PROFILE + MARK MEMBER
-  // ============================================
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    const email = session.customer_details?.email;
+    const email =
+      (session.metadata && session.metadata.supabase_email) ||
+      session.customer_details?.email ||
+      undefined;
+
+    const supabaseUserId =
+      session.metadata && session.metadata.supabase_user_id
+        ? session.metadata.supabase_user_id
+        : null;
+
     const countryCode = session.customer_details?.address?.country || "Unknown";
     const country = regionNames.of(countryCode) || countryCode;
 
-    if (email) {
-      // Check if profile exists
+    if (!email) {
+      return new NextResponse("No email on session", { status: 200 });
+    }
+
+    if (supabaseUserId) {
+      // Update the real auth-linked profile row
+      await supabase
+        .from("profiles")
+        .upsert({
+          id: supabaseUserId,
+          email,
+          country,
+          is_member: true,
+          membership_status: "active",
+          stripe_customer_id: session.customer,
+        });
+    } else {
+      // Fallback: email-only row (for pay-before-sign-in)
       const { data: existingProfile } = await supabase
         .from("profiles")
         .select("email")
@@ -50,7 +75,7 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
 
       if (!existingProfile) {
-        // CREATE PROFILE ROW (no auth user yet)
+  
         await supabase.from("profiles").insert({
           email,
           country,
@@ -58,8 +83,8 @@ export async function POST(req: NextRequest) {
           membership_status: "active",
           stripe_customer_id: session.customer,
         });
-      } else {
-        // UPDATE EXISTING PROFILE
+ 
+     } else {
         await supabase
           .from("profiles")
           .update({
@@ -73,9 +98,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ============================================
+ 
   // SUBSCRIPTION CREATED → STORE SUBSCRIPTION ID
-  // ============================================
+ 
   if (event.type === "customer.subscription.created") {
     const subscription = event.data.object as Stripe.Subscription;
 
@@ -90,9 +115,9 @@ export async function POST(req: NextRequest) {
       .eq("stripe_customer_id", subscription.customer as string);
   }
 
-  // ============================================
+
   // RENEWAL → KEEP USER ACTIVE
-  // ============================================
+  
   if (event.type === "invoice.payment_succeeded") {
     const invoice = event.data.object as Stripe.Invoice;
 
@@ -107,9 +132,9 @@ export async function POST(req: NextRequest) {
       .eq("stripe_customer_id", customerId);
   }
 
-  // ============================================
+  
   // USER CLICKED "CANCEL" → KEEP ACCESS UNTIL END
-  // ============================================
+  
   if (event.type === "customer.subscription.updated") {
     const subscription = event.data.object as Stripe.Subscription;
 
@@ -134,9 +159,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ============================================
+
   // SUBSCRIPTION ENDED → REMOVE ACCESS
-  // ============================================
+ 
   if (event.type === "customer.subscription.deleted") {
     const subscription = event.data.object as Stripe.Subscription;
 
@@ -145,7 +170,7 @@ export async function POST(req: NextRequest) {
       .update({
         is_member: false,
         membership_status: "canceled",
-      
+   
       })
       .eq("stripe_customer_id", subscription.customer as string);
   }

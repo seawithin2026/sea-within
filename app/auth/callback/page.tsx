@@ -11,7 +11,7 @@ import { supabase } from "@/lib/supabase/client";
 export default function CallbackPage() {
   const router = useRouter();
 
-
+  
   useEffect(() => {
     async function completeSignIn() {
       const { data, error } = await supabase.auth.getSession();
@@ -21,7 +21,23 @@ export default function CallbackPage() {
         return;
       }
 
-      // User is authenticated — send them to your protected area
+      const session = data.session;
+      const user = session.user;
+
+      // Merge any email-only profile into the auth-linked profile
+      try {
+        await fetch("/api/profile/merge-from-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            email: user.email,
+          }),
+        });
+      } catch (e) {
+        // swallow merge errors; user can still proceed
+      }
+
       router.replace("/sanctuary");
     }
 
