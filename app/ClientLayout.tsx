@@ -22,15 +22,8 @@ const inter = Inter({
 export default function ClientLayout({ children }) {
   return (
     <div className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
-      <head>
-        <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
-        <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
-      </head>
-
-      <body className="bg-sanctuary-dark text-sea-100 antialiased">
-        <Navigation />
-        {children}
-      </body>
+      <Navigation />
+      {children}
     </div>
   );
 }

@@ -6,7 +6,12 @@ import ClientLayout from "./ClientLayout";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <head>
+        <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
+        <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
+      </head>
+
+      <body className="bg-sanctuary-dark text-sea-100 antialiased">
         <ClientLayout>
           {children}
         </ClientLayout>
