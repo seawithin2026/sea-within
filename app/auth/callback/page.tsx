@@ -8,37 +8,55 @@ import { supabase } from "@/lib/supabase/client";
 
 
 
+
 export default function CallbackPage() {
   const router = useRouter();
 
-  
   useEffect(() => {
     async function completeSignIn() {
-      const { data, error } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
 
-      if (error || !data.session) {
+      if (!user) {
         router.replace("/auth/signin");
         return;
       }
 
-      const session = data.session;
-      const user = session.user;
+      // 1. Merge webhook row → auth row
+      await fetch("/api/profile/merge-from-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user.id,
+          email: user.email,
+        }),
+      });
 
-      // Merge any email-only profile into the auth-linked profile
-      try {
-        await fetch("/api/profile/merge-from-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            email: user.email,
-          }),
-        });
-      } catch (e) {
-        // swallow merge errors; user can still proceed
+      // 2. Wait for membership to update
+      let tries = 0;
+      let profile = null;
+
+      while (tries < 5) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        profile = data;
+
+        if (profile?.is_member === true) break;
+
+        await new Promise((r) => setTimeout(r, 300));
+        tries++;
       }
 
-      router.replace("/sanctuary");
+      // 3. Redirect only when membership is ready
+      if (profile?.is_member) {
+        router.replace("/sanctuary");
+      } else {
+        router.replace("/account");
+      }
     }
 
     completeSignIn();
