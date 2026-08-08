@@ -4,35 +4,21 @@ import { supabase } from "@/lib/supabase/client";
 
 export default function FixMembership() {
   async function fix() {
-    await supabase.auth.updateUser({
+    const { data, error } = await supabase.auth.updateUser({
       data: { is_member: true }
     });
-  
+
+    console.log("Updated:", data, error);
   }
-
-
+  
 
   return (
-    <div
-      style={{
-        background: "red",
-        padding: 50,
-        zIndex: 999999,
-        position: "relative",
-      }}
-    >
-      <h1 style={{ fontSize: 50 }}>FIX MEMBERSHIP PAGE</h1>
+    <div className="relative z-[999999] p-10 bg-red-500 pointer-events-auto">
+      <h1 className="text-4xl">Fix Membership</h1>
 
       <button
         onClick={fix}
-        style={{
-          fontSize: 30,
-          padding: "20px 40px",
-          background: "black",
-          color: "white",
-          borderRadius: 12,
-          marginTop: 20,
-        }}
+        className="mt-6 px-10 py-5 text-2xl bg-black text-white rounded-xl"
       >
         Fix My Membership
       </button>

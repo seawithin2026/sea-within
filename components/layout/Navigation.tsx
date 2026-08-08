@@ -53,18 +53,20 @@ export default function Navigation() {
     <>
       <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
 
+      {/* ⭐ TEMPORARY FIX APPLIED HERE */}
       <motion.nav
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 pointer-events-none ${
           isScrolled ? 'backdrop-blur-xl' : 'bg-transparent'
         }`}
         style={{
           backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* ⭐ Interactive content restored here */}
+        <div className="pointer-events-auto max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Brand */}
           <Link href="/" className="group flex items-center gap-3">
@@ -104,7 +106,7 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
-                {/* ACCOUNT BUTTON (added to the RIGHT of Sign Out) */}
+                {/* ACCOUNT BUTTON */}
                 <Link
                   href="/account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
@@ -131,7 +133,7 @@ export default function Navigation() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden backdrop-blur-xl"
+              className="pointer-events-auto md:hidden backdrop-blur-xl"
               style={{ backgroundColor: 'rgba(10, 22, 40, 0.95)' }}
             >
               <div className="px-6 py-8 flex flex-col gap-6">
@@ -169,7 +171,7 @@ export default function Navigation() {
                       Sign Out
                     </button>
 
-                    {/* ACCOUNT BUTTON (added to the RIGHT of Sign Out) */}
+   
                     <Link
                       href="/account"
                       onClick={() => setIsMobileMenuOpen(false)}
