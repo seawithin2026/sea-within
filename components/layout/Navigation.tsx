@@ -53,7 +53,7 @@ export default function Navigation() {
     <>
       <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
 
-      {/* ⭐ TEMPORARY FIX: NAV BACKGROUND DOES NOT BLOCK CLICKS */}
+      {/* ⭐ NAV BACKGROUND DOES NOT BLOCK CLICKS */}
       <motion.nav
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -65,7 +65,7 @@ export default function Navigation() {
           backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
         }}
       >
-        {/* ⭐ ALL INTERACTIVE CONTENT RE-ENABLED */}
+        {/* ⭐ INTERACTIVE CONTENT RE-ENABLED */}
         <div className="pointer-events-auto max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
           {/* Brand */}
@@ -106,7 +106,6 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
-  
                 <Link
                   href="/account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
@@ -126,17 +125,18 @@ export default function Navigation() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* ⭐ MOBILE MENU — BACKDROP DOES NOT BLOCK CLICKS */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="pointer-events-auto md:hidden backdrop-blur-xl"
+              className="pointer-events-none md:hidden backdrop-blur-xl"
               style={{ backgroundColor: 'rgba(10, 22, 40, 0.95)' }}
             >
-              <div className="px-6 py-8 flex flex-col gap-6">
+              {/* ⭐ MENU CONTENT IS CLICKABLE */}
+              <div className="pointer-events-auto px-6 py-8 flex flex-col gap-6">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}

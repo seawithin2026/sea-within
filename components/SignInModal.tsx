@@ -11,7 +11,7 @@ export default function SignInModal({ isOpen, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md pointer-events-auto"
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md pointer-events-none"
           onClick={onClose}
         >
           <motion.div
@@ -29,7 +29,6 @@ export default function SignInModal({ isOpen, onClose }) {
               Sign in to access your sanctuary.
             </p>
 
-  
             <Link
               href="/auth/signin"
               onClick={onClose}
@@ -38,7 +37,6 @@ export default function SignInModal({ isOpen, onClose }) {
               Sign In
             </Link>
 
-    
             <button
               onClick={onClose}
               className="mt-6 text-white/40 hover:text-white/60 text-xs tracking-[2px]"
