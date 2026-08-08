@@ -45,9 +45,8 @@ export async function POST(req: NextRequest) {
       emailProfile?.stripe_subscription_id ??
       userProfile?.stripe_subscription_id ??
       null,
-    current_period_end:
-      emailProfile?.current_period_end ?? userProfile?.current_period_end ?? null,
-    is_member: emailProfile?.is_member ?? userProfile?.is_member ?? false,
+   
+      is_member: emailProfile?.is_member ?? userProfile?.is_member ?? false,
     membership_status:
       emailProfile?.membership_status ?? userProfile?.membership_status ?? null,
     username: userProfile?.username ?? null,

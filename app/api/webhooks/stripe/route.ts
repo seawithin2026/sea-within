@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
@@ -12,12 +15,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
+ 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    event = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    );
   } catch (err: any) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
@@ -28,152 +34,142 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  
-  const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
-
-
-  // CHECKOUT COMPLETED → CREATE/UPDATE PROFILE + MARK MEMBER
-
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-
-    const email =
-      (session.metadata && session.metadata.supabase_email) ||
-      session.customer_details?.email ||
-      undefined;
-
-    const supabaseUserId =
-      session.metadata && session.metadata.supabase_user_id
-        ? session.metadata.supabase_user_id
-        : null;
-
-    const countryCode = session.customer_details?.address?.country || "Unknown";
-    const country = regionNames.of(countryCode) || countryCode;
-
-    if (!email) {
-      return new NextResponse("No email on session", { status: 200 });
-    }
-
-    if (supabaseUserId) {
-      // Update the real auth-linked profile row
-      await supabase
-        .from("profiles")
-        .upsert({
-          id: supabaseUserId,
-          email,
-          country,
-          is_member: true,
-          membership_status: "active",
-          stripe_customer_id: session.customer,
-        });
-    } else {
-      // Fallback: email-only row (for pay-before-sign-in)
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("email", email)
-        .maybeSingle();
-
-      if (!existingProfile) {
-  
-        await supabase.from("profiles").insert({
-          email,
-          country,
-          is_member: true,
-          membership_status: "active",
-          stripe_customer_id: session.customer,
-        });
- 
-     } else {
-        await supabase
-          .from("profiles")
-          .update({
-            country,
-            is_member: true,
-            membership_status: "active",
-            stripe_customer_id: session.customer,
-          })
-          .eq("email", email);
-      }
-    }
+  // Helper: update profile safely
+  async function updateProfile(userId: string, fields: any) {
+    await supabase.from("profiles").update(fields).eq("id", userId);
   }
 
- 
-  // SUBSCRIPTION CREATED → STORE SUBSCRIPTION ID
- 
-  if (event.type === "customer.subscription.created") {
-    const subscription = event.data.object as Stripe.Subscription;
-
-    await supabase
+  // Helper: find profile by Stripe customer ID
+  async function findProfileByCustomer(customerId: string) {
+    const { data } = await supabase
       .from("profiles")
-      .update({
-        stripe_subscription_id: subscription.id,
-        current_period_end: new Date(subscription.current_period_end * 1000),
-        membership_status: subscription.status,
-        is_member: true,
-      })
-      .eq("stripe_customer_id", subscription.customer as string);
+      .select("*")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle();
+    return data;
   }
 
+  // ---------------------------
+  // ⭐ HANDLE EVENTS
+  // ---------------------------
 
-  // RENEWAL → KEEP USER ACTIVE
-  
-  if (event.type === "invoice.payment_succeeded") {
-    const invoice = event.data.object as Stripe.Invoice;
+  switch (event.type) {
+    // ---------------------------
+    // ⭐ Subscription Created
+    // ---------------------------
+    case "customer.subscription.created": {
+      const sub = event.data.object;
+      const customerId = sub.customer as string;
 
-    const customerId = invoice.customer as string;
+      const profile = await findProfileByCustomer(customerId);
+      if (!profile) break;
 
-    await supabase
-      .from("profiles")
-      .update({
+      await updateProfile(profile.id, {
         is_member: true,
         membership_status: "active",
-      })
-      .eq("stripe_customer_id", customerId);
-  }
+        stripe_subscription_id: sub.id,
+      });
 
-  
-  // USER CLICKED "CANCEL" → KEEP ACCESS UNTIL END
-  
-  if (event.type === "customer.subscription.updated") {
-    const subscription = event.data.object as Stripe.Subscription;
+      break;
+    }
 
-    if (subscription.cancel_at_period_end) {
-      await supabase
-        .from("profiles")
-        .update({
-          membership_status: "cancel_at_period_end",
-          current_period_end: new Date(subscription.current_period_end * 1000),
-        })
-        .eq("stripe_customer_id", subscription.customer as string);
-    } else if (subscription.status === "active") {
- 
-      await supabase
-        .from("profiles")
-        .update({
+    // ---------------------------
+    // ⭐ Subscription Updated
+    // (includes cancel_at_period_end)
+    // ---------------------------
+    case "customer.subscription.updated": {
+      const sub = event.data.object;
+      const customerId = sub.customer as string;
+
+      const profile = await findProfileByCustomer(customerId);
+      if (!profile) break;
+
+      if (sub.cancel_at_period_end) {
+        // User clicked "Cancel" in Stripe portal
+        await updateProfile(profile.id, {
+          is_member: true, // still active until period ends
+          membership_status: "cancelling",
+        });
+      } else {
+        // Normal update (renewal, plan change)
+        await updateProfile(profile.id, {
           is_member: true,
           membership_status: "active",
-          current_period_end: new Date(subscription.current_period_end * 1000),
-        })
-        .eq("stripe_customer_id", subscription.customer as string);
+        });
+      }
+
+      break;
     }
-  }
 
+    // ---------------------------
+    // ⭐ Subscription Deleted
+    // (billing period ended)
+    // ---------------------------
+    case "customer.subscription.deleted": {
+      const sub = event.data.object;
+      const customerId = sub.customer as string;
 
-  // SUBSCRIPTION ENDED → REMOVE ACCESS
- 
-  if (event.type === "customer.subscription.deleted") {
-    const subscription = event.data.object as Stripe.Subscription;
+      const profile = await findProfileByCustomer(customerId);
+      if (!profile) break;
 
-    await supabase
-      .from("profiles")
-      .update({
+      // Access removed ONLY when Stripe ends the subscription
+      await updateProfile(profile.id, {
         is_member: false,
-        membership_status: "canceled",
-   
-      })
-      .eq("stripe_customer_id", subscription.customer as string);
+        membership_status: "expired",
+        stripe_subscription_id: null,
+      });
+
+      break;
+    }
+
+    // ---------------------------
+    // ⭐ Invoice Paid
+    // ---------------------------
+    case "invoice.paid": {
+      const invoice = event.data.object;
+      const customerId = invoice.customer as string;
+
+      const profile = await findProfileByCustomer(customerId);
+      if (!profile) break;
+
+      await updateProfile(profile.id, {
+        is_member: true,
+        membership_status: "active",
+      });
+
+      break;
+    }
+
+    // ---------------------------
+    // ⭐ Invoice Payment Failed
+    // ---------------------------
+    case "invoice.payment_failed": {
+      const invoice = event.data.object;
+      const customerId = invoice.customer as string;
+
+      const profile = await findProfileByCustomer(customerId);
+      if (!profile) break;
+
+      await updateProfile(profile.id, {
+        membership_status: "past_due",
+      });
+
+      break;
+    }
+
+    // ---------------------------
+    // ⭐ Customer Created
+    // ---------------------------
+    case "customer.created": {
+      const customer = event.data.object;
+
+      // You may store customer.id if needed
+      break;
+    }
+
+    default:
+      break;
   }
 
-  return new NextResponse("OK", { status: 200 });
+  return NextResponse.json({ received: true });
 }
