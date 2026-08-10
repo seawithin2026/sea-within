@@ -13,58 +13,48 @@ export default function CallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    async function completeSignIn() {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const user = sessionData?.session?.user;
+    async function finishMagicLink() {
+      // Wait for Supabase to detect the session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      if (!user) {
+      if (!session) {
         router.replace("/auth/signin");
         return;
       }
 
-      // 1. Merge webhook row → auth row
-      await fetch("/api/profile/merge-from-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          email: user.email,
-        }),
-      });
+      const user = session.user;
 
-      // 2. Wait for membership to update
-      let tries = 0;
-      let profile = null;
+      // Fetch profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member, membership_status")
+        .eq("id", user.id)
+        .single();
 
-      while (tries < 5) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        profile = data;
-
-        if (profile?.is_member === true) break;
-
-        await new Promise((r) => setTimeout(r, 300));
-        tries++;
+      // If no profile → send to username creation
+      if (!profile) {
+        router.replace("/create-username");
+        return;
       }
 
-      // 3. Redirect only when membership is ready
-      if (profile?.is_member) {
+      // If member → sanctuary
+      if (profile.is_member === true) {
         router.replace("/sanctuary");
-      } else {
-        router.replace("/account");
+        return;
       }
+
+      // If NOT a member → reveal page
+      router.replace("/reveal");
     }
 
-    completeSignIn();
+    finishMagicLink();
   }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white">
-      <p className="text-center opacity-70">Completing signin...</p>
+      <p className="text-center opacity-70">Completing sign-in...</p>
     </div>
   );
 }
