@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 
 
-/**
- * POST /api/auth/signup
- * Creates a new user account.
- */
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -36,14 +33,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create profile (no tier)
+    // Create profile
     if (authData.user) {
       await supabase
         .from('profiles')
         .update({
-          membership_tier: 'free', // optional, or remove entirely
+          membership_tier: 'free',
         })
         .eq('id', authData.user.id);
+
+      // ⭐ NEW: Sync membership from pending Stripe customer
+      await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/sync-membership`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          userId: authData.user.id,
+        }),
+      });
     }
 
     return NextResponse.json({
