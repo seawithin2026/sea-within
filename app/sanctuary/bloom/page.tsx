@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { supabase } from "@/lib/supabase/client";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
@@ -26,25 +26,21 @@ function getNextSequentialIndex(total: number, storageKey: string) {
 }
 
 export default function BloomRitualPage() {
-  return (
-    <ProtectedRoute>
-      <BloomContent />
-    </ProtectedRoute>
-  );
+  return <BloomContent />;
 }
 
 
 function BloomContent() {
-  
+ 
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
-  
+
   const [mode, setMode] = useState<
     "loading" | "intro" | "bloom" | "completion" | "outro" | "sanctuary"
   >("loading");
 
   const [videoEnded, setVideoEnded] = useState(false);
-  
+ 
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
@@ -54,7 +50,7 @@ function BloomContent() {
     let isMounted = true;
 
     const init = async () => {
-   
+ 
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -65,15 +61,14 @@ function BloomContent() {
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
         if (!isMounted) return;
-    
+
         setGestureIndex(g);
         setBloomIndex(b);
         setMode("intro");
         return;
       }
 
-  
-    // Authenticated user
+      // Authenticated user
       setUserId(user.id);
 
       const { data: progress } = await supabase
@@ -105,7 +100,7 @@ function BloomContent() {
     };
 
     init();
-  
+
     return () => {
       isMounted = false;
     };
@@ -139,8 +134,6 @@ function BloomContent() {
     setMode("completion");
   };
 
-
-  
   /* -----------------------------------------------------
      🌸 Intro → Bloom transition
 ----------------------------------------------------- */
@@ -151,10 +144,10 @@ function BloomContent() {
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
+
   /* -----------------------------------------------------
      🌸 RENDER — CINEMATIC FLOW
-  ----------------------------------------------------- */
- 
+----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
@@ -235,7 +228,7 @@ function BloomContent() {
                     (vid as HTMLVideoElement).play();
                   }
                 }}
-                       className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
+                className="px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/40 text-white/90 hover:bg-white/10 transition-all duration-500"
               >
                 Replay
               </button>
