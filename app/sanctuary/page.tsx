@@ -16,7 +16,8 @@ export default async function SanctuaryPage() {
     .eq('id', user.id)
     .single();
 
-  const status = profile?.membership_status;
+  // ⭐ FIX: lowercase membership_status
+  const status = profile?.membership_status?.toLowerCase();
 
   const isMember =
     status === 'active' ||
