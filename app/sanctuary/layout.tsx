@@ -6,38 +6,60 @@ import UsernameModal from "@/components/UsernameModal";
 import "../globals.css";
 
 export default function SanctuaryLayout({ children }: { children: React.ReactNode }) {
-
+ 
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    async function checkUsername() {
+    async function checkAccess() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setLoading(false);
+        window.location.href = "/auth/signin";
         return;
       }
 
+      // Fetch profile with membership fields
       const { data: profile } = await supabase
         .from("profiles")
-        .select("username")
+        .select("username, is_member, membership_status")
         .eq("id", user.id)
         .single();
 
-      if (!profile?.username) {
+      if (!profile) {
+        window.location.href = "/auth/signin";
+        return;
+      }
+
+      // ⭐ Username check
+      if (!profile.username) {
         setShowModal(true);
       }
 
+      // ⭐ Membership guard
+      const status = profile.membership_status;
+
+      const isActive =
+        profile.is_member &&
+        (status === "active" || status === "cancelling");
+
+      if (!isActive) {
+        window.location.href = "/reveal"; // your membership-required page
+        return;
+      }
+
+      setAllowed(true);
       setLoading(false);
     }
 
-    checkUsername();
+    checkAccess();
   }, []);
 
   if (loading) return null;
+  if (!allowed) return null;
 
   return (
     <>
