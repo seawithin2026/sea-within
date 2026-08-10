@@ -12,7 +12,7 @@ export default function SanctuaryLayout({ children }) {
 
   useEffect(() => {
     async function checkAccess() {
-      // ⭐ FIX 1: use getSession instead of getUser
+   
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -24,7 +24,6 @@ export default function SanctuaryLayout({ children }) {
         return;
       }
 
-   
       const { data: profile } = await supabase
         .from("profiles")
         .select("username, is_member, membership_status")
@@ -36,10 +35,10 @@ export default function SanctuaryLayout({ children }) {
         return;
       }
 
-      // ⭐ FIX 3: lowercase membership_status
+      // ⭐ Membership guard FIRST
       const status = profile.membership_status?.toLowerCase();
 
-      // ⭐ FIX 2: membership guard FIRST
+
       const isActive =
         profile.is_member &&
         (status === "active" || status === "cancelling");
