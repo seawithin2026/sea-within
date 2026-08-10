@@ -4,28 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase/client";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface ChatMsg {
   id: string;
   message: string;
   author: string;
- user_id: string;
+  user_id: string;
   created_at: string;
   is_own?: boolean;
 }
 
 export default function CommunityPage() {
-  return (
-    <ProtectedRoute>
-      <CommunityContent />
-    </ProtectedRoute>
-  );
-}
-
-function CommunityContent() {
-
-  
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -116,8 +105,7 @@ function CommunityContent() {
         return;
       }
 
-  
-    setNewMessage("");
+      setNewMessage("");
     } catch {
       setFeedback("Something went wrong. Please try again.");
     } finally {
@@ -153,8 +141,7 @@ function CommunityContent() {
     if (!confirm("Delete this message?")) return;
 
     await fetch(`/api/messages?id=${id}&type=chat`, {
- 
-     method: "DELETE",
+      method: "DELETE",
     });
   };
 
@@ -265,9 +252,8 @@ function CommunityContent() {
                         >
                           Delete
                         </button>
-   
-                     </div>
-     )}
+                      </div>
+                    )}
                   </>
                 )}
               </div>
@@ -321,7 +307,6 @@ function CommunityContent() {
       </section>
 
       {/* STYLES */}
-    
       <style>{`
         .chat-scroll::-webkit-scrollbar {
           width: 0px;
