@@ -35,21 +35,23 @@ export default function ProfilePage() {
         return;
       }
 
-      // Fetch profile
+      // Fetch profile (⭐ now includes is_member)
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, bio, membership_status')
+        .select('full_name, bio, membership_status, is_member')
         .eq('id', authUser.id)
         .single();
 
       if (profile) {
         const status = profile.membership_status;
 
-        // ⭐ Active OR cancel_at_period_end → Explorer
-        const tier =
-          status === 'active' || status === 'cancel_at_period_end'
-            ? 'explorer'
-            : 'free';
+        // ⭐ Correct Option B membership tier mapping
+        let tier = 'free';
+
+        if (status === 'active') tier = 'explorer';
+        if (status === 'cancelling') tier = 'explorer'; // still active until period end
+        if (status === 'past_due') tier = 'seeker';     // payment failed
+        if (status === 'expired') tier = 'free';        // fully cancelled
 
         setUser({
           full_name: profile.full_name || '',
