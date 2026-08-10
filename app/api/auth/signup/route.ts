@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', authData.user.id);
 
-      // ⭐ NEW: Sync membership from pending Stripe customer
+      // ⭐ Sync membership from pending Stripe customer
       await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/sync-membership`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

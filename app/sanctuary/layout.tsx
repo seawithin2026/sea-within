@@ -5,24 +5,26 @@ import { supabase } from "@/lib/supabase/client";
 import UsernameModal from "@/components/UsernameModal";
 import "../globals.css";
 
-export default function SanctuaryLayout({ children }: { children: React.ReactNode }) {
- 
+export default function SanctuaryLayout({ children }) {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     async function checkAccess() {
+      // ⭐ FIX 1: use getSession instead of getUser
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
 
       if (!user) {
         window.location.href = "/auth/signin";
         return;
       }
 
-      // Fetch profile with membership fields
+   
       const { data: profile } = await supabase
         .from("profiles")
         .select("username, is_member, membership_status")
@@ -34,21 +36,22 @@ export default function SanctuaryLayout({ children }: { children: React.ReactNod
         return;
       }
 
-      // ⭐ Username check
-      if (!profile.username) {
-        setShowModal(true);
-      }
+      // ⭐ FIX 3: lowercase membership_status
+      const status = profile.membership_status?.toLowerCase();
 
-      // ⭐ Membership guard
-      const status = profile.membership_status;
-
+      // ⭐ FIX 2: membership guard FIRST
       const isActive =
         profile.is_member &&
         (status === "active" || status === "cancelling");
 
       if (!isActive) {
-        window.location.href = "/reveal"; // your membership-required page
+        window.location.href = "/reveal";
         return;
+      }
+
+      // ⭐ Username check AFTER membership
+      if (!profile.username) {
+        setShowModal(true);
       }
 
       setAllowed(true);
