@@ -21,25 +21,35 @@ export default function WisdomBoardPage() {
  
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
-  // ⭐ CLIENT MEMBERSHIP GATE
-  useEffect(() => {
-    const check = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return setAllowed(false);
+// ⭐ CLIENT MEMBERSHIP GATE — UPDATED
+useEffect(() => {
+  const check = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return setAllowed(false);
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_member")
-        .eq("id", user.id)
-        .single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("membership_status")
+      .eq("id", user.id)
+      .single();
 
-      if (!profile?.is_member) return setAllowed(false);
+    const status = profile?.membership_status;
 
-      setAllowed(true);
-    };
+    const isMember =
+      status === "active" ||
+      status === "cancel_at_period_end" ||
+      status === "trialing" ||
+      status === "past_due" ||
+      status === "cancelling";
 
-    check();
-  }, []);
+    if (!isMember) return setAllowed(false);
+
+    setAllowed(true);
+  };
+
+  check();
+}, []);
+
 
   if (allowed === null) return null;
   if (allowed === false) {

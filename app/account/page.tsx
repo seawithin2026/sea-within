@@ -34,9 +34,13 @@ export default function AccountPage() {
 
       // ⭐ Active OR cancel_at_period_end = still a member
       setIsMember(
-        status === "active" ||
-        status === "cancel_at_period_end"
-      );
+  status === "active" ||
+  status === "cancel_at_period_end" ||
+  status === "trialing" ||
+  status === "past_due" ||
+  status === "cancelling"
+);
+
 
       setLoading(false);
     };

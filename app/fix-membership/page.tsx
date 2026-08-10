@@ -10,10 +10,9 @@ export default function FixMembership() {
 
     console.log("Updated:", data, error);
   }
-  
 
   return (
-    <div className="relative z-[999999] p-10 bg-red-500 pointer-events-auto">
+    <div className="p-10">
       <h1 className="text-4xl">Fix Membership</h1>
 
       <button

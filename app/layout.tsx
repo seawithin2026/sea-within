@@ -1,20 +1,36 @@
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-import ClientLayout from "./ClientLayout";
+import { Cormorant_Garamond, Inter } from 'next/font/google';
+import './globals.css';
+import Navigation from '@/components/layout/Navigation';
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-display',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300'],
+  display: 'swap',
+  variable: '--font-body',
+});
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
       <head>
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
       </head>
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+        <Navigation />
+        {children}
       </body>
     </html>
   );

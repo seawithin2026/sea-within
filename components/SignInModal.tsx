@@ -11,7 +11,7 @@ export default function SignInModal({ isOpen, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md pointer-events-none"
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-md"
           onClick={onClose}
         >
           <motion.div
@@ -19,7 +19,7 @@ export default function SignInModal({ isOpen, onClose }) {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}
-            className="pointer-events-auto bg-[#0A1628] border border-white/10 rounded-xl p-10 max-w-sm w-full text-center"
+            className="bg-[#0A1628] border border-white/10 rounded-xl p-10 max-w-sm w-full text-center"
           >
             <h2 className="text-golden-400 font-display text-xl tracking-[3px] mb-6">
               Welcome Back

@@ -9,20 +9,23 @@ export default async function SanctuaryPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/reveal');
 
-  // 2. Must be an active OR cancel_at_period_end member
+  // 2. Must be a valid member
   const { data: profile } = await supabase
     .from('profiles')
     .select('membership_status')
     .eq('id', user.id)
     .single();
 
-  if (
-    !profile ||
-    (profile.membership_status !== 'active' &&
-     profile.membership_status !== 'cancel_at_period_end')
-  ) {
-    redirect('/reveal');
-  }
+  const status = profile?.membership_status;
+
+  const isMember =
+    status === 'active' ||
+    status === 'cancel_at_period_end' ||
+    status === 'trialing' ||
+    status === 'past_due' ||
+    status === 'cancelling';
+
+  if (!isMember) redirect('/reveal');
 
   // 3. Signed in + valid membership → show the page
   return (
