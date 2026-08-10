@@ -4,94 +4,12 @@ import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
 import { supabase } from "@/lib/supabase/client";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { GESTURES } from "@/data/gestures";
+import { BLOOMS } from "@/data/blooms";
+
 
 /* -----------------------------------------------------
-   🌿 GESTURES — 20 grounding + 30 awakening (FULL SET)
------------------------------------------------------ */
-const GESTURES = [
-  "Take a warm shower and feel the water on your skin for one slow breath.",
-  "Drink a glass of water and notice the coolness moving through you.",
-  "Step outside and let the air touch your face for a moment.",
-  "Place your hand on your heart and feel one rise and fall.",
-  "Hold a warm mug and feel the heat settle into your palms.",
-  "Look toward a window and let your eyes rest on the light.",
-  "Stretch your arms gently overhead and feel your body lengthen.",
-  "Splash cool water on your face and let it wake your senses.",
-  "Wrap yourself in a blanket and feel the weight settle around you.",
-  "Close your eyes and listen for the quietest sound in the room.",
-  "Sit down and let your shoulders soften for one slow breath.",
-  "Touch your forearm gently and notice the warmth of your own skin.",
-  "Stand still for a moment and feel the ground supporting you.",
-  "Light a candle and watch the flame for a few seconds.",
-  "Rest your back against a surface and feel it hold you.",
-  "Take one slow inhale and let it land softly inside you.",
-  "Gently roll your shoulders and notice where they soften.",
-  "Look at something beautiful and let your eyes rest there.",
-  "Place both feet flat on the floor and feel their weight.",
-  "Sit quietly and notice the rhythm of your breathing.",
-  "Take a slow breath and feel your chest open just a little more than usual.",
-  "Place your hand on your collarbone and feel the gentle rise beneath your touch.",
-  "Stand tall for a moment and feel your whole body wake up.",
-  "Let your fingertips trace your jawline and feel the warmth of your skin.",
-  "Sit quietly and feel your breath deepen naturally.",
-  "Place your palm over your heart and notice the quiet strength there.",
-  "Let your shoulders roll back and feel the space it creates inside you.",
-  "Rest your hand on your belly and feel the calm settling there.",
-  "Lift your face slightly and feel the air move across your skin.",
-  "Let your hands press gently together and feel the connection.",
-  "Take a slow inhale and feel your ribs expand like a quiet opening.",
-  "Place your hand on the side of your neck and feel the warmth of your pulse.",
-  "Let your spine lengthen and feel the energy rise through your body.",
-  "Rest your hand on your chest and feel the softness beneath your palm.",
-  "Let your breath fill your lower belly and feel the grounding.",
-  "Place your fingertips on your temples and feel the tension melt.",
-  "Sit still and feel your breath move all the way down your body.",
-  "Let your eyes soften and feel the calm behind them.",
-  "Place your hand on your shoulder and feel the warmth spread.",
-  "Take a slow breath and feel your whole body respond with ease.",
-  "Let your hands rest over your heart and feel the quiet inside you.",
-  "Sit tall and feel the strength in your spine.",
-  "Let your breath move gently through your chest and soften the space there.",
-  "Place your hand on your lower ribs and feel them expand with your breath.",
-  "Let your fingers rest lightly on your throat and feel the subtle movement.",
-  "Sit still and feel your breath warm the inside of your body.",
-  "Let your shoulders soften and feel the release ripple downward.",
-  "Place your hand on your upper arm and feel the comfort of your own touch.",
-  "Take a slow inhale and feel your body wake up from the inside.",
-  "Let your breath deepen and feel a quiet spark rise within you.",
-];
-
-/* -----------------------------------------------------
-   🌸 BLOOM VIDEOS — 23 total
------------------------------------------------------ */
-const BLOOMS = [
-  "/bloom-videos/bloom-01.mp4",
-  "/bloom-videos/bloom-02.mp4",
-  "/bloom-videos/bloom-03.mp4",
-  "/bloom-videos/bloom-04.mp4",
-  "/bloom-videos/bloom-05.mp4",
-  "/bloom-videos/bloom-06.mp4",
-  "/bloom-videos/bloom-07.mp4",
-  "/bloom-videos/bloom-08.mp4",
-  "/bloom-videos/bloom-09.mp4",
-  "/bloom-videos/bloom-10.mp4",
-  "/bloom-videos/bloom-11.mp4",
-  "/bloom-videos/bloom-12.mp4",
-  "/bloom-videos/bloom-13.mp4",
-  "/bloom-videos/bloom-14.mp4",
-  "/bloom-videos/bloom-15.mp4",
-  "/bloom-videos/bloom-16.mp4",
-  "/bloom-videos/bloom-17.mp4",
-  "/bloom-videos/bloom-18.mp4",
-  "/bloom-videos/bloom-19.mp4",
-  "/bloom-videos/bloom-20.mp4",
-  "/bloom-videos/bloom-21.mp4",
-  "/bloom-videos/bloom-22.mp4",
-  "/bloom-videos/bloom-23.mp4",
-];
-
-/* -----------------------------------------------------
-   🌙 PERFECT SEQUENTIAL ROTATION (NO REPEATS)
+   🌿 Sequential gesture rotation (kept)
 ----------------------------------------------------- */
 function getNextSequentialIndex(total: number, storageKey: string) {
   const raw =
@@ -115,14 +33,12 @@ export default function BloomRitualPage() {
   );
 }
 
-/* -----------------------------------------------------
-   🌸 BLOOM CONTENT — CLEAN, STABLE, NO MEMBERSHIP LOGIC
------------------------------------------------------ */
-function BloomContent() {
 
+function BloomContent() {
+  
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
-
+  
   const [mode, setMode] = useState<
     "loading" | "intro" | "bloom" | "completion" | "outro" | "sanctuary"
   >("loading");
@@ -132,233 +48,109 @@ function BloomContent() {
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     🌙 DAILY LOCKOUT — FIXED VERSION
-  ----------------------------------------------------- */
+     🌸 NEW BLOOM LOGIC — Supabase-based
+----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
 
     const init = async () => {
-      const today = new Date();
-      const todayKey = today.toISOString().split("T")[0];
-
-      const storedDate =
-        typeof window !== "undefined"
-          ? localStorage.getItem("lastBloomDate")
-          : null;
-      const storedBloom =
-        typeof window !== "undefined"
-          ? localStorage.getItem("todayBloomIndex")
-          : null;
-      const storedGesture =
-        typeof window !== "undefined"
-          ? localStorage.getItem("todayGestureIndex")
-          : null;
-
-      // If already bloomed today → go to sanctuary
-      if (storedDate === todayKey && storedBloom && storedGesture) {
-        if (!isMounted) return;
-        setBloomIndex(parseInt(storedBloom));
-        setGestureIndex(parseInt(storedGesture));
-        setMode("sanctuary");
-        return;
-      }
-
-      // Load user session
+   
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // ⭐ FIX: Wait for Supabase to finish loading session
-      if (user === undefined) return;
-
-      // ⭐ Guest logic (only when truly logged out)
-      if (user === null) {
+      // Guest users → keep your old rotation
+      if (!user) {
         const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
 
         if (!isMounted) return;
-
-        localStorage.setItem("todayBloomIndex", b.toString());
-        localStorage.setItem("todayGestureIndex", g.toString());
-        localStorage.setItem("lastBloomDate", todayKey);
-
+    
         setGestureIndex(g);
         setBloomIndex(b);
         setMode("intro");
         return;
       }
 
-      // Authenticated user
-      if (!isMounted) return;
+  
+    // Authenticated user
       setUserId(user.id);
 
-      const { data, error } = await supabase
+      const { data: progress } = await supabase
         .from("bloom_progress")
-        .select("last_completed")
+        .select("current_index, last_index")
         .eq("user_id", user.id)
         .single();
 
-      let lastCompleted: string | null = null;
+      let bloomIdx = 0;
 
-      if (!error && data?.last_completed) {
-        lastCompleted = new Date(data.last_completed)
-          .toISOString()
-          .split("T")[0];
-      }
+      if (progress) {
+        bloomIdx = progress.current_index ?? 0;
 
-      // Already bloomed today
-      if (lastCompleted === todayKey) {
-        if (!isMounted) return;
-
-        if (storedBloom && storedGesture) {
-          setBloomIndex(parseInt(storedBloom));
-          setGestureIndex(parseInt(storedGesture));
-        } else {
-          const existingGestureRaw =
-            typeof window !== "undefined"
-              ? localStorage.getItem("gestureIndex")
-              : null;
-          const existingBloomRaw =
-            typeof window !== "undefined"
-              ? localStorage.getItem("bloomIndex")
-              : null;
-
-          const g =
-            existingGestureRaw !== null
-              ? parseInt(existingGestureRaw)
-              : getNextSequentialIndex(GESTURES.length, "gestureIndex");
-          const b =
-            existingBloomRaw !== null
-              ? parseInt(existingBloomRaw)
-              : getNextSequentialIndex(BLOOMS.length, "bloomIndex");
-
-          localStorage.setItem("todayBloomIndex", b.toString());
-          localStorage.setItem("todayGestureIndex", g.toString());
-          localStorage.setItem("lastBloomDate", todayKey);
-
-          setGestureIndex(g);
-          setBloomIndex(b);
+        // Non-repeat rule
+        if (progress.last_index === bloomIdx) {
+          bloomIdx = (bloomIdx + 1) % BLOOMS.length;
         }
-
-        setMode("sanctuary");
-        return;
       }
 
-      // New bloom for today
-      const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
-      const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
+      const gestureIdx = getNextSequentialIndex(
+        GESTURES.length,
+        "gestureIndex"
+      );
 
       if (!isMounted) return;
-
-      localStorage.setItem("todayBloomIndex", b.toString());
-      localStorage.setItem("todayGestureIndex", g.toString());
-      localStorage.setItem("lastBloomDate", todayKey);
-
-      setGestureIndex(g);
-      setBloomIndex(b);
+      setGestureIndex(gestureIdx);
+      setBloomIndex(bloomIdx);
       setMode("intro");
     };
 
     init();
-
+  
     return () => {
       isMounted = false;
     };
-  }, [supabase]);
+  }, []);
 
-  const updateLastCompleted = async () => {
-    if (!userId) return;
+  /* -----------------------------------------------------
+     🌸 Completion → advance bloom
+----------------------------------------------------- */
+  const handleBloomComplete = async () => {
+    if (!userId || bloomIndex === null) {
+      setMode("completion");
+      return;
+    }
 
     const now = new Date().toISOString();
 
+    let nextIndex = bloomIndex + 1;
+
+    // Restart cycle at Bloom 01
+    if (nextIndex >= BLOOMS.length) {
+      nextIndex = 0;
+    }
+
     await supabase.from("bloom_progress").upsert({
       user_id: userId,
+      current_index: nextIndex,
+      last_index: bloomIndex,
       last_completed: now,
     });
+
+    setMode("completion");
   };
 
-  const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
-  const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
+  
   /* -----------------------------------------------------
-     🌸 DEV SHORTCUTS — PRESERVED
-  ----------------------------------------------------- */
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (!e.shiftKey) return;
-
-      if (e.key.toLowerCase() === "f") {
-        let current = parseInt(localStorage.getItem("bloomIndex") || "0");
-        current = (current + 1) % BLOOMS.length;
-        localStorage.setItem("bloomIndex", current.toString());
-        localStorage.removeItem("lastBloomDate");
-        alert(`🌸 Dev Bloom Test → Bloom #${current}`);
-        window.location.reload();
-        return;
-      }
-
-      if (e.key.toLowerCase() === "g") {
-        let current = parseInt(localStorage.getItem("gestureIndex") || "0");
-        current = (current + 1) % GESTURES.length;
-        localStorage.setItem("gestureIndex", current.toString());
-        localStorage.removeItem("lastBloomDate");
-        alert(`🌿 Dev Gesture Test → Gesture #${current}`);
-        window.location.reload();
-        return;
-      }
-
-      if (e.key.toLowerCase() === "r") {
-        localStorage.removeItem("todayBloomIndex");
-        localStorage.removeItem("lastBloomDate");
-        localStorage.removeItem("gestureIndex");
-        localStorage.removeItem("bloomIndex");
-        alert("🔄 Full Reset → Bloom #1");
-        window.location.reload();
-        return;
-      }
-
-      if (e.key === "1") {
-        localStorage.setItem("bloomIndex", "0");
-        localStorage.removeItem("lastBloomDate");
-        alert("🌸 Jumped to Bloom #1");
-        window.location.reload();
-        return;
-      }
-
-      if (e.key === "2") {
-        localStorage.setItem("bloomIndex", "1");
-        localStorage.removeItem("lastBloomDate");
-        alert("🌸 Jumped to Bloom #2");
-        window.location.reload();
-        return;
-      }
-    };
-
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
+     🌸 Intro → Bloom transition
+----------------------------------------------------- */
   const handleIntroContinue = () => {
     setVideoEnded(false);
     setMode("bloom");
   };
 
-  const handleBloomComplete = async () => {
-    if (bloomIndex !== null) {
-      localStorage.setItem("bloomIndex", bloomIndex.toString());
-    }
-    if (gestureIndex !== null) {
-      localStorage.setItem("todayBloomIndex", bloomIndex!.toString());
-      localStorage.setItem("todayGestureIndex", gestureIndex!.toString());
-      localStorage.setItem(
-        "lastBloomDate",
-        new Date().toISOString().split("T")[0]
-      );
-    }
-    await updateLastCompleted();
-    setMode("completion");
-  };
-
+  const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
+  const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
   /* -----------------------------------------------------
      🌸 RENDER — CINEMATIC FLOW
   ----------------------------------------------------- */
