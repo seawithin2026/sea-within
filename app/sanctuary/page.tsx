@@ -1,24 +1,53 @@
-import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 import VideoGrid from './VideoGrid';
 
-export default async function SanctuaryPage() {
-  const supabase = createServerSupabaseClient();
+export default function SanctuaryPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
-  // 1. Must be signed in
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/reveal');
+  useEffect(() => {
+    async function checkAccess() {
+      // 1. Must be signed in
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  // 2. Must be a valid member (⭐ clean + correct)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_member')
-    .eq('id', user.id)
-    .single();
+      if (!user) {
+        router.replace('/reveal');
+        return;
+      }
 
-  if (!profile?.is_member) redirect('/reveal');
+      // 2. Must be a valid member
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_member')
+        .eq('id', user.id)
+        .single();
 
-  // 3. Signed in + valid membership → show the page
+      if (!profile?.is_member) {
+        router.replace('/reveal');
+        return;
+      }
+
+      // 3. Access granted
+      setLoading(false);
+    }
+
+    checkAccess();
+  }, [router]);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-white/40 tracking-[3px] uppercase">Loading Sanctuary...</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-black text-white sanctuary-root">
 
