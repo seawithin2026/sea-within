@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET() {
   const supabase = createClient();
 
+
   // Get logged-in user
   const {
     data: { user },
