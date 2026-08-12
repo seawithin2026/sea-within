@@ -10,8 +10,8 @@ import SignInModal from '../SignInModal';
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
   { href: '/sanctuary/bloom', label: 'Bloom' },
-  { href: '/wisdom-board', label: 'Wisdom Board' },
-  { href: '/community', label: 'Community' },
+  { href: '/sanctuary/wisdom-board', label: 'Wisdom Board' },
+  { href: '/sanctuary/community', label: 'Community' },
 ];
 
 export default function Navigation() {
