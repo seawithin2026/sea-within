@@ -23,7 +23,7 @@ export default function AccountPage() {
 
       setUser(user);
 
-      // ⭐ UPDATED: use membership_status instead of is_member
+      // ⭐ Using membership_status (your current logic)
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status")
@@ -34,13 +34,12 @@ export default function AccountPage() {
 
       // ⭐ Active OR cancel_at_period_end = still a member
       setIsMember(
-  status === "active" ||
-  status === "cancel_at_period_end" ||
-  status === "trialing" ||
-  status === "past_due" ||
-  status === "cancelling"
-);
-
+        status === "active" ||
+        status === "cancel_at_period_end" ||
+        status === "trialing" ||
+        status === "past_due" ||
+        status === "cancelling"
+      );
 
       setLoading(false);
     };
@@ -50,10 +49,11 @@ export default function AccountPage() {
 
   /* -----------------------------------------------------
      ⭐ FIXED MANAGE SUBSCRIPTION FUNCTION
+     (Correct Stripe Customer Portal endpoint)
   ----------------------------------------------------- */
   const handleManageSubscription = async () => {
     try {
-      const response = await fetch("/api/stripe/portal", {
+      const response = await fetch("/api/stripe/create-portal-session", {
         method: "GET",
       });
 
