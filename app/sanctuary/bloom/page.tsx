@@ -9,7 +9,7 @@ import { BLOOMS } from "@/data/blooms";
 
 
 /* -----------------------------------------------------
-   🌿 Sequential gesture rotation (kept)
+   🌿 Sequential rotation fallback for guests only
 ----------------------------------------------------- */
 function getNextSequentialIndex(total: number, storageKey: string) {
   const raw =
@@ -31,7 +31,7 @@ export default function BloomRitualPage() {
 
 
 function BloomContent() {
- 
+
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
@@ -44,18 +44,20 @@ function BloomContent() {
   const [userId, setUserId] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     🌸 NEW BLOOM LOGIC — Supabase-based
+     🌸 INIT — Bloom + Gesture (Supabase)
 ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
 
     const init = async () => {
- 
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Guest users → keep your old rotation
+      /* -----------------------------------------------------
+         🌿 Guest users → fallback rotation
+      ----------------------------------------------------- */
       if (!user) {
         const g = getNextSequentialIndex(GESTURES.length, "gestureIndex");
         const b = getNextSequentialIndex(BLOOMS.length, "bloomIndex");
@@ -68,10 +70,15 @@ function BloomContent() {
         return;
       }
 
-      // Authenticated user
+      /* -----------------------------------------------------
+         🌿 Authenticated user
+      ----------------------------------------------------- */
       setUserId(user.id);
 
-      const { data: progress } = await supabase
+      /* -----------------------------------------------------
+         🌸 BLOOM PROGRESS FETCH
+      ----------------------------------------------------- */
+      const { data: bloomProgress } = await supabase
         .from("bloom_progress")
         .select("current_index, last_index")
         .eq("user_id", user.id)
@@ -79,21 +86,45 @@ function BloomContent() {
 
       let bloomIdx = 0;
 
-      if (progress) {
-        bloomIdx = progress.current_index ?? 0;
+      if (bloomProgress) {
+        bloomIdx = bloomProgress.current_index ?? 0;
 
         // Non-repeat rule
-        if (progress.last_index === bloomIdx) {
+        if (bloomProgress.last_index === bloomIdx) {
           bloomIdx = (bloomIdx + 1) % BLOOMS.length;
         }
       }
 
-      const gestureIdx = getNextSequentialIndex(
-        GESTURES.length,
-        "gestureIndex"
-      );
+      /* -----------------------------------------------------
+         🌿 GESTURE PROGRESS FETCH
+      ----------------------------------------------------- */
+      const { data: gestureProgress } = await supabase
+        .from("gesture_progress")
+        .select("current_index, last_index")
+        .eq("user_id", user.id)
+        .single();
+
+      let gestureIdx = 0;
+
+      if (gestureProgress) {
+        gestureIdx = gestureProgress.current_index ?? 0;
+
+        // Non-repeat rule
+        if (gestureProgress.last_index === gestureIdx) {
+          gestureIdx = (gestureIdx + 1) % GESTURES.length;
+        }
+      } else {
+        // First-time user → initialize gesture progress
+        await supabase.from("gesture_progress").insert({
+          user_id: user.id,
+          current_index: 0,
+          last_index: null,
+          last_completed: null,
+        });
+      }
 
       if (!isMounted) return;
+
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
       setMode("intro");
@@ -107,27 +138,39 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     🌸 Completion → advance bloom
+     🌸 Completion → advance bloom + gesture
 ----------------------------------------------------- */
   const handleBloomComplete = async () => {
-    if (!userId || bloomIndex === null) {
+    if (!userId || bloomIndex === null || gestureIndex === null) {
       setMode("completion");
       return;
     }
 
     const now = new Date().toISOString();
 
-    let nextIndex = bloomIndex + 1;
-
-    // Restart cycle at Bloom 01
-    if (nextIndex >= BLOOMS.length) {
-      nextIndex = 0;
-    }
+    /* -----------------------------------------------------
+       🌸 Advance Bloom
+    ----------------------------------------------------- */
+    let nextBloom = bloomIndex + 1;
+    if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
     await supabase.from("bloom_progress").upsert({
       user_id: userId,
-      current_index: nextIndex,
+      current_index: nextBloom,
       last_index: bloomIndex,
+      last_completed: now,
+    });
+
+    /* -----------------------------------------------------
+       🌿 Advance Gesture
+    ----------------------------------------------------- */
+    let nextGesture = gestureIndex + 1;
+    if (nextGesture >= GESTURES.length) nextGesture = 0;
+
+    await supabase.from("gesture_progress").upsert({
+      user_id: userId,
+      current_index: nextGesture,
+      last_index: gestureIndex,
       last_completed: now,
     });
 
