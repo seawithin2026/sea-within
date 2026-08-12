@@ -9,24 +9,14 @@ export default async function SanctuaryPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/reveal');
 
-  // 2. Must be a valid member
+  // 2. Must be a valid member (⭐ clean + correct)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('membership_status')
+    .select('is_member')
     .eq('id', user.id)
     .single();
 
-  // ⭐ FIX: lowercase membership_status
-  const status = profile?.membership_status?.toLowerCase();
-
-  const isMember =
-    status === 'active' ||
-    status === 'cancel_at_period_end' ||
-    status === 'trialing' ||
-    status === 'past_due' ||
-    status === 'cancelling';
-
-  if (!isMember) redirect('/reveal');
+  if (!profile?.is_member) redirect('/reveal');
 
   // 3. Signed in + valid membership → show the page
   return (
