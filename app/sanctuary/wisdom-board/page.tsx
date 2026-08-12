@@ -9,6 +9,8 @@ interface WisdomPost {
   id: string;
   content: string;
   created_at: string;
+  username?: string;
+  country?: string;
 }
 
 interface DailyMessage {
@@ -18,38 +20,36 @@ interface DailyMessage {
 
 export default function WisdomBoardPage() {
 
- 
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
-// ⭐ CLIENT MEMBERSHIP GATE — UPDATED
-useEffect(() => {
-  const check = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return setAllowed(false);
+  // ⭐ CLIENT MEMBERSHIP GATE
+  useEffect(() => {
+    const check = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setAllowed(false);
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("membership_status")
-      .eq("id", user.id)
-      .single();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("membership_status")
+        .eq("id", user.id)
+        .single();
 
-    const status = profile?.membership_status;
+      const status = profile?.membership_status;
 
-    const isMember =
-      status === "active" ||
-      status === "cancel_at_period_end" ||
-      status === "trialing" ||
-      status === "past_due" ||
-      status === "cancelling";
+      const isMember =
+        status === "active" ||
+        status === "cancel_at_period_end" ||
+        status === "trialing" ||
+        status === "past_due" ||
+        status === "cancelling";
 
-    if (!isMember) return setAllowed(false);
+      if (!isMember) return setAllowed(false);
 
-    setAllowed(true);
-  };
+      setAllowed(true);
+    };
 
-  check();
-}, []);
-
+    check();
+  }, []);
 
   if (allowed === null) return null;
   if (allowed === false) {
@@ -71,7 +71,7 @@ function ClientWisdomBoard() {
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
-  
+
 
   /* Slow bottle video */
   useEffect(() => {
@@ -112,6 +112,10 @@ function ClientWisdomBoard() {
     }
   };
 
+  /* -----------------------------------------------------
+     ⭐ FIXED — CLIENT-SIDE SUPABASE INSERT
+     (username + country + today's date)
+  ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!newPost.trim()) return;
@@ -120,19 +124,38 @@ function ClientWisdomBoard() {
     setFeedback("");
 
     try {
-      const res = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newPost, type: "wisdom" }),
-      });
+      // Get logged-in user
+      const { data: { user } } = await supabase.auth.getUser();
 
-      const data = await res.json();
+      if (!user) {
+        setFeedbackType("error");
+        setFeedback("You must be signed in to send a message.");
+        return;
+      }
 
-      if (!res.ok) {
+      // Fetch profile info (username + country)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username, country")
+        .eq("id", user.id)
+        .single();
+
+      // Insert message with metadata
+      const { error } = await supabase
+        .from("messages")
+        .insert({
+          content: newPost,
+          type: "wisdom",
+          user_id: user.id,
+          username: profile?.username || null,
+          country: profile?.country || null,
+          created_at: new Date().toISOString(),
+        });
+
+      if (error) {
         setFeedbackType("error");
         setFeedback(
-          data.suggestion ||
-            "This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed."
+          "This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed."
         );
         return;
       }
@@ -141,6 +164,7 @@ function ClientWisdomBoard() {
       setFeedback("Your reflection has been shared with the community.");
       setNewPost("");
       fetchPosts();
+
     } catch {
       setFeedbackType("error");
       setFeedback("Something went wrong. Please try again.");
