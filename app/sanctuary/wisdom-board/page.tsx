@@ -70,6 +70,7 @@ function ClientWisdomBoard() {
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
+ 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
 
 
@@ -104,7 +105,7 @@ function ClientWisdomBoard() {
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("/api/messages?type=wisdom");
+      const res = await fetch("/api/wisdom");
       const data = await res.json();
       setPosts(data.posts || []);
     } catch {
@@ -113,8 +114,7 @@ function ClientWisdomBoard() {
   };
 
   /* -----------------------------------------------------
-     ⭐ FIXED — CLIENT-SIDE SUPABASE INSERT
-     (username + country + today's date)
+     ⭐ CLEAN — USE NEW API + wisdom_posts
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -124,38 +124,19 @@ function ClientWisdomBoard() {
     setFeedback("");
 
     try {
-      // Get logged-in user
-      const { data: { user } } = await supabase.auth.getUser();
+      const res = await fetch("/api/wisdom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: newPost }),
+      });
 
-      if (!user) {
-        setFeedbackType("error");
-        setFeedback("You must be signed in to send a message.");
-        return;
-      }
+      const data = await res.json();
 
-      // Fetch profile info (username + country)
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, country")
-        .eq("id", user.id)
-        .single();
-
-      // Insert message with metadata
-      const { error } = await supabase
-        .from("messages")
-        .insert({
-          content: newPost,
-          type: "wisdom",
-          user_id: user.id,
-          username: profile?.username || null,
-          country: profile?.country || null,
-          created_at: new Date().toISOString(),
-        });
-
-      if (error) {
+      if (!res.ok) {
         setFeedbackType("error");
         setFeedback(
-          "This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed."
+          data.suggestion ||
+            "This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed."
         );
         return;
       }
@@ -268,6 +249,25 @@ function ClientWisdomBoard() {
               <p className="mt-4 text-xs text-stone-700/85">
                 Your message will be shared with the community along with your username, country, and today&apos;s date.
               </p>
+
+              {/* ⭐ DISPLAY POSTS */}
+              <div className="mt-20 w-full max-w-md text-left">
+                {posts.map((post) => (
+                  <div key={post.id} className="mb-10">
+                    <p className="text-xl text-[#3b2414] leading-relaxed mb-2">
+                      {post.content}
+                    </p>
+
+                    <p className="text-sm text-stone-700/85 italic">
+                      {post.username || "Unknown"} • {post.country || "Unknown"} •{" "}
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </p>
+
+                    <div className="h-px w-full bg-stone-300/40 mt-4"></div>
+                  </div>
+                ))}
+              </div>
+
             </div>
           </div>
         </div>

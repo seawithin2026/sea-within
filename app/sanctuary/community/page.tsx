@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase/client";
 interface ChatMsg {
   id: string;
   message: string;
-  author: string;
+  username: string;
   user_id: string;
   created_at: string;
   is_own?: boolean;
@@ -33,10 +33,10 @@ export default function CommunityPage() {
     });
   }, []);
 
-  /* FETCH MESSAGES */
+  /* FETCH MESSAGES — FIXED */
   const fetchMessages = async () => {
     try {
-      const res = await fetch("/api/messages?type=chat");
+      const res = await fetch("/api/chat");
       const data = await res.json();
 
       if (data.messages) {
@@ -76,7 +76,7 @@ export default function CommunityPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* SEND */
+  /* SEND — FIXED */
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -85,10 +85,10 @@ export default function CommunityPage() {
     setFeedback("");
 
     try {
-      const res = await fetch("/api/messages", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newMessage, type: "chat" }),
+        body: JSON.stringify({ content: newMessage }),
       });
 
       const data = await res.json();
@@ -113,7 +113,7 @@ export default function CommunityPage() {
     }
   };
 
-  /* EDIT */
+  /* EDIT — FIXED */
   const startEditing = (msg: ChatMsg) => {
     setEditingId(msg.id);
     setEditingContent(msg.message);
@@ -122,13 +122,12 @@ export default function CommunityPage() {
   const saveEdit = async () => {
     if (!editingId) return;
 
-    await fetch("/api/messages", {
+    await fetch("/api/chat", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         id: editingId,
         content: editingContent,
-        type: "chat",
       }),
     });
 
@@ -136,11 +135,11 @@ export default function CommunityPage() {
     setEditingContent("");
   };
 
-  /* DELETE */
+  /* DELETE — FIXED */
   const deleteMessage = async (id: string) => {
     if (!confirm("Delete this message?")) return;
 
-    await fetch(`/api/messages?id=${id}&type=chat`, {
+    await fetch(`/api/chat?id=${id}`, {
       method: "DELETE",
     });
   };
@@ -229,7 +228,7 @@ export default function CommunityPage() {
                   <>
                     {!msg.is_own && (
                       <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                        {msg.author}
+                        {msg.username}
                       </p>
                     )}
 
