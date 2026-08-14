@@ -1,7 +1,6 @@
 import { supabase } from './supabase/client';
 
-
-const BLOOM_MAX_DAY = 12; // change if needed
+const BLOOM_MAX_DAY = 12;
 
 export async function getBloomProgress() {
 
@@ -18,13 +17,14 @@ export async function getBloomProgress() {
     .single();
 
   if (error && error.code === 'PGRST116') {
-    // no row yet → create one
+ 
     const { data: created } = await supabase
       .from('bloom_progress')
       .insert({
         user_id: user.id,
         current_day: 1,
         completed_all: false,
+        last_completed: null,
       })
       .select()
       .single();
@@ -37,14 +37,13 @@ export async function getBloomProgress() {
 }
 
 export async function completeTodayBloom(progress: any) {
-
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const today = new Date().toISOString().slice(0, 10);
 
   let nextDay = progress.current_day + 1;
   let completedAll = progress.completed_all;
 
   if (nextDay > BLOOM_MAX_DAY) {
-    // finished cycle → mark completed_all
+
     nextDay = BLOOM_MAX_DAY;
     completedAll = true;
   }
@@ -66,8 +65,7 @@ export async function completeTodayBloom(progress: any) {
 }
 
 export async function resetBloomCycle(progress: any) {
-
-
+ 
   const { data, error } = await supabase
     .from('bloom_progress')
     .update({

@@ -25,7 +25,9 @@ export default function WisdomBoardPage() {
   // ⭐ CLIENT MEMBERSHIP GATE
   useEffect(() => {
     const check = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return setAllowed(false);
 
       const { data: profile } = await supabase
@@ -70,7 +72,6 @@ function ClientWisdomBoard() {
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
- 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
 
 
@@ -86,35 +87,51 @@ function ClientWisdomBoard() {
     fetchDailyMessage();
   }, []);
 
+  /* -----------------------------------------------------
+     ⭐ DAILY MESSAGE — DIRECT SUPABASE
+  ----------------------------------------------------- */
   const fetchDailyMessage = async () => {
-    try {
-      const res = await fetch("/api/daily-affirmation");
-      const data = await res.json();
+    const today = new Date().toISOString().split("T")[0];
 
-      setDailyMessage({
-        message: data.message,
-        attribution: data.attribution || "",
-      });
-    } catch {
+    const { data, error } = await supabase
+      .from("daily_affirmations")
+      .select("message, attribution")
+      .eq("date", today)
+      .maybeSingle();
+
+    if (error || !data) {
       setDailyMessage({
         message: "A new message will arrive soon.",
         attribution: "",
       });
+      return;
     }
-  };
 
-  const fetchPosts = async () => {
-    try {
-      const res = await fetch("/api/wisdom");
-      const data = await res.json();
-      setPosts(data.posts || []);
-    } catch {
-      console.error("Failed to fetch posts");
-    }
+    setDailyMessage({
+      message: data.message,
+      attribution: data.attribution || "",
+    });
   };
 
   /* -----------------------------------------------------
-     ⭐ CLEAN — USE NEW API + wisdom_posts
+     ⭐ FETCH POSTS — DIRECT SUPABASE
+  ----------------------------------------------------- */
+  const fetchPosts = async () => {
+    const { data, error } = await supabase
+      .from("wisdom_posts")
+      .select("id, content, created_at, username, country")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Failed to fetch posts:", error.message);
+      return;
+    }
+
+    setPosts(data || []);
+  };
+
+  /* -----------------------------------------------------
+     ⭐ SUBMIT POST — DIRECT SUPABASE
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -124,28 +141,41 @@ function ClientWisdomBoard() {
     setFeedback("");
 
     try {
-      const res = await fetch("/api/wisdom", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newPost }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth?.user) {
         setFeedbackType("error");
-        setFeedback(
-          data.suggestion ||
-            "This space welcomes honesty, depth, and vulnerability. Only harmful or attacking language is not allowed."
-        );
+        setFeedback("You must be logged in to post.");
         return;
       }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username, country")
+        .eq("id", auth.user.id)
+        .single();
+
+const { error: insertError } = await supabase.from("wisdom_posts").insert({
+  user_id: auth.user.id,
+  content: newPost,
+  username: profile?.username || null,
+  country: profile?.country || null,
+  is_approved: true, // ⭐ auto-approve after moderation
+  created_at: new Date().toISOString(),
+});
+
+if (insertError) {
+  setFeedbackType("error");
+  setFeedback("Your message could not be shared. Please try again.");
+  return;
+}
+
 
       setFeedbackType("success");
       setFeedback("Your reflection has been shared with the community.");
       setNewPost("");
+  
       fetchPosts();
-
+  
     } catch {
       setFeedbackType("error");
       setFeedback("Something went wrong. Please try again.");
@@ -154,6 +184,10 @@ function ClientWisdomBoard() {
     }
   };
 
+  const bottleVideoSrc = "/videos/ocean-bottle.mp4";
+  const heroVideoSrc = "/videos/ocean-hero.mp4";
+  const wisdomVideoSrc = "/videos/ocean-wisdom.mp4";
+
   return (
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
@@ -161,7 +195,7 @@ function ClientWisdomBoard() {
       {/* SECTION 1 — OCEAN HERO */}
       <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video className="w-full h-full object-cover" autoPlay loop muted playsInline>
-          <source src="/videos/ocean-hero.mp4" type="video/mp4" />
+          <source src={heroVideoSrc} type="video/mp4" />
         </video>
       </section>
 
@@ -176,14 +210,14 @@ function ClientWisdomBoard() {
           muted
           playsInline
         >
-          <source src="/videos/ocean-bottle.mp4" type="video/mp4" />
+          <source src={bottleVideoSrc} type="video/mp4" />
         </video>
       </section>
 
       {/* SECTION 4 — FULLSCREEN 50/50 SPLIT */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-        
+  
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
@@ -193,7 +227,7 @@ function ClientWisdomBoard() {
               muted
               playsInline
             >
-              <source src="/videos/ocean-wisdom.mp4" type="video/mp4" />
+              <source src={wisdomVideoSrc} type="video/mp4" />
             </video>
           </div>
 
@@ -266,8 +300,8 @@ function ClientWisdomBoard() {
                     <div className="h-px w-full bg-stone-300/40 mt-4"></div>
                   </div>
                 ))}
-              </div>
-
+  
+            </div>
             </div>
           </div>
         </div>

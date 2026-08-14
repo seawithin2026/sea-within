@@ -31,7 +31,7 @@ export default function BloomRitualPage() {
 
 
 function BloomContent() {
-
+ 
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
@@ -50,7 +50,7 @@ function BloomContent() {
     let isMounted = true;
 
     const init = async () => {
-
+  
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -76,28 +76,36 @@ function BloomContent() {
       setUserId(user.id);
 
       /* -----------------------------------------------------
-         🌸 BLOOM PROGRESS FETCH
-      ----------------------------------------------------- */
+         🌸 BLOOM PROGRESS FETCH (Correct)
+----------------------------------------------------- */
       const { data: bloomProgress } = await supabase
         .from("bloom_progress")
-        .select("current_index, last_index")
+        .select("current_day, completed_all, last_completed")
         .eq("user_id", user.id)
         .single();
 
       let bloomIdx = 0;
 
       if (bloomProgress) {
-        bloomIdx = bloomProgress.current_index ?? 0;
+        bloomIdx = bloomProgress.current_day - 1;
 
-        // Non-repeat rule
-        if (bloomProgress.last_index === bloomIdx) {
-          bloomIdx = (bloomIdx + 1) % BLOOMS.length;
+        const today = new Date().toISOString().slice(0, 10);
+        if (bloomProgress.last_completed === today) {
+          bloomIdx = bloomProgress.current_day - 1;
         }
+      } else {
+        // First-time user → initialize bloom progress
+        await supabase.from("bloom_progress").insert({
+          user_id: user.id,
+          current_day: 1,
+          completed_all: false,
+          last_completed: null,
+        });
       }
 
       /* -----------------------------------------------------
-         🌿 GESTURE PROGRESS FETCH
-      ----------------------------------------------------- */
+         🌿 GESTURE PROGRESS FETCH (Correct)
+----------------------------------------------------- */
       const { data: gestureProgress } = await supabase
         .from("gesture_progress")
         .select("current_index, last_index")
@@ -109,16 +117,16 @@ function BloomContent() {
       if (gestureProgress) {
         gestureIdx = gestureProgress.current_index ?? 0;
 
-        // Non-repeat rule
+
         if (gestureProgress.last_index === gestureIdx) {
           gestureIdx = (gestureIdx + 1) % GESTURES.length;
         }
       } else {
-        // First-time user → initialize gesture progress
+  
         await supabase.from("gesture_progress").insert({
           user_id: user.id,
           current_index: 0,
-          last_index: null,
+          last_index: -1,
           last_completed: null,
         });
       }
@@ -149,30 +157,34 @@ function BloomContent() {
     const now = new Date().toISOString();
 
     /* -----------------------------------------------------
-       🌸 Advance Bloom
+       🌸 Advance Bloom (Correct)
     ----------------------------------------------------- */
     let nextBloom = bloomIndex + 1;
     if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
-    await supabase.from("bloom_progress").upsert({
-      user_id: userId,
-      current_index: nextBloom,
-      last_index: bloomIndex,
-      last_completed: now,
-    });
+    await supabase
+      .from("bloom_progress")
+      .update({
+        current_day: nextBloom + 1,
+        last_completed: now,
+        updated_at: now,
+      })
+      .eq("user_id", userId);
 
     /* -----------------------------------------------------
-       🌿 Advance Gesture
+       🌿 Advance Gesture (Correct)
     ----------------------------------------------------- */
     let nextGesture = gestureIndex + 1;
     if (nextGesture >= GESTURES.length) nextGesture = 0;
 
-    await supabase.from("gesture_progress").upsert({
-      user_id: userId,
-      current_index: nextGesture,
-      last_index: gestureIndex,
-      last_completed: now,
-    });
+    await supabase
+      .from("gesture_progress")
+      .update({
+        current_index: nextGesture,
+        last_index: gestureIndex,
+        last_completed: now,
+      })
+      .eq("user_id", userId);
 
     setMode("completion");
   };
