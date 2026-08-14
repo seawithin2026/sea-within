@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase/client";
+import { moderateContent } from "@/lib/moderation";
 
 interface ChatMsg {
   id: string;
@@ -33,21 +34,19 @@ export default function CommunityPage() {
     });
   }, []);
 
-  /* FETCH MESSAGES — FIXED */
+  /* FETCH MESSAGES — CLIENT-SIDE SUPABASE */
   const fetchMessages = async () => {
-    try {
-      const res = await fetch("/api/chat");
-      const data = await res.json();
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .select("id, message, username, user_id, created_at")
+      .order("created_at", { ascending: true });
 
-      if (data.messages) {
-        const withOwnership = data.messages.map((msg: ChatMsg) => ({
-          ...msg,
-          is_own: user && msg.user_id === user.id,
-        }));
-        setMessages(withOwnership);
-      }
-    } catch {
-      console.error("Failed to fetch messages");
+    if (!error && data) {
+      const withOwnership = data.map((msg: ChatMsg) => ({
+        ...msg,
+        is_own: user && msg.user_id === user.id,
+      }));
+      setMessages(withOwnership);
     }
   };
 
@@ -76,7 +75,7 @@ export default function CommunityPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* SEND — FIXED */
+  /* SEND — CLIENT-SIDE SUPABASE + MODERATION */
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -85,35 +84,46 @@ export default function CommunityPage() {
     setFeedback("");
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newMessage }),
+      if (!user) {
+        setFeedback("Please sign in to share your light with the circle.");
+        return;
+      }
+
+      const moderation = moderateContent(newMessage);
+      if (!moderation.approved) {
+        setFeedback(
+          moderation.message ||
+            "Your message didn’t meet the circle’s guidelines. Try something softer or more reflective."
+        );
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single();
+
+      const { error } = await supabase.from("chat_messages").insert({
+        user_id: user.id,
+        message: newMessage,
+        username: profile?.username || "Anonymous",
+        created_at: new Date().toISOString(),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401) {
-          setFeedback("Please sign in to share your light with the circle.");
-        } else {
-          setFeedback(
-            data.suggestion ||
-              "Your message didn’t meet the circle’s guidelines. Try something softer or more reflective."
-          );
-        }
+      if (error) {
+        setFeedback("Something went wrong. Please try again.");
         return;
       }
 
       setNewMessage("");
-    } catch {
-      setFeedback("Something went wrong. Please try again.");
+      fetchMessages();
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  /* EDIT — FIXED */
+  /* EDIT — CLIENT-SIDE SUPABASE */
   const startEditing = (msg: ChatMsg) => {
     setEditingId(msg.id);
     setEditingContent(msg.message);
@@ -122,26 +132,31 @@ export default function CommunityPage() {
   const saveEdit = async () => {
     if (!editingId) return;
 
-    await fetch("/api/chat", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: editingId,
-        content: editingContent,
-      }),
-    });
+    const moderation = moderateContent(editingContent);
+    if (!moderation.approved) {
+      setFeedback(
+        moderation.message ||
+          "Your message didn’t meet the circle’s guidelines."
+      );
+      return;
+    }
+
+    await supabase
+      .from("chat_messages")
+      .update({ message: editingContent })
+      .eq("id", editingId);
 
     setEditingId(null);
     setEditingContent("");
+    fetchMessages();
   };
 
-  /* DELETE — FIXED */
+  /* DELETE — CLIENT-SIDE SUPABASE */
   const deleteMessage = async (id: string) => {
     if (!confirm("Delete this message?")) return;
 
-    await fetch(`/api/chat?id=${id}`, {
-      method: "DELETE",
-    });
+    await supabase.from("chat_messages").delete().eq("id", id);
+    fetchMessages();
   };
 
   return (
