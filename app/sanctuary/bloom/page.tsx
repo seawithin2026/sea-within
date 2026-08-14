@@ -7,16 +7,11 @@ import { supabase } from "@/lib/supabase/client";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
-
-
-
 export default function BloomRitualPage() {
   return <BloomContent />;
 }
 
-
 function BloomContent() {
-
   const [gestureIndex, setGestureIndex] = useState<number | null>(null);
   const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
@@ -33,11 +28,9 @@ function BloomContent() {
     let isMounted = true;
 
     const init = async () => {
-   
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
 
       if (!user) {
         // Guests fallback
@@ -47,7 +40,6 @@ function BloomContent() {
         return;
       }
 
-   
       setUserId(user.id);
 
       /* BLOOM PROGRESS */
@@ -60,16 +52,15 @@ function BloomContent() {
       const today = new Date().toISOString().slice(0, 10);
 
       let bloomIdx = 0;
+      let bloomedToday = false;
 
       if (bloomProgress) {
         bloomIdx = bloomProgress.current_day - 1;
 
-   
         if (bloomProgress.last_completed === today) {
-          setHasBloomedToday(true);
+          bloomedToday = true;
         }
       } else {
-  
         await supabase.from("bloom_progress").insert({
           user_id: user.id,
           current_day: 1,
@@ -89,10 +80,8 @@ function BloomContent() {
 
       if (gestureProgress) {
         gestureIdx = gestureProgress.current_index ?? 0;
-  
       } else {
-  
-      await supabase.from("gesture_progress").insert({
+        await supabase.from("gesture_progress").insert({
           user_id: user.id,
           current_index: 0,
           last_index: -1,
@@ -104,7 +93,8 @@ function BloomContent() {
 
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
-      setMode("gesture");
+      setHasBloomedToday(bloomedToday);
+      setMode(bloomedToday ? "bloom" : "gesture");
     };
 
     init();
@@ -116,6 +106,7 @@ function BloomContent() {
 
   /* -----------------------------------------------------
      🌿 COMPLETE GESTURE → Save progress + go to Bloom
+     (Only if not already bloomed today)
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!userId || bloomIndex === null || gestureIndex === null) {
@@ -123,10 +114,16 @@ function BloomContent() {
       return;
     }
 
+    // If already bloomed today, just show today's bloom again
+    if (hasBloomedToday) {
+      setMode("bloom");
+      return;
+    }
+
     const now = new Date().toISOString();
     const today = now.slice(0, 10);
 
-    /* Advance Bloom */
+    /* Advance Bloom (next day in cycle) */
     let nextBloom = bloomIndex + 1;
     if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
@@ -152,6 +149,7 @@ function BloomContent() {
       })
       .eq("user_id", userId);
 
+    setBloomIndex(nextBloom);
     setHasBloomedToday(true);
     setMode("bloom");
   };
@@ -213,8 +211,6 @@ function BloomContent() {
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-
-
           {videoEnded && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
@@ -227,8 +223,6 @@ function BloomContent() {
         </div>
       )}
 
-
-
       {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
@@ -240,8 +234,7 @@ function BloomContent() {
           }
         }
 
-
-
+        
         @keyframes softRiseSlow {
           from {
             opacity: 0;
@@ -257,9 +250,6 @@ function BloomContent() {
           animation: fadeIn 1s ease forwards;
         }
 
-
-
-        
         .animate-softRiseSlow {
           animation: softRiseSlow 2.4s ease forwards;
         }
