@@ -19,10 +19,10 @@ interface DailyMessage {
 }
 
 export default function WisdomBoardPage() {
-
+ 
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
-  // ⭐ CLIENT MEMBERSHIP GATE
+  // ⭐ MEMBERSHIP GATE
   useEffect(() => {
     const check = async () => {
       const {
@@ -63,7 +63,7 @@ export default function WisdomBoardPage() {
 }
 
 /* -----------------------------------------------------
-   ⭐ CLIENT COMPONENT FOR INTERACTIVITY
+   ⭐ CLIENT COMPONENT
 ----------------------------------------------------- */
 function ClientWisdomBoard() {
   const [posts, setPosts] = useState<WisdomPost[]>([]);
@@ -88,33 +88,39 @@ function ClientWisdomBoard() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ DAILY MESSAGE — DIRECT SUPABASE
+     ⭐ DAILY MESSAGE — CALL API ROUTE
   ----------------------------------------------------- */
   const fetchDailyMessage = async () => {
-    const today = new Date().toISOString().split("T")[0];
+    try {
+      const res = await fetch("/api/affirmation", {
+        method: "GET",
+        cache: "no-store",
+      });
 
-    const { data, error } = await supabase
-      .from("daily_affirmations")
-      .select("message, attribution")
-      .eq("date", today)
-      .maybeSingle();
+      if (!res.ok) {
+        setDailyMessage({
+          message: "A new message will arrive soon.",
+          attribution: "",
+        });
+        return;
+      }
 
-    if (error || !data) {
+      const data = await res.json();
+
+      setDailyMessage({
+        message: data.message,
+        attribution: data.attribution || "",
+      });
+    } catch {
       setDailyMessage({
         message: "A new message will arrive soon.",
         attribution: "",
       });
-      return;
     }
-
-    setDailyMessage({
-      message: data.message,
-      attribution: data.attribution || "",
-    });
   };
 
   /* -----------------------------------------------------
-     ⭐ FETCH POSTS — DIRECT SUPABASE
+     ⭐ FETCH POSTS
   ----------------------------------------------------- */
   const fetchPosts = async () => {
     const { data, error } = await supabase
@@ -131,7 +137,7 @@ function ClientWisdomBoard() {
   };
 
   /* -----------------------------------------------------
-     ⭐ SUBMIT POST — DIRECT SUPABASE
+     ⭐ SUBMIT POST
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -154,28 +160,27 @@ function ClientWisdomBoard() {
         .eq("id", auth.user.id)
         .single();
 
-const { error: insertError } = await supabase.from("wisdom_posts").insert({
-  user_id: auth.user.id,
-  content: newPost,
-  username: profile?.username || null,
-  country: profile?.country || null,
-  is_approved: true, // ⭐ auto-approve after moderation
-  created_at: new Date().toISOString(),
-});
+      const { error: insertError } = await supabase.from("wisdom_posts").insert({
+        user_id: auth.user.id,
+        content: newPost,
+        username: profile?.username || null,
+        country: profile?.country || null,
+        is_approved: true,
+        created_at: new Date().toISOString(),
+      });
 
-if (insertError) {
-  setFeedbackType("error");
-  setFeedback("Your message could not be shared. Please try again.");
-  return;
-}
-
+      if (insertError) {
+        setFeedbackType("error");
+        setFeedback("Your message could not be shared. Please try again.");
+        return;
+      }
 
       setFeedbackType("success");
       setFeedback("Your reflection has been shared with the community.");
       setNewPost("");
-  
+
       fetchPosts();
-  
+   
     } catch {
       setFeedbackType("error");
       setFeedback("Something went wrong. Please try again.");
@@ -192,7 +197,7 @@ if (insertError) {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* SECTION 1 — OCEAN HERO */}
+      {/* SECTION 1 — HERO */}
       <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video className="w-full h-full object-cover" autoPlay loop muted playsInline>
           <source src={heroVideoSrc} type="video/mp4" />
@@ -214,10 +219,10 @@ if (insertError) {
         </video>
       </section>
 
-      {/* SECTION 4 — FULLSCREEN 50/50 SPLIT */}
+      {/* SECTION 3 — WISDOM BOARD */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-  
+    
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
@@ -284,7 +289,7 @@ if (insertError) {
                 Your message will be shared with the community along with your username, country, and today&apos;s date.
               </p>
 
-              {/* ⭐ DISPLAY POSTS */}
+              {/* POSTS */}
               <div className="mt-20 w-full max-w-md text-left">
                 {posts.map((post) => (
                   <div key={post.id} className="mb-10">
@@ -300,8 +305,7 @@ if (insertError) {
                     <div className="h-px w-full bg-stone-300/40 mt-4"></div>
                   </div>
                 ))}
-  
-            </div>
+              </div>
             </div>
           </div>
         </div>
