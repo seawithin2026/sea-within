@@ -92,7 +92,7 @@ function ClientWisdomBoard() {
   ----------------------------------------------------- */
   const fetchDailyMessage = async () => {
     try {
-      const res = await fetch("/api/affirmation", {
+      const res = await fetch("/api/daily-affirmation", {
         method: "GET",
         cache: "no-store",
       });
