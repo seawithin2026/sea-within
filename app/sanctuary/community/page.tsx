@@ -197,135 +197,91 @@ export default function CommunityPage() {
         </ScrollReveal>
       </section>
 
-      {/* CHAT */}
-      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
-        <div className="space-y-4 pb-24">
-          {messages.length === 0 && (
-            <div className="text-center py-20">
-              <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
-                The circle is open.
-              </p>
-              <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
-                Be the first to share your light.
-              </p>
-            </div>
+{/* CHAT */}
+<section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
+  <div className="space-y-4 pb-24">
+    {messages.length === 0 && (
+      <div className="text-center py-20">
+        <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
+          The circle is open.
+        </p>
+        <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
+          Be the first to share your light.
+        </p>
+      </div>
+    )}
+
+    {messages.map((msg) => (
+      <div
+        key={msg.id}
+        className={`flex ${msg.is_own ? "justify-end" : "justify-start"}`}
+      >
+        <div
+          className={`chat-bubble ${
+            msg.is_own ? "own" : ""
+          } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
+        >
+          {/* Username for others */}
+          {!msg.is_own && (
+            <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+              {msg.username}
+            </p>
           )}
 
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.is_own ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`chat-bubble ${
-                  msg.is_own ? "own" : ""
-                } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
-              >
-                {editingId === msg.id ? (
-                  <>
-                    <textarea
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                      rows={3}
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-[#E8D7B8] text-sm"
-                    />
-
-                    <div className="flex gap-4 mt-3">
-                      <button
-                        onClick={saveEdit}
-                        className="text-golden-400/70 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                      >
-                        Save
-                      </button>
-
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {!msg.is_own && (
-                      <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                        {msg.username}
-                      </p>
-                    )}
-
-                    <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
-                      {msg.content}
-                    </p>
-
-                    {msg.is_own && (
-                      <div className="flex gap-4 mt-3">
-                        <button
-                          onClick={() => startEditing(msg)}
-                          className="text-golden-400/60 hover:text-golden-400/90 text-xs transition-colors duration-300"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => deleteMessage(msg.id)}
-                          className="text-golden-400/40 hover:text-golden-400/70 text-xs transition-colors duration-300"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-
-          <div ref={messagesEndRef} />
-        </div>
-      </section>
-
-      {/* FEEDBACK */}
-      {feedback && (
-        <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
-          <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
-            {feedback}
-          </div>
-        </div>
-      )}
-
-      {/* INPUT BAR */}
-      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
-        <div className="max-w-3xl mx-auto">
-          <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
-            This space is for uplifting, reflective, and supportive communication.
+          {/* Message content */}
+          <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+            {msg.content}
           </p>
-
-          <form onSubmit={handleSend} className="flex gap-3">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Share something uplifting..."
-              maxLength={300}
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
-                       font-body text-sm text-sea-100 placeholder:text-[#FFFFFF]
-                       focus:outline-none focus:border-golden-400/30 focus:bg.white/[0.08]
-                       transition-all duration-300"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting || !newMessage.trim()}
-              className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
-                       rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
-                       uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
-                       disabled:opacity-40"
-            >
-              {isSubmitting ? "..." : "Send"}
-            </button>
-          </form>
         </div>
-      </section>
+      </div>
+    ))}
+
+    <div ref={messagesEndRef} />
+  </div>
+</section>
+
+{/* FEEDBACK */}
+{feedback && (
+  <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
+    <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
+      {feedback}
+    </div>
+  </div>
+)}
+
+{/* INPUT BAR */}
+<section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
+  <div className="max-w-3xl mx-auto">
+    <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
+      This space is for uplifting, reflective, and supportive communication.
+    </p>
+
+    <form onSubmit={handleSend} className="flex gap-3">
+      <input
+        type="text"
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        placeholder="Share something uplifting..."
+        maxLength={300}
+        className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
+                 font-body text-sm text-sea-100 placeholder:text-[#FFFFFF]
+                 focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
+                 transition-all duration-300"
+      />
+      <button
+        type="submit"
+        disabled={isSubmitting || !newMessage.trim()}
+        className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
+                 rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
+                 uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
+                 disabled:opacity-40"
+      >
+        {isSubmitting ? "..." : "Send"}
+      </button>
+    </form>
+  </div>
+</section>
+
 
       {/* STYLES */}
       <style>{`
