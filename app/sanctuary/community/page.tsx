@@ -8,7 +8,7 @@ import { moderateContent } from "@/lib/moderation";
 
 interface ChatMsg {
   id: string;
-  message: string;
+  content: string;
   username: string;
   user_id: string;
   created_at: string;
@@ -34,11 +34,11 @@ export default function CommunityPage() {
     });
   }, []);
 
-  /* FETCH MESSAGES — CLIENT-SIDE SUPABASE */
+  /* FETCH MESSAGES */
   const fetchMessages = async () => {
     const { data, error } = await supabase
       .from("chat_messages")
-      .select("id, message, username, user_id, created_at")
+      .select("id, content, username, user_id, created_at")
       .order("created_at", { ascending: true });
 
     if (!error && data) {
@@ -47,6 +47,8 @@ export default function CommunityPage() {
         is_own: user && msg.user_id === user.id,
       }));
       setMessages(withOwnership);
+    } else {
+      setFeedback("Something went wrong. Please try again.");
     }
   };
 
@@ -75,7 +77,7 @@ export default function CommunityPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  /* SEND — CLIENT-SIDE SUPABASE + MODERATION */
+  /* SEND */
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -106,7 +108,7 @@ export default function CommunityPage() {
 
       const { error } = await supabase.from("chat_messages").insert({
         user_id: user.id,
-        message: newMessage,
+        content: newMessage,
         username: profile?.username || "Anonymous",
         created_at: new Date().toISOString(),
       });
@@ -123,10 +125,10 @@ export default function CommunityPage() {
     }
   };
 
-  /* EDIT — CLIENT-SIDE SUPABASE */
+  /* EDIT */
   const startEditing = (msg: ChatMsg) => {
     setEditingId(msg.id);
-    setEditingContent(msg.message);
+    setEditingContent(msg.content);
   };
 
   const saveEdit = async () => {
@@ -143,7 +145,7 @@ export default function CommunityPage() {
 
     await supabase
       .from("chat_messages")
-      .update({ message: editingContent })
+      .update({ content: editingContent })
       .eq("id", editingId);
 
     setEditingId(null);
@@ -151,7 +153,7 @@ export default function CommunityPage() {
     fetchMessages();
   };
 
-  /* DELETE — CLIENT-SIDE SUPABASE */
+  /* DELETE */
   const deleteMessage = async (id: string) => {
     if (!confirm("Delete this message?")) return;
 
@@ -248,7 +250,7 @@ export default function CommunityPage() {
                     )}
 
                     <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
-                      {msg.message}
+                      {msg.content}
                     </p>
 
                     {msg.is_own && (
@@ -303,7 +305,7 @@ export default function CommunityPage() {
               maxLength={300}
               className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
                        font-body text-sm text-sea-100 placeholder:text-[#FFFFFF]
-                       focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
+                       focus:outline-none focus:border-golden-400/30 focus:bg.white/[0.08]
                        transition-all duration-300"
             />
             <button
