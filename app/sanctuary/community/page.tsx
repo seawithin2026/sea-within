@@ -30,12 +30,14 @@ export default function CommunityPage() {
   /* LOAD USER */
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+      setUser(data.user ?? null);
     });
   }, []);
 
   /* FETCH MESSAGES */
   const fetchMessages = async () => {
+    if (!user?.id) return;
+
     const { data, error } = await supabase
       .from("chat_messages")
       .select("id, content, username, user_id, created_at")
@@ -44,7 +46,7 @@ export default function CommunityPage() {
     if (!error && data) {
       const withOwnership = data.map((msg: ChatMsg) => ({
         ...msg,
-        is_own: user && msg.user_id === user.id,
+        is_own: msg.user_id === user.id,
       }));
       setMessages(withOwnership);
     } else {
@@ -52,9 +54,10 @@ export default function CommunityPage() {
     }
   };
 
-  /* REALTIME */
+  /* REALTIME — FIXED */
   useEffect(() => {
-    if (!user) return;
+    if (user === null) return;
+    if (!user?.id) return;
 
     fetchMessages();
 
@@ -63,7 +66,9 @@ export default function CommunityPage() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "chat_messages" },
-        () => fetchMessages()
+        () => {
+          if (user?.id) fetchMessages();
+        }
       )
       .subscribe();
 
@@ -86,7 +91,7 @@ export default function CommunityPage() {
     setFeedback("");
 
     try {
-      if (!user) {
+      if (!user?.id) {
         setFeedback("Please sign in to share your light with the circle.");
         return;
       }
