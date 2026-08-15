@@ -21,6 +21,9 @@ function BloomContent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
 
+  // 🌸 NEW STATE — fixes your message logic
+  const [justBloomedNow, setJustBloomedNow] = useState(false);
+
   /* -----------------------------------------------------
      🌿 INIT — Load Bloom + Gesture Progress
   ----------------------------------------------------- */
@@ -33,7 +36,6 @@ function BloomContent() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        // Guests fallback
         setGestureIndex(0);
         setBloomIndex(0);
         setMode("gesture");
@@ -94,6 +96,8 @@ function BloomContent() {
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
       setHasBloomedToday(bloomedToday);
+
+      // If already bloomed today → skip gesture
       setMode(bloomedToday ? "bloom" : "gesture");
     };
 
@@ -106,7 +110,6 @@ function BloomContent() {
 
   /* -----------------------------------------------------
      🌿 COMPLETE GESTURE → Save progress + go to Bloom
-     (Only if not already bloomed today)
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!userId || bloomIndex === null || gestureIndex === null) {
@@ -114,8 +117,9 @@ function BloomContent() {
       return;
     }
 
-    // If already bloomed today, just show today's bloom again
+    // Already bloomed today → replay only
     if (hasBloomedToday) {
+      setJustBloomedNow(false);
       setMode("bloom");
       return;
     }
@@ -123,7 +127,7 @@ function BloomContent() {
     const now = new Date().toISOString();
     const today = now.slice(0, 10);
 
-    /* Advance Bloom (next day in cycle) */
+    /* Advance Bloom */
     let nextBloom = bloomIndex + 1;
     if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
@@ -150,7 +154,11 @@ function BloomContent() {
       .eq("user_id", userId);
 
     setBloomIndex(nextBloom);
+
+    // 🌸 FIRST BLOOM OF THE DAY
     setHasBloomedToday(true);
+    setJustBloomedNow(true);
+
     setMode("bloom");
   };
 
@@ -211,12 +219,20 @@ function BloomContent() {
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {videoEnded && (
+          {/* 🌸 FIRST BLOOM OF THE DAY */}
+          {videoEnded && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
-                {hasBloomedToday
-                  ? "Come back tomorrow ."
-                  : "You bloomed today."}
+                You bloomed today.
+              </p>
+            </div>
+          )}
+
+          {/* 🌿 REPLAY BLOOM (already bloomed earlier today) */}
+          {videoEnded && !justBloomedNow && (
+            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+              <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
+                Come back tomorrow.
               </p>
             </div>
           )}
@@ -234,7 +250,6 @@ function BloomContent() {
           }
         }
 
-        
         @keyframes softRiseSlow {
           from {
             opacity: 0;
