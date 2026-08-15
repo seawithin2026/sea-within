@@ -215,7 +215,7 @@ function BloomContent() {
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
                 {hasBloomedToday
-                  ? "Come back tomorrow to bloom again."
+                  ? "Come back tomorrow ."
                   : "You bloomed today."}
               </p>
             </div>
