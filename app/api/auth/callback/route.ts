@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from "next/server";
+import { supabaseServer } from "@/lib/supabase/server";
 
 /**
  * GET /api/auth/callback
@@ -7,11 +7,12 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/sanctuary';
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/sanctuary";
 
   if (code) {
-    const supabase = createServerSupabaseClient();
+    const supabase = supabaseServer();
+
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
