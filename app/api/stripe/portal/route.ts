@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@/lib/supabase/server";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function GET() {
-
-  const supabase = createClient();
+  const supabase = supabaseServer();
 
   // Get logged-in user
   const {
@@ -43,6 +42,5 @@ export async function GET() {
     return_url: "https://www.seawithinyourself.com/account",
   });
 
- 
   return NextResponse.json({ url: portalSession.url });
 }
