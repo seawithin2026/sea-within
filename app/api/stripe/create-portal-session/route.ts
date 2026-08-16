@@ -1,16 +1,36 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { supabaseServer } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
 
-export async function GET() {
-  const supabase = supabaseServer();
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get("Authorization");
 
-  // Get logged-in user
+  if (!authHeader) {
+    return NextResponse.json(
+      { error: "Missing Authorization header" },
+      { status: 401 }
+    );
+  }
+
+  const token = authHeader.replace("Bearer ", "");
+
+  // Create Supabase client using JWT instead of cookies
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (userError || !user) {
     return NextResponse.json(
       { error: "Not authenticated" },
       { status: 401 }
@@ -22,7 +42,7 @@ export async function GET() {
     apiVersion: "2024-04-10",
   });
 
-  // Fetch Stripe customer ID from profiles table
+  // Fetch Stripe customer ID
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_customer_id")
