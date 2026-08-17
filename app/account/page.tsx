@@ -48,17 +48,27 @@ export default function AccountPage() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ FIXED — USE EXISTING SUPABASE CLIENT (NO DUPLICATE)
+     ⭐ FIXED — GUARANTEED VALID JWT
   ----------------------------------------------------- */
   const handleManageSubscription = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // 1. Always verify user first — this guarantees a valid JWT exists
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-      if (!session) {
+      if (userError || !user) {
         alert("You must be logged in.");
         return;
       }
 
+      // 2. Now safely get the session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !session?.access_token) {
+        alert("Session not ready. Please try again.");
+        return;
+      }
+
+      // 3. Call your portal route with a VALID JWT
       const res = await fetch("/api/stripe/create-portal-session", {
         method: "GET",
         headers: {
@@ -66,15 +76,21 @@ export default function AccountPage() {
         },
       });
 
-      const data = await res.json();
-    
-      console.log("Portal response:", data);
-
-      if (!data.url) {
+      if (!res.ok) {
+        console.error("Portal error:", await res.text());
         alert("Could not open subscription portal.");
         return;
       }
 
+      const data = await res.json();
+
+
+      if (!data.url) {
+        alert("Portal URL missing.");
+        return;
+      }
+
+      // 4. Redirect to Stripe portal
       window.location.href = data.url;
 
     } catch (error) {
