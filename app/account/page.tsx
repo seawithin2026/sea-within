@@ -63,13 +63,10 @@ export default function AccountPage() {
         return;
       }
 
-      // 3. POST request (GET drops headers in production)
-      const res = await fetch("/api/stripe/create-portal-session", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+    const res = await fetch("/api/stripe/create-portal-session", {
+  method: "POST",
+});
+
 
       if (!res.ok) {
         console.error("Portal error:", await res.text());
