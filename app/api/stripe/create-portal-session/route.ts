@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createServerClient } from "@supabase/ssr";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const authHeader = request.headers.get("Authorization");
 
   if (!authHeader) {
@@ -14,15 +14,13 @@ export async function GET(request: NextRequest) {
 
   const token = authHeader.replace("Bearer ", "");
 
-  // ⭐ REQUIRED FIX — Supabase SSR needs a cookie adapter object
+  
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get() {
-          return "";
-        },
+        get() { return ""; },
         set() {},
         remove() {},
       },
@@ -63,7 +61,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-
+  
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
     return_url: "https://www.seawithinyourself.com/account",

@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
-
 export default function AccountPage() {
-
   const router = useRouter();
 
   const [user, setUser] = useState(null);
@@ -23,7 +21,6 @@ export default function AccountPage() {
       }
 
       setUser(user);
-
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -48,29 +45,27 @@ export default function AccountPage() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ FIXED — GUARANTEED VALID JWT
+     ⭐ FIXED — USE POST + VALID JWT
   ----------------------------------------------------- */
   const handleManageSubscription = async () => {
     try {
-      // 1. Always verify user first — this guarantees a valid JWT exists
+      // 1. Ensure user exists
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-
       if (userError || !user) {
         alert("You must be logged in.");
         return;
       }
 
-      // 2. Now safely get the session
+      // 2. Ensure session + JWT exists
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
       if (sessionError || !session?.access_token) {
         alert("Session not ready. Please try again.");
         return;
       }
 
-      // 3. Call your portal route with a VALID JWT
+      // 3. POST request (GET drops headers in production)
       const res = await fetch("/api/stripe/create-portal-session", {
-        method: "GET",
+        method: "POST",
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -83,7 +78,6 @@ export default function AccountPage() {
       }
 
       const data = await res.json();
-
 
       if (!data.url) {
         alert("Portal URL missing.");
