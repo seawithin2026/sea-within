@@ -44,29 +44,18 @@ export default function AccountPage() {
     load();
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ FIXED — USE POST + VALID JWT
-  ----------------------------------------------------- */
+  // ⭐ FINAL FIXED VERSION — CLEAN, MATCHES BACKEND PERFECTLY
   const handleManageSubscription = async () => {
     try {
-      // 1. Ensure user exists
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         alert("You must be logged in.");
         return;
       }
 
-      // 2. Ensure session + JWT exists
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !session?.access_token) {
-        alert("Session not ready. Please try again.");
-        return;
-      }
-
-    const res = await fetch("/api/stripe/create-portal-session", {
-  method: "POST",
-});
-
+      const res = await fetch("/api/stripe/create-portal-session", {
+        method: "POST",
+      });
 
       if (!res.ok) {
         console.error("Portal error:", await res.text());
@@ -81,7 +70,7 @@ export default function AccountPage() {
         return;
       }
 
-      // 4. Redirect to Stripe portal
+     
       window.location.href = data.url;
 
     } catch (error) {
