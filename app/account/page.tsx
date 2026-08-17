@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
+
 
 export default function AccountPage() {
 
@@ -33,7 +33,6 @@ export default function AccountPage() {
 
       const status = profile?.membership_status;
 
-   
       setIsMember(
         status === "active" ||
         status === "cancel_at_period_end" ||
@@ -49,17 +48,11 @@ export default function AccountPage() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ JWT-BASED MANAGE SUBSCRIPTION FUNCTION (NO COOKIES)
+     ⭐ FIXED — USE EXISTING SUPABASE CLIENT (NO DUPLICATE)
   ----------------------------------------------------- */
   const handleManageSubscription = async () => {
     try {
-      // Create a client to fetch the JWT
-      const client = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
-      const { data: { session } } = await client.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
         alert("You must be logged in.");
@@ -74,7 +67,7 @@ export default function AccountPage() {
       });
 
       const data = await res.json();
-
+    
       console.log("Portal response:", data);
 
       if (!data.url) {
