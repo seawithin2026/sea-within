@@ -14,11 +14,18 @@ export async function GET(request: NextRequest) {
 
   const token = authHeader.replace("Bearer ", "");
 
-  // Create Supabase client using JWT instead of cookies
+  // ⭐ REQUIRED FIX — Supabase SSR needs a cookie adapter object
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      cookies: {
+        get() {
+          return "";
+        },
+        set() {},
+        remove() {},
+      },
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -37,12 +44,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Stripe client
+
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: "2024-04-10",
   });
 
-  // Fetch Stripe customer ID
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_customer_id")
@@ -56,7 +63,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Create billing portal session
+
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
     return_url: "https://www.seawithinyourself.com/account",
