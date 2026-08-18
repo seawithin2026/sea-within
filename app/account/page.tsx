@@ -44,39 +44,9 @@ export default function AccountPage() {
     load();
   }, []);
 
-  // ⭐ FINAL FIXED VERSION — CLEAN, MATCHES BACKEND PERFECTLY
-  const handleManageSubscription = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        alert("You must be logged in.");
-        return;
-      }
-
-      const res = await fetch("/api/stripe/create-portal-session", {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        console.error("Portal error:", await res.text());
-        alert("Could not open subscription portal.");
-        return;
-      }
-
-      const data = await res.json();
-
-      if (!data.url) {
-        alert("Portal URL missing.");
-        return;
-      }
-
-     
-      window.location.href = data.url;
-
-    } catch (error) {
-      console.error("Error opening portal:", error);
-      alert("Something went wrong.");
-    }
+  // ⭐ DIRECT STRIPE PORTAL LINK — SIMPLE & SAFE
+  const handleManageSubscription = () => {
+    window.location.href = "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
   };
 
   const handleSignOut = async () => {
