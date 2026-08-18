@@ -27,4 +27,11 @@ export const BLOOMS = [
   "/bloom-videos/bloom-26.mp4",
   "/bloom-videos/bloom-27.mp4",
   "/bloom-videos/bloom-28.mp4",
+  "/bloom-videos/bloom-29.mp4",
+  "/bloom-videos/bloom-30.mp4",
+  "/bloom-videos/bloom-31.mp4",
+  "/bloom-videos/bloom-32.mp4",
+  "/bloom-videos/bloom-33.mp4",
+  "/bloom-videos/bloom-34.mp4",
+  "/bloom-videos/bloom-35.mp4",
 ];
