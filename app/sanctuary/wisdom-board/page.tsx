@@ -66,7 +66,7 @@ export default function WisdomBoardPage() {
    ⭐ CLIENT COMPONENT
 ----------------------------------------------------- */
 function ClientWisdomBoard() {
-  const [posts, setPosts] = useState<WisdomPost[]>([]);
+ 
   const [newPost, setNewPost] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -74,6 +74,8 @@ function ClientWisdomBoard() {
 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
 
+  // ⭐ NEW — Only show the reflection once
+  const [justSubmittedPost, setJustSubmittedPost] = useState<WisdomPost | null>(null);
 
   /* Slow bottle video */
   useEffect(() => {
@@ -81,9 +83,9 @@ function ClientWisdomBoard() {
     if (bottle) bottle.playbackRate = 0.5;
   }, []);
 
-  /* Load posts + daily message */
+  /* Load daily message */
   useEffect(() => {
-    fetchPosts();
+ 
     fetchDailyMessage();
   }, []);
 
@@ -120,24 +122,7 @@ function ClientWisdomBoard() {
   };
 
   /* -----------------------------------------------------
-     ⭐ FETCH POSTS
-  ----------------------------------------------------- */
-  const fetchPosts = async () => {
-    const { data, error } = await supabase
-      .from("wisdom_posts")
-      .select("id, content, created_at, username, country")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Failed to fetch posts:", error.message);
-      return;
-    }
-
-    setPosts(data || []);
-  };
-
-  /* -----------------------------------------------------
-     ⭐ SUBMIT POST
+     ⭐ SUBMIT POST — Option B logic
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -175,12 +160,19 @@ function ClientWisdomBoard() {
         return;
       }
 
+      // ⭐ NEW — store reflection only for this session
+      setJustSubmittedPost({
+        id: crypto.randomUUID(),
+        content: newPost,
+        created_at: new Date().toISOString(),
+        username: profile?.username || "Unknown",
+        country: profile?.country || "Unknown",
+      });
+
       setFeedbackType("success");
       setFeedback("Your reflection has been shared with the community.");
       setNewPost("");
 
-      fetchPosts();
-   
     } catch {
       setFeedbackType("error");
       setFeedback("Something went wrong. Please try again.");
@@ -289,23 +281,22 @@ function ClientWisdomBoard() {
                 Your message will be shared with the community along with your username, country, and today&apos;s date.
               </p>
 
-              {/* POSTS */}
-              <div className="mt-20 w-full max-w-md text-left">
-                {posts.map((post) => (
-                  <div key={post.id} className="mb-10">
-                    <p className="text-xl text-[#3b2414] leading-relaxed mb-2">
-                      {post.content}
-                    </p>
+              {/* ⭐ NEW — SHOW ONLY THE JUST-SUBMITTED POST */}
+              {justSubmittedPost && (
+                <div className="mt-20 w-full max-w-md text-left">
+                  <p className="text-xl text-[#3b2414] leading-relaxed mb-2">
+                    {justSubmittedPost.content}
+                  </p>
 
-                    <p className="text-sm text-stone-700/85 italic">
-                      {post.username || "Unknown"} • {post.country || "Unknown"} •{" "}
-                      {new Date(post.created_at).toLocaleDateString()}
-                    </p>
+                  <p className="text-sm text-stone-700/85 italic">
+                    {justSubmittedPost.username} • {justSubmittedPost.country} •{" "}
+                    {new Date(justSubmittedPost.created_at).toLocaleDateString()}
+                  </p>
 
-                    <div className="h-px w-full bg-stone-300/40 mt-4"></div>
-                  </div>
-                ))}
-              </div>
+                  <div className="h-px w-full bg-stone-300/40 mt-4"></div>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
