@@ -34,4 +34,5 @@ export const BLOOMS = [
   "/bloom-videos/bloom-33.mp4",
   "/bloom-videos/bloom-34.mp4",
   "/bloom-videos/bloom-35.mp4",
+  "/bloom-videos/bloom-36.mp4",
 ];
