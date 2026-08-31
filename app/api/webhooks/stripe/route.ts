@@ -16,7 +16,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: NextRequest) {
- 
+  
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
 
@@ -32,15 +32,17 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
- 
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // ⭐ Store pending Stripe customer
-  async function storePending(data: any) {
-    await supabase.from("stripe_customers_pending").upsert(data);
+  async function updateProfile(email: string, data: any) {
+    await supabase
+      .from("profiles")
+      .update(data)
+      .eq("email", email);
   }
 
 
@@ -50,14 +52,20 @@ export async function POST(req: NextRequest) {
     // ⭐ Subscription Created
     // -------------------------------------------------
     case "customer.subscription.created": {
-      const sub = event.data.object;
-      const customerId = sub.customer as string;
+      const sub = event.data.object as Stripe.Subscription;
 
-      await storePending({
-        email: sub.customer_email,
-        stripe_customer_id: customerId,
+      const customer = (await stripe.customers.retrieve(
+        sub.customer as string
+      )) as Stripe.Customer;
+
+      const email = customer.email ?? null;
+
+      await updateProfile(email!, {
+        stripe_customer_id: sub.customer,
         stripe_subscription_id: sub.id,
         membership_status: "active",
+        is_member: true,
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
@@ -67,32 +75,43 @@ export async function POST(req: NextRequest) {
     // ⭐ Subscription Updated
     // -------------------------------------------------
     case "customer.subscription.updated": {
-      const sub = event.data.object;
-      const customerId = sub.customer as string;
+      const sub = event.data.object as Stripe.Subscription;
 
-      await storePending({
-        email: sub.customer_email,
-        stripe_customer_id: customerId,
+      const customer = (await stripe.customers.retrieve(
+        sub.customer as string
+      )) as Stripe.Customer;
+
+      const email = customer.email ?? null;
+
+      await updateProfile(email!, {
+        stripe_customer_id: sub.customer,
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
+        is_member: !sub.cancel_at_period_end,
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
     }
 
     // -------------------------------------------------
-    // ⭐ Subscription Deleted
+    // ⭐ Subscription Deleted (Immediate cancellation)
     // -------------------------------------------------
     case "customer.subscription.deleted": {
-      const sub = event.data.object;
-      const customerId = sub.customer as string;
+      const sub = event.data.object as Stripe.Subscription;
 
-      await storePending({
-        email: sub.customer_email,
-        stripe_customer_id: customerId,
+      const customer = (await stripe.customers.retrieve(
+        sub.customer as string
+      )) as Stripe.Customer;
+
+      const email = customer.email ?? null;
+
+      await updateProfile(email!, {
+        stripe_customer_id: sub.customer,
         stripe_subscription_id: null,
         membership_status: "expired",
-    
+        is_member: false,
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
@@ -102,12 +121,11 @@ export async function POST(req: NextRequest) {
     // ⭐ Invoice Paid
     // -------------------------------------------------
     case "invoice.paid": {
-      const invoice = event.data.object;
+      const invoice = event.data.object as Stripe.Invoice;
 
-      await storePending({
-        email: invoice.customer_email,
-        stripe_customer_id: invoice.customer,
+      await updateProfile(invoice.customer_email!, {
         membership_status: "active",
+        is_member: true,
       });
 
       break;
@@ -117,18 +135,16 @@ export async function POST(req: NextRequest) {
     // ⭐ Invoice Failed
     // -------------------------------------------------
     case "invoice.payment_failed": {
-      const invoice = event.data.object;
+      const invoice = event.data.object as Stripe.Invoice;
 
-      await storePending({
-        email: invoice.customer_email,
-        stripe_customer_id: invoice.customer,
+      await updateProfile(invoice.customer_email!, {
         membership_status: "past_due",
+        is_member: false,
       });
 
       break;
     }
 
-    
 
     default:
       break;
