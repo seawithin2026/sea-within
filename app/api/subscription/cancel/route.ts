@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("email, stripe_customer_id, stripe_subscription_id")
+      .select("email, stripe_customer_id, stripe_subscription_id, timezone")
       .eq("id", user.id)
       .single();
 
@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
       invoice_now: false,
     });
 
-    const accessUntil = new Date(canceled.current_period_end * 1000).toISOString();
+    // ⭐ Stripe always returns UTC timestamps — store them as UTC
+    const accessUntilUTC = new Date(canceled.current_period_end * 1000).toISOString();
 
     // Update profile
     await supabase
@@ -63,13 +64,18 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: null,
         membership_status: "expired",
         is_member: false,
-        access_until: accessUntil,
+
+        // ⭐ Store UTC timestamp (correct)
+        access_until: accessUntilUTC,
+
+        // ⭐ Keep user's timezone if already stored
+        timezone: profile.timezone || null,
       })
       .eq("id", user.id);
 
     return NextResponse.json({
       success: true,
-      access_until: accessUntil,
+      access_until: accessUntilUTC, // still UTC — interpreted later
     });
   } catch (err: any) {
     console.error("Cancel subscription error:", err);

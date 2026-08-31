@@ -1,4 +1,10 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -6,14 +12,15 @@ const supabase = createClient(
 );
 
 // Fetch today's affirmation or generate a new one
-export async function getTodayAffirmation() {
-  const today = new Date().toISOString().split('T')[0];
+export async function getTodayAffirmation(userTimezone: string = "UTC") {
+  // ⭐ Compute "today" in the user's timezone
+  const today = dayjs().tz(userTimezone).format("YYYY-MM-DD");
 
   // 1. Check if today's message already exists
   const { data: existing } = await supabase
-    .from('daily_affirmations')
-    .select('*')
-    .eq('date', today)
+    .from("daily_affirmations")
+    .select("*")
+    .eq("date", today)
     .maybeSingle();
 
   if (existing) {
@@ -21,18 +28,13 @@ export async function getTodayAffirmation() {
   }
 
   // 2. Get a random message from the pool
-  let { data: pool } = await supabase
-    .from('affirmation_pool')
-    .select('*');
+  let { data: pool } = await supabase.from("affirmation_pool").select("*");
 
   if (!pool || pool.length === 0) {
-    const { default: refillMessages } = await import('../data/affirmations');
-    await supabase.from('affirmation_pool').insert(refillMessages);
+    const { default: refillMessages } = await import("../data/affirmations");
+    await supabase.from("affirmation_pool").insert(refillMessages);
 
-    const refreshed = await supabase
-      .from('affirmation_pool')
-      .select('*');
-
+    const refreshed = await supabase.from("affirmation_pool").select("*");
     pool = refreshed.data || [];
   }
 
@@ -44,17 +46,14 @@ async function generateNewAffirmation(pool: any[], today: string) {
   const random = pool[Math.floor(Math.random() * pool.length)];
 
   // Insert into daily_affirmations
-  await supabase.from('daily_affirmations').insert({
+  await supabase.from("daily_affirmations").insert({
     message: random.message,
     attribution: random.attribution,
-    date: today,
+    date: today, // ⭐ timezone-correct date
   });
 
   // Remove from pool
-  await supabase
-    .from('affirmation_pool')
-    .delete()
-    .eq('id', random.id);
+  await supabase.from("affirmation_pool").delete().eq("id", random.id);
 
   return {
     message: random.message,

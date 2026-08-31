@@ -21,11 +21,11 @@ function BloomContent() {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
 
-  // 🌸 NEW STATE — fixes your message logic
+  
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
-     🌿 INIT — Load Bloom + Gesture Progress
+     🌿 INIT — Load Bloom + Gesture Progress (from backend)
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -44,24 +44,33 @@ function BloomContent() {
 
       setUserId(user.id);
 
-      /* BLOOM PROGRESS */
-      const { data: bloomProgress } = await supabase
+      // ⭐ Fetch bloom progress from backend (timezone-correct)
+      const { data: bloomData } = await supabase
         .from("bloom_progress")
         .select("current_day, last_completed")
         .eq("user_id", user.id)
         .single();
 
-      const today = new Date().toISOString().slice(0, 10);
+      // ⭐ Fetch gesture progress
+      const { data: gestureData } = await supabase
+        .from("gesture_progress")
+        .select("current_index, last_index")
+        .eq("user_id", user.id)
+        .single();
+
+      // ⭐ Fetch user's timezone-correct "today" from backend
+      const { data: todayData } = await supabase.rpc("get_user_today", {
+        user_id: user.id,
+      });
+
+      const today = todayData?.today;
 
       let bloomIdx = 0;
       let bloomedToday = false;
 
-      if (bloomProgress) {
-        bloomIdx = bloomProgress.current_day - 1;
-
-        if (bloomProgress.last_completed === today) {
-          bloomedToday = true;
-        }
+      if (bloomData) {
+        bloomIdx = bloomData.current_day - 1;
+        bloomedToday = bloomData.last_completed === today;
       } else {
         await supabase.from("bloom_progress").insert({
           user_id: user.id,
@@ -71,17 +80,11 @@ function BloomContent() {
         });
       }
 
-      /* GESTURE PROGRESS */
-      const { data: gestureProgress } = await supabase
-        .from("gesture_progress")
-        .select("current_index, last_index")
-        .eq("user_id", user.id)
-        .single();
-
+  
       let gestureIdx = 0;
 
-      if (gestureProgress) {
-        gestureIdx = gestureProgress.current_index ?? 0;
+      if (gestureData) {
+        gestureIdx = gestureData.current_index ?? 0;
       } else {
         await supabase.from("gesture_progress").insert({
           user_id: user.id,
@@ -97,7 +100,7 @@ function BloomContent() {
       setBloomIndex(bloomIdx);
       setHasBloomedToday(bloomedToday);
 
-      // If already bloomed today → skip gesture
+  
       setMode(bloomedToday ? "bloom" : "gesture");
     };
 
@@ -117,15 +120,20 @@ function BloomContent() {
       return;
     }
 
-    // Already bloomed today → replay only
+
     if (hasBloomedToday) {
       setJustBloomedNow(false);
       setMode("bloom");
       return;
     }
 
-    const now = new Date().toISOString();
-    const today = now.slice(0, 10);
+    // ⭐ Get timezone-correct "now" and "today" from backend
+    const { data: todayData } = await supabase.rpc("get_user_today", {
+      user_id: userId,
+    });
+
+    const today = todayData?.today;
+    const now = todayData?.now;
 
     /* Advance Bloom */
     let nextBloom = bloomIndex + 1;
@@ -155,7 +163,7 @@ function BloomContent() {
 
     setBloomIndex(nextBloom);
 
-    // 🌸 FIRST BLOOM OF THE DAY
+
     setHasBloomedToday(true);
     setJustBloomedNow(true);
 
@@ -219,7 +227,7 @@ function BloomContent() {
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {/* 🌸 FIRST BLOOM OF THE DAY */}
+  
           {videoEnded && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
@@ -228,7 +236,7 @@ function BloomContent() {
             </div>
           )}
 
-          {/* 🌿 REPLAY BLOOM (already bloomed earlier today) */}
+
           {videoEnded && !justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">

@@ -1,19 +1,45 @@
-export const dynamic = "force-dynamic"; // prevent prerender crash
+export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import affirmations from "@/data/affirmations"; // ⭐ REQUIRED IMPORT
+import affirmations from "@/data/affirmations";
+
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export async function GET() {
-  // Use service role for server-side logic (no cookies, no session)
+ 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const today = new Date().toISOString().split("T")[0];
+  // 1. Get the authenticated user (service role cannot read cookies)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // 1. Check if today's affirmation already exists
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  // 2. Fetch user's timezone from profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .eq("id", user.id)
+    .single();
+
+  const userTimezone = profile?.timezone || "UTC";
+
+  // 3. Compute "today" in the user's timezone
+  const today = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+
+  // 4. Check if today's affirmation already exists
   const { data: existing } = await supabase
     .from("daily_affirmations")
     .select("*")
@@ -27,13 +53,13 @@ export async function GET() {
     });
   }
 
-  // 2. Pull the next affirmation from the pool
+  // 5. Pull the next affirmation from the pool
   let { data: pool } = await supabase
     .from("affirmation_pool")
     .select("*")
     .order("id", { ascending: true });
 
-  // 3. If pool is empty → refill from backup file
+  // 6. If pool is empty → refill from backup file
   if (!pool || pool.length === 0) {
     await supabase.from("affirmation_pool").insert(affirmations);
 
@@ -45,10 +71,10 @@ export async function GET() {
     pool = refreshed.data || [];
   }
 
-  // 4. Select the first affirmation in the pool
+  // 7. Select the first affirmation in the pool
   const affirmation = pool[0];
 
-  // 5. Insert today's affirmation
+  // 8. Insert today's affirmation
   const { data: inserted } = await supabase
     .from("daily_affirmations")
     .insert({
@@ -59,10 +85,10 @@ export async function GET() {
     .select()
     .maybeSingle();
 
-  // 6. Remove it from the pool
+  // 9. Remove it from the pool
   await supabase.from("affirmation_pool").delete().eq("id", affirmation.id);
 
-  // 7. Return the final message
+  // 10. Return the final message
   return NextResponse.json({
     message: inserted.message,
     attribution: inserted.attribution,

@@ -12,6 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const sessionId = searchParams.get("session_id");
+  const timezone = searchParams.get("tz"); // ⭐ user's timezone passed from frontend
 
   if (!sessionId) {
     return NextResponse.redirect(`${origin}/auth/signin?error=session`);
@@ -46,7 +47,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${origin}/auth/signin?error=email`);
   }
 
-  // Update profile
+  // ⭐ Store Stripe data + user's timezone (if provided)
   await supabase
     .from("profiles")
     .update({
@@ -54,7 +55,12 @@ export async function GET(req: NextRequest) {
       stripe_subscription_id: session.subscription,
       membership_status: "active",
       is_member: true,
+
+      // ⭐ Store Stripe's UTC timestamp (correct)
       access_until: new Date(subscription.current_period_end * 1000).toISOString(),
+
+      // ⭐ Store user's timezone (if frontend passed it)
+      timezone: timezone || null,
     })
     .eq("email", email);
 

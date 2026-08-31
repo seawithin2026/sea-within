@@ -16,7 +16,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: NextRequest) {
-  
+ 
   const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
 
@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: sub.id,
         membership_status: "active",
         is_member: true,
+
+        // ⭐ Store Stripe UTC timestamp (correct)
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
@@ -88,6 +90,8 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
         is_member: !sub.cancel_at_period_end,
+
+        // ⭐ Store Stripe UTC timestamp (correct)
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
@@ -111,6 +115,8 @@ export async function POST(req: NextRequest) {
         stripe_subscription_id: null,
         membership_status: "expired",
         is_member: false,
+
+        // ⭐ Store Stripe UTC timestamp (correct)
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
