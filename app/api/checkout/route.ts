@@ -32,18 +32,14 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // ⭐ FIXED: Stripe MUST receive the session_id placeholder
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?session_id={CHECKOUT_SESSION_ID}`,
+      // ⭐ Correct callback
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/callback?session_id={CHECKOUT_SESSION_ID}`,
 
-      // ⭐ If they cancel checkout
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
 
-    console.log("SESSION URL:", session.url);
-
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error("Stripe Checkout Error:", error);
     return NextResponse.json(
       { error: error.message || "Something went wrong" },
       { status: 500 }

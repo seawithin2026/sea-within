@@ -17,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(req: NextRequest) {
- const body = await req.text();
+  const body = await req.text();
   const sig = req.headers.get("stripe-signature")!;
 
   let event;
@@ -58,54 +58,90 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // ⭐ FINAL FIX — works with your Stripe SDK
+  async function getCustomerData(customerId: string) {
+    const response = await stripe.customers.retrieve(customerId);
+
+    // Force-cast to actual Customer object
+    const customer = response as unknown as Stripe.Customer;
+
+    if ((customer as any).deleted) {
+      return {
+        email: null,
+        country: null,
+      };
+    }
+
+    return {
+      email: customer.email || null,
+      country: customer.address?.country || null,
+    };
+  }
+
   switch (event.type) {
-   case "customer.subscription.created": {
+    case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
 
+      const { email, country } = await getCustomerData(customerId);
+
       await upsertProfile(customerId, {
+        email,
+        country,
         stripe_subscription_id: sub.id,
         membership_status: "active",
         is_member: true,
-       access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
     }
 
-  case "customer.subscription.updated": {
+    case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
 
+      const { email, country } = await getCustomerData(customerId);
+
       await upsertProfile(customerId, {
+        email,
+        country,
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
         is_member: !sub.cancel_at_period_end,
-      access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
     }
 
-   case "customer.subscription.deleted": {
+    case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
 
+      const { email, country } = await getCustomerData(customerId);
+
       await upsertProfile(customerId, {
+        email,
+        country,
         stripe_subscription_id: null,
         membership_status: "expired",
         is_member: false,
-       access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
       break;
     }
 
-   case "invoice.paid": {
+    case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
 
+      const { email, country } = await getCustomerData(customerId);
+
       await upsertProfile(customerId, {
+        email,
+        country,
         membership_status: "active",
         is_member: true,
       });
@@ -113,18 +149,21 @@ export async function POST(req: NextRequest) {
       break;
     }
 
-  case "invoice.payment_failed": {
+    case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
 
+      const { email, country } = await getCustomerData(customerId);
+
       await upsertProfile(customerId, {
+        email,
+        country,
         membership_status: "past_due",
         is_member: false,
       });
 
       break;
-  
-  }
+    }
   }
 
   return NextResponse.json({ received: true });

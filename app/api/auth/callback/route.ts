@@ -25,17 +25,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/`);
   }
 
-  // ⭐ Stripe customer ID from user metadata
+ 
   const stripeCustomerId = user.user_metadata?.stripe_customer_id ?? null;
 
-  // ⭐ Create profile row if missing
+  // Create profile row if missing — DO NOT override membership
   await supabase
     .from("profiles")
     .upsert({
       id: user.id,
       stripe_customer_id: stripeCustomerId,
-      membership_status: "none",
-      is_member: false,
+  
     });
 
   return NextResponse.redirect(`${origin}${next}`);
