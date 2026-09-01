@@ -12,37 +12,41 @@ export default function SanctuaryLayout({ children }) {
 
   useEffect(() => {
     async function checkAccess() {
-   
+      // Get session
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       const user = session?.user;
 
+      // ⭐ FIX: Non‑signed‑in users go to REVEAL (not sign‑in)
       if (!user) {
-        window.location.href = "/auth/signin";
+        window.location.href = "/reveal";
         return;
       }
 
+      // Fetch profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("username, is_member, membership_status")
         .eq("id", user.id)
         .single();
 
+      // If no profile, treat as non‑member → reveal
       if (!profile) {
-        window.location.href = "/auth/signin";
+        window.location.href = "/reveal";
         return;
       }
 
       // ⭐ Membership guard FIRST
       const status = profile.membership_status?.toLowerCase();
 
-
+      
       const isActive =
         profile.is_member &&
         (status === "active" || status === "cancelling");
 
+      // ⭐ Non‑members → reveal
       if (!isActive) {
         window.location.href = "/reveal";
         return;
