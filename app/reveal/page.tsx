@@ -152,10 +152,9 @@ export default function RevealPage() {
         <ScrollReveal delay={800}>
           <h2 className="font-display text-3xl font-light mb-4">The Transformation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            Sea Within is for the part of you that feels deeply, moves quickly, and
-            longs for stillness and depth. For the part that wants to reconnect with
-            your inner world and is tired of surface‑level healing. This is not
-            self‑improvement. This is self‑returning.
+          Sea Within is for those who feel everything and carry it alone. 
+          For those who move fast through life but crave a place to finally slow down. 
+          If you’ve outgrown surface‑level healing, this is where you return to yourself.
           </p>
         </ScrollReveal>
 
