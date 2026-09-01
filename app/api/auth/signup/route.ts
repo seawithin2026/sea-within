@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-  
-    const supabaseAdmin = createServerClient(
+  const supabaseAdmin = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
@@ -26,7 +25,6 @@ export async function POST(request: NextRequest) {
       }
     );
 
-  
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email,
@@ -39,25 +37,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: authError.message }, { status: 400 });
     }
 
-  
     if (authData.user) {
       await supabaseAdmin
         .from("profiles")
-        .update({
+        .upsert({
+          id: authData.user.id,
+          email,
           membership_status: "free",
           is_member: false
-        })
-        .eq("id", authData.user.id);
-   
-      }
+        });
+    }
 
     return NextResponse.json({
       success: true,
       user: { id: authData.user?.id, email }
     });
   } catch (error) {
- 
-    return NextResponse.json(
+   return NextResponse.json(
       { error: "Failed to create account" },
       { status: 500 }
     );

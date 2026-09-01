@@ -15,8 +15,10 @@ export default function AccountPage() {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // ⭐ DO NOT REDIRECT HERE — this was the bug
       if (!user) {
-        router.push("/signin");
+        setUser(null);
+        setLoading(false);
         return;
       }
 
@@ -44,15 +46,22 @@ export default function AccountPage() {
     load();
   }, []);
 
-  // ⭐ DIRECT STRIPE PORTAL LINK — SIMPLE & SAFE
+ 
   const handleManageSubscription = () => {
-    window.location.href = "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
+    window.location.href =
+      "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
   };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/signin");
   };
+
+  // ⭐ Redirect ONLY after loading is complete
+  if (!loading && !user) {
+    router.push("/signin");
+    return null;
+  }
 
   if (loading) {
     return (
