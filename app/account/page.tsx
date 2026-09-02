@@ -26,27 +26,23 @@ export default function AccountPage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("membership_status")
+        .select("is_member, membership_status")
         .eq("id", user.id)
         .single();
 
-      const status = profile?.membership_status;
+      // ⭐ FINAL membership logic (matches webhook + SanctuaryLayout)
+      const active =
+        profile?.is_member === true &&
+        (profile?.membership_status === "active" ||
+         profile?.membership_status === "cancelling");
 
-      setIsMember(
-        status === "active" ||
-        status === "cancel_at_period_end" ||
-        status === "trialing" ||
-        status === "past_due" ||
-        status === "cancelling"
-      );
-
+      setIsMember(active);
       setLoading(false);
     };
 
     load();
   }, []);
 
- 
   const handleManageSubscription = () => {
     window.location.href =
       "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
