@@ -12,58 +12,47 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const sessionId = searchParams.get("session_id");
-  const timezone = searchParams.get("tz");
+  const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/sanctuary";
 
-  if (!sessionId) {
-    return NextResponse.redirect(`${origin}/auth/signin?error=session`);
+  if (!code) {
+    return NextResponse.redirect(`${origin}/`);
   }
 
- 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Fetch checkout session
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  // Exchange magic link for session
+  const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
 
-  if (!session.customer || !session.subscription) {
-    return NextResponse.redirect(`${origin}/auth/signin?error=stripe`);
+  if (error || !sessionData?.user) {
+    return NextResponse.redirect(`${origin}/`);
   }
 
-  const stripeCustomerId = session.customer;
+  const user = sessionData.user;
 
-  // Fetch subscription
-  const subscription = await stripe.subscriptions.retrieve(
-    session.subscription as string
-  );
+  // Fetch Stripe checkout session to get customer ID
+  let stripeCustomerId = null;
 
-  // ⭐ Find Supabase user by Stripe customer ID
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("stripe_customer_id", stripeCustomerId)
-    .single();
-
-  if (!profile) {
-    return NextResponse.redirect(`${origin}/auth/signin?error=profile`);
+  if (sessionId) {
+    try {
+      const stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
+      stripeCustomerId = stripeSession.customer as string;
+    } catch (err) {
+      console.error("Stripe session fetch error:", err);
+    }
   }
 
-  // ⭐ Update membership using Supabase user ID (correct)
+  // Upsert profile WITHOUT touching membership fields
   await supabase
     .from("profiles")
-    .update({
+    .upsert({
+      id: user.id,
       stripe_customer_id: stripeCustomerId,
-      stripe_subscription_id: session.subscription,
-      membership_status: "active",
-      is_member: true,
-  
-      access_until: new Date(subscription.current_period_end * 1000).toISOString(),
- 
-      timezone: timezone || null,
-    })
-    .eq("id", profile.id);
+    });
 
-  
-    return NextResponse.redirect(`${origin}/sanctuary`);
+  // Redirect user to sanctuary — webhook will update membership
+  return NextResponse.redirect(`${origin}${next}`);
 }
