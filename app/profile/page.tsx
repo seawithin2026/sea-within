@@ -5,7 +5,7 @@ import Navigation from '@/components/layout/Navigation';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 // ============================================
-// SEA WITHIN — Member Profile
+// SEA WITHIN — Member Profile (Final Version)
 // ============================================
 
 export default function ProfilePage() {
@@ -16,6 +16,7 @@ export default function ProfilePage() {
     membership_tier: 'free',
     avatar_url: '',
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -35,7 +36,7 @@ export default function ProfilePage() {
         return;
       }
 
-      // Fetch profile (⭐ now includes is_member)
+      // Fetch profile (⭐ includes membership_status + is_member)
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name, bio, membership_status, is_member')
@@ -44,14 +45,18 @@ export default function ProfilePage() {
 
       if (profile) {
         const status = profile.membership_status;
+        const active = profile.is_member === true;
 
-        // ⭐ Correct Option B membership tier mapping
+        // ⭐ FINAL MEMBERSHIP TIER LOGIC
         let tier = 'free';
 
-        if (status === 'active') tier = 'explorer';
-        if (status === 'cancelling') tier = 'explorer'; // still active until period end
-        if (status === 'past_due') tier = 'seeker';     // payment failed
-        if (status === 'expired') tier = 'free';        // fully cancelled
+        if (active) {
+          tier = 'explorer'; // active or cancelling
+        } else if (status === 'past_due') {
+          tier = 'seeker'; // payment failed
+        } else if (status === 'expired') {
+          tier = 'free'; // fully cancelled
+        }
 
         setUser({
           full_name: profile.full_name || '',
