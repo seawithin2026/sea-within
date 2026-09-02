@@ -13,7 +13,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-  const supabaseAdmin = createServerClient(
+    // Admin client (safe ONLY on server)
+    const supabaseAdmin = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
@@ -25,6 +26,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // Create user
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email,
@@ -37,14 +39,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: authError.message }, { status: 400 });
     }
 
+    // Create profile WITHOUT touching membership fields
     if (authData.user) {
       await supabaseAdmin
         .from("profiles")
         .upsert({
           id: authData.user.id,
           email,
-          membership_status: "free",
-          is_member: false
+          full_name: fullName,
+          stripe_customer_id: null,   // webhook will fill this
+          stripe_subscription_id: null,
+          membership_status: "free",  // safe default
+          is_member: false,
+          access_until: null
         });
     }
 
@@ -53,7 +60,7 @@ export async function POST(request: NextRequest) {
       user: { id: authData.user?.id, email }
     });
   } catch (error) {
-   return NextResponse.json(
+    return NextResponse.json(
       { error: "Failed to create account" },
       { status: 500 }
     );
