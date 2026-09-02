@@ -99,8 +99,9 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
+                {/* FIXED: Account now points to /my-account */}
                 <Link
-                  href="/account"
+                  href="/my-account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
                 >
                   Account
@@ -161,8 +162,9 @@ export default function Navigation() {
                       Sign Out
                     </button>
 
+                    {/* FIXED: Mobile Account link */}
                     <Link
-                      href="/account"
+                      href="/my-account"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
                     >

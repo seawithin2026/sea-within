@@ -1,20 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useState } from "react";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function JoinPage() {
   const supabase = createClientComponentClient();
-  const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  // ⭐ NO AUTO-REDIRECT HERE
+  const [errorMsg, setErrorMsg] = useState("");
 
   const sendLink = async () => {
-    setErrorMsg('');
+    setErrorMsg("");
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -24,11 +20,10 @@ export default function JoinPage() {
     });
 
     if (error) {
-      if (error.message.includes('rate limit')) {
+       if (error.message.includes('rate limit')) {
         setErrorMsg('Too many attempts — please wait a moment.');
         return;
       }
-
       setErrorMsg(error.message);
       return;
     }
@@ -49,19 +44,16 @@ export default function JoinPage() {
             <p className="text-white/60 text-[13px] tracking-[1px] mb-10">
               Receive your magic link to enter.
             </p>
-
             <input
               type="email"
               placeholder="Your email"
-              className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
+             className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
 
             {errorMsg && (
-              <p className="text-red-400 text-[13px] mb-4">
-                {errorMsg}
-              </p>
+              <p className="text-red-400 text-[13px] mb-4">{errorMsg}</p>
             )}
 
             <button

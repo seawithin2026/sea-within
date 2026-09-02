@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
-import VideoGrid from './VideoGrid';
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import VideoGrid from "./VideoGrid";
 
 export default function SanctuaryPage() {
   const router = useRouter();
@@ -17,26 +17,32 @@ export default function SanctuaryPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.replace('/reveal');
+        // Cold visitor → Reveal page
+        router.replace("/reveal");
         return;
       }
 
       // 2. Must be a valid member + must have username
       const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_member, username')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("is_member, membership_status, username")
+        .eq("id", user.id)
         .single();
 
-      // Not a member → redirect
-      if (!profile?.is_member) {
-        router.replace('/reveal');
+      // Logged in but NOT a member → send to Account (so they can pay)
+      if (
+        !profile ||
+        profile.is_member !== true ||
+        (profile.membership_status !== "active" &&
+         profile.membership_status !== "cancelling")
+      ) {
+        router.replace("/account");
         return;
       }
 
-      // ⭐ Username missing → force username creation
-      if (!profile?.username) {
-        router.replace('/create-username');
+      // Member but no username → onboarding
+      if (!profile.username) {
+        router.replace("/create-username");
         return;
       }
 
@@ -50,14 +56,15 @@ export default function SanctuaryPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-white/40 tracking-[3px] uppercase">Loading Sanctuary...</p>
+        <p className="text-white/40 tracking-[3px] uppercase">
+          Loading Sanctuary...
+        </p>
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-black text-white sanctuary-root">
-
       {/* HERO VIDEO */}
       <section className="relative w-full h-[130vh] overflow-hidden sanctuary-video">
         <video
@@ -70,11 +77,11 @@ export default function SanctuaryPage() {
         />
 
         {/* OVERLAY TEXT */}
-        <div 
+        <div
           className="absolute inset-0 flex flex-col justify-end px-10 sanctuary-hero-text"
           style={{ paddingBottom: "51rem" }}
         >
-          <p 
+          <p
             className="uppercase text-slate-200 sanctuary-hero-subtitle"
             style={{
               fontSize: "0.85rem",
@@ -123,7 +130,6 @@ export default function SanctuaryPage() {
 
         <VideoGrid />
       </section>
-
     </main>
   );
 }

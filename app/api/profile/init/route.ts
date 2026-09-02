@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+// /api/profile/init/route.ts
+
+import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 export async function POST() {
   const supabase = createClient(
@@ -9,13 +11,22 @@ export async function POST() {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: 'Not logged in' }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
-  await supabase.from('profiles').upsert({
-    id: user.id,
-    email: user.email,
-    created_at: new Date().toISOString(),
-  });
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (!existing) {
+    await supabase.from("profiles").insert({
+      id: user.id,
+      email: user.email,
+      is_member: false,
+      membership_status: "none",
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }
