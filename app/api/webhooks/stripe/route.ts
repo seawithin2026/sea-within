@@ -2,63 +2,65 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
+// Stripe client
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
-export async function POST(req: NextRequest) {
-  const body = await req.text();
-  const sig = req.headers.get("stripe-signature")!;
+// ⭐ Helper: Read raw body from App Router request
+async function getRawBody(req: NextRequest): Promise<Buffer> {
+  const chunks = [];
+  const reader = req.body!.getReader();
 
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+
+  return Buffer.concat(chunks);
+}
+
+export async function POST(req: NextRequest) {
   let event;
 
   try {
+    const rawBody = await getRawBody(req);
+    const sig = req.headers.get("stripe-signature")!;
+
     event = stripe.webhooks.constructEvent(
-      body,
+      rawBody,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err: any) {
+    console.error("❌ Webhook signature error:", err.message);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
+  // Supabase client
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
   async function upsertProfile(customerId: string, data: any) {
-    const { data: existing, error: selectError } = await supabase
+    const { data: existing } = await supabase
       .from("profiles")
       .select("*")
       .eq("stripe_customer_id", customerId)
       .single();
 
-    if (selectError && selectError.code !== "PGRST116") {
-      console.error("Select error:", selectError);
-    }
-
     if (existing) {
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update(data)
-        .eq("stripe_customer_id", customerId);
-
-      if (updateError) {
-        console.error("Update error:", updateError);
-      }
+      await supabase.from("profiles").update(data).eq("stripe_customer_id", customerId);
     } else {
-      const { error: insertError } = await supabase.from("profiles").insert({
+      await supabase.from("profiles").insert({
         stripe_customer_id: customerId,
         ...data,
       });
-
-      if (insertError) {
-        console.error("Insert error:", insertError);
-      }
     }
   }
 
@@ -76,11 +78,11 @@ export async function POST(req: NextRequest) {
     };
   }
 
+  // ⭐ Handle events
   switch (event.type) {
     case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-
       const { email, country } = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
@@ -91,14 +93,12 @@ export async function POST(req: NextRequest) {
         is_member: true,
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
-
       break;
     }
 
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-
       const { email, country } = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
@@ -106,18 +106,15 @@ export async function POST(req: NextRequest) {
         country,
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
-        // ⭐ keep access until period end even if cancelling
         is_member: true,
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
-
       break;
     }
 
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-
       const { email, country } = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
@@ -128,14 +125,12 @@ export async function POST(req: NextRequest) {
         is_member: false,
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
-
       break;
     }
 
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
-
       const { email, country } = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
@@ -144,14 +139,12 @@ export async function POST(req: NextRequest) {
         membership_status: "active",
         is_member: true,
       });
-
       break;
     }
 
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
-
       const { email, country } = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
@@ -160,7 +153,6 @@ export async function POST(req: NextRequest) {
         membership_status: "past_due",
         is_member: false,
       });
-
       break;
     }
   }
