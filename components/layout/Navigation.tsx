@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { supabase } from "@/lib/supabase/client";
-import SignInModal from '../SignInModal';
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
@@ -15,10 +14,9 @@ const navLinks = [
 ];
 
 export default function Navigation() {
- 
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [user, setUser] = useState(null);
 
   // Detect scroll
@@ -48,12 +46,8 @@ export default function Navigation() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  
   return (
     <>
-      <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
-
- 
       <motion.nav
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -86,19 +80,19 @@ export default function Navigation() {
               </Link>
             ))}
 
-
             {!user ? (
-              <button
-                onClick={() => setIsSignInOpen(true)}
+              <Link
+                href="/join"
                 className="btn-golden text-[11px] px-6 py-2.5 ml-8"
               >
                 Sign In
-              </button>
+              </Link>
             ) : (
               <>
                 <button
-                  onClick={() => {
-                    window.location.href = '/logout';
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = "/";
                   }}
                   className="btn-golden text-[11px] px-6 py-2.5 ml-8"
                 >
@@ -146,23 +140,21 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-
                 {!user ? (
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setIsSignInOpen(true);
-                    }}
+                  <Link
+                    href="/join"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="btn-golden text-[11px] px-6 py-2.5"
                   >
                     Sign In
-                  </button>
+                  </Link>
                 ) : (
                   <>
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = '/logout';
+                        await supabase.auth.signOut();
+                        window.location.href = "/";
                       }}
                       className="btn-golden text-[11px] px-6 py-2.5"
                     >

@@ -21,15 +21,22 @@ export default function SanctuaryPage() {
         return;
       }
 
-      // 2. Must be a valid member
+      // 2. Must be a valid member + must have username
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_member')
+        .select('is_member, username')
         .eq('id', user.id)
         .single();
 
+      // Not a member → redirect
       if (!profile?.is_member) {
         router.replace('/reveal');
+        return;
+      }
+
+      // ⭐ Username missing → force username creation
+      if (!profile?.username) {
+        router.replace('/create-username');
         return;
       }
 

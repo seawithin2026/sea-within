@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 
-
 export default function CreateUsernamePage() {
   const router = useRouter();
 
@@ -17,7 +16,7 @@ export default function CreateUsernamePage() {
     setError('');
     setLoading(true);
 
-    // ⭐ FIX: use getSession instead of getUser
+    // Get current session
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -30,6 +29,7 @@ export default function CreateUsernamePage() {
       return;
     }
 
+    // Update username
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ username })
@@ -42,6 +42,8 @@ export default function CreateUsernamePage() {
     }
 
     setLoading(false);
+
+    // ⭐ After saving username → enter the Sanctuary
     router.push('/sanctuary');
   };
 

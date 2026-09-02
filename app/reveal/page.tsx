@@ -2,28 +2,9 @@
 
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import Navigation from '@/components/layout/Navigation';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 export default function RevealPage() {
-  const [loading, setLoading] = useState(false);
-
-  // ⭐ Correct Stripe Checkout trigger
-  const handleJoin = async (plan: 'monthly') => {
-    setLoading(true);
-
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan }),
-    });
-
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url; // 🔹 Opens Stripe Checkout
-    }
-
-    setLoading(false);
-  };
 
   /* -----------------------------------------------------
      ⭐ VIDEO AUDIO CONTROL — ONLY ADDITION
@@ -34,11 +15,9 @@ export default function RevealPage() {
 
     if (!marketingVideo || !seaAudio) return;
 
-    
     marketingVideo.addEventListener("play", () => {
       seaAudio.pause();
     });
-
 
     const enableSound = () => {
       marketingVideo.muted = false;
@@ -48,7 +27,6 @@ export default function RevealPage() {
 
     window.addEventListener("touchstart", enableSound);
     window.addEventListener("click", enableSound);
-
 
     marketingVideo.addEventListener("ended", () => {
       seaAudio.play();
@@ -152,9 +130,9 @@ export default function RevealPage() {
         <ScrollReveal delay={800}>
           <h2 className="font-display text-3xl font-light mb-4">The Transformation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-          Sea Within is for those who feel everything and carry it alone. 
-          For those who move fast through life but crave a place to finally slow down. 
-          If you’ve outgrown surface‑level healing, this is where you return to yourself.
+            Sea Within is for those who feel everything and carry it alone. 
+            For those who move fast through life but crave a place to finally slow down. 
+            If you’ve outgrown surface‑level healing, this is where you return to yourself.
           </p>
         </ScrollReveal>
 
@@ -180,13 +158,12 @@ export default function RevealPage() {
             This is your opportunity to sea within yourself.
           </p>
 
-          {/* ⭐ FIXED — Stripe Checkout Button */}
+          {/* ⭐ FINAL — Clean Join Button */}
           <button
-            onClick={() => handleJoin('monthly')}
-            disabled={loading}
-            className="btn-golden w-full text-center py-4 text-lg block disabled:opacity-60 disabled:cursor-not-allowed"
+            onClick={() => window.location.href = "/join"}
+            className="btn-golden w-full text-center py-4 text-lg block"
           >
-            {loading ? 'Opening Stripe…' : 'Enter the Sanctuary — $77.77/month'}
+            Enter the Sanctuary — $77.77/month
           </button>
 
         </ScrollReveal>

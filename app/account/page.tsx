@@ -50,12 +50,14 @@ export default function AccountPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/signin");
+    router.push("/join");
+
   };
 
   // ⭐ Redirect ONLY after loading is complete
   if (!loading && !user) {
-    router.push("/signin");
+    router.push("/join");
+
     return null;
   }
 
