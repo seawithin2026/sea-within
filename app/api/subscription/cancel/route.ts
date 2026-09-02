@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     // Fetch profile
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("email, stripe_customer_id, stripe_subscription_id, timezone")
+      .select("stripe_subscription_id")
       .eq("id", user.id)
       .single();
 
@@ -48,34 +48,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No active subscription to cancel" }, { status: 400 });
     }
 
-    // ⭐ Cancel immediately — no future invoices, no prorating
-    const canceled = await stripe.subscriptions.cancel(profile.stripe_subscription_id, {
-      prorate: false,
-      invoice_now: false,
+    // ⭐ Cancel at period end — DO NOT expire immediately
+    const canceled = await stripe.subscriptions.update(profile.stripe_subscription_id, {
+      cancel_at_period_end: true,
     });
-
-    // ⭐ Stripe always returns UTC timestamps — store them as UTC
-    const accessUntilUTC = new Date(canceled.current_period_end * 1000).toISOString();
-
-    // Update profile
-    await supabase
-      .from("profiles")
-      .update({
-        stripe_subscription_id: null,
-        membership_status: "expired",
-        is_member: false,
-
-        // ⭐ Store UTC timestamp (correct)
-        access_until: accessUntilUTC,
-
-        // ⭐ Keep user's timezone if already stored
-        timezone: profile.timezone || null,
-      })
-      .eq("id", user.id);
 
     return NextResponse.json({
       success: true,
-      access_until: accessUntilUTC, // still UTC — interpreted later
+      message: "Subscription will end at period end.",
+      current_period_end: new Date(canceled.current_period_end * 1000).toISOString(),
     });
   } catch (err: any) {
     console.error("Cancel subscription error:", err);
