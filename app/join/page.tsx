@@ -9,6 +9,7 @@ export default function JoinPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   // ⭐ Detect magic link login
   useEffect(() => {
@@ -30,15 +31,30 @@ export default function JoinPage() {
     });
   }, []);
 
-  // ⭐ Send magic link
+  // ⭐ Send magic link + detect rate limit
   const sendLink = async () => {
-    await supabase.auth.signInWithOtp({
+    setErrorMsg('');
+
+    const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // ⭐ Redirect to /account (correct)
         emailRedirectTo: `${window.location.origin}/account`,
       },
     });
+
+    // ⭐ RATE LIMIT DETECTION
+    if (error) {
+      if (error.message.includes('rate limit')) {
+        setErrorMsg(
+          'Too many attempts — please wait a moment before trying again.'
+        );
+        return;
+      }
+
+      // ⭐ Any other Supabase error
+      setErrorMsg(error.message);
+      return;
+    }
 
     setSent(true);
   };
@@ -60,10 +76,16 @@ export default function JoinPage() {
             <input
               type="email"
               placeholder="Your email"
-              className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-6"
+              className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+
+            {errorMsg && (
+              <p className="text-red-400 text-[13px] mb-4">
+                {errorMsg}
+              </p>
+            )}
 
             <button
               onClick={sendLink}
