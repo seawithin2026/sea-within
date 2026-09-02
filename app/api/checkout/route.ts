@@ -6,14 +6,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
-// Your real price IDs
 const PRICE_IDS = {
   monthly: "price_1Tk3G1DdlqSxXxUFu0NH3PAV",
 };
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan } = await req.json();
+    const { plan, userId } = await req.json();
 
     if (!plan || !PRICE_IDS[plan]) {
       return NextResponse.json(
@@ -25,6 +24,9 @@ export async function POST(req: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
+
+      customer_creation: "always",
+
       line_items: [
         {
           price: PRICE_IDS[plan],
@@ -32,9 +34,21 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // ⭐ Correct callback
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/callback?session_id={CHECKOUT_SESSION_ID}`,
+      client_reference_id: userId,
 
+      metadata: {
+        supabase_user_id: userId,
+      },
+
+      subscription_data: {
+        metadata: {
+          supabase_user_id: userId,
+        },
+      },
+
+      billing_address_collection: "auto",
+
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/callback?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
     });
 
