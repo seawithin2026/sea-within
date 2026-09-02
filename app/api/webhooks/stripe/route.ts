@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-
-
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-
-
-
-
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
@@ -32,52 +25,59 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
   async function upsertProfile(customerId: string, data: any) {
-    const { data: existing } = await supabase
+    const { data: existing, error: selectError } = await supabase
       .from("profiles")
       .select("*")
       .eq("stripe_customer_id", customerId)
       .single();
 
+    if (selectError && selectError.code !== "PGRST116") {
+      console.error("Select error:", selectError);
+    }
+
     if (existing) {
-      await supabase
+      const { error: updateError } = await supabase
         .from("profiles")
         .update(data)
         .eq("stripe_customer_id", customerId);
+
+      if (updateError) {
+        console.error("Update error:", updateError);
+      }
     } else {
-      await supabase.from("profiles").insert({
+      const { error: insertError } = await supabase.from("profiles").insert({
         stripe_customer_id: customerId,
         ...data,
       });
+
+      if (insertError) {
+        console.error("Insert error:", insertError);
+      }
     }
   }
 
-  // ⭐ FINAL FIX — works with your Stripe SDK
+  // ⭐ SAFE CUSTOMER RETRIEVAL — no crashes on null address or deleted customers
   async function getCustomerData(customerId: string) {
-    const response = await stripe.customers.retrieve(customerId);
-
-    // Force-cast to actual Customer object
-    const customer = response as unknown as Stripe.Customer;
+    const raw = await stripe.customers.retrieve(customerId);
+    const customer = raw as Stripe.Customer;
 
     if ((customer as any).deleted) {
-      return {
-        email: null,
-        country: null,
-      };
+      return { email: null, country: null };
     }
 
     return {
-      email: customer.email || null,
-      country: customer.address?.country || null,
+      email: customer.email ?? null,
+      country: customer.address?.country ?? null,
     };
   }
 
+  // ⭐ EVENT HANDLING
   switch (event.type) {
     case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
