@@ -62,7 +62,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // ⭐ SAFE CUSTOMER RETRIEVAL — no crashes on null address or deleted customers
   async function getCustomerData(customerId: string) {
     const raw = await stripe.customers.retrieve(customerId);
     const customer = raw as Stripe.Customer;
@@ -77,7 +76,6 @@ export async function POST(req: NextRequest) {
     };
   }
 
-  // ⭐ EVENT HANDLING
   switch (event.type) {
     case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
@@ -108,7 +106,8 @@ export async function POST(req: NextRequest) {
         country,
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
-        is_member: !sub.cancel_at_period_end,
+        // ⭐ keep access until period end even if cancelling
+        is_member: true,
         access_until: new Date(sub.current_period_end * 1000).toISOString(),
       });
 
