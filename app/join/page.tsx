@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
@@ -11,27 +11,8 @@ export default function JoinPage() {
   const [sent, setSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // ⭐ Detect magic link login
-  useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (data.user) {
-        // ⭐ Create profile silently
-        await fetch('/api/profile/init', { method: 'POST' });
+  // ⭐ NO AUTO-REDIRECT HERE
 
-        // ⭐ Redirect to Stripe Checkout
-        const res = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan: 'monthly' }),
-        });
-
-        const { url } = await res.json();
-        if (url) window.location.href = url;
-      }
-    });
-  }, []);
-
-  // ⭐ Send magic link + detect rate limit
   const sendLink = async () => {
     setErrorMsg('');
 
@@ -42,16 +23,12 @@ export default function JoinPage() {
       },
     });
 
-    // ⭐ RATE LIMIT DETECTION
     if (error) {
       if (error.message.includes('rate limit')) {
-        setErrorMsg(
-          'Too many attempts — please wait a moment before trying again.'
-        );
+        setErrorMsg('Too many attempts — please wait a moment.');
         return;
       }
 
-      // ⭐ Any other Supabase error
       setErrorMsg(error.message);
       return;
     }
