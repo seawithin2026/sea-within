@@ -19,7 +19,7 @@ export default function SanctuaryLayout({ children }) {
 
       const user = session?.user;
 
-      // ⭐ FIX: Non‑signed‑in users go to REVEAL (not sign‑in)
+      // ⭐ Non‑signed‑in users → reveal
       if (!user) {
         window.location.href = "/reveal";
         return;
@@ -32,7 +32,7 @@ export default function SanctuaryLayout({ children }) {
         .eq("id", user.id)
         .single();
 
-      // If no profile, treat as non‑member → reveal
+      // ⭐ No profile → treat as non‑member
       if (!profile) {
         window.location.href = "/reveal";
         return;
@@ -41,12 +41,15 @@ export default function SanctuaryLayout({ children }) {
       // ⭐ Membership guard FIRST
       const status = profile.membership_status?.toLowerCase();
 
-      
+      // ⭐ FINAL membership logic:
+      // Active → access
+      // Cancelling → access until period end
+      // Past_due → no access
+      // Expired → no access
       const isActive =
-        profile.is_member &&
+        profile.is_member === true &&
         (status === "active" || status === "cancelling");
 
-      // ⭐ Non‑members → reveal
       if (!isActive) {
         window.location.href = "/reveal";
         return;
