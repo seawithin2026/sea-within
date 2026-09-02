@@ -35,7 +35,8 @@ export default function JoinPage() {
     await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/join`,
+        // ⭐ Redirect to /account (correct)
+        emailRedirectTo: `${window.location.origin}/account`,
       },
     });
 
@@ -43,29 +44,41 @@ export default function JoinPage() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6">
-      {!sent ? (
-        <>
-          <h1 className="text-3xl mb-6">Enter the Sanctuary</h1>
-          <input
-            type="email"
-            placeholder="Your email"
-            className="border px-4 py-3 rounded w-full max-w-md mb-4"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button
-            onClick={sendLink}
-            className="btn-golden w-full max-w-md py-3"
-          >
-            Send Magic Link
-          </button>
-        </>
-      ) : (
-        <p className="text-center text-lg">
-          Check your email — your doorway is waiting.
-        </p>
-      )}
+    <main className="min-h-screen flex items-center justify-center px-6 bg-[#0A1628] text-white">
+      <div className="max-w-sm w-full text-center">
+
+        {!sent ? (
+          <>
+            <h1 className="text-[22px] tracking-[3px] mb-6 text-golden-400 font-display">
+              Enter the Sanctuary
+            </h1>
+
+            <p className="text-white/60 text-[13px] tracking-[1px] mb-10">
+              Receive your magic link to enter.
+            </p>
+
+            <input
+              type="email"
+              placeholder="Your email"
+              className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-6"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <button
+              onClick={sendLink}
+              className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
+            >
+              SEND MAGIC LINK
+            </button>
+          </>
+        ) : (
+          <p className="text-center text-lg text-golden-400">
+            Check your email — your doorway is waiting.
+          </p>
+        )}
+
+      </div>
     </main>
   );
 }
