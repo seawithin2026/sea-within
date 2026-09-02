@@ -12,10 +12,9 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
+    const timer = setTimeout(async () => {
       const { data: { user } } = await supabase.auth.getUser();
 
-      // ⭐ DO NOT REDIRECT HERE — this was the bug
       if (!user) {
         setUser(null);
         setLoading(false);
@@ -30,7 +29,6 @@ export default function AccountPage() {
         .eq("id", user.id)
         .single();
 
-      // ⭐ FINAL membership logic (matches webhook + SanctuaryLayout)
       const active =
         profile?.is_member === true &&
         (profile?.membership_status === "active" ||
@@ -38,9 +36,9 @@ export default function AccountPage() {
 
       setIsMember(active);
       setLoading(false);
-    };
+    }, 600); // ⭐ WAIT FOR SESSION RESTORE
 
-    load();
+    return () => clearTimeout(timer);
   }, []);
 
   const handleManageSubscription = () => {
@@ -51,13 +49,10 @@ export default function AccountPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/join");
-
   };
 
-  // ⭐ Redirect ONLY after loading is complete
   if (!loading && !user) {
     router.push("/join");
-
     return null;
   }
 
