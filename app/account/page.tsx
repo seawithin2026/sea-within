@@ -9,18 +9,19 @@ export default function AccountRouter() {
 
   useEffect(() => {
     async function run() {
-      // 1. Check authentication
-      const { data: { user } } = await supabase.auth.getUser();
+      // 1. Check session (more reliable than getUser)
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
 
       if (!user) {
         router.replace("/join");
         return;
       }
 
-      // 2. Ensure profile row exists (trigger will create it)
+      // 2. Ensure profile row exists
       await fetch("/api/profile/init", { method: "POST" });
 
-      // 3. Wait for profile row to exist (fixes JOIN loop)
+      // 3. Poll until profile exists
       let profile = null;
       for (let i = 0; i < 10; i++) {
         const { data } = await supabase
@@ -34,7 +35,6 @@ export default function AccountRouter() {
           break;
         }
 
-        // Wait 200ms before trying again
         await new Promise((r) => setTimeout(r, 200));
       }
 
@@ -43,25 +43,24 @@ export default function AccountRouter() {
         return;
       }
 
-      // 4. Determine membership status
+      // 4. Membership logic
       const isActive =
         profile.is_member === true &&
         (profile.membership_status === "active" ||
          profile.membership_status === "cancelling");
 
-      // 5. Not a member → send to Stripe checkout
       if (!isActive) {
         router.replace("/checkout");
         return;
       }
 
-      // 6. Member but no username → onboarding
+      // 5. Username onboarding
       if (!profile.username) {
         router.replace("/create-username");
         return;
       }
 
-      // 7. Fully onboarded → sanctuary
+      // 6. Fully onboarded
       router.replace("/sanctuary");
     }
 
