@@ -22,9 +22,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ⭐ Use your SSR server client (correct)
     const supabase = supabaseServer();
-
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -36,11 +34,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ⭐ Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-
       customer_creation: "always",
 
       line_items: [
@@ -50,7 +46,6 @@ export async function POST(req: NextRequest) {
         },
       ],
 
-      // ⭐ Attach Supabase user ID to Stripe metadata
       metadata: {
         supabase_user_id: user.id,
       },

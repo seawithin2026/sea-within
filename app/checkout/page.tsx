@@ -6,7 +6,11 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function startCheckout() {
       try {
-        const res = await fetch("/api/checkout", { method: "POST" });
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          body: JSON.stringify({ plan: "monthly" }),
+        });
+
         const data = await res.json();
 
         if (data?.url) {
