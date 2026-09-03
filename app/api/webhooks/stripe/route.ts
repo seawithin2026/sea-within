@@ -47,36 +47,49 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  async function upsertProfile(customerId: string, data: any) {
-    const { data: existing } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("stripe_customer_id", customerId)
-      .maybeSingle();
-
-
-    if (existing) {
-      await supabase.from("profiles").update(data).eq("stripe_customer_id", customerId);
-    } else {
-      await supabase.from("profiles").insert({
-        stripe_customer_id: customerId,
-        ...data,
-      });
-    }
-  }
-
+  // ⭐ Fetch customer data (email, country, full_name)
   async function getCustomerData(customerId: string) {
     const raw = await stripe.customers.retrieve(customerId);
     const customer = raw as Stripe.Customer;
 
     if ((customer as any).deleted) {
-      return { email: null, country: null };
+      return { email: null, country: null, full_name: null };
     }
 
     return {
       email: customer.email ?? null,
       country: customer.address?.country ?? null,
+      full_name: customer.name ?? null,
     };
+  }
+
+  // ⭐ Upsert profile safely (no crashes)
+  async function upsertProfile(customerId: string, data: any) {
+    const { data: existing } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle(); // ← FIXED
+
+    const payload = {
+      stripe_customer_id: customerId,
+      email: data.email ?? existing?.email ?? null,
+      country: data.country ?? existing?.country ?? null,
+      full_name: data.full_name ?? existing?.full_name ?? null,
+      stripe_subscription_id: data.stripe_subscription_id ?? existing?.stripe_subscription_id ?? null,
+      membership_status: data.membership_status ?? existing?.membership_status ?? "inactive",
+      is_member: data.is_member ?? existing?.is_member ?? false,
+      access_until: data.access_until ?? existing?.access_until ?? null,
+    };
+
+    if (existing) {
+      await supabase
+        .from("profiles")
+        .update(payload)
+        .eq("stripe_customer_id", customerId);
+    } else {
+      await supabase.from("profiles").insert(payload);
+    }
   }
 
   // ⭐ Handle events
@@ -84,11 +97,10 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-      const { email, country } = await getCustomerData(customerId);
+      const customer = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
-        email,
-        country,
+        ...customer,
         stripe_subscription_id: sub.id,
         membership_status: "active",
         is_member: true,
@@ -100,11 +112,10 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.updated": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-      const { email, country } = await getCustomerData(customerId);
+      const customer = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
-        email,
-        country,
+        ...customer,
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
         is_member: true,
@@ -116,11 +127,10 @@ export async function POST(req: NextRequest) {
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
-      const { email, country } = await getCustomerData(customerId);
+      const customer = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
-        email,
-        country,
+        ...customer,
         stripe_subscription_id: null,
         membership_status: "expired",
         is_member: false,
@@ -132,11 +142,10 @@ export async function POST(req: NextRequest) {
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
-      const { email, country } = await getCustomerData(customerId);
+      const customer = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
-        email,
-        country,
+        ...customer,
         membership_status: "active",
         is_member: true,
       });
@@ -146,11 +155,10 @@ export async function POST(req: NextRequest) {
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
-      const { email, country } = await getCustomerData(customerId);
+      const customer = await getCustomerData(customerId);
 
       await upsertProfile(customerId, {
-        email,
-        country,
+        ...customer,
         membership_status: "past_due",
         is_member: false,
       });
