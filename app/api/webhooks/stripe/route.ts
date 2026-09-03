@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .select("*")
       .eq("stripe_customer_id", customerId)
-      .single();
+      .maybeSingle();
+
 
     if (existing) {
       await supabase.from("profiles").update(data).eq("stripe_customer_id", customerId);
