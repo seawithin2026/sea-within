@@ -18,8 +18,11 @@ export default function AccountRouter() {
         return;
       }
 
-      // 2. Ensure profile row exists
-      await fetch("/api/profile/init", { method: "POST" });
+      // 2. Ensure profile row exists — MUST send cookies
+      await fetch("/api/profile/init", {
+        method: "POST",
+        credentials: "include",
+      });
 
       // 3. Poll until profile exists
       let profile = null;
