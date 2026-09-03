@@ -24,7 +24,7 @@ export default function MyAccountPage() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_member, membership_status")
+        .select("is_member, membership_status, stripe_customer_id")
         .eq("id", user.id)
         .single();
 
@@ -35,9 +35,19 @@ export default function MyAccountPage() {
     load();
   }, []);
 
-  const handleManageSubscription = () => {
-    window.location.href =
-      "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
+  // ⭐ REAL CUSTOMER PORTAL — dynamic session
+  const handleManageSubscription = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const res = await fetch("/api/stripe/portal", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    const { url } = await res.json();
+    window.location.href = url;
   };
 
   const handleSignOut = async () => {
