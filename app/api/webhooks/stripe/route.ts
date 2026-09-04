@@ -84,8 +84,14 @@ export async function POST(req: Request) {
     }
   }
 
+  // ⭐ Safe date helper
+  function safeDate(ts: number | null | undefined) {
+    return ts ? new Date(ts * 1000).toISOString() : null;
+  }
+
   // ⭐ Handle events
   switch (event.type) {
+
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const customerId = session.customer as string;
@@ -109,7 +115,7 @@ export async function POST(req: Request) {
         stripe_subscription_id: sub.id,
         membership_status: "active",
         is_member: true,
-        access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: safeDate(sub.current_period_end),
       });
       break;
     }
@@ -124,7 +130,7 @@ export async function POST(req: Request) {
         stripe_subscription_id: sub.id,
         membership_status: sub.cancel_at_period_end ? "cancelling" : "active",
         is_member: true,
-        access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: safeDate(sub.current_period_end),
       });
       break;
     }
@@ -139,7 +145,7 @@ export async function POST(req: Request) {
         stripe_subscription_id: null,
         membership_status: "expired",
         is_member: false,
-        access_until: new Date(sub.current_period_end * 1000).toISOString(),
+        access_until: safeDate(sub.current_period_end),
       });
       break;
     }
@@ -170,16 +176,20 @@ export async function POST(req: Request) {
       break;
     }
 
-    // ⭐ NEW: Stripe’s newer event name
     case "invoice.payment_succeeded": {
       const invoice = event.data.object as Stripe.Invoice;
       const customerId = invoice.customer as string;
       const customer = await getCustomerData(customerId);
 
+      const subscriptionId = invoice.subscription as string | null;
+      const periodEnd = invoice.lines.data[0]?.period?.end ?? null;
+
       await upsertProfile(customerId, {
         ...customer,
+        stripe_subscription_id: subscriptionId,
         membership_status: "active",
         is_member: true,
+        access_until: safeDate(periodEnd),
       });
       break;
     }
