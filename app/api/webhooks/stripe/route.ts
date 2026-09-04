@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
@@ -10,21 +10,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
-// ⭐ Helper: Read raw body from App Router request
-async function getRawBody(req: NextRequest): Promise<Buffer> {
-  const chunks = [];
-  const reader = req.body!.getReader();
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-  }
-
-  return Buffer.concat(chunks);
+// ⭐ Correct raw body reader for App Router + Vercel/serverless
+async function getRawBody(req: Request): Promise<Buffer> {
+  const arrayBuffer = await req.arrayBuffer();
+  return Buffer.from(arrayBuffer);
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   let event;
 
   try {
@@ -38,7 +30,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (err: any) {
     console.error("❌ Webhook signature error:", err.message);
-    return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   // Supabase client
@@ -69,7 +61,7 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .select("*")
       .eq("stripe_customer_id", customerId)
-      .maybeSingle(); // ← FIXED
+      .maybeSingle(); // SAFE
 
     const payload = {
       stripe_customer_id: customerId,
