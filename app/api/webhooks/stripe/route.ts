@@ -86,6 +86,19 @@ export async function POST(req: Request) {
 
   // ⭐ Handle events
   switch (event.type) {
+    case "checkout.session.completed": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const customerId = session.customer as string;
+      const customer = await getCustomerData(customerId);
+
+      await upsertProfile(customerId, {
+        ...customer,
+        membership_status: "active",
+        is_member: true,
+      });
+      break;
+    }
+
     case "customer.subscription.created": {
       const sub = event.data.object as Stripe.Subscription;
       const customerId = sub.customer as string;
@@ -153,6 +166,20 @@ export async function POST(req: Request) {
         ...customer,
         membership_status: "past_due",
         is_member: false,
+      });
+      break;
+    }
+
+    // ⭐ NEW: Stripe’s newer event name
+    case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+      const customer = await getCustomerData(customerId);
+
+      await upsertProfile(customerId, {
+        ...customer,
+        membership_status: "active",
+        is_member: true,
       });
       break;
     }
