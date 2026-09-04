@@ -1,22 +1,20 @@
-import { NextResponse } from "next/server";
+export const config = {
+  verify_jwt: false,
+};
+
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
-// Stripe client
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-04-10",
 });
 
-// Correct raw body reader for App Router + Vercel/serverless
 async function getRawBody(req: Request): Promise<Buffer> {
   const arrayBuffer = await req.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
 
-export async function POST(req: Request) {
+export default async function handler(req: Request): Promise<Response> {
   let event;
 
   try {
@@ -26,20 +24,18 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       rawBody,
       sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      Deno.env.get("STRIPE_WEBHOOK_SECRET")!
     );
   } catch (err: any) {
-    console.error("❌ Webhook signature error:", err.message);
+    console.error("❌ Invalid signature:", err.message);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  // Supabase client
   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
-  // Fetch customer data (email, country, full_name)
   async function getCustomerData(customerId: string) {
     const raw = await stripe.customers.retrieve(customerId);
     const customer = raw as Stripe.Customer;
@@ -55,12 +51,10 @@ export async function POST(req: Request) {
     };
   }
 
-  // Safe date helper
   function safeDate(ts: number | null | undefined) {
     return ts ? new Date(ts * 1000).toISOString() : null;
   }
 
-  // Upsert profile safely
   async function upsertProfile(customerId: string, data: any) {
     const { data: existing } = await supabase
       .from("profiles")
@@ -70,20 +64,14 @@ export async function POST(req: Request) {
 
     const payload = {
       stripe_customer_id: customerId,
-
-      // Only send fields Stripe actually provides
       email: data.email ?? existing?.email ?? null,
       country: data.country ?? existing?.country ?? null,
       full_name: data.full_name ?? existing?.full_name ?? null,
-
-      // Subscription fields
       stripe_subscription_id:
         data.stripe_subscription_id ?? existing?.stripe_subscription_id ?? null,
-
       access_until: data.access_until ?? existing?.access_until ?? null,
-
-      // Membership logic
-      membership_status: data.membership_status ?? existing?.membership_status ?? "inactive",
+      membership_status:
+        data.membership_status ?? existing?.membership_status ?? "inactive",
       is_member: data.is_member ?? existing?.is_member ?? false,
     };
 
@@ -97,7 +85,6 @@ export async function POST(req: Request) {
     }
   }
 
-  // Handle events
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
@@ -202,5 +189,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ received: true });
+  return new Response(JSON.stringify({ received: true }), { status: 200 });
 }
