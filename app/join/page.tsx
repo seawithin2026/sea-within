@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabase/client";
 
 export default function JoinPage() {
-  const supabase = createClientComponentClient();
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -20,8 +19,8 @@ export default function JoinPage() {
     });
 
     if (error) {
-       if (error.message.includes('rate limit')) {
-        setErrorMsg('Too many attempts — please wait a moment.');
+      if (error.message.includes("rate limit")) {
+        setErrorMsg("Too many attempts — please wait a moment.");
         return;
       }
       setErrorMsg(error.message);
@@ -34,7 +33,6 @@ export default function JoinPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-6 bg-[#0A1628] text-white">
       <div className="max-w-sm w-full text-center">
-
         {!sent ? (
           <>
             <h1 className="text-[22px] tracking-[3px] mb-6 text-golden-400 font-display">
@@ -44,10 +42,11 @@ export default function JoinPage() {
             <p className="text-white/60 text-[13px] tracking-[1px] mb-10">
               Receive your magic link to enter.
             </p>
+
             <input
               type="email"
               placeholder="Your email"
-             className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
+              className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -68,7 +67,6 @@ export default function JoinPage() {
             Check your email — your doorway is waiting.
           </p>
         )}
-
       </div>
     </main>
   );
