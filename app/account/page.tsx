@@ -29,9 +29,10 @@ export default function AccountRouter() {
       for (let i = 0; i < 10; i++) {
         const { data } = await supabase
           .from("profiles")
-          .select("is_member, membership_status, username")
+          .select("is_member, membership_status")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
+
 
         if (data) {
           profile = data;
