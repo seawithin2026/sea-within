@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-04-10",
 });
 
-// ⭐ Correct raw body reader for App Router + Vercel/serverless
+// Correct raw body reader for App Router + Vercel/serverless
 async function getRawBody(req: Request): Promise<Buffer> {
   const arrayBuffer = await req.arrayBuffer();
   return Buffer.from(arrayBuffer);
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // ⭐ Fetch customer data (email, country, full_name)
+  // Fetch customer data (email, country, full_name)
   async function getCustomerData(customerId: string) {
     const raw = await stripe.customers.retrieve(customerId);
     const customer = raw as Stripe.Customer;
@@ -55,23 +55,36 @@ export async function POST(req: Request) {
     };
   }
 
-  // ⭐ Upsert profile safely (no crashes)
+  // Safe date helper
+  function safeDate(ts: number | null | undefined) {
+    return ts ? new Date(ts * 1000).toISOString() : null;
+  }
+
+  // Upsert profile safely
   async function upsertProfile(customerId: string, data: any) {
     const { data: existing } = await supabase
       .from("profiles")
       .select("*")
       .eq("stripe_customer_id", customerId)
-      .maybeSingle(); // SAFE
+      .maybeSingle();
 
     const payload = {
       stripe_customer_id: customerId,
+
+      // Only send fields Stripe actually provides
       email: data.email ?? existing?.email ?? null,
       country: data.country ?? existing?.country ?? null,
       full_name: data.full_name ?? existing?.full_name ?? null,
-      stripe_subscription_id: data.stripe_subscription_id ?? existing?.stripe_subscription_id ?? null,
+
+      // Subscription fields
+      stripe_subscription_id:
+        data.stripe_subscription_id ?? existing?.stripe_subscription_id ?? null,
+
+      access_until: data.access_until ?? existing?.access_until ?? null,
+
+      // Membership logic
       membership_status: data.membership_status ?? existing?.membership_status ?? "inactive",
       is_member: data.is_member ?? existing?.is_member ?? false,
-      access_until: data.access_until ?? existing?.access_until ?? null,
     };
 
     if (existing) {
@@ -84,14 +97,8 @@ export async function POST(req: Request) {
     }
   }
 
-  // ⭐ Safe date helper
-  function safeDate(ts: number | null | undefined) {
-    return ts ? new Date(ts * 1000).toISOString() : null;
-  }
-
-  // ⭐ Handle events
+  // Handle events
   switch (event.type) {
-
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const customerId = session.customer as string;
