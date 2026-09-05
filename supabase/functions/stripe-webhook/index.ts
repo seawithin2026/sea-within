@@ -1,3 +1,7 @@
+export const config = {
+  bodyParser: "raw"
+};
+
 import Stripe from "npm:stripe@16.12.0";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -31,13 +35,10 @@ function getCustomerId(
 
 async function getCustomerData(customerId: string) {
   const rawCustomer = await stripe.customers.retrieve(customerId);
-
   if (rawCustomer.deleted) {
     return { email: null, country: null, full_name: null };
   }
-
   const customer = rawCustomer as Stripe.Customer;
-
   return {
     email: customer.email ?? null,
     country: customer.address?.country ?? null,
@@ -82,7 +83,11 @@ async function upsertProfile(
     .single();
 
   if (error) {
-    console.error("Supabase profile upsert failed:", { customerId, payload, error });
+    console.error("Supabase profile upsert failed:", {
+      customerId,
+      payload,
+      error,
+    });
     throw error;
   }
 
@@ -113,7 +118,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       ? "cancelling"
       : subscription.status;
 
-    member = isMember(subscription.status, subscription.cancel_at_period_end);
+    member = isMember(
+      subscription.status,
+      subscription.cancel_at_period_end
+    );
+
     accessUntil = safeDate(subscription.current_period_end);
   }
 
@@ -137,7 +146,10 @@ async function handleSubscription(subscription: Stripe.Subscription) {
     membership_status: subscription.cancel_at_period_end
       ? "cancelling"
       : subscription.status,
-    is_member: isMember(subscription.status, subscription.cancel_at_period_end),
+    is_member: isMember(
+      subscription.status,
+      subscription.cancel_at_period_end
+    ),
   });
 }
 
@@ -173,7 +185,10 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       membership_status: subscription.cancel_at_period_end
         ? "cancelling"
         : subscription.status,
-      is_member: isMember(subscription.status, subscription.cancel_at_period_end),
+      is_member: isMember(
+        subscription.status,
+        subscription.cancel_at_period_end
+      ),
     });
 
     return;
@@ -226,21 +241,30 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return new Response(`Webhook Error: ${message}`, { status: 400 });
   }
 
-  console.log("Stripe event received:", { id: event.id, type: event.type });
+  console.log("Stripe event received:", {
+    id: event.id,
+    type: event.type,
+  });
 
   try {
     switch (event.type) {
       case "checkout.session.completed":
-        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        await handleCheckoutCompleted(
+          event.data.object as Stripe.Checkout.Session
+        );
         break;
 
       case "customer.subscription.created":
       case "customer.subscription.updated":
-        await handleSubscription(event.data.object as Stripe.Subscription);
+        await handleSubscription(
+          event.data.object as Stripe.Subscription
+        );
         break;
 
       case "customer.subscription.deleted":
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        await handleSubscriptionDeleted(
+          event.data.object as Stripe.Subscription
+        );
         break;
 
       case "invoice.paid":
@@ -248,11 +272,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
         break;
 
       case "invoice.payment_failed":
-        await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
+        await handleInvoicePaymentFailed(
+          event.data.object as Stripe.Invoice
+        );
         break;
 
       case "invoice.payment_succeeded":
-        console.log("Ignoring invoice.payment_succeeded; invoice.paid handles it.");
+        console.log(
+          "Ignoring invoice.payment_succeeded; invoice.paid handles it."
+        );
         break;
 
       default:
@@ -275,7 +303,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
     });
 
     return new Response(
-      JSON.stringify({ received: false, error: "Event processing failed" }),
+      JSON.stringify({
+        received: false,
+        error: "Event processing failed",
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
