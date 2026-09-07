@@ -43,16 +43,24 @@ serve(async (req) => {
       apiVersion: "2024-04-10",
     });
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
       customer: profile.stripe_customer_id,
-      return_url: `${Deno.env.get("SITE_URL")}/account`,
+      line_items: [
+        {
+          price: Deno.env.get("STRIPE_PRICE_ID")!, // YOUR monthly price ID
+          quantity: 1,
+        },
+      ],
+      success_url: `${Deno.env.get("SITE_URL")}/account`,
+      cancel_url: `${Deno.env.get("SITE_URL")}/checkout`,
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
     });
   } catch (err) {
-    console.error("Billing Portal Error:", err);
+    console.error("Checkout Error:", err);
     return new Response(
       JSON.stringify({ error: "Something went wrong" }),
       { status: 500 }
