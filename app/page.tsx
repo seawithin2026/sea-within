@@ -27,13 +27,25 @@ export default function HomePage() {
     window.addEventListener('scroll', enableAudio);
   }, []);
 
-  // DIRECT STRIPE CHECKOUT FUNCTION
+  // ⭐ UPDATED — USE SUPABASE EDGE FUNCTION CHECKOUT
   const handleJoin = async () => {
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: 'monthly' }),
-    });
+    const { supabase } = await import('@/lib/supabase/client');
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-checkout`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ plan: 'monthly' }),
+      }
+    );
 
     const data = await res.json();
     if (data.url) {
@@ -43,8 +55,6 @@ export default function HomePage() {
 
   return (
     <main className="relative">
-      
-
       {/* =============================================
           SECTION 1 — OCEAN SURFACE
       ============================================= */}
@@ -104,7 +114,6 @@ export default function HomePage() {
       {/* =============================================
           SECTION 3 — ELEMENTAL JOURNEY
       ============================================= */}
-     
       <ElementSection
         element="earth"
         videoSrc="/videos/element-earth.mp4"
@@ -216,7 +225,6 @@ export default function HomePage() {
             </h2>
           </ScrollReveal>
 
-      
           <ScrollReveal delay={1000}>
             <div className="mt-12">
               <a
@@ -240,7 +248,6 @@ export default function HomePage() {
         className="!h-auto !min-h-screen !overflow-visible"
       >
         <div className="text-center px-6 max-w-3xl">
-
           <ScrollReveal delay={200}>
             <p className="font-whisper text-sm tracking-[8px] uppercase text-sea-300/70 mb-12">
               the invitation
@@ -290,15 +297,14 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-   
           <ScrollReveal delay={2000}>
             <div className="mt-16">
-              <a
-                href="/reveal"
+              <button
+                onClick={handleJoin}
                 className="btn-golden text-lg py-4 px-10 inline-block"
               >
-                Join the Movement
-              </a>
+                Join the Movement — $77.77/month
+              </button>
             </div>
           </ScrollReveal>
         </div>
@@ -309,8 +315,6 @@ export default function HomePage() {
       ============================================= */}
       <footer className="relative bg-sanctuary-dark border-t border-white/5 py-20">
         <div className="max-w-7xl mx-auto px-6 md:px-12 text-center">
-
-          {/* Brand */}
           <p className="font-display text-xl tracking-[4px] text-golden-400/60">
             SEA WITHIN
           </p>
@@ -318,7 +322,6 @@ export default function HomePage() {
             come home to yourself
           </p>
 
-          {/* Navigation */}
           <div className="flex justify-center flex-wrap gap-8 mt-10">
             <a href="/sanctuary" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Sanctuary
@@ -337,17 +340,15 @@ export default function HomePage() {
             </a>
           </div>
 
-     {/* Legal */}
-<div className="flex justify-center flex-wrap gap-8 mt-10">
-  <a
-    href="/legal"
-    className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
-  >
-    Legal
-  </a>
-</div>
+          <div className="flex justify-center flex-wrap gap-8 mt-10">
+            <a
+              href="/legal"
+              className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
+            >
+              Legal
+            </a>
+          </div>
 
-          {/* Copyright */}
           <p className="font-body text-[11px] text-white/15 mt-12">
             &copy; {new Date().getFullYear()} Sea Within. All rights reserved.
           </p>

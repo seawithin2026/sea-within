@@ -1,6 +1,8 @@
 // supabase/functions/daily-affirmation/index.ts
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 import dayjs from "https://esm.sh/dayjs@1.11.10";
 import utc from "https://esm.sh/dayjs@1.11.10/plugin/utc";
 import timezone from "https://esm.sh/dayjs@1.11.10/plugin/timezone";

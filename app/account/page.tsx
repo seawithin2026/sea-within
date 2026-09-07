@@ -33,7 +33,6 @@ export default function AccountRouter() {
           .eq("id", user.id)
           .maybeSingle();
 
-
         if (data) {
           profile = data;
           break;
@@ -47,11 +46,13 @@ export default function AccountRouter() {
         return;
       }
 
-      // 4. Membership logic
+      // 4. Membership logic (Stripe Sync Engine compatible)
       const isActive =
         profile.is_member === true &&
-        (profile.membership_status === "active" ||
-         profile.membership_status === "cancelling");
+        (
+          profile.membership_status === "active" ||
+          profile.membership_status === "cancelling"
+        );
 
       if (!isActive) {
         router.replace("/checkout");

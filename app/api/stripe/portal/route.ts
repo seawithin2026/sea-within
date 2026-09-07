@@ -1,59 +1,33 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { supabaseServer } from "@/lib/supabase/server";
 
 export async function POST() {
-  // 1. Init Supabase server client (anon key is fine)
-  const cookieStore = cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  const supabase = supabaseServer();
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session?.access_token) {
+    return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  }
+
+  // Call Supabase Edge Function
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/billing-portal`,
     {
-      cookies: {
-        get(name) {
-          return cookieStore.get(name)?.value;
-        },
-        set() {},
-        remove() {},
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
       },
     }
   );
 
-  // 2. Get logged-in user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const data = await response.json();
 
-  if (!user) {
-    return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  if (!response.ok) {
+    return NextResponse.json({ error: data.error }, { status: 500 });
   }
 
-  // 3. Fetch stripe_customer_id from Supabase
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("stripe_customer_id")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.stripe_customer_id) {
-    return NextResponse.json(
-      { error: "No Stripe customer found" },
-      { status: 400 }
-    );
-  }
-
-  // 4. Init Stripe (safe to keep secret in Vercel)
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2024-04-10",
-  });
-
-  // 5. Create portal session
-  const session = await stripe.billingPortal.sessions.create({
-    customer: profile.stripe_customer_id,
-    return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`,
-  });
-
-  // 6. Return portal URL
-  return NextResponse.json({ url: session.url });
+  return NextResponse.json({ url: data.url });
 }

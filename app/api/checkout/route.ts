@@ -1,22 +1,13 @@
 export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
 import { supabaseServer } from "@/lib/supabase/server";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-04-10",
-});
-
-const PRICE_IDS = {
-  monthly: "price_1Tk3G1DdlqSxXxUFu0NH3PAV",
-};
 
 export async function POST(req: NextRequest) {
   try {
     const { plan } = await req.json();
 
-    if (!plan || !PRICE_IDS[plan]) {
+    if (!plan) {
       return NextResponse.json(
         { error: "Invalid or missing plan type." },
         { status: 400 }
@@ -35,37 +26,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ⭐ FIXED VERSION — customer_creation REMOVED
-    const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
-      payment_method_types: ["card"],
-
-      line_items: [
-        {
-          price: PRICE_IDS[plan],
-          quantity: 1,
+    // ⭐ Call Supabase Edge Function instead of Stripe directly
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/create-checkout`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${await supabase.auth.getSession().then(r => r.data.session?.access_token)}`,
+          "Content-Type": "application/json",
         },
-      ],
+        body: JSON.stringify({ plan }),
+      }
+    );
 
-      metadata: {
-        supabase_user_id: user.id,
-      },
+    const data = await response.json();
 
-      subscription_data: {
-        metadata: {
-          supabase_user_id: user.id,
-        },
-      },
+    if (!response.ok) {
+      return NextResponse.json({ error: data.error }, { status: 500 });
+    }
 
-      billing_address_collection: "auto",
-
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/join/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
-    });
-
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: data.url });
   } catch (error: any) {
-    console.error("STRIPE ERROR:", error);
+    console.error("CHECKOUT ERROR:", error);
     return NextResponse.json(
       { error: error.message || "Something went wrong" },
       { status: 500 }

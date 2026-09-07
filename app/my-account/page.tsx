@@ -13,7 +13,9 @@ export default function MyAccountPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         router.replace("/join");
@@ -35,16 +37,21 @@ export default function MyAccountPage() {
     load();
   }, []);
 
-  // ⭐ REAL CUSTOMER PORTAL — dynamic session
+  // ⭐ FIXED — Uses Supabase Edge Function instead of old Next.js route
   const handleManageSubscription = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    const res = await fetch("/api/stripe/portal", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/billing-portal`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      }
+    );
 
     const { url } = await res.json();
     window.location.href = url;
@@ -69,7 +76,6 @@ export default function MyAccountPage() {
 
       <div className="max-w-md mx-auto px-6 pt-32 pb-24">
         <div className="sanctuary-card p-8 md:p-12">
-
           <h1 className="font-display text-3xl text-center text-sea-100 mb-8">
             Your Account
           </h1>
