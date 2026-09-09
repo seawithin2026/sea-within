@@ -7,7 +7,9 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function startCheckout() {
       try {
+        // Get Supabase session
         const { data: { session } } = await supabase.auth.getSession();
+
         if (!session?.user) {
           window.location.href = "/join";
           return;
@@ -17,14 +19,16 @@ export default function CheckoutPage() {
         const response = await supabase.functions.invoke("create-checkout");
         console.log("RAW RESPONSE:", response);
 
-        // The ONLY correct place the URL exists
-        const url = response?.data?.url;
+        // ⭐ FIX: Supabase returns a JSON STRING, not an object
+        const parsed = JSON.parse(response.data);
+        const url = parsed.url;
 
         if (!url) {
           console.error("Stripe URL missing:", response);
           return;
         }
 
+        // Redirect to Stripe Checkout
         window.location.href = url;
 
       } catch (err) {
