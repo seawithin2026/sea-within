@@ -10,15 +10,12 @@ import timezone from "https://esm.sh/dayjs@1.11.10/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-// Load your affirmation pool backup
-import affirmations from "./affirmations.json" assert { type: "json" };
-
 serve(async (req) => {
   try {
     // 1. Init Supabase client (service role is allowed here)
     const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      Deno.env.get("PROJECT_URL")!,
+      Deno.env.get("SERVICE_ROLE_KEY")!
     );
 
     // 2. Get user from Authorization header
@@ -74,16 +71,15 @@ serve(async (req) => {
       .select("*")
       .order("id", { ascending: true });
 
-    // 7. Refill pool if empty
+    // 7. If pool is empty, return error (should never happen now)
     if (!pool || pool.length === 0) {
-      await supabase.from("affirmation_pool").insert(affirmations);
-
-      const refreshed = await supabase
-        .from("affirmation_pool")
-        .select("*")
-        .order("id", { ascending: true });
-
-      pool = refreshed.data || [];
+      return new Response(
+        JSON.stringify({
+          error:
+            "Affirmation pool is empty. Please refill it from your curated pool.",
+        }),
+        { status: 500 }
+      );
     }
 
     // 8. Select first affirmation
