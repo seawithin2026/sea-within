@@ -9,7 +9,7 @@ export default function AccountRouter() {
 
   useEffect(() => {
     async function run() {
-      // 1. Check session (more reliable than getUser)
+      // 1. Check session
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
 
@@ -18,28 +18,28 @@ export default function AccountRouter() {
         return;
       }
 
-      // 2. Ensure profile row exists — MUST send cookies
-      await fetch("/api/profile/init", {
-        method: "POST",
-        credentials: "include",
-      });
+      // 2. Ensure profile exists (client-side insert)
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      // 3. Poll until profile exists
-      let profile = null;
-      for (let i = 0; i < 10; i++) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("is_member, membership_status, username")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        if (data) {
-          profile = data;
-          break;
-        }
-
-        await new Promise((r) => setTimeout(r, 200));
+      if (!existing) {
+        await supabase.from("profiles").insert({
+          id: user.id,
+          email: user.email,
+          is_member: false,
+          membership_status: "none",
+        });
       }
+
+      // 3. Fetch profile again
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member, membership_status, username")
+        .eq("id", user.id)
+        .maybeSingle();
 
       if (!profile) {
         router.replace("/join");
