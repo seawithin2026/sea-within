@@ -1,32 +1,27 @@
-// ============================================// SEA WITHIN — Authentication
+// ============================================
+// SEA WITHIN — Authentication (FIXED VERSION)
 // ============================================
 
-// ❗ Only import the client for functions that actually use it
 import { supabase } from "./supabase/client";
 
 // --------------------------------------------
-// SIGN UP
+// SIGN UP (FIXED)
 // --------------------------------------------
-export async function signUp(email: string, password: string, fullName: string) {
+export async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        full_name: fullName,
-      },
-    },
   });
 
   if (error) throw error;
 
-
+  // Create minimal profile that matches your schema
   if (data.user) {
     await supabase.from("profiles").insert({
       id: data.user.id,
       email,
-      full_name: fullName,
-      membership_tier: "free",
+      is_member: false,
+      membership_status: "none",
     });
   }
 
@@ -55,10 +50,8 @@ export async function signOut() {
 }
 
 // --------------------------------------------
-// ⭐ FIXED: RESET PASSWORD (server route)
+// RESET PASSWORD (server route)
 // --------------------------------------------
-// This now calls your API route instead of Supabase directly.
-// This is the ONLY way redirectTo works correctly.
 export async function resetPassword(email: string) {
   const res = await fetch("/api/reset-password", {
     method: "POST",
@@ -74,7 +67,7 @@ export async function resetPassword(email: string) {
 }
 
 // --------------------------------------------
-// GET CURRENT USER
+// GET CURRENT USER (FIXED)
 // --------------------------------------------
 export async function getCurrentUser() {
   const {
@@ -93,19 +86,21 @@ export async function getCurrentUser() {
 }
 
 // --------------------------------------------
-// UPDATE PROFILE
+// UPDATE PROFILE (FIXED)
 // --------------------------------------------
+// Only allow updating fields that actually exist in your table
 export async function updateProfile(
   userId: string,
   updates: Partial<{
-    full_name: string;
-    avatar_url: string;
-    bio: string;
+    email: string;
   }>
 ) {
   const { data, error } = await supabase
     .from("profiles")
-    .update({ ...updates, updated_at: new Date().toISOString() })
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", userId)
     .select()
     .single();
