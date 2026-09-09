@@ -4,21 +4,13 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/layout/Navigation';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
-// ============================================
-// SEA WITHIN — Member Profile (Final Version)
-// ============================================
-
 export default function ProfilePage() {
   const [user, setUser] = useState({
-    full_name: '',
+    username: '',
     email: '',
-    bio: '',
     membership_tier: 'free',
-    avatar_url: '',
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState('');
 
   // ⭐ LOAD USER + PROFILE
@@ -26,7 +18,6 @@ export default function ProfilePage() {
     async function loadProfile() {
       const { supabase } = await import('@/lib/supabase/client');
 
-      // Get logged-in user
       const {
         data: { user: authUser },
       } = await supabase.auth.getUser();
@@ -36,10 +27,9 @@ export default function ProfilePage() {
         return;
       }
 
-      // Fetch profile (⭐ includes membership_status + is_member)
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, bio, membership_status, is_member')
+        .select('username, membership_status, is_member')
         .eq('id', authUser.id)
         .single();
 
@@ -47,23 +37,14 @@ export default function ProfilePage() {
         const status = profile.membership_status;
         const active = profile.is_member === true;
 
-        // ⭐ FINAL MEMBERSHIP TIER LOGIC
         let tier = 'free';
-
-        if (active) {
-          tier = 'explorer'; // active or cancelling
-        } else if (status === 'past_due') {
-          tier = 'seeker'; // payment failed
-        } else if (status === 'expired') {
-          tier = 'free'; // fully cancelled
-        }
+        if (active) tier = 'explorer';
+        else if (status === 'past_due') tier = 'seeker';
 
         setUser({
-          full_name: profile.full_name || '',
+          username: profile.username || '',
           email: authUser.email,
-          bio: profile.bio || '',
           membership_tier: tier,
-          avatar_url: '',
         });
       }
     }
@@ -71,54 +52,16 @@ export default function ProfilePage() {
     loadProfile();
   }, []);
 
-  // ⭐ SAVE PROFILE
-  const handleSave = async () => {
-    setIsSaving(true);
-    setMessage('');
-
-    try {
-      const { supabase } = await import('@/lib/supabase/client');
-
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
-
-      if (!authUser) {
-        setMessage('You must be signed in.');
-        return;
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: user.full_name,
-          bio: user.bio,
-        })
-        .eq('id', authUser.id);
-
-      if (error) {
-        setMessage('Something went wrong. Please try again.');
-      } else {
-        setMessage('Your profile has been updated.');
-        setIsEditing(false);
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const tierLabels: Record<string, string> = {
+  const tierLabels = {
     free: 'Free Spirit',
     seeker: 'Seeker',
     explorer: 'Explorer',
-    guardian: 'Guardian',
   };
 
-  const tierColors: Record<string, string> = {
+  const tierColors = {
     free: 'text-white/40',
     seeker: 'text-sea-300',
     explorer: 'text-golden-400',
-    guardian: 'text-golden-300',
   };
 
   return (
@@ -137,37 +80,26 @@ export default function ProfilePage() {
           </div>
         </ScrollReveal>
 
-        {/* Profile Card */}
         <ScrollReveal delay={400}>
           <div className="sanctuary-card p-8 md:p-12">
+
             {/* Avatar */}
             <div className="flex justify-center mb-8">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-sea-400/20 to-golden-400/20 border border-white/10 flex items-center justify-center">
                 <span className="font-display text-3xl text-golden-400/60">
-                  {user.full_name ? user.full_name[0]?.toUpperCase() : '?'}
+                  {user.username ? user.username[0]?.toUpperCase() : '?'}
                 </span>
               </div>
             </div>
 
-            {/* Name */}
+            {/* Username */}
             <div className="mb-6">
               <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-2">
-                Name
+                Username
               </label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={user.full_name}
-                  onChange={(e) => setUser({ ...user, full_name: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
-                           font-body text-sea-100 focus:outline-none focus:border-golden-400/40
-                           transition-all duration-300"
-                />
-              ) : (
-                <p className="font-display text-xl text-sea-100 font-light">
-                  {user.full_name || 'Beautiful Soul'}
-                </p>
-              )}
+              <p className="font-display text-xl text-sea-100 font-light">
+                {user.username || 'Beautiful Soul'}
+              </p>
             </div>
 
             {/* Email */}
@@ -176,7 +108,7 @@ export default function ProfilePage() {
                 Email
               </label>
               <p className="font-body text-sm text-white/50">
-                {user.email || 'your@email.com'}
+                {user.email}
               </p>
             </div>
 
@@ -186,83 +118,29 @@ export default function ProfilePage() {
                 Membership
               </label>
               <p className={`font-display text-lg font-light ${tierColors[user.membership_tier]}`}>
-                {tierLabels[user.membership_tier] || 'Free Spirit'}
+                {tierLabels[user.membership_tier]}
               </p>
             </div>
 
-            {/* Bio */}
-            <div className="mb-8">
-              <label className="block font-body text-[11px] tracking-[2px] uppercase text-white/40 mb-2">
-                About You
-              </label>
-              {isEditing ? (
-                <textarea
-                  value={user.bio}
-                  onChange={(e) => setUser({ ...user, bio: e.target.value })}
-                  placeholder="Share a little about your journey..."
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
-                           font-body text-sea-100 placeholder:text-white/20 resize-none
-                           focus:outline-none focus:border-golden-400/40
-                           transition-all duration-300"
-                />
-              ) : (
-                <p className="font-body text-sm text-white/40 leading-relaxed">
-                  {user.bio || 'Your story is still being written...'}
-                </p>
-              )}
-            </div>
-
-            {/* Message */}
             {message && (
               <p className="font-body text-sm text-golden-400/80 text-center mb-6">
                 {message}
               </p>
             )}
 
-            {/* Actions */}
-            <div className="flex justify-center gap-4">
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="btn-golden text-[11px] disabled:opacity-40"
-                  >
-                    {isSaving ? 'Saving...' : 'Save Changes'}
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="btn-ghost text-[11px]"
-                  >
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="btn-ghost text-[11px]"
-                >
-                  Edit Profile
-                </button>
-              )}
+            {/* Sign Out */}
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={async () => {
+                  const { supabase } = await import('@/lib/supabase/client');
+                  await supabase.auth.signOut();
+                  window.location.href = '/';
+                }}
+                className="font-body text-[11px] text-white/15 hover:text-white/30 transition-colors tracking-[1px]"
+              >
+                Sign Out
+              </button>
             </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Danger Zone */}
-        <ScrollReveal delay={600}>
-          <div className="mt-12 text-center">
-            <button
-              onClick={async () => {
-                const { supabase } = await import('@/lib/supabase/client');
-                await supabase.auth.signOut();
-                window.location.href = '/';
-              }}
-              className="font-body text-[11px] text-white/15 hover:text-white/30 transition-colors tracking-[1px]"
-            >
-              Sign Out
-            </button>
           </div>
         </ScrollReveal>
       </div>
