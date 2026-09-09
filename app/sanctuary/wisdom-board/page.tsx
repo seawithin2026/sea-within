@@ -1,6 +1,5 @@
 "use client";
 
-
 import Navigation from "@/components/layout/Navigation";
 import { useState, useEffect, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase/client";
@@ -10,7 +9,6 @@ interface WisdomPost {
   content: string;
   created_at: string;
   username?: string;
-  country?: string;
 }
 
 interface DailyMessage {
@@ -19,7 +17,6 @@ interface DailyMessage {
 }
 
 export default function WisdomBoardPage() {
- 
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   // ⭐ MEMBERSHIP GATE
@@ -66,7 +63,6 @@ export default function WisdomBoardPage() {
    ⭐ CLIENT COMPONENT
 ----------------------------------------------------- */
 function ClientWisdomBoard() {
- 
   const [newPost, setNewPost] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState("");
@@ -85,7 +81,6 @@ function ClientWisdomBoard() {
 
   /* Load daily message */
   useEffect(() => {
- 
     fetchDailyMessage();
   }, []);
 
@@ -122,7 +117,7 @@ function ClientWisdomBoard() {
   };
 
   /* -----------------------------------------------------
-     ⭐ SUBMIT POST — Option B logic
+     ⭐ SUBMIT POST — CLEANED (no country, no full name)
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -141,7 +136,7 @@ function ClientWisdomBoard() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("username, country")
+        .select("username")
         .eq("id", auth.user.id)
         .single();
 
@@ -149,7 +144,6 @@ function ClientWisdomBoard() {
         user_id: auth.user.id,
         content: newPost,
         username: profile?.username || null,
-        country: profile?.country || null,
         is_approved: true,
         created_at: new Date().toISOString(),
       });
@@ -166,13 +160,11 @@ function ClientWisdomBoard() {
         content: newPost,
         created_at: new Date().toISOString(),
         username: profile?.username || "Unknown",
-        country: profile?.country || "Unknown",
       });
 
       setFeedbackType("success");
       setFeedback("Your reflection has been shared with the community.");
       setNewPost("");
-
     } catch {
       setFeedbackType("error");
       setFeedback("Something went wrong. Please try again.");
@@ -278,7 +270,7 @@ function ClientWisdomBoard() {
               )}
 
               <p className="mt-4 text-xs text-stone-700/85">
-                Your message will be shared with the community along with your username, country, and today&apos;s date.
+                Your message will be shared with the community along with your username and today&apos;s date.
               </p>
 
               {/* ⭐ NEW — SHOW ONLY THE JUST-SUBMITTED POST */}
@@ -289,7 +281,7 @@ function ClientWisdomBoard() {
                   </p>
 
                   <p className="text-sm text-stone-700/85 italic">
-                    {justSubmittedPost.username} • {justSubmittedPost.country} •{" "}
+                    {justSubmittedPost.username} •{" "}
                     {new Date(justSubmittedPost.created_at).toLocaleDateString()}
                   </p>
 
