@@ -7,7 +7,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function startCheckout() {
       try {
-        // Get session
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user) {
           window.location.href = "/join";
@@ -15,15 +14,18 @@ export default function CheckoutPage() {
         }
 
         // Call Supabase Edge Function
-        const { data, error } = await supabase.functions.invoke("create-checkout");
+        const response = await supabase.functions.invoke("create-checkout");
+        console.log("RAW RESPONSE:", response);
 
-        if (error || !data?.url) {
-          console.error("Stripe URL missing:", error || data);
+        // The ONLY correct place the URL exists
+        const url = response?.data?.url;
+
+        if (!url) {
+          console.error("Stripe URL missing:", response);
           return;
         }
 
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
+        window.location.href = url;
 
       } catch (err) {
         console.error("Checkout error:", err);
