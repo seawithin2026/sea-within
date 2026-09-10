@@ -34,6 +34,23 @@ export default function AccountRouter() {
         });
       }
 
+      // ⭐ 2.5 — Update consent if missing
+      const { data: consentCheck } = await supabase
+        .from("profiles")
+        .select("terms_accepted")
+        .eq("id", user.id)
+        .single();
+
+      if (consentCheck?.terms_accepted !== true) {
+        await supabase
+          .from("profiles")
+          .update({
+            terms_accepted: true,
+            terms_accepted_at: new Date().toISOString(),
+          })
+          .eq("id", user.id);
+      }
+
       // 3. Fetch profile again
       const { data: profile } = await supabase
         .from("profiles")
