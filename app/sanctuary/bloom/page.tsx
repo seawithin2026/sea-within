@@ -52,7 +52,7 @@ function BloomContent() {
       // Gesture progress
       const { data: gestureData } = await supabase
         .from("gesture_progress")
-        .select("current_index, last_index")
+        .select("current_index, last_index, last_completed")
         .eq("user_id", user.id)
         .single();
 
@@ -136,7 +136,7 @@ function BloomContent() {
       .from("bloom_progress")
       .update({
         current_day: nextBloom + 1,
-        last_completed: today,
+        last_completed: today,   // FIXED
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -150,7 +150,8 @@ function BloomContent() {
       .update({
         current_index: nextGesture,
         last_index: gestureIndex,
-        last_completed: now,
+        last_completed: today,   // FIXED
+        updated_at: now,
       })
       .eq("user_id", userId);
 
@@ -177,7 +178,7 @@ function BloomContent() {
     await supabase
       .from("profiles")
       .update({
-        last_bloom_date: today,
+        last_bloom_date: today,          // FIXED
         last_bloom_video: BLOOMS[bloomIndex],
         bloom_cycle: bloomIndex + 1,
         updated_at: now,
@@ -188,7 +189,7 @@ function BloomContent() {
     await supabase
       .from("bloom_progress")
       .update({
-        last_completed: today,
+        last_completed: today,           // FIXED
         updated_at: now,
       })
       .eq("user_id", userId);
