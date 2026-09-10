@@ -48,15 +48,17 @@ export default function MyAccountPage() {
     }
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}/billing-portal`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  `${process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}/billing-portal`,
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      "Content-Type": "application/json",
+    },
+  }
+);
+
 
     if (!res.ok) {
       console.error("Billing portal error:", await res.text());
