@@ -23,7 +23,7 @@ function BloomContent() {
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
-     🌿 INIT — Load Bloom + Gesture Progress (from backend)
+     🌿 INIT — Load Bloom + Gesture Progress (FIXED)
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -63,12 +63,17 @@ function BloomContent() {
 
       const today = todayData?.today;
 
+      // ⭐ Fetch profile bloom fields (FIXED)
+      const { data: profileBloom } = await supabase
+        .from("profiles")
+        .select("last_bloom_date")
+        .eq("id", user.id)
+        .single();
+
       let bloomIdx = 0;
-      let bloomedToday = false;
 
       if (bloomData) {
         bloomIdx = bloomData.current_day - 1;
-        bloomedToday = bloomData.last_completed === today;
       } else {
         await supabase.from("bloom_progress").insert({
           user_id: user.id,
@@ -91,12 +96,17 @@ function BloomContent() {
         });
       }
 
+      // ⭐ FIXED BLOOM LOCK LOGIC
+      const bloomLocked =
+        bloomData?.last_completed === today ||
+        profileBloom?.last_bloom_date === today;
+
       if (!isMounted) return;
 
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
-      setHasBloomedToday(bloomedToday);
-      setMode(bloomedToday ? "bloom" : "gesture");
+      setHasBloomedToday(bloomLocked);
+      setMode(bloomLocked ? "bloom" : "gesture");
     };
 
     init();
@@ -136,7 +146,7 @@ function BloomContent() {
       .from("bloom_progress")
       .update({
         current_day: nextBloom + 1,
-        last_completed: today,   // FIXED
+        last_completed: today,
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -150,7 +160,7 @@ function BloomContent() {
       .update({
         current_index: nextGesture,
         last_index: gestureIndex,
-        last_completed: today,   // FIXED
+        last_completed: today,
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -178,7 +188,7 @@ function BloomContent() {
     await supabase
       .from("profiles")
       .update({
-        last_bloom_date: today,          // FIXED
+        last_bloom_date: today,
         last_bloom_video: BLOOMS[bloomIndex],
         bloom_cycle: bloomIndex + 1,
         updated_at: now,
@@ -189,7 +199,7 @@ function BloomContent() {
     await supabase
       .from("bloom_progress")
       .update({
-        last_completed: today,           // FIXED
+        last_completed: today,
         updated_at: now,
       })
       .eq("user_id", userId);
