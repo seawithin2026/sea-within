@@ -37,21 +37,32 @@ export default function MyAccountPage() {
     load();
   }, []);
 
-  // ⭐ FIXED — Uses Supabase Edge Function instead of old Next.js route
   const handleManageSubscription = async () => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
 
+    if (!session) {
+      alert("You must be logged in.");
+      return;
+    }
+
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/billing-portal`,
+      `${process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}/billing-portal`,
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${session.access_token}`,
+          "Content-Type": "application/json",
         },
       }
     );
+
+    if (!res.ok) {
+      console.error("Billing portal error:", await res.text());
+      alert("Unable to open billing portal.");
+      return;
+    }
 
     const { url } = await res.json();
     window.location.href = url;
