@@ -7,13 +7,47 @@ export default function JoinPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Whether the checkbox should be shown
+  const [needsConsent, setNeedsConsent] = useState(true);
+
+  // Whether the checkbox is checked
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  /* -----------------------------------------------------
+     🌿 CHECK CONSENT STATUS WHEN USER TYPES EMAIL
+  ----------------------------------------------------- */
+  const checkConsent = async (emailValue: string) => {
+    setEmail(emailValue);
+
+    if (!emailValue) {
+      setNeedsConsent(true);
+      return;
+    }
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("terms_accepted")
+      .eq("email", emailValue)
+      .maybeSingle();
+
+    // ⭐ Correct logic:
+    // Only TRUE means consent. Everything else requires checkbox.
+    if (data && data.terms_accepted === true) {
+      setNeedsConsent(false); // returning user → skip checkbox
+    } else {
+      setNeedsConsent(true); // new user OR null OR false → require consent
+    }
+  };
+
+  /* -----------------------------------------------------
+     🌿 SEND MAGIC LINK (with consent enforcement)
+  ----------------------------------------------------- */
   const sendLink = async () => {
     setErrorMsg("");
 
-    // Block sending magic link unless user agrees to Terms + Privacy
-    if (!termsAccepted) {
+    // If consent is required, enforce it
+    if (needsConsent && !termsAccepted) {
       setErrorMsg("You must agree to the Terms and Privacy Policy to continue.");
       return;
     }
@@ -37,6 +71,9 @@ export default function JoinPage() {
     setSent(true);
   };
 
+  /* -----------------------------------------------------
+     🌿 RENDER
+  ----------------------------------------------------- */
   return (
     <main className="min-h-screen flex items-center justify-center px-6 bg-[#0A1628] text-white">
       <div className="max-w-sm w-full text-center">
@@ -55,28 +92,30 @@ export default function JoinPage() {
               placeholder="Your email"
               className="w-full bg-white/5 border border-white/10 rounded-md py-3 px-4 text-[13px] tracking-[1px] focus:outline-none focus:border-white/30 mb-4"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => checkConsent(e.target.value)}
             />
 
-            {/* LEGAL CONSENT CHECKBOX */}
-            <label className="flex items-center gap-2 text-[12px] text-white/70 mb-4 text-left">
-              <input
-                type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                className="w-4 h-4 accent-white"
-              />
-              <span>
-                I agree to the{" "}
-                <a href="/legal#terms" className="underline">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="/legal#privacy" className="underline">
-                  Privacy Policy
-                </a>.
-              </span>
-            </label>
+            {/* ⭐ Show checkbox ONLY if consent is needed */}
+            {needsConsent && (
+              <label className="flex items-center gap-2 text-[12px] text-white/70 mb-4 text-left">
+                <input
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="w-4 h-4 accent-white"
+                />
+                <span>
+                  I agree to the{" "}
+                  <a href="/legal#terms" className="underline">
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a href="/legal#privacy" className="underline">
+                    Privacy Policy
+                  </a>.
+                </span>
+              </label>
+            )}
 
             {errorMsg && (
               <p className="text-red-400 text-[13px] mb-4">{errorMsg}</p>
