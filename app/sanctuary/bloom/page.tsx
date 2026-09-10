@@ -20,8 +20,6 @@ function BloomContent() {
 
   const [userId, setUserId] = useState<string | null>(null);
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
-
-  
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
@@ -44,21 +42,21 @@ function BloomContent() {
 
       setUserId(user.id);
 
-      // ⭐ Fetch bloom progress from backend (timezone-correct)
+      // Bloom progress
       const { data: bloomData } = await supabase
         .from("bloom_progress")
         .select("current_day, last_completed")
         .eq("user_id", user.id)
         .single();
 
-      // ⭐ Fetch gesture progress
+      // Gesture progress
       const { data: gestureData } = await supabase
         .from("gesture_progress")
         .select("current_index, last_index")
         .eq("user_id", user.id)
         .single();
 
-      // ⭐ Fetch user's timezone-correct "today" from backend
+      // Timezone-correct today
       const { data: todayData } = await supabase.rpc("get_user_today", {
         user_id: user.id,
       });
@@ -80,7 +78,6 @@ function BloomContent() {
         });
       }
 
-  
       let gestureIdx = 0;
 
       if (gestureData) {
@@ -99,8 +96,6 @@ function BloomContent() {
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
       setHasBloomedToday(bloomedToday);
-
-  
       setMode(bloomedToday ? "bloom" : "gesture");
     };
 
@@ -120,14 +115,12 @@ function BloomContent() {
       return;
     }
 
-
     if (hasBloomedToday) {
       setJustBloomedNow(false);
       setMode("bloom");
       return;
     }
 
-    // ⭐ Get timezone-correct "now" and "today" from backend
     const { data: todayData } = await supabase.rpc("get_user_today", {
       user_id: userId,
     });
@@ -135,7 +128,7 @@ function BloomContent() {
     const today = todayData?.today;
     const now = todayData?.now;
 
-    /* Advance Bloom */
+    // Advance Bloom
     let nextBloom = bloomIndex + 1;
     if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
@@ -148,7 +141,7 @@ function BloomContent() {
       })
       .eq("user_id", userId);
 
-    /* Advance Gesture */
+    // Advance Gesture
     let nextGesture = gestureIndex + 1;
     if (nextGesture >= GESTURES.length) nextGesture = 0;
 
@@ -162,12 +155,45 @@ function BloomContent() {
       .eq("user_id", userId);
 
     setBloomIndex(nextBloom);
-
-
     setHasBloomedToday(true);
     setJustBloomedNow(true);
-
     setMode("bloom");
+  };
+
+  /* -----------------------------------------------------
+     🌿 COMPLETE BLOOM RITUAL → Update profile + bloom_progress
+  ----------------------------------------------------- */
+  const handleBloomComplete = async () => {
+    if (!userId || bloomIndex === null) return;
+
+    const { data: todayData } = await supabase.rpc("get_user_today", {
+      user_id: userId,
+    });
+
+    const today = todayData?.today;
+    const now = todayData?.now;
+
+    // Update profile bloom fields
+    await supabase
+      .from("profiles")
+      .update({
+        last_bloom_date: today,
+        last_bloom_video: BLOOMS[bloomIndex],
+        bloom_cycle: bloomIndex + 1,
+        updated_at: now,
+      })
+      .eq("id", userId);
+
+    // Ensure bloom_progress also reflects today's bloom
+    await supabase
+      .from("bloom_progress")
+      .update({
+        last_completed: today,
+        updated_at: now,
+      })
+      .eq("user_id", userId);
+
+    setHasBloomedToday(true);
   };
 
   const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
@@ -223,11 +249,13 @@ function BloomContent() {
             muted
             playsInline
             loop={false}
-            onEnded={() => setVideoEnded(true)}
+            onEnded={() => {
+              setVideoEnded(true);
+              if (justBloomedNow) handleBloomComplete();
+            }}
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-  
           {videoEnded && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
@@ -235,7 +263,6 @@ function BloomContent() {
               </p>
             </div>
           )}
-
 
           {videoEnded && !justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
