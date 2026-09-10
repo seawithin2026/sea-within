@@ -219,7 +219,7 @@ function BloomContent() {
 
           <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
             <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
-              Sanctuary • Bloom Ritual • Part 1/2
+              Sanctuary • Bloom Ritual
             </p>
 
             <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
