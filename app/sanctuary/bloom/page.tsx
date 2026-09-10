@@ -97,7 +97,7 @@ function BloomContent() {
         });
       }
 
-      // ⭐ FIXED BLOOM LOCK LOGIC — compare timestamps, not strings
+      // ⭐ FIXED BLOOM LOCK LOGIC — compare timestamps to today's date
       const bloomLocked =
         (bloomData?.last_completed &&
           bloomData.last_completed.slice(0, 10) === today) ||
