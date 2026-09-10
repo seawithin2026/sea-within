@@ -62,8 +62,9 @@ function BloomContent() {
       });
 
       const today = todayData?.today;
+      const now = todayData?.now;
 
-      // ⭐ Fetch profile bloom fields (FIXED)
+      // Fetch profile bloom fields
       const { data: profileBloom } = await supabase
         .from("profiles")
         .select("last_bloom_date")
@@ -96,10 +97,12 @@ function BloomContent() {
         });
       }
 
-      // ⭐ FIXED BLOOM LOCK LOGIC
+      // ⭐ FIXED BLOOM LOCK LOGIC — compare timestamps, not strings
       const bloomLocked =
-        bloomData?.last_completed === today ||
-        profileBloom?.last_bloom_date === today;
+        (bloomData?.last_completed &&
+          bloomData.last_completed.slice(0, 10) === today) ||
+        (profileBloom?.last_bloom_date &&
+          profileBloom.last_bloom_date.slice(0, 10) === today);
 
       if (!isMounted) return;
 
@@ -146,7 +149,7 @@ function BloomContent() {
       .from("bloom_progress")
       .update({
         current_day: nextBloom + 1,
-        last_completed: today,
+        last_completed: now, // ⭐ FIXED
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -160,7 +163,7 @@ function BloomContent() {
       .update({
         current_index: nextGesture,
         last_index: gestureIndex,
-        last_completed: today,
+        last_completed: now, // ⭐ FIXED
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -188,7 +191,7 @@ function BloomContent() {
     await supabase
       .from("profiles")
       .update({
-        last_bloom_date: today,
+        last_bloom_date: now, // ⭐ FIXED
         last_bloom_video: BLOOMS[bloomIndex],
         bloom_cycle: bloomIndex + 1,
         updated_at: now,
@@ -199,7 +202,7 @@ function BloomContent() {
     await supabase
       .from("bloom_progress")
       .update({
-        last_completed: today,
+        last_completed: now, // ⭐ FIXED
         updated_at: now,
       })
       .eq("user_id", userId);
