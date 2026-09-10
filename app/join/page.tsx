@@ -7,9 +7,16 @@ export default function JoinPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const sendLink = async () => {
     setErrorMsg("");
+
+    // Block sending magic link unless user agrees to Terms + Privacy
+    if (!termsAccepted) {
+      setErrorMsg("You must agree to the Terms and Privacy Policy to continue.");
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -50,6 +57,26 @@ export default function JoinPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+
+            {/* LEGAL CONSENT CHECKBOX */}
+            <label className="flex items-center gap-2 text-[12px] text-white/70 mb-4 text-left">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="w-4 h-4 accent-white"
+              />
+              <span>
+                I agree to the{" "}
+                <a href="/legal#terms" className="underline">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="/legal#privacy" className="underline">
+                  Privacy Policy
+                </a>.
+              </span>
+            </label>
 
             {errorMsg && (
               <p className="text-red-400 text-[13px] mb-4">{errorMsg}</p>
