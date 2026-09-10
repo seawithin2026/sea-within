@@ -37,37 +37,10 @@ export default function MyAccountPage() {
     load();
   }, []);
 
-  const handleManageSubscription = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
-      alert("You must be logged in.");
-      return;
-    }
-
-    const res = await fetch(
-  `${process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL}/billing-portal`,
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      "Content-Type": "application/json",
-    },
-  }
-);
-
-
-    if (!res.ok) {
-      console.error("Billing portal error:", await res.text());
-      alert("Unable to open billing portal.");
-      return;
-    }
-
-    const { url } = await res.json();
-    window.location.href = url;
+  // ⭐ FIXED — simple, secure, Stripe-approved redirect
+  const handleManageSubscription = () => {
+    window.location.href =
+      "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
   };
 
   const handleSignOut = async () => {
