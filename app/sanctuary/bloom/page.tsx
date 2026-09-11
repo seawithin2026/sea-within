@@ -23,7 +23,7 @@ function BloomContent() {
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
-     🌿 INIT — Load Bloom + Gesture Progress (FIXED)
+     🌙 INIT — Load Bloom + Gesture Progress (RPC + DATE)
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -42,6 +42,17 @@ function BloomContent() {
 
       setUserId(user.id);
 
+      // Browser timezone
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      // RPC → user-local today + now
+      const { data: todayData } = await supabase.rpc("get_user_today", {
+        user_tz: timezone,
+      });
+
+      const today = todayData?.today; // "YYYY-MM-DD"
+      const now = todayData?.now;     // timestamp in user timezone
+
       // Bloom progress
       const { data: bloomData } = await supabase
         .from("bloom_progress")
@@ -56,26 +67,17 @@ function BloomContent() {
         .eq("user_id", user.id)
         .single();
 
-      // Timezone-correct today
-      const { data: todayData } = await supabase.rpc("get_user_today", {
-        user_id: user.id,
-      });
-
-      const today = todayData?.today;
-      const now = todayData?.now;
-
-      // Fetch profile bloom fields
+      // Profile bloom fields
       const { data: profileBloom } = await supabase
         .from("profiles")
         .select("last_bloom_date")
         .eq("id", user.id)
         .single();
 
-      let bloomIdx = 0;
+      // Bloom index
+      let bloomIdx = bloomData ? bloomData.current_day - 1 : 0;
 
-      if (bloomData) {
-        bloomIdx = bloomData.current_day - 1;
-      } else {
+      if (!bloomData) {
         await supabase.from("bloom_progress").insert({
           user_id: user.id,
           current_day: 1,
@@ -84,11 +86,10 @@ function BloomContent() {
         });
       }
 
-      let gestureIdx = 0;
+      // Gesture index
+      let gestureIdx = gestureData ? gestureData.current_index : 0;
 
-      if (gestureData) {
-        gestureIdx = gestureData.current_index ?? 0;
-      } else {
+      if (!gestureData) {
         await supabase.from("gesture_progress").insert({
           user_id: user.id,
           current_index: 0,
@@ -97,12 +98,10 @@ function BloomContent() {
         });
       }
 
-      // ⭐ FIXED BLOOM LOCK LOGIC — compare timestamps to today's date
+      // 🌙 BLOOM LOCK — DATE vs DATE
       const bloomLocked =
-        (bloomData?.last_completed &&
-          bloomData.last_completed.slice(0, 10) === today) ||
-        (profileBloom?.last_bloom_date &&
-          profileBloom.last_bloom_date.slice(0, 10) === today);
+        (bloomData?.last_completed === today) ||
+        (profileBloom?.last_bloom_date === today);
 
       if (!isMounted) return;
 
@@ -120,7 +119,7 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     🌿 COMPLETE GESTURE → Save progress + go to Bloom
+     🌙 COMPLETE GESTURE → Save progress + go to Bloom
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!userId || bloomIndex === null || gestureIndex === null) {
@@ -134,12 +133,14 @@ function BloomContent() {
       return;
     }
 
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const { data: todayData } = await supabase.rpc("get_user_today", {
-      user_id: userId,
+      user_tz: timezone,
     });
 
-    const today = todayData?.today;
-    const now = todayData?.now;
+    const today = todayData?.today; // DATE
+    const now = todayData?.now;     // TIMESTAMP
 
     // Advance Bloom
     let nextBloom = bloomIndex + 1;
@@ -149,7 +150,7 @@ function BloomContent() {
       .from("bloom_progress")
       .update({
         current_day: nextBloom + 1,
-        last_completed: now, // ⭐ FIXED
+        last_completed: today, // DATE
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -163,8 +164,7 @@ function BloomContent() {
       .update({
         current_index: nextGesture,
         last_index: gestureIndex,
-        last_completed: now, // ⭐ FIXED
-        updated_at: now,
+        last_completed: now, // TIMESTAMP
       })
       .eq("user_id", userId);
 
@@ -175,34 +175,36 @@ function BloomContent() {
   };
 
   /* -----------------------------------------------------
-     🌿 COMPLETE BLOOM RITUAL → Update profile + bloom_progress
+     🌙 COMPLETE BLOOM → Update profile + bloom_progress
   ----------------------------------------------------- */
   const handleBloomComplete = async () => {
     if (!userId || bloomIndex === null) return;
 
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     const { data: todayData } = await supabase.rpc("get_user_today", {
-      user_id: userId,
+      user_tz: timezone,
     });
 
-    const today = todayData?.today;
-    const now = todayData?.now;
+    const today = todayData?.today; // DATE
+    const now = todayData?.now;     // TIMESTAMP
 
     // Update profile bloom fields
     await supabase
       .from("profiles")
       .update({
-        last_bloom_date: now, // ⭐ FIXED
+        last_bloom_date: today, // DATE
         last_bloom_video: BLOOMS[bloomIndex],
         bloom_cycle: bloomIndex + 1,
         updated_at: now,
       })
       .eq("id", userId);
 
-    // Ensure bloom_progress also reflects today's bloom
+    // Sync bloom_progress
     await supabase
       .from("bloom_progress")
       .update({
-        last_completed: now, // ⭐ FIXED
+        last_completed: today, // DATE
         updated_at: now,
       })
       .eq("user_id", userId);
@@ -214,7 +216,7 @@ function BloomContent() {
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
   /* -----------------------------------------------------
-     🌿 RENDER
+     🌙 RENDER
   ----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
@@ -287,7 +289,7 @@ function BloomContent() {
           )}
         </div>
       )}
-
+      
       {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
