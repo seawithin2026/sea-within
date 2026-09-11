@@ -23,7 +23,7 @@ function BloomContent() {
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
-     🌙 INIT — Load Bloom + Gesture Progress (RPC + DATE)
+     INIT — Load Bloom + Gesture Progress (RPC + DATE)
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -42,39 +42,32 @@ function BloomContent() {
 
       setUserId(user.id);
 
-      // Browser timezone
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      // RPC → user-local today + now
       const { data: todayData } = await supabase.rpc("get_user_today", {
         user_tz: timezone,
       });
 
       const today = todayData?.today; // "YYYY-MM-DD"
-      const now = todayData?.now;     // timestamp in user timezone
 
-      // Bloom progress
       const { data: bloomData } = await supabase
         .from("bloom_progress")
         .select("current_day, last_completed")
         .eq("user_id", user.id)
         .single();
 
-      // Gesture progress
       const { data: gestureData } = await supabase
         .from("gesture_progress")
         .select("current_index, last_index, last_completed")
         .eq("user_id", user.id)
         .single();
 
-      // Profile bloom fields
       const { data: profileBloom } = await supabase
         .from("profiles")
         .select("last_bloom_date")
         .eq("id", user.id)
         .single();
 
-      // Bloom index
       let bloomIdx = bloomData ? bloomData.current_day - 1 : 0;
 
       if (!bloomData) {
@@ -86,7 +79,6 @@ function BloomContent() {
         });
       }
 
-      // Gesture index
       let gestureIdx = gestureData ? gestureData.current_index : 0;
 
       if (!gestureData) {
@@ -98,7 +90,6 @@ function BloomContent() {
         });
       }
 
-      // 🌙 BLOOM LOCK — DATE vs DATE
       const bloomLocked =
         (bloomData?.last_completed === today) ||
         (profileBloom?.last_bloom_date === today);
@@ -108,6 +99,7 @@ function BloomContent() {
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
       setHasBloomedToday(bloomLocked);
+      setJustBloomedNow(false);
       setMode(bloomLocked ? "bloom" : "gesture");
     };
 
@@ -119,7 +111,7 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     🌙 COMPLETE GESTURE → Save progress + go to Bloom
+     COMPLETE GESTURE → Only gesture_progress
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!userId || bloomIndex === null || gestureIndex === null) {
@@ -133,51 +125,36 @@ function BloomContent() {
       return;
     }
 
+    let nextGesture = gestureIndex + 1;
+    if (nextGesture >= GESTURES.length) nextGesture = 0;
+
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const { data: todayData } = await supabase.rpc("get_user_today", {
       user_tz: timezone,
     });
 
-    const today = todayData?.today; // DATE
-    const now = todayData?.now;     // TIMESTAMP
-
-    // Advance Bloom
-    let nextBloom = bloomIndex + 1;
-    if (nextBloom >= BLOOMS.length) nextBloom = 0;
-
-    await supabase
-      .from("bloom_progress")
-      .update({
-        current_day: nextBloom + 1,
-        last_completed: today, // DATE
-        updated_at: now,
-      })
-      .eq("user_id", userId);
-
-    // Advance Gesture
-    let nextGesture = gestureIndex + 1;
-    if (nextGesture >= GESTURES.length) nextGesture = 0;
+    const now = todayData?.now;
 
     await supabase
       .from("gesture_progress")
       .update({
         current_index: nextGesture,
         last_index: gestureIndex,
-        last_completed: now, // TIMESTAMP
+        last_completed: now,
       })
       .eq("user_id", userId);
 
-    setBloomIndex(nextBloom);
-    setHasBloomedToday(true);
-    setJustBloomedNow(true);
+    setGestureIndex(nextGesture);
     setMode("bloom");
+    setVideoEnded(false);
+    setJustBloomedNow(true); // first bloom of the day
   };
 
   /* -----------------------------------------------------
-     🌙 COMPLETE BLOOM → Update profile + bloom_progress
+     MARK BLOOM COMPLETE — Called ON VIDEO START
   ----------------------------------------------------- */
-  const handleBloomComplete = async () => {
+  const markBloomComplete = async () => {
     if (!userId || bloomIndex === null) return;
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -189,25 +166,24 @@ function BloomContent() {
     const today = todayData?.today; // DATE
     const now = todayData?.now;     // TIMESTAMP
 
-    // Update profile bloom fields
-    await supabase
-      .from("profiles")
-      .update({
-        last_bloom_date: today, // DATE
-        last_bloom_video: BLOOMS[bloomIndex],
-        bloom_cycle: bloomIndex + 1,
-        updated_at: now,
-      })
-      .eq("id", userId);
-
-    // Sync bloom_progress
     await supabase
       .from("bloom_progress")
       .update({
-        last_completed: today, // DATE
+        current_day: (bloomIndex ?? 0) + 1,
+        last_completed: today,
         updated_at: now,
       })
       .eq("user_id", userId);
+
+    await supabase
+      .from("profiles")
+      .update({
+        last_bloom_date: today,
+        last_bloom_video: BLOOMS[bloomIndex ?? 0],
+        bloom_cycle: (bloomIndex ?? 0) + 1,
+        updated_at: now,
+      })
+      .eq("id", userId);
 
     setHasBloomedToday(true);
   };
@@ -216,7 +192,7 @@ function BloomContent() {
   const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
 
   /* -----------------------------------------------------
-     🌙 RENDER
+     RENDER
   ----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
@@ -265,11 +241,13 @@ function BloomContent() {
             muted
             playsInline
             loop={false}
-            onPlay={() => {
-              if (!hasBloomedToday && !justBloomedNow) {
-                handleBloomComplete(); // LOCK IMMEDIATELY
+            onPlay={async () => {
+              // Only mark complete once per day
+              if (!hasBloomedToday) {
+                await markBloomComplete();
                 setJustBloomedNow(true);
-                setHasBloomedToday(true);
+              } else {
+                setJustBloomedNow(false);
               }
             }}
             onEnded={() => setVideoEnded(true)}
