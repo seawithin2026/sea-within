@@ -265,10 +265,14 @@ function BloomContent() {
             muted
             playsInline
             loop={false}
-            onEnded={() => {
-              setVideoEnded(true);
-              if (justBloomedNow) handleBloomComplete();
+            onPlay={() => {
+              if (!hasBloomedToday && !justBloomedNow) {
+                handleBloomComplete(); // LOCK IMMEDIATELY
+                setJustBloomedNow(true);
+                setHasBloomedToday(true);
+              }
             }}
+            onEnded={() => setVideoEnded(true)}
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
@@ -289,7 +293,7 @@ function BloomContent() {
           )}
         </div>
       )}
-      
+
       {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
