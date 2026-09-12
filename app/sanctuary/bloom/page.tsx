@@ -7,6 +7,15 @@ import { supabase } from "@/lib/supabase/client";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
+import {
+  getBloomProgress,
+  completeTodayBloom,
+} from "@/lib/bloom"; // ⭐ your correct bloom service
+import {
+  getGestureProgress,
+  completeGesture as completeGestureService,
+} from "@/lib/gesture"; // ⭐ your correct gesture service
+
 type RitualState =
   | "INIT"
   | "GESTURE"
@@ -49,38 +58,23 @@ function BloomContent() {
 
       setUserId(user.id);
 
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // ⭐ Load gesture + bloom progress using your correct services
+      const gestureData = await getGestureProgress();
+      const bloomData = await getBloomProgress();
 
+      const gestureIdx = gestureData?.current_index ?? 0;
+      const bloomIdx = (bloomData?.current_day ?? 1) - 1;
+
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const { data: todayData } = await supabase.rpc("get_user_today", {
         user_tz: timezone,
       });
 
       const today = todayData?.today;
 
-      const { data: bloomData } = await supabase
-        .from("bloom_progress")
-        .select("current_day, last_completed")
-        .eq("user_id", user.id)
-        .single();
-
-      const { data: gestureData } = await supabase
-        .from("gesture_progress")
-        .select("current_index")
-        .eq("user_id", user.id)
-        .single();
-
-      const { data: profileBloom } = await supabase
-        .from("profiles")
-        .select("last_bloom_date")
-        .eq("id", user.id)
-        .single();
-
-      const bloomIdx = bloomData ? bloomData.current_day - 1 : 0;
-      const gestureIdx = gestureData ? gestureData.current_index : 0;
-
       const alreadyBloomed =
         bloomData?.last_completed === today ||
-        profileBloom?.last_bloom_date === today;
+        bloomData?.last_completed_local === today;
 
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
@@ -106,24 +100,9 @@ function BloomContent() {
       return;
     }
 
-    const nextGesture =
-      gestureIndex + 1 >= GESTURES.length ? 0 : gestureIndex + 1;
+    const updatedGesture = await completeGestureService(gestureIndex);
+    setGestureIndex(updatedGesture.current_index);
 
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const { data: todayData } = await supabase.rpc("get_user_today", {
-      user_tz: timezone,
-    });
-
-    await supabase
-      .from("gesture_progress")
-      .update({
-        current_index: nextGesture,
-        last_index: gestureIndex,
-        last_completed: todayData?.now,
-      })
-      .eq("user_id", userId);
-
-    setGestureIndex(nextGesture);
     setState("BLOOM_READY");
   };
 
@@ -134,35 +113,15 @@ function BloomContent() {
   const markBloomComplete = async () => {
     if (!userId) return;
 
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const { data: todayData } = await supabase.rpc("get_user_today", {
-      user_tz: timezone,
-    });
+    const bloomData = await getBloomProgress(); // ⭐ fetch correct row (has id)
 
-    const today = todayData?.today;
-    const now = todayData?.now;
-
-    await supabase
-      .from("bloom_progress")
-      .update({
-        current_day: bloomIndex + 1,
-        last_completed: today,
-        updated_at: now,
-      })
-      .eq("user_id", userId);
-
-    await supabase
-      .from("profiles")
-      .update({
-        last_bloom_date: today,
-        last_bloom_video: BLOOMS[bloomIndex],
-        bloom_cycle: bloomIndex + 1,
-        updated_at: now,
-      })
-      .eq("id", userId);
+    const updatedBloom = await completeTodayBloom(bloomData); // ⭐ correct update using id
 
     setHasBloomedToday(true);
     setJustBloomedNow(true);
+
+    // ⭐ update bloomIndex based on updated bloom_progress
+    setBloomIndex(updatedBloom.current_day - 1);
   };
 
   /* -----------------------------------------------------
@@ -222,7 +181,7 @@ function BloomContent() {
             loop={false}
             onPlay={async () => {
               if (!hasBloomedToday) {
-                await markBloomComplete();
+                await markBloomComplete(); // ⭐ now correct
               }
               setState("BLOOM_PLAYING");
             }}
@@ -251,7 +210,7 @@ function BloomContent() {
         </div>
       )}
 
-      {/* ANIMATIONS — CORRECT PLACEMENT */}
+      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
