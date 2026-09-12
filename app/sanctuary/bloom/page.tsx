@@ -7,43 +7,29 @@ import { supabase } from "@/lib/supabase/client";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
-import {
-  getBloomProgress,
-  completeTodayBloom,
-} from "@/lib/bloom"; // ⭐ your correct bloom service
-import {
-  getGestureProgress,
-  completeGesture as completeGestureService,
-} from "@/lib/gesture"; // ⭐ your correct gesture service
-
-type RitualState =
-  | "INIT"
-  | "GESTURE"
-  | "BLOOM_READY"
-  | "BLOOM_PLAYING"
-  | "BLOOM_DONE"
-  | "LOCKED";
-
 export default function BloomRitualPage() {
   return <BloomContent />;
 }
 
 function BloomContent() {
-  const [state, setState] = useState<RitualState>("INIT");
+  const [gestureIndex, setGestureIndex] = useState<number | null>(null);
+  const [bloomIndex, setBloomIndex] = useState<number | null>(null);
 
-  const [gestureIndex, setGestureIndex] = useState<number>(0);
-  const [bloomIndex, setBloomIndex] = useState<number>(0);
+  const [mode, setMode] = useState<"loading" | "gesture" | "bloom">("loading");
+  const [videoEnded, setVideoEnded] = useState(false);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
-  const [videoEnded, setVideoEnded] = useState(false);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   /* -----------------------------------------------------
-     INIT → Load user + progress → Decide state
+     🌿 INIT — Load Bloom + Gesture Progress (from backend)
   ----------------------------------------------------- */
   useEffect(() => {
+    let isMounted = true;
+
     const init = async () => {
       const {
         data: { user },
@@ -52,101 +38,189 @@ function BloomContent() {
       if (!user) {
         setGestureIndex(0);
         setBloomIndex(0);
-        setState("GESTURE");
+        setMode("gesture");
         return;
       }
 
       setUserId(user.id);
 
-      // ⭐ Load gesture + bloom progress using your correct services
-      const gestureData = await getGestureProgress();
-      const bloomData = await getBloomProgress();
+      // Bloom progress
+      const { data: bloomData } = await supabase
+        .from("bloom_progress")
+        .select("current_day, last_completed")
+        .eq("user_id", user.id)
+        .single();
 
-      const gestureIdx = gestureData?.current_index ?? 0;
-      const bloomIdx = (bloomData?.current_day ?? 1) - 1;
+      // Gesture progress
+      const { data: gestureData } = await supabase
+        .from("gesture_progress")
+        .select("current_index, last_index")
+        .eq("user_id", user.id)
+        .single();
 
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      // Timezone-correct today
       const { data: todayData } = await supabase.rpc("get_user_today", {
         user_tz: timezone,
       });
 
       const today = todayData?.today;
 
-      const alreadyBloomed =
-        bloomData?.last_completed === today ||
-        bloomData?.last_completed_local === today;
+      let bloomIdx = 0;
+      let bloomedToday = false;
+
+      if (bloomData) {
+        bloomIdx = bloomData.current_day - 1;
+        bloomedToday = bloomData.last_completed === today;
+      } else {
+        await supabase.from("bloom_progress").insert({
+          user_id: user.id,
+          current_day: 1,
+          completed_all: false,
+          last_completed: null,
+        });
+      }
+
+      let gestureIdx = 0;
+
+      if (gestureData) {
+        gestureIdx = gestureData.current_index ?? 0;
+      } else {
+        await supabase.from("gesture_progress").insert({
+          user_id: user.id,
+          current_index: 0,
+          last_index: -1,
+          last_completed: null,
+        });
+      }
+
+      if (!isMounted) return;
 
       setGestureIndex(gestureIdx);
       setBloomIndex(bloomIdx);
-      setHasBloomedToday(alreadyBloomed);
-
-      setState(alreadyBloomed ? "LOCKED" : "GESTURE");
+      setHasBloomedToday(bloomedToday);
+      setMode(bloomedToday ? "bloom" : "gesture");
     };
 
     init();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   /* -----------------------------------------------------
-     GESTURE → BLOOM_READY
+     🌿 COMPLETE GESTURE → Save progress + go to Bloom
   ----------------------------------------------------- */
-  const completeGesture = async () => {
-    if (!userId) {
-      setState("BLOOM_READY");
+  const handleGestureComplete = async () => {
+    if (!userId || bloomIndex === null || gestureIndex === null) {
+      setMode("bloom");
       return;
     }
 
     if (hasBloomedToday) {
-      setState("LOCKED");
+      setJustBloomedNow(false);
+      setMode("bloom");
       return;
     }
 
-    const updatedGesture = await completeGestureService(gestureIndex);
-    setGestureIndex(updatedGesture.current_index);
+    const { data: todayData } = await supabase.rpc("get_user_today", {
+      user_tz: timezone,
+    });
 
-    setState("BLOOM_READY");
-  };
+    const today = todayData?.today;
+    const now = todayData?.now;
 
-  /* -----------------------------------------------------
-     BLOOM_READY → BLOOM_PLAYING (onPlay)
-     BLOOM_PLAYING → BLOOM_DONE (onEnded)
-  ----------------------------------------------------- */
-  const markBloomComplete = async () => {
-    if (!userId) return;
+    // Advance Bloom
+    let nextBloom = bloomIndex + 1;
+    if (nextBloom >= BLOOMS.length) nextBloom = 0;
 
-    const bloomData = await getBloomProgress(); // ⭐ fetch correct row (has id)
+    await supabase
+      .from("bloom_progress")
+      .update({
+        current_day: nextBloom + 1,
+        last_completed: today,
+        updated_at: now,
+      })
+      .eq("user_id", userId);
 
-    const updatedBloom = await completeTodayBloom(bloomData); // ⭐ correct update using id
+    // Advance Gesture
+    let nextGesture = gestureIndex + 1;
+    if (nextGesture >= GESTURES.length) nextGesture = 0;
 
+    await supabase
+      .from("gesture_progress")
+      .update({
+        current_index: nextGesture,
+        last_index: gestureIndex,
+        last_completed: now,
+      })
+      .eq("user_id", userId);
+
+    setBloomIndex(nextBloom);
     setHasBloomedToday(true);
     setJustBloomedNow(true);
-
-    // ⭐ update bloomIndex based on updated bloom_progress
-    setBloomIndex(updatedBloom.current_day - 1);
+    setMode("bloom");
   };
 
   /* -----------------------------------------------------
-     RENDER
+     🌿 COMPLETE BLOOM RITUAL → Update profile + bloom_progress
   ----------------------------------------------------- */
-  const gesture = GESTURES[gestureIndex];
-  const bloomSrc = BLOOMS[bloomIndex];
+  const handleBloomComplete = async () => {
+    if (!userId || bloomIndex === null) return;
 
+    const { data: todayData } = await supabase.rpc("get_user_today", {
+      user_tz: timezone,
+    });
+
+    const today = todayData?.today;
+    const now = todayData?.now;
+
+    // Update profile bloom fields
+    await supabase
+      .from("profiles")
+      .update({
+        last_bloom_date: today,
+        last_bloom_video: BLOOMS[bloomIndex],
+        bloom_cycle: bloomIndex + 1,
+        updated_at: now,
+      })
+      .eq("id", userId);
+
+    // Ensure bloom_progress also reflects today's bloom
+    await supabase
+      .from("bloom_progress")
+      .update({
+        last_completed: today,
+        updated_at: now,
+      })
+      .eq("user_id", userId);
+
+    setHasBloomedToday(true);
+  };
+
+  const gesture = gestureIndex !== null ? GESTURES[gestureIndex] : "";
+  const bloomSrc = bloomIndex !== null ? BLOOMS[bloomIndex] : "";
+
+  /* -----------------------------------------------------
+     🌿 RENDER
+  ----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* STATE: GESTURE */}
-      {state === "GESTURE" && (
+      {/* GESTURE PAGE */}
+      {mode === "gesture" && (
         <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-          />
+          ></div>
 
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40"></div>
 
           <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
             <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
-              Sanctuary • Bloom Ritual
+              Sanctuary • Bloom Ritual • Part 1/2
             </p>
 
             <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
@@ -158,8 +232,8 @@ function BloomContent() {
             </p>
 
             <button
-              onClick={completeGesture}
-              className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
+              onClick={handleGestureComplete}
+              className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 text-white/80 hover:border-white/40 hover:text-white transition-all duration-500 backdrop-blur-sm"
             >
               I offered myself a moment
             </button>
@@ -167,10 +241,8 @@ function BloomContent() {
         </section>
       )}
 
-      {/* BLOOM STATES */}
-      {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
-        state
-      ) && (
+      {/* BLOOM PAGE */}
+      {mode === "bloom" && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
           <video
             key={bloomSrc}
@@ -179,30 +251,24 @@ function BloomContent() {
             muted
             playsInline
             loop={false}
-            onPlay={async () => {
-              if (!hasBloomedToday) {
-                await markBloomComplete(); // ⭐ now correct
-              }
-              setState("BLOOM_PLAYING");
-            }}
             onEnded={() => {
               setVideoEnded(true);
-              setState("BLOOM_DONE");
+              if (justBloomedNow) handleBloomComplete();
             }}
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {state === "BLOOM_DONE" && justBloomedNow && (
+          {videoEnded && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+              <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
                 You bloomed today.
               </p>
             </div>
           )}
 
-          {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
+          {videoEnded && !justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+              <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
                 Come back tomorrow.
               </p>
             </div>
