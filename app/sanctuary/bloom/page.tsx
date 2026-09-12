@@ -91,8 +91,8 @@ function BloomContent() {
       }
 
       const bloomLocked =
-        (bloomData?.last_completed === today) ||
-        (profileBloom?.last_bloom_date === today);
+        bloomData?.last_completed === today ||
+        profileBloom?.last_bloom_date === today;
 
       if (!isMounted) return;
 
@@ -148,7 +148,7 @@ function BloomContent() {
     setGestureIndex(nextGesture);
     setMode("bloom");
     setVideoEnded(false);
-    setJustBloomedNow(true); // first bloom of the day
+    setJustBloomedNow(false); // gesture ≠ bloom completion
   };
 
   /* -----------------------------------------------------
@@ -164,7 +164,7 @@ function BloomContent() {
     });
 
     const today = todayData?.today; // DATE
-    const now = todayData?.now;     // TIMESTAMP
+    const now = todayData?.now; // TIMESTAMP
 
     await supabase
       .from("bloom_progress")
@@ -262,7 +262,7 @@ function BloomContent() {
             </div>
           )}
 
-          {videoEnded && !justBloomedNow && (
+          {videoEnded && !justBloomedNow && hasBloomedToday && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase drop-shadow-[0_0_8px_rgba(0,0,0,0.7)]">
                 Come back tomorrow.
