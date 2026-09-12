@@ -23,7 +23,7 @@ function BloomContent() {
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   /* -----------------------------------------------------
-     INIT — Load Bloom + Gesture Progress (RPC + DATE)
+     INIT
   ----------------------------------------------------- */
   useEffect(() => {
     let isMounted = true;
@@ -48,7 +48,7 @@ function BloomContent() {
         user_tz: timezone,
       });
 
-      const today = todayData?.today; // "YYYY-MM-DD"
+      const today = todayData?.today;
 
       const { data: bloomData } = await supabase
         .from("bloom_progress")
@@ -58,7 +58,7 @@ function BloomContent() {
 
       const { data: gestureData } = await supabase
         .from("gesture_progress")
-        .select("current_index, last_index, last_completed")
+        .select("current_index")
         .eq("user_id", user.id)
         .single();
 
@@ -68,27 +68,8 @@ function BloomContent() {
         .eq("id", user.id)
         .single();
 
-      let bloomIdx = bloomData ? bloomData.current_day - 1 : 0;
-
-      if (!bloomData) {
-        await supabase.from("bloom_progress").insert({
-          user_id: user.id,
-          current_day: 1,
-          completed_all: false,
-          last_completed: null,
-        });
-      }
-
-      let gestureIdx = gestureData ? gestureData.current_index : 0;
-
-      if (!gestureData) {
-        await supabase.from("gesture_progress").insert({
-          user_id: user.id,
-          current_index: 0,
-          last_index: -1,
-          last_completed: null,
-        });
-      }
+      const bloomIdx = bloomData ? bloomData.current_day - 1 : 0;
+      const gestureIdx = gestureData ? gestureData.current_index : 0;
 
       const bloomLocked =
         bloomData?.last_completed === today ||
@@ -104,14 +85,13 @@ function BloomContent() {
     };
 
     init();
-
     return () => {
       isMounted = false;
     };
   }, []);
 
   /* -----------------------------------------------------
-     COMPLETE GESTURE → Only gesture_progress
+     COMPLETE GESTURE — DO NOT TOUCH BLOOM STATE
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!userId || bloomIndex === null || gestureIndex === null) {
@@ -129,7 +109,6 @@ function BloomContent() {
     if (nextGesture >= GESTURES.length) nextGesture = 0;
 
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
     const { data: todayData } = await supabase.rpc("get_user_today", {
       user_tz: timezone,
     });
@@ -148,11 +127,13 @@ function BloomContent() {
     setGestureIndex(nextGesture);
     setMode("bloom");
     setVideoEnded(false);
-    setJustBloomedNow(false); // gesture ≠ bloom completion
+
+    // FIX: gesture completion ≠ bloom completion
+    setJustBloomedNow(false);
   };
 
   /* -----------------------------------------------------
-     MARK BLOOM COMPLETE — Called ON VIDEO START
+     MARK BLOOM COMPLETE — ONLY HERE
   ----------------------------------------------------- */
   const markBloomComplete = async () => {
     if (!userId || bloomIndex === null) return;
@@ -163,13 +144,13 @@ function BloomContent() {
       user_tz: timezone,
     });
 
-    const today = todayData?.today; // DATE
-    const now = todayData?.now; // TIMESTAMP
+    const today = todayData?.today;
+    const now = todayData?.now;
 
     await supabase
       .from("bloom_progress")
       .update({
-        current_day: (bloomIndex ?? 0) + 1,
+        current_day: bloomIndex + 1,
         last_completed: today,
         updated_at: now,
       })
@@ -179,8 +160,8 @@ function BloomContent() {
       .from("profiles")
       .update({
         last_bloom_date: today,
-        last_bloom_video: BLOOMS[bloomIndex ?? 0],
-        bloom_cycle: (bloomIndex ?? 0) + 1,
+        last_bloom_video: BLOOMS[bloomIndex],
+        bloom_cycle: bloomIndex + 1,
         updated_at: now,
       })
       .eq("id", userId);
@@ -242,7 +223,6 @@ function BloomContent() {
             playsInline
             loop={false}
             onPlay={async () => {
-              // Only mark complete once per day
               if (!hasBloomedToday) {
                 await markBloomComplete();
                 setJustBloomedNow(true);
@@ -272,7 +252,6 @@ function BloomContent() {
         </div>
       )}
 
-      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
