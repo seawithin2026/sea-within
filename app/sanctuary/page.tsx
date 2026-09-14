@@ -114,7 +114,7 @@ export default function SanctuaryPage() {
               opacity: 0.95,
             }}
           >
-            Living is Feeling.
+            When you feel alive in the moment, your whole life finds its balance.
           </p>
         </div>
       </section>
