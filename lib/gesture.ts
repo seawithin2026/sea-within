@@ -6,31 +6,34 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+const GESTURE_MAX = 50;
+
 /* -----------------------------------------------------
-   🌿 Fetch Gesture Progress (timezone‑aware)
+   🌿 GET GESTURE PROGRESS (timezone‑aware)
 ----------------------------------------------------- */
 export async function getGestureProgress() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return null;
 
-  // Fetch timezone
+  // Fetch profile timezone + gesture metadata
   const { data: profile } = await supabase
     .from("profiles")
-    .select("timezone")
+    .select("timezone, last_gesture_date")
     .eq("id", user.id)
     .single();
 
   const userTimezone = profile?.timezone || "UTC";
 
+  // Fetch gesture_progress
   const { data, error } = await supabase
     .from("gesture_progress")
-    .select("id, current_index, last_index, last_completed")
+    .select("*")
     .eq("user_id", user.id)
     .single();
 
+  // If no gesture_progress row exists → create one
   if (error && error.code === "PGRST116") {
     const { data: created } = await supabase
       .from("gesture_progress")
@@ -43,33 +46,36 @@ export async function getGestureProgress() {
       .select()
       .single();
 
-    return created;
+    return {
+      ...created,
+      profile_last_gesture_date: profile?.last_gesture_date,
+    };
   }
 
   if (error) throw error;
 
-  // ⭐ Convert last_completed into user's timezone
-if (data?.last_completed) {
+  // Convert last_completed to user's timezone
+  let lastCompletedLocal = null;
+  if (data?.last_completed) {
+    lastCompletedLocal = dayjs(data.last_completed)
+      .tz(userTimezone)
+      .format("YYYY-MM-DD");
+  }
+
   return {
     ...data,
-    last_completed_local: dayjs(data.last_completed)
-      .tz(userTimezone)
-      .format("YYYY-MM-DD"),
+    last_completed_local: lastCompletedLocal,
+    profile_last_gesture_date: profile?.last_gesture_date,
   };
 }
 
-return data;
-
-}
-
 /* -----------------------------------------------------
-   🌿 Complete Gesture (timezone‑correct)
+   🌿 COMPLETE GESTURE (timezone‑correct, rotating independently)
 ----------------------------------------------------- */
-export async function completeGesture(currentIndex: number) {
+export async function completeGesture(progress: any) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return null;
 
   // Fetch timezone
@@ -81,36 +87,50 @@ export async function completeGesture(currentIndex: number) {
 
   const userTimezone = profile?.timezone || "UTC";
 
-  // ⭐ Compute "now" and "today" in user's timezone
   const now = dayjs().tz(userTimezone);
   const today = now.format("YYYY-MM-DD");
 
-  const nextIndex = currentIndex + 1;
+  // Advance gesture cycle independently of bloom
+  let nextIndex = progress.current_index + 1;
+  if (nextIndex >= GESTURE_MAX) {
+    nextIndex = 0; // wrap back to start when all gestures are done
+  }
 
-  const { data, error } = await supabase
+  // Update gesture_progress
+  const { data: gestureData, error: gestureError } = await supabase
     .from("gesture_progress")
     .update({
       current_index: nextIndex,
-      last_index: currentIndex,
-      last_completed: today, // ⭐ timezone‑correct
-      updated_at: now.toISOString(), // ⭐ stored in UTC
+      last_index: progress.current_index,
+      last_completed: today,
+      updated_at: now.toISOString(),
     })
     .eq("user_id", user.id)
     .select()
     .single();
 
-  if (error) throw error;
-  return data;
+  if (gestureError) throw gestureError;
+
+  // Update profile gesture metadata
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      last_gesture_date: today,
+    })
+    .eq("id", user.id);
+
+  if (profileError) throw profileError;
+
+  return gestureData;
 }
 
 /* -----------------------------------------------------
-   🌿 Reset Gesture Cycle (timezone‑correct)
+   🌿 RESET GESTURE CYCLE (manual reset, if ever needed)
 ----------------------------------------------------- */
-export async function resetGestureCycle() {
+export async function resetGestureCycle(progress: any) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) return null;
 
   // Fetch timezone
@@ -121,21 +141,32 @@ export async function resetGestureCycle() {
     .single();
 
   const userTimezone = profile?.timezone || "UTC";
-
   const now = dayjs().tz(userTimezone);
 
-  const { data, error } = await supabase
+  // Reset gesture_progress
+  const { data: gestureData, error: gestureError } = await supabase
     .from("gesture_progress")
     .update({
       current_index: 0,
       last_index: -1,
       last_completed: null,
-      updated_at: now.toISOString(), // ⭐ stored in UTC
+      updated_at: now.toISOString(),
     })
     .eq("user_id", user.id)
     .select()
     .single();
 
-  if (error) throw error;
-  return data;
+  if (gestureError) throw gestureError;
+
+  // Reset profile gesture metadata
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      last_gesture_date: null,
+    })
+    .eq("id", user.id);
+
+  if (profileError) throw profileError;
+
+  return gestureData;
 }
