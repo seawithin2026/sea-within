@@ -85,14 +85,32 @@ function ClientWisdomBoard() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ DAILY MESSAGE — CALL API ROUTE
+     ⭐ DAILY MESSAGE — CALL EDGE FUNCTION
   ----------------------------------------------------- */
   const fetchDailyMessage = async () => {
     try {
-      const res = await fetch("/api/daily-affirmation", {
-        method: "GET",
-        cache: "no-store",
-      });
+      // 1. Get current session (contains access_token)
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+
+      if (!token) {
+        setDailyMessage({
+          message: "Please log in to receive today’s message.",
+          attribution: "",
+        });
+        return;
+      }
+
+      // 2. Call Supabase Edge Function with Authorization header
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/daily-affirmation`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!res.ok) {
         setDailyMessage({
@@ -102,13 +120,15 @@ function ClientWisdomBoard() {
         return;
       }
 
+      // 3. Parse response
       const data = await res.json();
 
       setDailyMessage({
         message: data.message,
         attribution: data.attribution || "",
       });
-    } catch {
+    } catch (err) {
+      console.error("Daily affirmation fetch error:", err);
       setDailyMessage({
         message: "A new message will arrive soon.",
         attribution: "",
@@ -206,7 +226,6 @@ function ClientWisdomBoard() {
       {/* SECTION 3 — WISDOM BOARD */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-    
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
@@ -288,7 +307,6 @@ function ClientWisdomBoard() {
                   <div className="h-px w-full bg-stone-300/40 mt-4"></div>
                 </div>
               )}
-
             </div>
           </div>
         </div>
