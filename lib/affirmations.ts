@@ -12,15 +12,19 @@ const supabase = createClient(
 );
 
 // Fetch today's affirmation or generate a new one
-export async function getTodayAffirmation(userTimezone: string = "UTC") {
+export async function getTodayAffirmation(
+  userId: string,
+  userTimezone: string = "UTC"
+) {
   // ⭐ Compute "today" in the user's timezone
   const today = dayjs().tz(userTimezone).format("YYYY-MM-DD");
 
-  // 1. Check if today's message already exists
+  // 1. Check if today's message already exists for THIS user
   const { data: existing } = await supabase
     .from("daily_affirmations")
     .select("*")
     .eq("date", today)
+    .eq("user_id", userId)
     .maybeSingle();
 
   if (existing) {
@@ -38,18 +42,23 @@ export async function getTodayAffirmation(userTimezone: string = "UTC") {
     pool = refreshed.data || [];
   }
 
-  return await generateNewAffirmation(pool, today);
+  return await generateNewAffirmation(pool, today, userId);
 }
 
 // Helper to generate a new affirmation
-async function generateNewAffirmation(pool: any[], today: string) {
+async function generateNewAffirmation(
+  pool: any[],
+  today: string,
+  userId: string
+) {
   const random = pool[Math.floor(Math.random() * pool.length)];
 
-  // Insert into daily_affirmations
+  // Insert into daily_affirmations WITH user_id ⭐
   await supabase.from("daily_affirmations").insert({
     message: random.message,
     attribution: random.attribution,
-    date: today, // ⭐ timezone-correct date
+    date: today,
+    user_id: userId, // ⭐ FIXED — now fills correctly
   });
 
   // Remove from pool
@@ -59,5 +68,6 @@ async function generateNewAffirmation(pool: any[], today: string) {
     message: random.message,
     attribution: random.attribution,
     date: today,
+    user_id: userId,
   };
 }
