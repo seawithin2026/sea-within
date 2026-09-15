@@ -6,16 +6,21 @@ import Navigation from "@/components/layout/Navigation";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 import {
   getBloomProgress,
   completeTodayBloom,
-  resetBloomCycle,
 } from "@/lib/bloom";
 
 import {
   getGestureProgress,
   completeGesture,
-  resetGestureCycle,
 } from "@/lib/gesture";
 
 type RitualState =
@@ -52,7 +57,6 @@ function BloomContent() {
       const gesture = await getGestureProgress();
 
       if (!bloom || !gesture) {
-        // user not logged in → show gesture
         setGestureIndex(0);
         setBloomIndex(0);
         setVideoSrc(BLOOMS[0]);
@@ -60,11 +64,21 @@ function BloomContent() {
         return;
       }
 
-      const today = bloom.last_completed_local;
-      const profileToday = bloom.profile_last_bloom_date;
+      const userTimezone = bloom.timezone || dayjs.tz.guess();
+
+      // Convert both dates to LOCAL timezone
+      const localLastCompleted = bloom.last_completed_local;
+
+      const localProfileDate = bloom.profile_last_bloom_date
+        ? dayjs(bloom.profile_last_bloom_date)
+            .tz(userTimezone)
+            .format("YYYY-MM-DD")
+        : null;
 
       const alreadyBloomed =
-        today === profileToday && today !== null && profileToday !== null;
+        localLastCompleted === localProfileDate &&
+        localLastCompleted !== null &&
+        localProfileDate !== null;
 
       // Bloom index (0-based)
       const bloomIdx = bloom.current_day - 1;
@@ -73,7 +87,6 @@ function BloomContent() {
       // Gesture index
       setGestureIndex(gesture.current_index);
 
-      // If already bloomed today → skip gesture
       if (alreadyBloomed) {
         setHasBloomedToday(true);
         setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIdx]);
@@ -144,9 +157,7 @@ function BloomContent() {
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* -----------------------------------------------------
-         GESTURE SCREEN
-      ----------------------------------------------------- */}
+      {/* GESTURE SCREEN */}
       {state === "GESTURE" && (
         <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
           <div
@@ -179,9 +190,7 @@ function BloomContent() {
         </section>
       )}
 
-      {/* -----------------------------------------------------
-         BLOOM VIDEO OVERLAY
-      ----------------------------------------------------- */}
+      {/* BLOOM VIDEO OVERLAY */}
       {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
         state
       ) && (
@@ -216,9 +225,7 @@ function BloomContent() {
         </div>
       )}
 
-      {/* -----------------------------------------------------
-         ANIMATIONS
-      ----------------------------------------------------- */}
+      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
