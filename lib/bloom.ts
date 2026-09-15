@@ -9,20 +9,35 @@ dayjs.extend(timezone);
 const BLOOM_MAX_DAY = 36;
 
 /* -----------------------------------------------------
+   🌿 SESSION HELPER — WAIT FOR USER (OTP‑safe)
+----------------------------------------------------- */
+async function waitForUser() {
+  for (let i = 0; i < 10; i++) {
+    const { data } = await supabase.auth.getSession();
+    const user = data.session?.user;
+    if (user) return user;
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  return null;
+}
+
+/* -----------------------------------------------------
    🌿 GET BLOOM PROGRESS (timezone‑aware)
 ----------------------------------------------------- */
 export async function getBloomProgress() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await waitForUser();
   if (!user) return null;
 
   // Fetch profile timezone + bloom metadata
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone, last_bloom_date, last_bloom_video")
     .eq("id", user.id)
     .single();
+
+  if (profileError && profileError.code !== "PGRST116") {
+    throw profileError;
+  }
 
   const userTimezone = profile?.timezone || "UTC";
 
@@ -35,7 +50,7 @@ export async function getBloomProgress() {
 
   // If no bloom_progress row exists → create one
   if (error && error.code === "PGRST116") {
-    const { data: created } = await supabase
+    const { data: created, error: createError } = await supabase
       .from("bloom_progress")
       .insert({
         user_id: user.id,
@@ -46,17 +61,20 @@ export async function getBloomProgress() {
       .select()
       .single();
 
+    if (createError) throw createError;
+
     return {
       ...created,
-      profile_last_bloom_date: profile?.last_bloom_date,
-      profile_last_bloom_video: profile?.last_bloom_video,
+      last_completed_local: null,
+      profile_last_bloom_date: profile?.last_bloom_date ?? null,
+      profile_last_bloom_video: profile?.last_bloom_video ?? null,
     };
   }
 
   if (error) throw error;
 
   // Convert last_completed to user's timezone
-  let lastCompletedLocal = null;
+  let lastCompletedLocal: string | null = null;
   if (data?.last_completed) {
     lastCompletedLocal = dayjs(data.last_completed)
       .tz(userTimezone)
@@ -66,8 +84,8 @@ export async function getBloomProgress() {
   return {
     ...data,
     last_completed_local: lastCompletedLocal,
-    profile_last_bloom_date: profile?.last_bloom_date,
-    profile_last_bloom_video: profile?.last_bloom_video,
+    profile_last_bloom_date: profile?.last_bloom_date ?? null,
+    profile_last_bloom_video: profile?.last_bloom_video ?? null,
   };
 }
 
@@ -75,17 +93,19 @@ export async function getBloomProgress() {
    🌿 COMPLETE TODAY BLOOM (timezone‑correct)
 ----------------------------------------------------- */
 export async function completeTodayBloom(progress: any, videoName: string) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await waitForUser();
   if (!user) return null;
 
   // Fetch timezone
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", user.id)
     .single();
+
+  if (profileError && profileError.code !== "PGRST116") {
+    throw profileError;
+  }
 
   const userTimezone = profile?.timezone || "UTC";
 
@@ -97,7 +117,6 @@ export async function completeTodayBloom(progress: any, videoName: string) {
   let nextDay = progress.current_day + 1;
   let completedAll = progress.completed_all;
 
-  // If cycle ends → reset to day 1
   if (nextDay > BLOOM_MAX_DAY) {
     nextDay = 1;
     completedAll = false;
@@ -119,7 +138,7 @@ export async function completeTodayBloom(progress: any, videoName: string) {
   if (bloomError) throw bloomError;
 
   // Update profile bloom metadata
-  const { error: profileError } = await supabase
+  const { error: profileUpdateError } = await supabase
     .from("profiles")
     .update({
       last_bloom_date: today,
@@ -127,7 +146,7 @@ export async function completeTodayBloom(progress: any, videoName: string) {
     })
     .eq("id", user.id);
 
-  if (profileError) throw profileError;
+  if (profileUpdateError) throw profileUpdateError;
 
   return bloomData;
 }
@@ -136,17 +155,19 @@ export async function completeTodayBloom(progress: any, videoName: string) {
    🌿 RESET BLOOM CYCLE (timezone‑correct)
 ----------------------------------------------------- */
 export async function resetBloomCycle(progress: any) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await waitForUser();
   if (!user) return null;
 
   // Fetch timezone
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", user.id)
     .single();
+
+  if (profileError && profileError.code !== "PGRST116") {
+    throw profileError;
+  }
 
   const userTimezone = profile?.timezone || "UTC";
   const now = dayjs().tz(userTimezone);
@@ -167,7 +188,7 @@ export async function resetBloomCycle(progress: any) {
   if (bloomError) throw bloomError;
 
   // Reset profile bloom metadata
-  const { error: profileError } = await supabase
+  const { error: profileUpdateError } = await supabase
     .from("profiles")
     .update({
       last_bloom_date: null,
@@ -175,7 +196,7 @@ export async function resetBloomCycle(progress: any) {
     })
     .eq("id", user.id);
 
-  if (profileError) throw profileError;
+  if (profileUpdateError) throw profileUpdateError;
 
   return bloomData;
 }
