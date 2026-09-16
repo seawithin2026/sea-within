@@ -336,9 +336,6 @@ export default function HomePage() {
             <a href="/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
               Community
             </a>
-            <a href="/join" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
-              Join
-            </a>
           </div>
 
           <div className="flex justify-center flex-wrap gap-8 mt-10">

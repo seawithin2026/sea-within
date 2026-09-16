@@ -14,7 +14,7 @@ export default function AccountRouter() {
       const user = session?.user;
 
       if (!user) {
-        router.replace("/join");
+        router.replace("/login");
         return;
       }
 
@@ -59,7 +59,7 @@ export default function AccountRouter() {
         .maybeSingle();
 
       if (!profile) {
-        router.replace("/join");
+        router.replace("/login");
         return;
       }
 

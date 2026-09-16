@@ -82,7 +82,7 @@ export default function Navigation() {
 
             {!user ? (
               <Link
-                href="/join"
+                href="/login"
                 className="btn-golden text-[11px] px-6 py-2.5 ml-8"
               >
                 Sign In
@@ -143,7 +143,7 @@ export default function Navigation() {
 
                 {!user ? (
                   <Link
-                    href="/join"
+                    href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="btn-golden text-[11px] px-6 py-2.5"
                   >

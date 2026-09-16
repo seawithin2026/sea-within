@@ -11,7 +11,7 @@ export default function CheckoutPage() {
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session?.user) {
-          window.location.href = "/join";
+          window.location.href = "/login";
           return;
         }
 

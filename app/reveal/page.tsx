@@ -158,9 +158,9 @@ export default function RevealPage() {
             This is your opportunity to sea within yourself.
           </p>
 
-          {/* ⭐ FINAL — Clean Join Button */}
+          {/* ⭐ FINAL — Clean Button */}
           <button
-            onClick={() => window.location.href = "/join"}
+            onClick={() => window.location.href = "/login"}
             className="btn-golden w-full text-center py-4 text-lg block"
           >
             Enter the Sanctuary — $77.77/month

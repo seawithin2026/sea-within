@@ -18,7 +18,7 @@ export default function MyAccountPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        router.replace("/join");
+        router.replace("/login");
         return;
       }
 
@@ -45,7 +45,7 @@ export default function MyAccountPage() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/join");
+    router.push("/login");
   };
 
   if (loading) {
