@@ -79,7 +79,7 @@ export default function LoginPage() {
     }
 
     // SUCCESS → Supabase session created
-    window.location.href = "/"; // AccountRouter takes over
+  window.location.href = "/account"; // FIXED
   };
 
   /* -----------------------------------------------------
