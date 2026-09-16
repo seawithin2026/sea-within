@@ -297,16 +297,17 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-          <ScrollReveal delay={2000}>
-            <div className="mt-16">
-              <button
-                onClick={handleJoin}
-                className="btn-golden text-lg py-4 px-10 inline-block"
-              >
-                Join the Movement — $77.77/month
-              </button>
-            </div>
-          </ScrollReveal>
+         <ScrollReveal delay={2000}>
+  <div className="mt-16">
+    <a
+      href="/reveal"
+      className="btn-golden text-lg py-4 px-10 inline-block"
+    >
+      Join the Movement
+    </a>
+  </div>
+</ScrollReveal>
+
         </div>
       </CinematicSection>
 
