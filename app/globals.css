@@ -564,14 +564,4 @@ body {
   width: 24px;
   height: 24px;
   pointer-events: none;
-  
-  @keyframes bounce-slow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-
-.animate-bounce-slow {
-  animation: bounce-slow 2.4s ease-in-out infinite;
-}
-
 }

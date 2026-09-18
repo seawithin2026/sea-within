@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import UsernameModal from "@/components/UsernameModal";
-import ScrollDownArrow from "@/components/ScrollDownArrow";
 import "../globals.css";
 
 export default function SanctuaryLayout({ children }) {
@@ -13,30 +12,40 @@ export default function SanctuaryLayout({ children }) {
 
   useEffect(() => {
     async function checkAccess() {
+      // Get session
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       const user = session?.user;
 
+      // ⭐ Non‑signed‑in users → reveal
       if (!user) {
         window.location.href = "/reveal";
         return;
       }
 
+      // Fetch profile
       const { data: profile } = await supabase
         .from("profiles")
         .select("username, is_member, membership_status")
         .eq("id", user.id)
         .single();
 
+      // ⭐ No profile → treat as non‑member
       if (!profile) {
         window.location.href = "/reveal";
         return;
       }
 
+      // ⭐ Membership guard FIRST
       const status = profile.membership_status?.toLowerCase();
 
+      // ⭐ FINAL membership logic:
+      // Active → access
+      // Cancelling → access until period end
+      // Past_due → no access
+      // Expired → no access
       const isActive =
         profile.is_member === true &&
         (status === "active" || status === "cancelling");
@@ -46,6 +55,7 @@ export default function SanctuaryLayout({ children }) {
         return;
       }
 
+      // ⭐ Username check AFTER membership
       if (!profile.username) {
         setShowModal(true);
       }
@@ -65,9 +75,6 @@ export default function SanctuaryLayout({ children }) {
       {showModal && (
         <UsernameModal onComplete={() => setShowModal(false)} />
       )}
-
-      {/* 🌟 Soft gold scroll-down cue */}
-      <ScrollDownArrow />
 
       {children}
     </>
