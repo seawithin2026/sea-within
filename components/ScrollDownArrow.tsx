@@ -11,6 +11,9 @@ export default function ScrollDownArrow() {
   if (pathname === "/sanctuary/community") return null;
 
   useEffect(() => {
+    // Prevent crash during SSR
+    if (typeof window === "undefined") return;
+
     const handleScroll = () => {
       if (window.scrollY > 40) {
         setVisible(false); // fade out once user scrolls
