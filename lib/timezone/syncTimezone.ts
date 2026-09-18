@@ -1,15 +1,16 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from "@/lib/supabase/client";
 
 export async function syncTimezone() {
-  const supabase = createClientComponentClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   await supabase
-    .from('profiles')
+    .from("profiles")
     .update({ timezone })
-    .eq('id', user.id);
+    .eq("id", user.id);
 }
