@@ -15,13 +15,15 @@ export async function signUp(email: string, password: string) {
 
   if (error) throw error;
 
-  // Create minimal profile that matches your schema
   if (data.user) {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
     await supabase.from("profiles").insert({
       id: data.user.id,
       email,
       is_member: false,
       membership_status: "none",
+      timezone,
     });
   }
 
@@ -29,7 +31,7 @@ export async function signUp(email: string, password: string) {
 }
 
 // --------------------------------------------
-// SIGN IN
+// SIGN IN (FIXED — sync timezone)
 // --------------------------------------------
 export async function signIn(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -38,6 +40,16 @@ export async function signIn(email: string, password: string) {
   });
 
   if (error) throw error;
+
+  if (data.user) {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    await supabase
+      .from("profiles")
+      .update({ timezone })
+      .eq("id", data.user.id);
+  }
+
   return data;
 }
 
@@ -88,7 +100,6 @@ export async function getCurrentUser() {
 // --------------------------------------------
 // UPDATE PROFILE (FIXED)
 // --------------------------------------------
-// Only allow updating fields that actually exist in your table
 export async function updateProfile(
   userId: string,
   updates: Partial<{

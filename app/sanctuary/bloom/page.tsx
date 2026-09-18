@@ -6,13 +6,6 @@ import Navigation from "@/components/layout/Navigation";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
 import {
   getBloomProgress,
   completeTodayBloom,
@@ -48,9 +41,6 @@ function BloomContent() {
 
   const [videoEnded, setVideoEnded] = useState(false);
 
-  /* -----------------------------------------------------
-     INIT → Load progress → Decide state
-  ----------------------------------------------------- */
   useEffect(() => {
     const init = async () => {
       const bloom = await getBloomProgress();
@@ -64,27 +54,17 @@ function BloomContent() {
         return;
       }
 
-      const userTimezone = bloom.timezone || dayjs.tz.guess();
-
-      // Convert both dates to LOCAL timezone
       const localLastCompleted = bloom.last_completed_local;
-
-      const localProfileDate = bloom.profile_last_bloom_date
-        ? dayjs(bloom.profile_last_bloom_date)
-            .tz(userTimezone)
-            .format("YYYY-MM-DD")
-        : null;
+      const localProfileDate = bloom.profile_last_bloom_date ?? null;
 
       const alreadyBloomed =
         localLastCompleted === localProfileDate &&
         localLastCompleted !== null &&
         localProfileDate !== null;
 
-      // Bloom index (0-based)
       const bloomIdx = bloom.current_day - 1;
       setBloomIndex(bloomIdx);
 
-      // Gesture index
       setGestureIndex(gesture.current_index);
 
       if (alreadyBloomed) {
@@ -101,9 +81,6 @@ function BloomContent() {
     init();
   }, []);
 
-  /* -----------------------------------------------------
-     GESTURE → BLOOM_READY
-  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     const gesture = await getGestureProgress();
     if (!gesture) {
@@ -126,10 +103,6 @@ function BloomContent() {
     setState("BLOOM_READY");
   };
 
-  /* -----------------------------------------------------
-     BLOOM_READY → BLOOM_PLAYING (onPlay)
-     BLOOM_PLAYING → BLOOM_DONE (onEnded)
-  ----------------------------------------------------- */
   const handleBloomStart = async () => {
     if (!hasBloomedToday) {
       const bloom = await getBloomProgress();
@@ -148,16 +121,12 @@ function BloomContent() {
     setState("BLOOM_DONE");
   };
 
-  /* -----------------------------------------------------
-     RENDER
-  ----------------------------------------------------- */
   const gestureText = GESTURES[gestureIndex];
 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* GESTURE SCREEN */}
       {state === "GESTURE" && (
         <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
           <div
@@ -190,7 +159,6 @@ function BloomContent() {
         </section>
       )}
 
-      {/* BLOOM VIDEO OVERLAY */}
       {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
         state
       ) && (
@@ -225,7 +193,6 @@ function BloomContent() {
         </div>
       )}
 
-      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
           from {

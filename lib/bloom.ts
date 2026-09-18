@@ -28,7 +28,6 @@ export async function getBloomProgress() {
   const user = await waitForUser();
   if (!user) return null;
 
-  // Fetch profile timezone + bloom metadata
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone, last_bloom_date, last_bloom_video")
@@ -39,16 +38,14 @@ export async function getBloomProgress() {
     throw profileError;
   }
 
-  const userTimezone = profile?.timezone || "UTC";
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  // Fetch bloom progress
   const { data, error } = await supabase
     .from("bloom_progress")
     .select("*")
     .eq("user_id", user.id)
     .single();
 
-  // If no bloom_progress row exists → create one
   if (error && error.code === "PGRST116") {
     const { data: created, error: createError } = await supabase
       .from("bloom_progress")
@@ -73,7 +70,6 @@ export async function getBloomProgress() {
 
   if (error) throw error;
 
-  // Convert last_completed to user's timezone
   let lastCompletedLocal: string | null = null;
   if (data?.last_completed) {
     lastCompletedLocal = dayjs(data.last_completed)
@@ -96,7 +92,6 @@ export async function completeTodayBloom(progress: any, videoName: string) {
   const user = await waitForUser();
   if (!user) return null;
 
-  // Fetch timezone
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone")
@@ -107,13 +102,12 @@ export async function completeTodayBloom(progress: any, videoName: string) {
     throw profileError;
   }
 
-  const userTimezone = profile?.timezone || "UTC";
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  // Compute "today" in user's timezone
   const now = dayjs().tz(userTimezone);
-  const today = now.format("YYYY-MM-DD");
+  const todayLocal = now.format("YYYY-MM-DD");
+  const nowUtcIso = new Date().toISOString();
 
-  // Advance bloom cycle
   let nextDay = progress.current_day + 1;
   let completedAll = progress.completed_all;
 
@@ -122,14 +116,13 @@ export async function completeTodayBloom(progress: any, videoName: string) {
     completedAll = false;
   }
 
-  // Update bloom_progress
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
       current_day: nextDay,
-      last_completed: today,
+      last_completed: nowUtcIso,
       completed_all: completedAll,
-      updated_at: now.toISOString(),
+      updated_at: nowUtcIso,
     })
     .eq("id", progress.id)
     .select()
@@ -137,11 +130,10 @@ export async function completeTodayBloom(progress: any, videoName: string) {
 
   if (bloomError) throw bloomError;
 
-  // Update profile bloom metadata
   const { error: profileUpdateError } = await supabase
     .from("profiles")
     .update({
-      last_bloom_date: today,
+      last_bloom_date: todayLocal,
       last_bloom_video: videoName,
     })
     .eq("id", user.id);
@@ -158,7 +150,6 @@ export async function resetBloomCycle(progress: any) {
   const user = await waitForUser();
   if (!user) return null;
 
-  // Fetch timezone
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone")
@@ -169,17 +160,17 @@ export async function resetBloomCycle(progress: any) {
     throw profileError;
   }
 
-  const userTimezone = profile?.timezone || "UTC";
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
   const now = dayjs().tz(userTimezone);
+  const nowUtcIso = new Date().toISOString();
 
-  // Reset bloom_progress
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
       current_day: 1,
       last_completed: null,
       completed_all: false,
-      updated_at: now.toISOString(),
+      updated_at: nowUtcIso,
     })
     .eq("id", progress.id)
     .select()
@@ -187,7 +178,6 @@ export async function resetBloomCycle(progress: any) {
 
   if (bloomError) throw bloomError;
 
-  // Reset profile bloom metadata
   const { error: profileUpdateError } = await supabase
     .from("profiles")
     .update({
