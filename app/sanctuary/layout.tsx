@@ -1,79 +1,51 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
+import { redirect } from "next/navigation";
+import { supabaseServer } from "@/lib/supabase/server";
 import UsernameModal from "@/components/UsernameModal";
 import "../globals.css";
 
-export default function SanctuaryLayout({ children }) {
-  const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [allowed, setAllowed] = useState(false);
+export default async function SanctuaryLayout({ children }) {
+  const supabase = supabaseServer();
 
-  useEffect(() => {
-    async function checkAccess() {
-      // Get session
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  // Get session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-      const user = session?.user;
+  const user = session?.user;
 
-      // ⭐ Non‑signed‑in users → reveal
-      if (!user) {
-        window.location.href = "/reveal";
-        return;
-      }
+  // ⭐ Not signed in → reveal
+  if (!user) {
+    redirect("/reveal");
+  }
 
-      // Fetch profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, is_member, membership_status")
-        .eq("id", user.id)
-        .single();
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username, is_member, membership_status")
+    .eq("id", user.id)
+    .single();
 
-      // ⭐ No profile → treat as non‑member
-      if (!profile) {
-        window.location.href = "/reveal";
-        return;
-      }
+  // ⭐ No profile → reveal
+  if (!profile) {
+    redirect("/reveal");
+  }
 
-      // ⭐ Membership guard FIRST
-      const status = profile.membership_status?.toLowerCase();
+  // Membership logic
+  const status = profile.membership_status?.toLowerCase();
+  const isActive =
+    profile.is_member === true &&
+    (status === "active" || status === "cancelling");
 
-      // ⭐ FINAL membership logic:
-      // Active → access
-      // Cancelling → access until period end
-      // Past_due → no access
-      // Expired → no access
-      const isActive =
-        profile.is_member === true &&
-        (status === "active" || status === "cancelling");
-
-      if (!isActive) {
-        window.location.href = "/reveal";
-        return;
-      }
-
-      // ⭐ Username check AFTER membership
-      if (!profile.username) {
-        setShowModal(true);
-      }
-
-      setAllowed(true);
-      setLoading(false);
-    }
-
-    checkAccess();
-  }, []);
-
-  if (loading) return null;
-  if (!allowed) return null;
+  // ⭐ Not active → reveal
+  if (!isActive) {
+    redirect("/reveal");
+  }
 
   return (
     <>
-      {showModal && (
-        <UsernameModal onComplete={() => setShowModal(false)} />
+      {/* Username setup modal */}
+      {!profile.username && (
+        <UsernameModal onComplete={() => {}} />
       )}
 
       {children}
