@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { supabase } from "@/lib/supabase/client";
+import { syncTimezone } from "@/lib/timezone/syncTimezone"; // <-- ADDED
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
@@ -38,8 +39,13 @@ export default function Navigation() {
     loadUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
         setUser(session?.user ?? null);
+
+        // 🔥 SURGICAL FIX: OTP login triggers SIGNED_IN
+        if (event === 'SIGNED_IN') {
+          await syncTimezone();
+        }
       }
     );
 
