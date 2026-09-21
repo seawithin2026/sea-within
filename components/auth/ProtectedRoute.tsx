@@ -16,23 +16,21 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         return;
       }
 
-      // 2. Check membership_status (correct field)
+      // 2. Check membership_status
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status")
         .eq("id", user.id)
         .single();
 
-      const status = profile?.membership_status;
+      const membership = profile?.membership_status?.toLowerCase();
 
-      const isMember =
-        status === "active" ||
-        status === "cancel_at_period_end" ||
-        status === "trialing" ||
-        status === "past_due" ||
-        status === "cancelling";
+      // ⭐ Only allow ACTIVE or CANCELLING
+      const hasAccess =
+        membership === "active" ||
+        membership === "cancelling";
 
-      if (!isMember) {
+      if (!hasAccess) {
         setStatus("blocked");
         return;
       }

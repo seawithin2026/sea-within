@@ -9,18 +9,17 @@ export default function AccountRouter() {
 
   useEffect(() => {
     async function run() {
-      // 1. Check session
+      // 1. Get current user directly (avoids stale session issues)
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const user = session?.user;
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!user) {
         router.replace("/login");
         return;
       }
 
-      // 2. Ensure profile exists (SIGNUP already creates it)
+      // 2. Ensure profile exists
       const { data: existing } = await supabase
         .from("profiles")
         .select("*")
@@ -28,7 +27,6 @@ export default function AccountRouter() {
         .maybeSingle();
 
       if (!existing) {
-        // If no profile, send to login (or onboarding) instead of recreating a broken one
         router.replace("/login");
         return;
       }
@@ -50,7 +48,7 @@ export default function AccountRouter() {
           .eq("id", user.id);
       }
 
-      // 4. Fetch profile again (minimal fields)
+      // 4. Fetch profile again (with all needed fields)
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status, username, stripe_subscription_id, is_member")
