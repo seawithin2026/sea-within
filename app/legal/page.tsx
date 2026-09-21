@@ -172,8 +172,7 @@ export default function LegalPage() {
             <p>
               Payments are processed securely through Stripe. By subscribing,
               you agree to recurring charges until cancellation and understand
-              that access may end if payment fails. Refunds are handled
-              according to our refund policy, if applicable.
+              that access may end if payment fails.
             </p>
           </section>
 
