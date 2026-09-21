@@ -1,4 +1,4 @@
-import { supabase } from "./supabase/client";
+import { supabaseServer } from "@/lib/supabase/server";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -8,10 +8,9 @@ dayjs.extend(timezone);
 
 const GESTURE_MAX = 50;
 
-/* -----------------------------------------------------
-   🌿 SESSION HELPER — WAIT FOR USER (OTP‑safe)
------------------------------------------------------ */
 async function waitForUser() {
+  const supabase = supabaseServer();
+
   for (let i = 0; i < 10; i++) {
     const { data } = await supabase.auth.getSession();
     const user = data.session?.user;
@@ -21,22 +20,16 @@ async function waitForUser() {
   return null;
 }
 
-/* -----------------------------------------------------
-   🌿 GET GESTURE PROGRESS (timezone‑aware)
------------------------------------------------------ */
 export async function getGestureProgress() {
+  const supabase = supabaseServer();
   const user = await waitForUser();
   if (!user) return null;
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_gesture_date")
     .eq("id", user.id)
     .single();
-
-  if (profileError && profileError.code !== "PGRST116") {
-    throw profileError;
-  }
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
@@ -46,9 +39,8 @@ export async function getGestureProgress() {
     .eq("user_id", user.id)
     .single();
 
-  // If no gesture_progress row exists → create one
   if (error && error.code === "PGRST116") {
-    const { data: created, error: createError } = await supabase
+    const { data: created } = await supabase
       .from("gesture_progress")
       .insert({
         user_id: user.id,
@@ -59,8 +51,6 @@ export async function getGestureProgress() {
       .select()
       .single();
 
-    if (createError) throw createError;
-
     return {
       ...created,
       last_completed_local: null,
@@ -68,10 +58,7 @@ export async function getGestureProgress() {
     };
   }
 
-  if (error) throw error;
-
-  // Convert last_completed to user's timezone
-  let lastCompletedLocal: string | null = null;
+  let lastCompletedLocal = null;
   if (data?.last_completed) {
     lastCompletedLocal = dayjs(data.last_completed)
       .tz(userTimezone)
@@ -85,22 +72,16 @@ export async function getGestureProgress() {
   };
 }
 
-/* -----------------------------------------------------
-   🌿 COMPLETE GESTURE (timezone‑correct)
------------------------------------------------------ */
-export async function completeGesture(progress: any) {
+export async function completeGesture(progress) {
+  const supabase = supabaseServer();
   const user = await waitForUser();
   if (!user) return null;
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", user.id)
     .single();
-
-  if (profileError && profileError.code !== "PGRST116") {
-    throw profileError;
-  }
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
@@ -108,14 +89,12 @@ export async function completeGesture(progress: any) {
   const todayLocal = now.format("YYYY-MM-DD");
   const nowUtcIso = new Date().toISOString();
 
-  // Advance gesture cycle independently of bloom
   let nextIndex = progress.current_index + 1;
   if (nextIndex >= GESTURE_MAX) {
     nextIndex = 0;
   }
 
-  // Update gesture_progress
-  const { data: gestureData, error: gestureError } = await supabase
+  const { data: gestureData } = await supabase
     .from("gesture_progress")
     .update({
       current_index: nextIndex,
@@ -127,44 +106,32 @@ export async function completeGesture(progress: any) {
     .select()
     .single();
 
-  if (gestureError) throw gestureError;
-
-  // Update profile gesture metadata
-  const { error: profileUpdateError } = await supabase
+  await supabase
     .from("profiles")
     .update({
       last_gesture_date: todayLocal,
     })
     .eq("id", user.id);
 
-  if (profileUpdateError) throw profileUpdateError;
-
   return gestureData;
 }
 
-/* -----------------------------------------------------
-   🌿 RESET GESTURE CYCLE (manual reset)
------------------------------------------------------ */
-export async function resetGestureCycle(progress: any) {
+export async function resetGestureCycle(progress) {
+  const supabase = supabaseServer();
   const user = await waitForUser();
   if (!user) return null;
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", user.id)
     .single();
 
-  if (profileError && profileError.code !== "PGRST116") {
-    throw profileError;
-  }
-
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
   const now = dayjs().tz(userTimezone);
   const nowUtcIso = new Date().toISOString();
 
-  // Reset gesture_progress
-  const { data: gestureData, error: gestureError } = await supabase
+  const { data: gestureData } = await supabase
     .from("gesture_progress")
     .update({
       current_index: 0,
@@ -176,17 +143,12 @@ export async function resetGestureCycle(progress: any) {
     .select()
     .single();
 
-  if (gestureError) throw gestureError;
-
-  // Reset profile gesture metadata
-  const { error: profileUpdateError } = await supabase
+  await supabase
     .from("profiles")
     .update({
       last_gesture_date: null,
     })
     .eq("id", user.id);
-
-  if (profileUpdateError) throw profileUpdateError;
 
   return gestureData;
 }

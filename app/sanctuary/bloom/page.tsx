@@ -44,8 +44,11 @@ function BloomContent() {
   // ⭐ Minimal fix — no auth gating here
   useEffect(() => {
     const init = async () => {
-      const bloom = await getBloomProgress();
-      const gesture = await getGestureProgress();
+      const [bloom, gesture] = await Promise.all([
+  getBloomProgress(),
+  getGestureProgress()
+]);
+
 
       if (!bloom || !gesture) {
         setGestureIndex(0);

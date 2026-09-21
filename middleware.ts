@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import type { NextRequest } from "next/server";
 
-export async function middleware(req) {
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
-  // Create Supabase SSR client with cookies
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name) {
@@ -23,7 +23,6 @@ export async function middleware(req) {
     }
   );
 
-  // Hydrate session server-side
   await supabase.auth.getSession();
 
   return res;
@@ -31,6 +30,6 @@ export async function middleware(req) {
 
 export const config = {
   matcher: [
-    "/((?!api/webhooks/stripe).*)", // Skip Stripe webhook route
+    "/((?!api/webhooks/stripe).*)",
   ],
 };
