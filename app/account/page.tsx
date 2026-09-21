@@ -53,7 +53,7 @@ export default function AccountRouter() {
       // 4. Fetch profile again (minimal fields)
       const { data: profile } = await supabase
         .from("profiles")
-        .select("membership_status, username")
+        .select("membership_status, username, stripe_subscription_id, is_member")
         .eq("id", user.id)
         .maybeSingle();
 
