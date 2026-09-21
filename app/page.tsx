@@ -55,6 +55,8 @@ export default function HomePage() {
 
   return (
     <main className="relative">
+      <Navigation />
+
       {/* =============================================
           SECTION 1 — OCEAN SURFACE
       ============================================= */}
