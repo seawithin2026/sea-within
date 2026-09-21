@@ -13,7 +13,7 @@ export default async function SanctuaryLayout({ children }) {
 
   const user = session?.user;
 
-  // ⭐ Not signed in → reveal
+  // Not signed in → reveal
   if (!user) {
     redirect("/reveal");
   }
@@ -25,7 +25,7 @@ export default async function SanctuaryLayout({ children }) {
     .eq("id", user.id)
     .single();
 
-  // ⭐ No profile → reveal
+  // No profile → reveal
   if (!profile) {
     redirect("/reveal");
   }
@@ -36,7 +36,7 @@ export default async function SanctuaryLayout({ children }) {
     profile.is_member === true &&
     (status === "active" || status === "cancelling");
 
-  // ⭐ Not active → reveal
+  // Not active → reveal
   if (!isActive) {
     redirect("/reveal");
   }

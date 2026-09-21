@@ -46,6 +46,7 @@ export async function getBloomProgress() {
     .eq("user_id", user.id)
     .single();
 
+  // If no bloom_progress row exists → create one
   if (error && error.code === "PGRST116") {
     const { data: created, error: createError } = await supabase
       .from("bloom_progress")
@@ -70,6 +71,7 @@ export async function getBloomProgress() {
 
   if (error) throw error;
 
+  // Convert last_completed to user's timezone
   let lastCompletedLocal: string | null = null;
   if (data?.last_completed) {
     lastCompletedLocal = dayjs(data.last_completed)

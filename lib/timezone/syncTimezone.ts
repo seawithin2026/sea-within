@@ -7,10 +7,10 @@ export async function syncTimezone() {
 
   if (!user) return;
 
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   await supabase
     .from("profiles")
-    .update({ timezone })
+    .update({ timezone: tz })
     .eq("id", user.id);
 }

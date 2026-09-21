@@ -29,7 +29,6 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
-        <Navigation />
         {children}
       </body>
     </html>

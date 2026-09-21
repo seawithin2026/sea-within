@@ -63,6 +63,7 @@ export default function LoginPage() {
 
   /* -----------------------------------------------------
      🌿 VERIFY OTP CODE
+     ⭐ Only stability fix: redirect to /account (your onboarding router)
   ----------------------------------------------------- */
   const verifyCode = async () => {
     setErrorMsg("");
@@ -79,7 +80,7 @@ export default function LoginPage() {
     }
 
     // SUCCESS → Supabase session created
-  window.location.href = "/account"; // FIXED
+    window.location.href = "/account"; // ⭐ REQUIRED for stable onboarding
   };
 
   /* -----------------------------------------------------

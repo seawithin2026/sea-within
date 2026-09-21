@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { supabase } from "@/lib/supabase/client";
-import { syncTimezone } from "@/lib/timezone/syncTimezone"; // <-- ADDED
+import { syncTimezone } from "@/lib/timezone/syncTimezone";
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
@@ -29,27 +29,35 @@ export default function Navigation() {
 
   // Detect user session
   useEffect(() => {
+    let mounted = true;
+
     async function loadUser() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user);
+
+      if (mounted) setUser(user);
     }
 
     loadUser();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+
         setUser(session?.user ?? null);
 
-        // 🔥 SURGICAL FIX: OTP login triggers SIGNED_IN
+        // OTP login → sync timezone
         if (event === 'SIGNED_IN') {
           await syncTimezone();
         }
       }
     );
 
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   return (
@@ -105,7 +113,6 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
-                {/* FIXED: Account now points to /my-account */}
                 <Link
                   href="/my-account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
@@ -168,7 +175,6 @@ export default function Navigation() {
                       Sign Out
                     </button>
 
-                    {/* FIXED: Mobile Account link */}
                     <Link
                       href="/my-account"
                       onClick={() => setIsMobileMenuOpen(false)}

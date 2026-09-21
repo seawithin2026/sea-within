@@ -1,57 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 import VideoGrid from "./VideoGrid";
 
 export default function SanctuaryPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
+  // ⭐ Minimal fix — remove client-side auth gating
   useEffect(() => {
-    async function checkAccess() {
-      // 1. Must be signed in
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        // Cold visitor → Reveal page
-        router.replace("/reveal");
-        return;
-      }
-
-      // 2. Must be a valid member + must have username
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_member, membership_status, username")
-        .eq("id", user.id)
-        .single();
-
-      // Logged in but NOT a member → send to Account (so they can pay)
-      if (
-        !profile ||
-        profile.is_member !== true ||
-        (profile.membership_status !== "active" &&
-         profile.membership_status !== "cancelling")
-      ) {
-        router.replace("/account");
-        return;
-      }
-
-      // Member but no username → onboarding
-      if (!profile.username) {
-        router.replace("/create-username");
-        return;
-      }
-
-      // 3. Access granted
-      setLoading(false);
-    }
-
-    checkAccess();
-  }, [router]);
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return (

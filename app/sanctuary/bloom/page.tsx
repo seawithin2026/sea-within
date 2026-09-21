@@ -41,6 +41,7 @@ function BloomContent() {
 
   const [videoEnded, setVideoEnded] = useState(false);
 
+  // ⭐ Minimal fix — no auth gating here
   useEffect(() => {
     const init = async () => {
       const bloom = await getBloomProgress();
