@@ -21,7 +21,7 @@ export default async function SanctuaryLayout({ children }) {
   // Fetch profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, is_member, membership_status")
+    .select("username, membership_status")
     .eq("id", user.id)
     .single();
 
@@ -30,24 +30,20 @@ export default async function SanctuaryLayout({ children }) {
     redirect("/reveal");
   }
 
-  // Membership logic
+  // Membership logic — cancelling STILL has access
   const status = profile.membership_status?.toLowerCase();
-  const isActive =
-    profile.is_member === true &&
-    (status === "active" || status === "cancelling");
+  const hasAccess =
+    status === "active" ||
+    status === "cancelling";
 
   // Not active → reveal
-  if (!isActive) {
+  if (!hasAccess) {
     redirect("/reveal");
   }
 
   return (
     <>
-      {/* Username setup modal */}
-      {!profile.username && (
-        <UsernameModal onComplete={() => {}} />
-      )}
-
+      {!profile.username && <UsernameModal onComplete={() => {}} />}
       {children}
     </>
   );

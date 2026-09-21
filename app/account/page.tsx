@@ -10,7 +10,9 @@ export default function AccountRouter() {
   useEffect(() => {
     async function run() {
       // 1. Check session
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const user = session?.user;
 
       if (!user) {
@@ -18,7 +20,7 @@ export default function AccountRouter() {
         return;
       }
 
-      // 2. Ensure profile exists
+      // 2. Ensure profile exists (SIGNUP already creates it)
       const { data: existing } = await supabase
         .from("profiles")
         .select("*")
@@ -26,12 +28,9 @@ export default function AccountRouter() {
         .maybeSingle();
 
       if (!existing) {
-        await supabase.from("profiles").insert({
-          id: user.id,
-          email: user.email,
-          is_member: false,
-          membership_status: "none",
-        });
+        // If no profile, send to login (or onboarding) instead of recreating a broken one
+        router.replace("/login");
+        return;
       }
 
       // 3. Ensure consent
@@ -51,10 +50,10 @@ export default function AccountRouter() {
           .eq("id", user.id);
       }
 
-      // 4. Fetch profile again
+      // 4. Fetch profile again (minimal fields)
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_member, membership_status, username")
+        .select("membership_status, username")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -63,15 +62,13 @@ export default function AccountRouter() {
         return;
       }
 
-      // 5. Stripe membership logic
-      const isActive =
-        profile.is_member === true &&
-        (
-          profile.membership_status === "active" ||
-          profile.membership_status === "cancelling"
-        );
+      // 5. Stripe membership logic — cancelling STILL has access
+      const status = profile.membership_status?.toLowerCase();
+      const hasAccess =
+        status === "active" ||
+        status === "cancelling";
 
-      if (!isActive) {
+      if (!hasAccess) {
         router.replace("/checkout");
         return;
       }
