@@ -1,49 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function AccountRouter() {
   const router = useRouter();
-  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    let active = true;
-
     async function run() {
-      // ⭐ REQUIRED FIX — hydrate session BEFORE reading user
-      await supabase.auth.getSession();
-
-      // 1. Hydration-safe user fetch
-      const first = await supabase.auth.getUser();
-      let user = first.data.user;
+      // 1. Check session
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
 
       if (!user) {
-        await new Promise((r) => setTimeout(r, 300));
-        const retry = await supabase.auth.getUser();
-        user = retry.data.user;
-
-        if (!user) {
-          if (active) setStatus("login");
-          return;
-        }
-      }
-
-      // 2. Fetch profile once
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("membership_status, username, stripe_subscription_id, is_member, terms_accepted")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!profile) {
-        if (active) setStatus("login");
+        router.replace("/login");
         return;
       }
 
-      // 3. Ensure consent
-      if (profile.terms_accepted !== true) {
+      // 2. Ensure profile exists (client-side insert)
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!existing) {
+        await supabase.from("profiles").insert({
+          id: user.id,
+          email: user.email,
+          is_member: false,
+          membership_status: "none",
+        });
+      }
+
+      // ⭐ 2.5 — Update consent if missing
+      const { data: consentCheck } = await supabase
+        .from("profiles")
+        .select("terms_accepted")
+        .eq("id", user.id)
+        .single();
+
+      if (consentCheck?.terms_accepted !== true) {
         await supabase
           .from("profiles")
           .update({
@@ -53,41 +51,43 @@ export default function AccountRouter() {
           .eq("id", user.id);
       }
 
-      // 4. Membership logic
-      const statusLower = profile.membership_status?.toLowerCase();
-      const hasAccess =
-        statusLower === "active" ||
-        statusLower === "cancelling";
+      // 3. Fetch profile again
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_member, membership_status, username")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (!hasAccess) {
-        if (active) setStatus("checkout");
+      if (!profile) {
+        router.replace("/login");
+        return;
+      }
+
+      // 4. Membership logic (Stripe Sync Engine compatible)
+      const isActive =
+        profile.is_member === true &&
+        (
+          profile.membership_status === "active" ||
+          profile.membership_status === "cancelling"
+        );
+
+      if (!isActive) {
+        router.replace("/checkout");
         return;
       }
 
       // 5. Username onboarding
       if (!profile.username) {
-        if (active) setStatus("username");
+        router.replace("/create-username");
         return;
       }
 
       // 6. Fully onboarded
-      if (active) setStatus("sanctuary");
+      router.replace("/sanctuary");
     }
 
     run();
-
-    return () => {
-      active = false;
-    };
   }, [router]);
-
-  // 7. Redirect AFTER hydration
-  useEffect(() => {
-    if (status === "login") router.replace("/login");
-    if (status === "checkout") router.replace("/checkout");
-    if (status === "username") router.replace("/create-username");
-    if (status === "sanctuary") router.replace("/sanctuary");
-  }, [status, router]);
 
   return null;
 }
