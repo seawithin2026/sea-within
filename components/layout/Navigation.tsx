@@ -32,6 +32,9 @@ export default function Navigation() {
     let mounted = true;
 
     async function loadUser() {
+      // ⭐ REQUIRED FIX — hydrate session BEFORE reading user
+      await supabase.auth.getSession();
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
