@@ -3,22 +3,21 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [status, setStatus] = useState<"loading" | "allowed" | "blocked">("loading");
+export default function ProtectedRoute({ children }) {
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
     let active = true;
 
     async function run() {
-      // 1. Wait for Supabase hydration
-      const session = await supabase.auth.getSession();
-      let user = session.data.session?.user;
+      // 1. Hydration-safe user fetch
+      const first = await supabase.auth.getUser();
+      let user = first.data.user;
 
       if (!user) {
-        // Retry once after hydration delay
         await new Promise((r) => setTimeout(r, 300));
-        const retry = await supabase.auth.getSession();
-        user = retry.data.session?.user;
+        const retry = await supabase.auth.getUser();
+        user = retry.data.user;
 
         if (!user) {
           if (active) setStatus("blocked");
@@ -26,23 +25,22 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         }
       }
 
-      // 2. Fetch membership safely
+      // 2. Fetch membership
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       const membership = profile?.membership_status?.toLowerCase();
 
-      // ⭐ Only allow the states YOU actually use
-      const hasAccess =
+      // 3. Only allow YOUR real states
+      const allowed =
         membership === "active" ||
         membership === "cancelling" ||
-        membership === "cancel_at_period_end" ||
-        membership === "past_due";
+        membership === "cancel_at_period_end";
 
-      if (!hasAccess) {
+      if (!allowed) {
         if (active) setStatus("blocked");
         return;
       }
@@ -51,13 +49,9 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     }
 
     run();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false };
   }, []);
 
-  // Redirect AFTER hydration finishes
   useEffect(() => {
     if (status === "blocked") {
       window.location.href = "/reveal";
