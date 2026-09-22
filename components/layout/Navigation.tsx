@@ -1,43 +1,66 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { href: '/sanctuary', label: 'Sanctuary' },
-  { href: '/sanctuary/bloom', label: 'Bloom' },
-  { href: '/sanctuary/wisdom-board', label: 'Wisdom Board' },
-  { href: '/sanctuary/community', label: 'Community' },
+  { href: "/sanctuary", label: "Sanctuary" },
+  { href: "/sanctuary/bloom", label: "Bloom" },
+  { href: "/sanctuary/wisdom-board", label: "Wisdom Board" },
+  { href: "/sanctuary/community", label: "Community" },
 ];
 
 export default function Navigation() {
+  const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Detect scroll
+  // Hydration guard — ensures server + client start identical
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    setHydrated(true);
   }, []);
+
+  // Scroll detection — runs ONLY after hydration
+  useEffect(() => {
+    if (!hydrated) return;
+
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hydrated]);
+
+  // Skeleton during hydration
+  if (!hydrated) {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400">
+            SEA WITHIN
+          </span>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>
       <motion.nav
-        initial={{ opacity: 0 }}
+        initial={false} // IMPORTANT: prevents hydration mismatch
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
+        transition={{ duration: 0.6 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          isScrolled ? 'backdrop-blur-xl' : 'bg-transparent'
+          isScrolled ? "backdrop-blur-xl" : "bg-transparent"
         }`}
         style={{
-          backgroundColor: isScrolled ? 'rgba(10, 22, 40, 0.90)' : 'transparent',
+          backgroundColor: isScrolled
+            ? "rgba(10, 22, 40, 0.90)"
+            : "transparent",
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
           {/* Brand */}
           <Link href="/" className="group flex items-center gap-3">
             <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400 group-hover:text-golden-300 transition-colors duration-500">
@@ -57,7 +80,6 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* Always show Sign In — AccountRouter handles auth */}
             <Link
               href="/login"
               className="btn-golden text-[11px] px-6 py-2.5 ml-8"
@@ -80,10 +102,10 @@ export default function Navigation() {
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden backdrop-blur-xl"
-              style={{ backgroundColor: 'rgba(10, 22, 40, 0.95)' }}
+              style={{ backgroundColor: "rgba(10, 22, 40, 0.95)" }}
             >
               <div className="px-6 py-8 flex flex-col gap-6">
                 {navLinks.map((link) => (
