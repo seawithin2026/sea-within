@@ -30,6 +30,9 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api/webhooks/stripe).*)",
+    "/sanctuary/:path*",
+    "/bloom/:path*",
+    "/wisdom-board/:path*",
+    "/community/:path*",
   ],
 };
