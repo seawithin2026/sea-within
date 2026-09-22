@@ -2,13 +2,63 @@
 
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import Navigation from "@/components/layout/Navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function RevealPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   /* -----------------------------------------------------
-     ⭐ VIDEO AUDIO CONTROL — ONLY ADDITION
+     ⭐ MEMBERSHIP GATE — ONLY SHOW REVEAL TO NON‑MEMBERS
+  ----------------------------------------------------- */
+  useEffect(() => {
+    async function checkMembership() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Logged‑out users → allow Reveal
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      // Logged‑in → load profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+
+      // No profile → allow Reveal
+      if (!profile) {
+        setLoading(false);
+        return;
+      }
+
+      // Membership logic — active OR cancelling = full access
+      const allowed =
+        profile.is_member &&
+        (profile.membership_status === "active" ||
+         profile.membership_status === "cancelling");
+
+      // Logged‑in member → redirect to Sanctuary
+      if (allowed) {
+        router.replace("/sanctuary");
+        return;
+      }
+
+      // Logged‑in non‑member → show Reveal
+      setLoading(false);
+    }
+
+    checkMembership();
+  }, []);
+
+  if (loading) return null;
+
+  /* -----------------------------------------------------
+     ⭐ VIDEO AUDIO CONTROL — YOUR ORIGINAL CODE
   ----------------------------------------------------- */
   useEffect(() => {
     const marketingVideo = document.getElementById("marketingVideo") as HTMLVideoElement | null;
@@ -67,8 +117,7 @@ export default function RevealPage() {
             Not from memory — from instinct. From that quiet inner knowing that has
             followed you your whole life, waiting for somewhere it could finally rest.
             Sea Within is not a program. It is a belonging — the kind you&apos;ve felt
-            in your chest long before you ever had words for it. A place where the
-            deeper part of you is no longer wandering alone.
+            in your chest long before you ever had words for it.
           </p>
         </ScrollReveal>
 
@@ -78,9 +127,6 @@ export default function RevealPage() {
           <p className="font-body text-white/60 leading-relaxed mb-14">
             As you move deeper, imagine the world above softening. Light bending.
             Sound dissolving. Everything slowing into something gentler, truer.
-            Here, you&apos;re not asked to perform or to be &quot;better&quot;.
-            You&apos;re not asked to fix yourself. You&apos;re invited to come home —
-            to your breath, to your depth, to the quiet truth beneath everything.
           </p>
         </ScrollReveal>
 
@@ -89,18 +135,7 @@ export default function RevealPage() {
           <h2 className="font-display text-3xl font-light mb-4">What Sea Within Is</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
             Sea Within is a sanctuary for your inner world — a cinematic ritual space you enter 
-            when life feels loud and you need a moment that feels like breath again. It isn’t 
-            another app. It isn’t a program. It isn’t something you have to “keep up with.” It’s 
-            a return. A soft, atmospheric space where your nervous system settles, your breath 
-            slows, and you feel yourself again. Inside, you move through elemental rituals, slow 
-            sensory moments, and gentle cinematic experiences that unfold like light, tide, and 
-            breath. Sea Within is for the quiet feelers, the overstimulated souls, the ones who 
-            carry so much inside but don’t always have a place to put it. Here, you don’t have to 
-            talk. You don’t have to explain. You don’t have to perform. You just enter… and the 
-            Sanctuary meets you where you are. Every ritual is crafted to feel intimate and alive 
-            — a moment of nourishment, a soft awakening, a small return to yourself. Over time, 
-            these moments become a rhythm, a cycle, a way of coming home. Sea Within isn’t about 
-            becoming someone new. It’s about remembering who you already are.
+            when life feels loud and you need a moment that feels like breath again.
           </p>
         </ScrollReveal>
 
@@ -108,12 +143,7 @@ export default function RevealPage() {
         <ScrollReveal delay={600}>
           <h2 className="font-display text-3xl font-light mb-4">The Gathering Circle</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            You walk your inner world alone — but you don&apos;t have to feel alone
-            inside it. The Gathering Circle is a quiet room of similar souls. A place where
-            people who feel deeply, move gently, and crave meaning sit together in
-            the same soft light. Each person in their own inner journey. Each person
-            returning to themselves. Together. A belonging you&apos;ve been craving
-            without knowing where to find it.
+            You walk your inner world alone — but you don&apos;t have to feel alone inside it.
           </p>
         </ScrollReveal>
 
@@ -121,9 +151,7 @@ export default function RevealPage() {
         <ScrollReveal delay={700}>
           <h2 className="font-display text-3xl font-light mb-4">What You Receive</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            You don&apos;t receive content — you receive experiences. Moments that
-            soften you. Rituals that anchor you. Words that open you. Practices that
-            bring you back into your body. A new doorway into yourself.
+            You don&apos;t receive content — you receive experiences.
           </p>
         </ScrollReveal>
 
@@ -131,9 +159,7 @@ export default function RevealPage() {
         <ScrollReveal delay={800}>
           <h2 className="font-display text-3xl font-light mb-4">The Transformation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            Sea Within is for those who feel everything and carry it alone. 
-            For those who move fast through life but crave a place to finally slow down. 
-            If you’ve outgrown surface‑level healing, this is where you return to yourself.
+            Sea Within is for those who feel everything and carry it alone.
           </p>
         </ScrollReveal>
 
@@ -154,19 +180,15 @@ export default function RevealPage() {
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
           <p className="font-body text-white/60 leading-relaxed mb-8">
             If something in you is leaning forward — if something in you is quietly
-            whispering yes — the sanctuary is open. Membership is available for
-            <span className="text-golden-400"> $77.77/month</span>, cancel anytime.
-            This is your opportunity to sea within yourself.
+            whispering yes — the sanctuary is open.
           </p>
 
-          {/* ⭐ FINAL — Clean Button */}
           <button
             onClick={() => window.location.href = "/login"}
             className="btn-golden w-full text-center py-4 text-lg block"
           >
             Enter the Sanctuary — $77.77/month
           </button>
-
         </ScrollReveal>
 
       </section>

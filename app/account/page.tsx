@@ -17,30 +17,35 @@ export default function AccountRouter() {
         return;
       }
 
-      // 2. Ensure profile exists
-      const { data: existing } = await supabase
+      // 2. Fetch or create profile
+      let { data: profile } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
-      if (!existing) {
+      if (!profile) {
         await supabase.from("profiles").insert({
           id: user.id,
           email: user.email,
           is_member: false,
           membership_status: "none",
+          terms_accepted: true,
+          terms_accepted_at: new Date().toISOString(),
         });
+
+        // Fetch again after insert
+        const { data: newProfile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        profile = newProfile;
       }
 
       // 3. Ensure consent
-      const { data: consentCheck } = await supabase
-        .from("profiles")
-        .select("terms_accepted")
-        .eq("id", user.id)
-        .single();
-
-      if (consentCheck?.terms_accepted !== true) {
+      if (profile.terms_accepted !== true) {
         await supabase
           .from("profiles")
           .update({
@@ -50,19 +55,7 @@ export default function AccountRouter() {
           .eq("id", user.id);
       }
 
-      // 4. Fetch profile again
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_member, membership_status, username")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!profile) {
-        router.replace("/login");
-        return;
-      }
-
-      // 5. Membership check
+      // 4. Membership check
       const isActive =
         profile.is_member === true &&
         (
@@ -75,13 +68,13 @@ export default function AccountRouter() {
         return;
       }
 
-      // 6. Username onboarding
+      // 5. Username onboarding
       if (!profile.username) {
         router.replace("/create-username");
         return;
       }
 
-      // 7. Fully onboarded
+      // 6. Fully onboarded
       router.replace("/sanctuary");
     }
 
