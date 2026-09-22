@@ -12,53 +12,43 @@ export function useMembershipGate() {
     let active = true;
 
     async function check() {
-      // 1. Wait for Supabase hydration
-      const session = await supabase.auth.getSession();
-      const user = session.data.session?.user;
+      // 1. Hydration-safe user fetch
+      const first = await supabase.auth.getUser();
+      let user = first.data.user;
 
       if (!user) {
-        // Retry once after hydration delay
         await new Promise((r) => setTimeout(r, 300));
-        const retry = await supabase.auth.getSession();
-        const retryUser = retry.data.session?.user;
+        const retry = await supabase.auth.getUser();
+        user = retry.data.user;
 
-        if (!retryUser) {
+        if (!user) {
           if (active) setAllowed(false);
           return;
         }
-
-        // Use retry user
-        user = retryUser;
       }
 
-      // 2. Fetch profile safely
+      // 2. Fetch membership
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      const status = profile?.membership_status;
+      const status = profile?.membership_status?.toLowerCase();
 
-      // 3. Membership logic (Stripe-compatible)
+      // 3. Only allow YOUR real states
       const isMember =
         status === "active" ||
-        status === "trialing" ||
-        status === "past_due" ||
-        status === "cancel_at_period_end" ||
         status === "cancelling";
 
       if (active) setAllowed(isMember);
     }
 
     check();
-
-    return () => {
-      active = false;
-    };
+    return () => { active = false };
   }, []);
 
-  // 4. Redirect only AFTER hydration is complete
+  // 4. Redirect AFTER hydration
   useEffect(() => {
     if (allowed === false) {
       router.replace("/reveal");
