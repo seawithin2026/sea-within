@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { supabase } from "@/lib/supabase/client";
-import { syncTimezone } from "@/lib/timezone/syncTimezone";
 
 const navLinks = [
   { href: '/sanctuary', label: 'Sanctuary' },
@@ -15,52 +13,14 @@ const navLinks = [
 ];
 
 export default function Navigation() {
-
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
 
   // Detect scroll
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Detect user session
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadUser() {
-      // ⭐ REQUIRED FIX — hydrate session BEFORE reading user
-      await supabase.auth.getSession();
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (mounted) setUser(user);
-    }
-
-    loadUser();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-
-        setUser(session?.user ?? null);
-
-        // OTP login → sync timezone
-        if (event === 'SIGNED_IN') {
-          await syncTimezone();
-        }
-      }
-    );
-
-    return () => {
-      mounted = false;
-      listener.subscription.unsubscribe();
-    };
   }, []);
 
   return (
@@ -97,33 +57,13 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {!user ? (
-              <Link
-                href="/login"
-                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-              >
-                Sign In
-              </Link>
-            ) : (
-              <>
-                <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    window.location.href = "/";
-                  }}
-                  className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-                >
-                  Sign Out
-                </button>
-
-                <Link
-                  href="/my-account"
-                  className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors ml-4"
-                >
-                  Account
-                </Link>
-              </>
-            )}
+            {/* Always show Sign In — AccountRouter handles auth */}
+            <Link
+              href="/login"
+              className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+            >
+              Sign In
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -157,36 +97,13 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {!user ? (
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="btn-golden text-[11px] px-6 py-2.5"
-                  >
-                    Sign In
-                  </Link>
-                ) : (
-                  <>
-                    <button
-                      onClick={async () => {
-                        setIsMobileMenuOpen(false);
-                        await supabase.auth.signOut();
-                        window.location.href = "/";
-                      }}
-                      className="btn-golden text-[11px] px-6 py-2.5"
-                    >
-                      Sign Out
-                    </button>
-
-                    <Link
-                      href="/my-account"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
-                    >
-                      Account
-                    </Link>
-                  </>
-                )}
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="btn-golden text-[11px] px-6 py-2.5"
+                >
+                  Sign In
+                </Link>
               </div>
             </motion.div>
           )}
