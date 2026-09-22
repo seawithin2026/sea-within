@@ -42,12 +42,6 @@ export default function ProtectedRoute({ children }) {
     return () => { active = false };
   }, []);
 
-  useEffect(() => {
-    if (status === "blocked") {
-      window.location.href = "/reveal";
-    }
-  }, [status]);
-
   if (status === "loading") {
     return <div className="text-white p-10">Loading...</div>;
   }

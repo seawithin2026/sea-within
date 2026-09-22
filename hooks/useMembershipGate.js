@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 export function useMembershipGate() {
-  const router = useRouter();
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -37,12 +35,6 @@ export function useMembershipGate() {
     check();
     return () => { active = false };
   }, []);
-
-  useEffect(() => {
-    if (allowed === false) {
-      router.replace("/reveal");
-    }
-  }, [allowed]);
 
   return allowed;
 }
