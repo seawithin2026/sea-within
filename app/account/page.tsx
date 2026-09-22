@@ -12,6 +12,9 @@ export default function AccountRouter() {
     let active = true;
 
     async function run() {
+      // ⭐ REQUIRED FIX — hydrate session BEFORE reading user
+      await supabase.auth.getSession();
+
       // 1. Hydration-safe user fetch
       const first = await supabase.auth.getUser();
       let user = first.data.user;

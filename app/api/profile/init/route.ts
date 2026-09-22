@@ -3,42 +3,24 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
 export async function POST() {
-  // Create Supabase server client with cookie support
+  // Create Supabase server client with ANON KEY
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     { cookies }
   );
 
-  // Get authenticated user from magic-link callback
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  // Hydrate session
+  const { data: sessionData } = await supabase.auth.getSession();
 
-  if (userError || !user) {
-    return NextResponse.json(
-      { error: "Not authenticated" },
-      { status: 401 }
-    );
+  if (!sessionData.session) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  // Check if profile exists
-  const { data: existing } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
+  const user = sessionData.session.user;
 
-  // Create profile if missing
-  if (!existing) {
-    await supabase.from("profiles").insert({
-      id: user.id,
-      email: user.email,
-      is_member: false,
-      membership_status: "none",
-    });
-  }
+  // DO NOT CREATE PROFILES HERE
+  // Profiles must be created in your onboarding flow ONLY
 
   return NextResponse.json({ ok: true });
 }
