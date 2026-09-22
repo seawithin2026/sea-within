@@ -6,8 +6,10 @@ import Navigation from "@/components/layout/Navigation";
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
 
-import { completeGesture } from "@/lib/gesture";
-import { completeTodayBloom } from "@/lib/bloom";
+import {
+  completeGestureAction,
+  completeTodayBloomAction,
+} from "./actions";
 
 type RitualState =
   | "INIT"
@@ -17,10 +19,29 @@ type RitualState =
   | "BLOOM_DONE"
   | "LOCKED";
 
-export default function BloomClient({ bloom, gesture }) {
+type BloomProgress = {
+  current_day: number;
+  last_completed_local: string | null;
+  profile_last_bloom_date: string | null;
+  profile_last_bloom_video: string | null;
+};
+
+type GestureProgress = {
+  current_index: number;
+};
+
+export default function BloomClient({
+  bloom,
+  gesture,
+}: {
+  bloom: BloomProgress | null;
+  gesture: GestureProgress | null;
+}) {
   const [state, setState] = useState<RitualState>("INIT");
 
-  const [gestureIndex, setGestureIndex] = useState(gesture?.current_index ?? 0);
+  const [gestureIndex, setGestureIndex] = useState(
+    gesture?.current_index ?? 0
+  );
   const [bloomIndex, setBloomIndex] = useState(
     bloom ? bloom.current_day - 1 : 0
   );
@@ -58,15 +79,15 @@ export default function BloomClient({ bloom, gesture }) {
       setVideoSrc(BLOOMS[bloomIndex]);
       setState("GESTURE");
     }
-  }, []);
+  }, [bloom, gesture, bloomIndex]);
 
   const handleGestureComplete = async () => {
-    if (hasBloomedToday) {
+    if (hasBloomedToday || !gesture) {
       setState("LOCKED");
       return;
     }
 
-    await completeGesture(gesture);
+    await completeGestureAction(gesture);
 
     setGestureIndex((prev) => {
       const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
@@ -77,8 +98,10 @@ export default function BloomClient({ bloom, gesture }) {
   };
 
   const handleBloomStart = async () => {
+    if (!bloom || !videoSrc) return;
+
     if (!hasBloomedToday) {
-      await completeTodayBloom(bloom, videoSrc!);
+      await completeTodayBloomAction(bloom, videoSrc);
       setHasBloomedToday(true);
       setJustBloomedNow(true);
     }
@@ -136,7 +159,7 @@ export default function BloomClient({ bloom, gesture }) {
       ) && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
           <video
-            key={videoSrc}
+            key={videoSrc ?? "bloom-video"}
             src={videoSrc || ""}
             autoPlay
             muted
