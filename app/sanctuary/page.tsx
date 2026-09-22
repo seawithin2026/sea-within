@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import VideoGrid from "./VideoGrid";
 
 export default function SanctuaryPage() {
-  const [loading, setLoading] = useState(true);
+  const [hydrated, setHydrated] = useState(false);
 
-  // ⭐ Minimal fix — remove client-side auth gating
+  // Hydration-safe: only mark client-ready, no conditional DOM differences
   useEffect(() => {
-    setLoading(false);
+    setHydrated(true);
   }, []);
 
-  if (loading) {
+  // Skeleton that matches server + client initial HTML
+  if (!hydrated) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
         <p className="text-white/40 tracking-[3px] uppercase">

@@ -4,20 +4,18 @@ import ScrollReveal from "@/components/ui/ScrollReveal";
 import Navigation from "@/components/layout/Navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 export default function RevealPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   /* -----------------------------------------------------
-     ⭐ MEMBERSHIP GATE — ONLY SHOW REVEAL TO NON‑MEMBERS
+     MEMBERSHIP CHECK — CLIENT ONLY, NO REDIRECTS
   ----------------------------------------------------- */
   useEffect(() => {
     async function checkMembership() {
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Logged‑out users → allow Reveal
+      // Logged‑out → allow Reveal
       if (!session) {
         setLoading(false);
         return;
@@ -26,7 +24,7 @@ export default function RevealPage() {
       // Logged‑in → load profile
       const { data: profile } = await supabase
         .from("profiles")
-        .select("*")
+        .select("is_member, membership_status")
         .eq("id", session.user.id)
         .single();
 
@@ -36,31 +34,38 @@ export default function RevealPage() {
         return;
       }
 
-      // Membership logic — active OR cancelling = full access
+      // Active or cancelling → allow Reveal (server layout handles sanctuary)
       const allowed =
         profile.is_member &&
         (profile.membership_status === "active" ||
          profile.membership_status === "cancelling");
 
-
-     // Logged‑in member → do nothing, let server layout handle it
-if (allowed) {
-  setLoading(false);
-  return;
-}
-
-
-      // Logged‑in non‑member → show Reveal
+      // Either way → Reveal stays public
       setLoading(false);
     }
 
     checkMembership();
   }, []);
 
-  if (loading) return null;
+  /* -----------------------------------------------------
+     HYDRATION‑SAFE LOADING SKELETON
+     (Server and client render the SAME initial HTML)
+  ----------------------------------------------------- */
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-sanctuary-dark text-sea-100">
+        <Navigation />
+        <section className="px-6 pt-32 pb-40 max-w-3xl mx-auto">
+          <p className="text-white/40 tracking-[3px] uppercase text-center">
+            Preparing your experience…
+          </p>
+        </section>
+      </main>
+    );
+  }
 
   /* -----------------------------------------------------
-     ⭐ VIDEO AUDIO CONTROL — YOUR ORIGINAL CODE
+     VIDEO + AUDIO CONTROL
   ----------------------------------------------------- */
   useEffect(() => {
     const marketingVideo = document.getElementById("marketingVideo") as HTMLVideoElement | null;
@@ -86,6 +91,9 @@ if (allowed) {
     });
   }, []);
 
+  /* -----------------------------------------------------
+     FULL PAGE CONTENT — HYDRATION SAFE
+  ----------------------------------------------------- */
   return (
     <main className="min-h-screen bg-sanctuary-dark text-sea-100">
       <Navigation />
@@ -118,7 +126,7 @@ if (allowed) {
           <p className="font-body text-lg leading-relaxed text-white/70 mb-14 text-center">
             Not from memory — from instinct. From that quiet inner knowing that has
             followed you your whole life, waiting for somewhere it could finally rest.
-            Sea Within is not a program. It is a belonging — the kind you&apos;ve felt
+            Sea Within is not a program. It is a belonging — the kind you’ve felt
             in your chest long before you ever had words for it.
           </p>
         </ScrollReveal>
@@ -145,7 +153,7 @@ if (allowed) {
         <ScrollReveal delay={600}>
           <h2 className="font-display text-3xl font-light mb-4">The Gathering Circle</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            You walk your inner world alone — but you don&apos;t have to feel alone inside it.
+            You walk your inner world alone — but you don’t have to feel alone inside it.
           </p>
         </ScrollReveal>
 
@@ -153,7 +161,7 @@ if (allowed) {
         <ScrollReveal delay={700}>
           <h2 className="font-display text-3xl font-light mb-4">What You Receive</h2>
           <p className="font-body text-white/60 leading-relaxed mb-14">
-            You don&apos;t receive content — you receive experiences.
+            You don’t receive content — you receive experiences.
           </p>
         </ScrollReveal>
 
@@ -176,7 +184,7 @@ if (allowed) {
           />
         </div>
 
-        {/* Invitation + Buttons */}
+        {/* Invitation */}
         <ScrollReveal delay={900}>
           <div className="mt-12"></div>
           <h2 className="font-display text-3xl font-light mb-4">The Invitation</h2>
@@ -186,13 +194,12 @@ if (allowed) {
           </p>
 
           <button
-            onClick={() => window.location.href = "/login"}
+            onClick={() => (window.location.href = "/login")}
             className="btn-golden w-full text-center py-4 text-lg block"
           >
             Enter the Sanctuary — $77.77/month
           </button>
         </ScrollReveal>
-
       </section>
     </main>
   );
