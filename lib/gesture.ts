@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client"; // ⭐ NEW: client-side supabase
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -8,6 +9,9 @@ dayjs.extend(timezone);
 
 const GESTURE_MAX = 50;
 
+/* -----------------------------------------------------
+   SERVER: Wait for user (SSR session polling)
+----------------------------------------------------- */
 async function waitForUser() {
   const supabase = supabaseServer();
 
@@ -20,6 +24,9 @@ async function waitForUser() {
   return null;
 }
 
+/* -----------------------------------------------------
+   SERVER: Get gesture progress (SSR)
+----------------------------------------------------- */
 export async function getGestureProgress() {
   const supabase = supabaseServer();
   const user = await waitForUser();
@@ -72,6 +79,9 @@ export async function getGestureProgress() {
   };
 }
 
+/* -----------------------------------------------------
+   SERVER: Complete gesture
+----------------------------------------------------- */
 export async function completeGesture(progress) {
   const supabase = supabaseServer();
   const user = await waitForUser();
@@ -116,6 +126,9 @@ export async function completeGesture(progress) {
   return gestureData;
 }
 
+/* -----------------------------------------------------
+   SERVER: Reset gesture cycle
+----------------------------------------------------- */
 export async function resetGestureCycle(progress) {
   const supabase = supabaseServer();
   const user = await waitForUser();
@@ -151,4 +164,24 @@ export async function resetGestureCycle(progress) {
     .eq("id", user.id);
 
   return gestureData;
+}
+
+/* -----------------------------------------------------
+   ⭐ NEW — CLIENT-SIDE VERSION
+   Used by BloomClient + BloomPage (hydration-safe)
+----------------------------------------------------- */
+export async function getGestureProgressClient() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("gesture_progress")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  return data ?? null;
 }

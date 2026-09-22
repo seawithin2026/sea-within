@@ -37,6 +37,11 @@ export default function BloomClient({
   bloom: BloomProgress | null;
   gesture: GestureProgress | null;
 }) {
+  // HYDRATION GUARD — prevents SSR/client mismatch
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+
+  // Ritual state
   const [state, setState] = useState<RitualState>("INIT");
 
   const [gestureIndex, setGestureIndex] = useState(
@@ -52,8 +57,10 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
 
-  // Initialize ritual state
+  // Initialize ritual state — runs ONLY after hydration
   useEffect(() => {
+    if (!ready) return;
+
     if (!bloom || !gesture) {
       setGestureIndex(0);
       setBloomIndex(0);
@@ -79,9 +86,11 @@ export default function BloomClient({
       setVideoSrc(BLOOMS[bloomIndex]);
       setState("GESTURE");
     }
-  }, [bloom, gesture, bloomIndex]);
+  }, [ready, bloom, gesture, bloomIndex]);
 
   const handleGestureComplete = async () => {
+    if (!ready) return;
+
     if (hasBloomedToday || !gesture) {
       setState("LOCKED");
       return;
@@ -98,7 +107,7 @@ export default function BloomClient({
   };
 
   const handleBloomStart = async () => {
-    if (!bloom || !videoSrc) return;
+    if (!ready || !bloom || !videoSrc) return;
 
     if (!hasBloomedToday) {
       await completeTodayBloomAction(bloom, videoSrc);
@@ -110,11 +119,23 @@ export default function BloomClient({
   };
 
   const handleBloomEnd = () => {
+    if (!ready) return;
     setVideoEnded(true);
     setState("BLOOM_DONE");
   };
 
   const gestureText = GESTURES[gestureIndex];
+
+  // HYDRATION SKELETON — identical server + client HTML
+  if (!ready) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-white/40 tracking-[3px] uppercase">
+          Loading Ritual…
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
