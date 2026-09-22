@@ -1,13 +1,16 @@
 // ============================================
-// SEA WITHIN — Authentication (FIXED VERSION)
+// SEA WITHIN — Authentication (SAFE VERSION)
 // ============================================
 
 import { supabase } from "./supabase/client";
 
 // --------------------------------------------
-// SIGN UP (FIXED)
+// SIGN UP (SAFE)
 // --------------------------------------------
 export async function signUp(email: string, password: string) {
+  // Hydrate session first
+  await supabase.auth.getSession();
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -18,7 +21,8 @@ export async function signUp(email: string, password: string) {
   if (data.user) {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    await supabase.from("profiles").insert({
+    // Create profile ONLY if not exists
+    await supabase.from("profiles").upsert({
       id: data.user.id,
       email,
       is_member: false,
@@ -31,9 +35,11 @@ export async function signUp(email: string, password: string) {
 }
 
 // --------------------------------------------
-// SIGN IN (FIXED — sync timezone)
+// SIGN IN (SAFE)
 // --------------------------------------------
 export async function signIn(email: string, password: string) {
+  await supabase.auth.getSession();
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -62,26 +68,11 @@ export async function signOut() {
 }
 
 // --------------------------------------------
-// RESET PASSWORD (server route)
+// GET CURRENT PROFILE (SAFE)
 // --------------------------------------------
-export async function resetPassword(email: string) {
-  const res = await fetch("/api/reset-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+export async function getCurrentProfile() {
+  await supabase.auth.getSession();
 
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error);
-  }
-}
-
-// --------------------------------------------
-// GET CURRENT USER (FIXED)
-// --------------------------------------------
-export async function getCurrentUser() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -98,13 +89,11 @@ export async function getCurrentUser() {
 }
 
 // --------------------------------------------
-// UPDATE PROFILE (FIXED)
+// UPDATE PROFILE (SAFE)
 // --------------------------------------------
 export async function updateProfile(
   userId: string,
-  updates: Partial<{
-    email: string;
-  }>
+  updates: Partial<{ email: string }>
 ) {
   const { data, error } = await supabase
     .from("profiles")
