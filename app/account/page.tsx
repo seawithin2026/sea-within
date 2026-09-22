@@ -9,16 +9,15 @@ export default function AccountRouter() {
 
   useEffect(() => {
     async function run() {
-      // 1. Check session
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
+      // 1. Get user
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         router.replace("/login");
         return;
       }
 
-      // 2. Ensure profile exists (client-side insert)
+      // 2. Ensure profile exists
       const { data: existing } = await supabase
         .from("profiles")
         .select("*")
@@ -34,7 +33,7 @@ export default function AccountRouter() {
         });
       }
 
-      // ⭐ 2.5 — Update consent if missing
+      // 3. Ensure consent
       const { data: consentCheck } = await supabase
         .from("profiles")
         .select("terms_accepted")
@@ -51,7 +50,7 @@ export default function AccountRouter() {
           .eq("id", user.id);
       }
 
-      // 3. Fetch profile again
+      // 4. Fetch profile again
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_member, membership_status, username")
@@ -63,7 +62,7 @@ export default function AccountRouter() {
         return;
       }
 
-      // 4. Membership logic (Stripe Sync Engine compatible)
+      // 5. Membership check
       const isActive =
         profile.is_member === true &&
         (
@@ -76,13 +75,13 @@ export default function AccountRouter() {
         return;
       }
 
-      // 5. Username onboarding
+      // 6. Username onboarding
       if (!profile.username) {
         router.replace("/create-username");
         return;
       }
 
-      // 6. Fully onboarded
+      // 7. Fully onboarded
       router.replace("/sanctuary");
     }
 

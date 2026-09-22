@@ -10,22 +10,13 @@ export default function ProtectedRoute({ children }) {
     let active = true;
 
     async function run() {
-      // 1. Hydration-safe user fetch
-      const first = await supabase.auth.getUser();
-      let user = first.data.user;
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        await new Promise((r) => setTimeout(r, 300));
-        const retry = await supabase.auth.getUser();
-        user = retry.data.user;
-
-        if (!user) {
-          if (active) setStatus("blocked");
-          return;
-        }
+        if (active) setStatus("blocked");
+        return;
       }
 
-      // 2. Fetch membership
       const { data: profile } = await supabase
         .from("profiles")
         .select("membership_status")
@@ -34,7 +25,6 @@ export default function ProtectedRoute({ children }) {
 
       const membership = profile?.membership_status?.toLowerCase();
 
-      // 3. Only allow YOUR real states
       const allowed =
         membership === "active" ||
         membership === "cancelling" ||

@@ -14,9 +14,6 @@ export default function LoginPage() {
   const [needsConsent, setNeedsConsent] = useState(true);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  /* -----------------------------------------------------
-     🌿 CHECK CONSENT STATUS WHEN USER TYPES EMAIL
-  ----------------------------------------------------- */
   const checkConsent = async (emailValue: string) => {
     setEmail(emailValue);
 
@@ -31,16 +28,9 @@ export default function LoginPage() {
       .eq("email", emailValue)
       .maybeSingle();
 
-    if (data && data.terms_accepted === true) {
-      setNeedsConsent(false);
-    } else {
-      setNeedsConsent(true);
-    }
+    setNeedsConsent(!(data?.terms_accepted === true));
   };
 
-  /* -----------------------------------------------------
-     🌿 SEND OTP CODE
-  ----------------------------------------------------- */
   const sendCode = async () => {
     setErrorMsg("");
 
@@ -49,9 +39,7 @@ export default function LoginPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-    });
+    const { error } = await supabase.auth.signInWithOtp({ email });
 
     if (error) {
       setErrorMsg(error.message);
@@ -61,10 +49,6 @@ export default function LoginPage() {
     setStage("code");
   };
 
-  /* -----------------------------------------------------
-     🌿 VERIFY OTP CODE (FIXED)
-     ⭐ Hydrate session BEFORE redirect
-  ----------------------------------------------------- */
   const verifyCode = async () => {
     setErrorMsg("");
 
@@ -79,27 +63,13 @@ export default function LoginPage() {
       return;
     }
 
-    // ⭐ REQUIRED FIX — hydrate session BEFORE redirect
-    const { data: sessionData } = await supabase.auth.getSession();
-    console.log("SESSION:", sessionData);
-
-    const { data: userData } = await supabase.auth.getUser();
-    console.log("USER:", userData);
-
-    // ⭐ NOW redirect safely
+    // Redirect immediately — AccountRouter handles everything
     window.location.href = "/account";
   };
 
-  /* -----------------------------------------------------
-     🌿 RENDER
-  ----------------------------------------------------- */
   return (
     <main className="min-h-screen flex items-center justify-center px-6 bg-[#0A1628] text-white">
       <div className="max-w-sm w-full text-center">
-
-        {/* -----------------------------------------------------
-            🌿 EMAIL STAGE
-        ----------------------------------------------------- */}
         {stage === "email" && (
           <>
             <h1 className="text-[22px] tracking-[3px] mb-6 text-golden-400 font-display">
@@ -118,7 +88,6 @@ export default function LoginPage() {
               onChange={(e) => checkConsent(e.target.value)}
             />
 
-            {/* Consent checkbox only if needed */}
             {needsConsent && (
               <label className="flex items-center gap-2 text-[12px] text-white/70 mb-4 text-left">
                 <input
@@ -153,9 +122,6 @@ export default function LoginPage() {
           </>
         )}
 
-        {/* -----------------------------------------------------
-            🌿 CODE STAGE
-        ----------------------------------------------------- */}
         {stage === "code" && (
           <>
             <h1 className="text-[22px] tracking-[3px] mb-6 text-golden-400 font-display">
@@ -167,7 +133,6 @@ export default function LoginPage() {
               <span className="text-golden-400">{email}</span>.
             </p>
 
-            {/* SEA WITHIN 6‑DIGIT OTP INPUT */}
             <div className="flex justify-center gap-2 mb-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <input
@@ -238,7 +203,6 @@ export default function LoginPage() {
             </p>
           </>
         )}
-
       </div>
     </main>
   );
