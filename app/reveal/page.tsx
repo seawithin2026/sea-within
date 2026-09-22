@@ -1,10 +1,44 @@
-'use client';
+"use client";
 
-import ScrollReveal from '@/components/ui/ScrollReveal';
-import Navigation from '@/components/layout/Navigation';
-import { useEffect } from 'react';
+import ScrollReveal from "@/components/ui/ScrollReveal";
+import Navigation from "@/components/layout/Navigation";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabase/client";
 
 export default function RevealPage() {
+
+    /* -----------------------------------------------------
+     ⭐ MEMBER REDIRECT — NEW LOGIC
+     If user is logged in AND membership is active/cancelling,
+     redirect them to Sanctuary immediately.
+  ----------------------------------------------------- */
+  useEffect(() => {
+    async function checkMembership() {
+      // 1. Hydration-safe user fetch
+      const first = await supabase.auth.getUser();
+      let user = first.data.user;
+
+      if (!user) return; // Non-member → stay on Reveal
+
+      // 2. Fetch profile
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("membership_status")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!profile) return; // No profile → treat as non-member
+
+      const status = profile.membership_status?.toLowerCase();
+
+      // 3. Active or Cancelling → redirect to Sanctuary
+      if (status === "active" || status === "cancelling") {
+        window.location.href = "/sanctuary";
+      }
+    }
+
+    checkMembership();
+  }, []);
 
   /* -----------------------------------------------------
      ⭐ VIDEO AUDIO CONTROL — ONLY ADDITION
