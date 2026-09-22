@@ -42,11 +42,13 @@ export default function RevealPage() {
         (profile.membership_status === "active" ||
          profile.membership_status === "cancelling");
 
-      // Logged‑in member → redirect to Sanctuary
-      if (allowed) {
-        router.replace("/sanctuary");
-        return;
-      }
+
+     // Logged‑in member → do nothing, let server layout handle it
+if (allowed) {
+  setLoading(false);
+  return;
+}
+
 
       // Logged‑in non‑member → show Reveal
       setLoading(false);
