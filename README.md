@@ -220,6 +220,6 @@ All emails use the Sea Within brand template (deep ocean blue background, golden
 Sea Within is a movement for the ones who are ready to feel again —
 to breathe deeper, to live truer, to come home to the part of themselves they left behind.
 
-Created by Marilyn, with love from New Brunswick, Canada.
+Created in New-Brunswick Canada with love.
 
 🩵🍵✨
