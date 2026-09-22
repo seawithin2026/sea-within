@@ -62,8 +62,8 @@ export default function LoginPage() {
   };
 
   /* -----------------------------------------------------
-     🌿 VERIFY OTP CODE
-     ⭐ Only stability fix: redirect to /account (your onboarding router)
+     🌿 VERIFY OTP CODE (FIXED)
+     ⭐ Hydrate session BEFORE redirect
   ----------------------------------------------------- */
   const verifyCode = async () => {
     setErrorMsg("");
@@ -79,8 +79,15 @@ export default function LoginPage() {
       return;
     }
 
-    // SUCCESS → Supabase session created
-    window.location.href = "/account"; // ⭐ REQUIRED for stable onboarding
+    // ⭐ REQUIRED FIX — hydrate session BEFORE redirect
+    const { data: sessionData } = await supabase.auth.getSession();
+    console.log("SESSION:", sessionData);
+
+    const { data: userData } = await supabase.auth.getUser();
+    console.log("USER:", userData);
+
+    // ⭐ NOW redirect safely
+    window.location.href = "/account";
   };
 
   /* -----------------------------------------------------
