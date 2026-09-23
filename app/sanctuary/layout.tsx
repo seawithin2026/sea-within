@@ -19,12 +19,11 @@ export default function SanctuaryLayout({ children }) {
     if (!ready) return;
 
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
 
       if (!user) {
-        setUser(null);
+        window.location.href = "/reveal";
         return;
       }
 
@@ -34,7 +33,12 @@ export default function SanctuaryLayout({ children }) {
         .from("profiles")
         .select("username, membership_status")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
+
+      if (!profileData) {
+        window.location.href = "/reveal";
+        return;
+      }
 
       setProfile(profileData);
     }
@@ -42,7 +46,7 @@ export default function SanctuaryLayout({ children }) {
     load();
   }, [ready]);
 
-  if (!ready || user === null || profile === null) {
+  if (!ready || !user || !profile) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p className="text-white/40 tracking-[3px] uppercase">
@@ -52,20 +56,10 @@ export default function SanctuaryLayout({ children }) {
     );
   }
 
-  const status = profile.membership_status?.toLowerCase();
-  const hasAccess = status === "active" || status === "cancelling";
-
-  if (!hasAccess) {
-    window.location.href = "/reveal";
-    return null;
-  }
-
   return (
     <>
       {!profile.username && <UsernameModal onComplete={() => {}} />}
-
-      <Navigation />  {/* ⭐ FIX: Navigation is now visible */}
-
+      <Navigation />
       {children}
     </>
   );
