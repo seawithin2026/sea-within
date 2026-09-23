@@ -42,10 +42,16 @@ export async function getBloomProgressClient() {
     user_tz: userTimezone,
   });
 
+  // ⭐ FULL FIX — return the correct bloom object
   return {
-    ...bloom,
+    id: bloom.id,                               // REQUIRED for server update
+    user_id: bloom.user_id,                     // optional but safe
+    current_day: bloom.current_day,
+    completed_all: bloom.completed_all,
+
     last_completed_local: lastCompletedLocal,
     today_local: todayLocal,
+
     profile_last_bloom_date: profile?.last_bloom_date ?? null,
     profile_last_bloom_video: profile?.last_bloom_video ?? null,
   };
