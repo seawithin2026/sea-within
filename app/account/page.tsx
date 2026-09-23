@@ -1,85 +1,94 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
-export default function AccountRouter() {
-  const router = useRouter();
+export default function AccountPage() {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function run() {
-      // 1. Get user
+    async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user) {
-        router.replace("/login");
+        setLoading(false);
         return;
       }
 
-      // 2. Fetch or create profile
-      let { data: profile } = await supabase
+      const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
-        .maybeSingle();
+        .single();
 
-      if (!profile) {
-        await supabase.from("profiles").insert({
-          id: user.id,
-          email: user.email,
-          is_member: false,
-          membership_status: "none",
-          terms_accepted: true,
-          terms_accepted_at: new Date().toISOString(),
-        });
-
-        // Fetch again after insert
-        const { data: newProfile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .maybeSingle();
-
-        profile = newProfile;
-      }
-
-      // 3. Ensure consent
-      if (profile.terms_accepted !== true) {
-        await supabase
-          .from("profiles")
-          .update({
-            terms_accepted: true,
-            terms_accepted_at: new Date().toISOString(),
-          })
-          .eq("id", user.id);
-      }
-
-      // 4. Membership check
-      const isActive =
-        profile.is_member === true &&
-        (
-          profile.membership_status === "active" ||
-          profile.membership_status === "cancelling"
-        );
-
-      if (!isActive) {
-        router.replace("/checkout");
-        return;
-      }
-
-      // 5. Username onboarding
-      if (!profile.username) {
-        router.replace("/create-username");
-        return;
-      }
-
-      // 6. Fully onboarded
-      router.replace("/account");
+      setProfile(data);
+      setLoading(false);
     }
 
-    run();
-  }, [router]);
+    load();
+  }, []);
 
-  return null;
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-white/40 tracking-[3px] uppercase">
+          Loading Account...
+        </p>
+      </main>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p>No profile found.</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-black text-white p-10">
+      <h1 className="text-3xl font-light mb-10 tracking-wide">
+        Your Sea Within Membership
+      </h1>
+
+      <div className="space-y-6 max-w-xl">
+        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+          <h2 className="text-xl font-light mb-3">Membership Status</h2>
+          <p className="text-slate-300 text-lg">
+            {profile.membership_status === "active" && "Active"}
+            {profile.membership_status === "cancelling" && "Cancelling"}
+            {profile.membership_status === "cancel_at_period_end" && "Ending Soon"}
+            {profile.membership_status === "none" && "Not a Member"}
+          </p>
+        </div>
+
+        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+          <h2 className="text-xl font-light mb-3">Your Plan</h2>
+          <p className="text-slate-300 text-lg">Sea Within Gold 400</p>
+        </div>
+
+        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+          <h2 className="text-xl font-light mb-3">Account Email</h2>
+          <p className="text-slate-300 text-lg">{profile.email}</p>
+        </div>
+
+        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+          <h2 className="text-xl font-light mb-3">Username</h2>
+          <p className="text-slate-300 text-lg">{profile.username}</p>
+        </div>
+
+        <button
+          onClick={async () => {
+            const res = await fetch("/api/billing-portal", { method: "POST" });
+            const { url } = await res.json();
+            window.location.href = url;
+          }}
+          className="mt-10 px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition"
+        >
+          Manage Subscription
+        </button>
+      </div>
+    </main>
+  );
 }
