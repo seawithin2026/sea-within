@@ -1,27 +1,34 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
 
-
 export default function LogoutPage() {
-  
-  
+  const [veil, setVeil] = useState(false);
+
   useEffect(() => {
     // Sign out immediately
     supabase.auth.signOut();
 
     // Slow down the video playback
     const vid = document.querySelector("video");
-    if (vid) vid.playbackRate = 0.6; // warm, slow, cinematic
+    if (vid) vid.playbackRate = 0.6;
 
-    // Redirect after cinematic moment
-    const timer = setTimeout(() => {
+    // Trigger veil fade-out before redirect
+    const veilTimer = setTimeout(() => {
+      setVeil(true);
+    }, 2800); // veil appears at 2.8s
+
+    // Redirect after veil fully fades in
+    const redirectTimer = setTimeout(() => {
       window.location.href = '/';
-    }, 3500); // 3.5 seconds
+    }, 3500); // 3.5 seconds total
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(veilTimer);
+      clearTimeout(redirectTimer);
+    };
   }, []);
 
   return (
@@ -58,7 +65,6 @@ export default function LogoutPage() {
           Return when you are ready.
         </motion.p>
 
-
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -66,6 +72,16 @@ export default function LogoutPage() {
           className="mt-6 h-[2px] w-40 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent origin-center"
         />
       </div>
+
+      {/* ✨ MAGICAL VEIL FADE-OUT */}
+      {veil && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+        />
+      )}
     </div>
   );
 }
