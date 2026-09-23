@@ -2,92 +2,100 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import Navigation from "@/components/layout/Navigation";
 
-export default function AccountPage() {
+export default function MyAccountPage() {
+  const router = useRouter();
+  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        setLoading(false);
+        router.replace("/login");
         return;
       }
 
-      const { data } = await supabase
+      setUser(user);
+
+      const { data: profile } = await supabase
         .from("profiles")
-        .select("*")
+        .select("is_member, membership_status, stripe_customer_id")
         .eq("id", user.id)
         .single();
 
-      setProfile(data);
+      setProfile(profile);
       setLoading(false);
     }
 
     load();
   }, []);
 
+  // ⭐ FIXED — simple, secure, Stripe-approved redirect
+  const handleManageSubscription = () => {
+    window.location.href =
+      "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-white/40 tracking-[3px] uppercase">
-          Loading Account...
-        </p>
-      </main>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p>No profile found.</p>
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-[#E8D7B8]">Loading your account…</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-10">
-      <h1 className="text-3xl font-light mb-10 tracking-wide">
-        Your Sea Within Membership
-      </h1>
+    <main className="min-h-screen bg-sanctuary-dark">
+      <Navigation />
 
-      <div className="space-y-6 max-w-xl">
-        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-          <h2 className="text-xl font-light mb-3">Membership Status</h2>
-          <p className="text-slate-300 text-lg">
-            {profile.membership_status === "active" && "Active"}
-            {profile.membership_status === "cancelling" && "Cancelling"}
-            {profile.membership_status === "cancel_at_period_end" && "Ending Soon"}
-            {profile.membership_status === "none" && "Not a Member"}
-          </p>
+      <div className="max-w-md mx-auto px-6 pt-32 pb-24">
+        <div className="sanctuary-card p-8 md:p-12">
+          <h1 className="font-display text-3xl text-center text-sea-100 mb-8">
+            Your Account
+          </h1>
+
+          <div className="space-y-6 text-[#E8D7B8]">
+            <div>
+              <p className="text-sm opacity-70">Email</p>
+              <p className="text-lg">{user.email}</p>
+            </div>
+
+            <div>
+              <p className="text-sm opacity-70">Membership Status</p>
+              <p className="text-lg">
+                {profile?.is_member ? "Active Member" : "Not a Member"}
+              </p>
+            </div>
+
+            {profile?.is_member && (
+              <button
+                onClick={handleManageSubscription}
+                className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
+              >
+                Manage Subscription
+              </button>
+            )}
+
+            <button
+              onClick={handleSignOut}
+              className="btn-ghost w-full py-3 text-[12px] tracking-[2px]"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
-
-        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-          <h2 className="text-xl font-light mb-3">Your Plan</h2>
-          <p className="text-slate-300 text-lg">Sea Within Gold 400</p>
-        </div>
-
-        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-          <h2 className="text-xl font-light mb-3">Account Email</h2>
-          <p className="text-slate-300 text-lg">{profile.email}</p>
-        </div>
-
-        <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-          <h2 className="text-xl font-light mb-3">Username</h2>
-          <p className="text-slate-300 text-lg">{profile.username}</p>
-        </div>
-
-        <button
-          onClick={async () => {
-            const res = await fetch("/api/billing-portal", { method: "POST" });
-            const { url } = await res.json();
-            window.location.href = url;
-          }}
-          className="mt-10 px-8 py-4 rounded-full border border-white/20 hover:bg-white/10 transition"
-        >
-          Manage Subscription
-        </button>
       </div>
     </main>
   );
