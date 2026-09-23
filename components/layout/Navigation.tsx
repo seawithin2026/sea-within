@@ -47,19 +47,20 @@ export default function Navigation() {
 
   return (
     <>
-      <motion.nav
-        initial={false} // IMPORTANT: prevents hydration mismatch
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          isScrolled ? "backdrop-blur-xl" : "bg-transparent"
-        }`}
-        style={{
-          backgroundColor: isScrolled
-            ? "rgba(10, 22, 40, 0.90)"
-            : "transparent",
-        }}
-      >
+    <motion.nav
+  initial={false}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.6 }}
+  className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${
+    isScrolled ? "backdrop-blur-xl" : "bg-transparent"
+  }`}
+  style={{
+    backgroundColor: isScrolled
+      ? "rgba(10, 22, 40, 0.90)"
+      : "transparent",
+  }}
+>
+
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Brand */}
           <Link href="/" className="group flex items-center gap-3">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import UsernameModal from "@/components/UsernameModal";
+import Navigation from "@/components/layout/Navigation"; 
 import "../globals.css";
 
 export default function SanctuaryLayout({ children }) {
@@ -10,12 +11,10 @@ export default function SanctuaryLayout({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
-  // Hydration guard
   useEffect(() => {
     setReady(true);
   }, []);
 
-  // Client-side auth + profile fetch
   useEffect(() => {
     if (!ready) return;
 
@@ -43,7 +42,6 @@ export default function SanctuaryLayout({ children }) {
     load();
   }, [ready]);
 
-  // Hydration-safe skeleton
   if (!ready || user === null || profile === null) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -54,12 +52,10 @@ export default function SanctuaryLayout({ children }) {
     );
   }
 
-  // Membership access check
   const status = profile.membership_status?.toLowerCase();
   const hasAccess = status === "active" || status === "cancelling";
 
   if (!hasAccess) {
-    // Client-side redirect
     window.location.href = "/reveal";
     return null;
   }
@@ -67,6 +63,9 @@ export default function SanctuaryLayout({ children }) {
   return (
     <>
       {!profile.username && <UsernameModal onComplete={() => {}} />}
+
+      <Navigation />  {/* ⭐ FIX: Navigation is now visible */}
+
       {children}
     </>
   );
