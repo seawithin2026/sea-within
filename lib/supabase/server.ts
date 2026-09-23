@@ -15,8 +15,8 @@ export function supabaseServer() {
         set(name, value, options) {
           cookieStore.set({ name, value, ...options });
         },
-        remove(name) {
-          cookieStore.delete(name);
+        remove(name, options) {
+          cookieStore.set({ name, value: "", ...options });
         },
       },
     }
