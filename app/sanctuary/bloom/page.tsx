@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import BloomClient from "./BloomClient";
 import { supabase } from "@/lib/supabase/client";
 import { getBloomProgressClient } from "@/lib/bloom.client";
@@ -17,31 +17,31 @@ export default function BloomPage() {
     setReady(true);
   }, []);
 
-  // Client-side user + ritual fetch
-  useEffect(() => {
-    if (!ready) return;
+  // ⭐ Reusable loader (BloomClient will call this)
+  const load = useCallback(async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        setUser(null);
-        return;
-      }
-
-      setUser(user);
-
-      const bloomData = await getBloomProgressClient();
-      const gestureData = await getGestureProgressClient();
-
-      setBloom(bloomData);
-      setGesture(gestureData);
+    if (!user) {
+      setUser(null);
+      return;
     }
 
+    setUser(user);
+
+    const bloomData = await getBloomProgressClient();
+    const gestureData = await getGestureProgressClient();
+
+    setBloom(bloomData);
+    setGesture(gestureData);
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    if (!ready) return;
     load();
-  }, [ready]);
+  }, [ready, load]);
 
   // Hydration-safe skeleton
   if (!ready || user === null) {
@@ -54,5 +54,12 @@ export default function BloomPage() {
     );
   }
 
-  return <BloomClient bloom={bloom} gesture={gesture} />;
+  // ⭐ Pass refresh callback to BloomClient
+  return (
+    <BloomClient
+      bloom={bloom}
+      gesture={gesture}
+      onRefresh={load}
+    />
+  );
 }

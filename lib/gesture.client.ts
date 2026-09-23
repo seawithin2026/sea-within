@@ -7,11 +7,20 @@ export async function getGestureProgressClient() {
 
   if (!user) return null;
 
+  // Fetch gesture progress
   const { data } = await supabase
     .from("gesture_progress")
     .select("*")
     .eq("user_id", user.id)
     .single();
 
-  return data ?? null;
+  if (!data) return null;
+
+  // Gesture server stores last_completed as YYYY-MM-DD
+  const lastCompletedLocal = data.last_completed ?? null;
+
+  return {
+    ...data,
+    last_completed_local: lastCompletedLocal,
+  };
 }

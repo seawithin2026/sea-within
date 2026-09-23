@@ -33,11 +33,13 @@ type GestureProgress = {
 export default function BloomClient({
   bloom,
   gesture,
+  onRefresh,
 }: {
   bloom: BloomProgress | null;
   gesture: GestureProgress | null;
+  onRefresh: () => Promise<void>;
 }) {
-  // HYDRATION GUARD — prevents SSR/client mismatch
+  // HYDRATION GUARD
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
 
@@ -57,7 +59,7 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
 
-  // Initialize ritual state — runs ONLY after hydration
+  // Initialize ritual state
   useEffect(() => {
     if (!ready) return;
 
@@ -88,6 +90,7 @@ export default function BloomClient({
     }
   }, [ready, bloom, gesture, bloomIndex]);
 
+  // ⭐ GESTURE COMPLETE
   const handleGestureComplete = async () => {
     if (!ready) return;
 
@@ -98,14 +101,19 @@ export default function BloomClient({
 
     await completeGestureAction(gesture);
 
+    // Update gesture index locally
     setGestureIndex((prev) => {
       const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
       return next;
     });
 
+    // ⭐ Reload fresh gesture + bloom from DB
+    await onRefresh();
+
     setState("BLOOM_READY");
   };
 
+  // ⭐ BLOOM START
   const handleBloomStart = async () => {
     if (!ready || !bloom || !videoSrc) return;
 
@@ -113,6 +121,9 @@ export default function BloomClient({
       await completeTodayBloomAction(bloom, videoSrc);
       setHasBloomedToday(true);
       setJustBloomedNow(true);
+
+      // ⭐ Reload fresh bloom + gesture from DB
+      await onRefresh();
     }
 
     setState("BLOOM_PLAYING");
@@ -126,7 +137,7 @@ export default function BloomClient({
 
   const gestureText = GESTURES[gestureIndex];
 
-  // HYDRATION SKELETON — identical server + client HTML
+  // HYDRATION SKELETON
   if (!ready) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
