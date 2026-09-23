@@ -105,7 +105,7 @@ export default function Navigation() {
                 Sign In
               </Link>
             ) : (
-              <div className="flex items-center gap-6 ml-8">
+              <div className="flex items-center gap-12 ml-8">
                 {/* ⭐ SIGN OUT FIRST */}
                 <button
                   onClick={async () => {
@@ -147,7 +147,7 @@ export default function Navigation() {
               className="md:hidden backdrop-blur-xl"
               style={{ backgroundColor: "rgba(10, 22, 40, 0.95)" }}
             >
-              <div className="px-6 py-8 flex flex-col gap-6">
+              <div className="px-6 py-8 flex flex-col gap-12">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
