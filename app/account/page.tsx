@@ -75,7 +75,7 @@ export default function AccountRouter() {
       }
 
       // 6. Fully onboarded
-      router.replace("/sanctuary");
+      router.replace("/account");
     }
 
     run();
