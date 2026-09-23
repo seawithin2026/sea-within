@@ -17,14 +17,14 @@ export default function Navigation() {
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null); // ⭐ NEW
+  const [user, setUser] = useState<any>(null);
 
-  // Hydration guard — ensures server + client start identical
+  // Hydration guard
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // Scroll detection — runs ONLY after hydration
+  // Scroll detection
   useEffect(() => {
     if (!hydrated) return;
 
@@ -34,7 +34,7 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hydrated]);
 
-  // ⭐ NEW: detect user after hydration
+  // Detect user
   useEffect(() => {
     if (!hydrated) return;
 
@@ -64,7 +64,7 @@ export default function Navigation() {
   return (
     <>
       <motion.nav
-        initial={false} // IMPORTANT: prevents hydration mismatch
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${
@@ -96,7 +96,7 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* ⭐ CONDITIONAL AUTH BUTTONS */}
+            {/* AUTH BUTTONS */}
             {!user ? (
               <Link
                 href="/login"
@@ -106,13 +106,7 @@ export default function Navigation() {
               </Link>
             ) : (
               <div className="flex items-center gap-6 ml-8">
-                <Link
-                  href="/account"
-                  className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
-                >
-                  Account
-                </Link>
-
+                {/* ⭐ SIGN OUT FIRST */}
                 <button
                   onClick={async () => {
                     await supabase.auth.signOut();
@@ -122,6 +116,14 @@ export default function Navigation() {
                 >
                   Sign Out
                 </button>
+
+                {/* ⭐ ACCOUNT SECOND */}
+                <Link
+                  href="/account"
+                  className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
+                >
+                  Account
+                </Link>
               </div>
             )}
           </div>
@@ -157,7 +159,7 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* ⭐ Mobile auth buttons */}
+                {/* MOBILE AUTH BUTTONS */}
                 {!user ? (
                   <Link
                     href="/login"
@@ -168,14 +170,7 @@ export default function Navigation() {
                   </Link>
                 ) : (
                   <>
-                    <Link
-                      href="/account"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
-                    >
-                      Account
-                    </Link>
-
+                    {/* ⭐ SIGN OUT FIRST */}
                     <button
                       onClick={async () => {
                         await supabase.auth.signOut();
@@ -186,6 +181,15 @@ export default function Navigation() {
                     >
                       Sign Out
                     </button>
+
+                    {/* ⭐ ACCOUNT SECOND */}
+                    <Link
+                      href="/account"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
+                    >
+                      Account
+                    </Link>
                   </>
                 )}
               </div>
