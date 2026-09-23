@@ -50,7 +50,11 @@ export default function WisdomBoardPage() {
     check();
   }, []);
 
-  if (allowed === null) return null;
+  // ⭐ NEW — FIX FLICKER
+  if (allowed === null) {
+    return <div className="opacity-0">Wisdom Board</div>;
+  }
+
   if (allowed === false) {
     if (typeof window !== "undefined") window.location.href = "/reveal";
     return null;
@@ -89,7 +93,6 @@ function ClientWisdomBoard() {
   ----------------------------------------------------- */
   const fetchDailyMessage = async () => {
     try {
-      // 1. Get current session (contains access_token)
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData?.session?.access_token;
 
@@ -101,7 +104,6 @@ function ClientWisdomBoard() {
         return;
       }
 
-      // 2. Call Supabase Edge Function with Authorization header
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/daily-affirmation`,
         {
@@ -120,7 +122,6 @@ function ClientWisdomBoard() {
         return;
       }
 
-      // 3. Parse response
       const data = await res.json();
 
       setDailyMessage({
@@ -137,7 +138,7 @@ function ClientWisdomBoard() {
   };
 
   /* -----------------------------------------------------
-     ⭐ SUBMIT POST — CLEANED (no country, no full name)
+     ⭐ SUBMIT POST — CLEANED
   ----------------------------------------------------- */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -174,7 +175,6 @@ function ClientWisdomBoard() {
         return;
       }
 
-      // ⭐ NEW — store reflection only for this session
       setJustSubmittedPost({
         id: crypto.randomUUID(),
         content: newPost,
