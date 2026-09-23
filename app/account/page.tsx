@@ -43,10 +43,10 @@ export default function MyAccountPage() {
       "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/login");
-  };
+  const handleSignOut = () => {
+  router.push("/logout");
+};
+
 
   if (loading) {
     return (

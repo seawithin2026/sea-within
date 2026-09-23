@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
@@ -14,6 +15,8 @@ const navLinks = [
 ];
 
 export default function Navigation() {
+  const router = useRouter();
+
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -106,18 +109,15 @@ export default function Navigation() {
               </Link>
             ) : (
               <div className="flex items-center gap-12 ml-8">
-                {/* ⭐ SIGN OUT FIRST */}
+                {/* ⭐ CINEMATIC SIGN OUT */}
                 <button
-                  onClick={async () => {
-                    await supabase.auth.signOut();
-                    window.location.href = "/login";
-                  }}
+                  onClick={() => router.push("/logout")}
                   className="btn-golden text-[11px] px-6 py-2.5"
                 >
                   Sign Out
                 </button>
 
-                {/* ⭐ ACCOUNT SECOND */}
+                {/* ⭐ ACCOUNT */}
                 <Link
                   href="/account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
@@ -170,19 +170,18 @@ export default function Navigation() {
                   </Link>
                 ) : (
                   <>
-                    {/* ⭐ SIGN OUT FIRST */}
+                    {/* ⭐ CINEMATIC SIGN OUT */}
                     <button
-                      onClick={async () => {
-                        await supabase.auth.signOut();
+                      onClick={() => {
                         setIsMobileMenuOpen(false);
-                        window.location.href = "/login";
+                        router.push("/logout");
                       }}
                       className="btn-golden text-[11px] px-6 py-2.5"
                     >
                       Sign Out
                     </button>
 
-                    {/* ⭐ ACCOUNT SECOND */}
+                    {/* ⭐ ACCOUNT */}
                     <Link
                       href="/account"
                       onClick={() => setIsMobileMenuOpen(false)}
