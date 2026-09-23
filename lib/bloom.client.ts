@@ -9,9 +9,8 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export async function getBloomProgressClient() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+  const user = data?.user;
 
   if (!user) return null;
 
@@ -23,19 +22,19 @@ export async function getBloomProgressClient() {
     .single();
 
   // Fetch bloom progress
-  const { data } = await supabase
+  const { data: bloom } = await supabase
     .from("bloom_progress")
     .select("*")
     .eq("user_id", user.id)
     .single();
 
-  if (!data) return null;
+  if (!bloom) return null;
 
   const userTimezone = profile?.timezone ?? "UTC";
 
   // Convert last_completed to YYYY-MM-DD in user's timezone
-  const lastCompletedLocal = data.last_completed
-    ? dayjs(data.last_completed).tz(userTimezone).format("YYYY-MM-DD")
+  const lastCompletedLocal = bloom.last_completed
+    ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
     : null;
 
   // Get today's date in user's timezone
@@ -44,7 +43,7 @@ export async function getBloomProgressClient() {
   });
 
   return {
-    ...data,
+    ...bloom,
     last_completed_local: lastCompletedLocal,
     today_local: todayLocal,
     profile_last_bloom_date: profile?.last_bloom_date ?? null,
