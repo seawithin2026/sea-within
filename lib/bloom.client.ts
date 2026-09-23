@@ -1,4 +1,12 @@
+"use client";
+
 import { supabase } from "@/lib/supabase/client";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export async function getBloomProgressClient() {
   const {
@@ -23,13 +31,17 @@ export async function getBloomProgressClient() {
 
   if (!data) return null;
 
-  // ⭐ Get today's date in user's timezone using your RPC function
-  const { data: todayLocal } = await supabase.rpc("get_user_today", {
-    user_tz: profile?.timezone ?? "UTC",
-  });
+  const userTimezone = profile?.timezone ?? "UTC";
 
-  // ⭐ Convert last_completed to YYYY-MM-DD (server already stores pure date)
-  const lastCompletedLocal = data.last_completed ?? null;
+  // Convert last_completed to YYYY-MM-DD in user's timezone
+  const lastCompletedLocal = data.last_completed
+    ? dayjs(data.last_completed).tz(userTimezone).format("YYYY-MM-DD")
+    : null;
+
+  // Get today's date in user's timezone
+  const { data: todayLocal } = await supabase.rpc("get_user_today", {
+    user_tz: userTimezone,
+  });
 
   return {
     ...data,
