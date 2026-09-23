@@ -89,7 +89,6 @@ export async function getBloomProgress() {
 export async function completeTodayBloom(progress, videoName) {
   const supabase = supabaseServer();
   const user = await waitForUser();
-  console.log("SERVER USER:", user);
   if (!user) return null;
 
   const { data: profile } = await supabase
