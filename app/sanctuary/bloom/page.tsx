@@ -2,7 +2,7 @@ import BloomClient from "./BloomClient";
 import { supabaseServer } from "@/lib/supabase/server";
 import { getBloomProgress } from "@/lib/bloom.server";
 import { getGestureProgress } from "@/lib/gesture.server";
-import MembershipGate from "@/components/MembershipGate";
+import MembershipGateWrapper from "@/components/MembershipGateWrapper";
 
 export default async function BloomPage() {
   const supabase = supabaseServer();
@@ -28,13 +28,13 @@ export default async function BloomPage() {
   async function onRefresh() {}
 
   return (
-    <MembershipGate>
+    <MembershipGateWrapper>
       <BloomClient
         bloom={bloom}
         gesture={gesture}
         onRefresh={onRefresh}
         userId={user.id}
       />
-    </MembershipGate>
+    </MembershipGateWrapper>
   );
 }
