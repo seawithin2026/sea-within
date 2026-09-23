@@ -60,6 +60,9 @@ export default function BloomClient({
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
+  /* -----------------------------------------------------
+     INITIALIZATION
+  ----------------------------------------------------- */
   useEffect(() => {
     if (!ready) return;
 
@@ -102,6 +105,9 @@ export default function BloomClient({
     }
   }, [ready, bloom, gesture, bloomIndex]);
 
+  /* -----------------------------------------------------
+     GESTURE COMPLETE
+  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!ready) return;
     if (!gesture || !userId) {
@@ -121,6 +127,9 @@ export default function BloomClient({
     setState("BLOOM_READY");
   };
 
+  /* -----------------------------------------------------
+     BLOOM START
+  ----------------------------------------------------- */
   const handleBloomStart = async () => {
     if (!ready || !bloom || !videoSrc || !userId) return;
 
@@ -142,6 +151,9 @@ export default function BloomClient({
 
   const gestureText = GESTURES[gestureIndex];
 
+  /* -----------------------------------------------------
+     LOADING SCREEN
+  ----------------------------------------------------- */
   if (!ready) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -152,10 +164,14 @@ export default function BloomClient({
     );
   }
 
+  /* -----------------------------------------------------
+     MAIN UI
+  ----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
+      {/* GESTURE SECTION */}
       {state === "GESTURE" && (
         <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
           <div
@@ -188,6 +204,7 @@ export default function BloomClient({
         </section>
       )}
 
+      {/* BLOOM VIDEO OVERLAY */}
       {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
         state
       ) && (
@@ -222,6 +239,7 @@ export default function BloomClient({
         </div>
       )}
 
+      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
           from {
@@ -239,7 +257,7 @@ export default function BloomClient({
           }
           to {
             opacity: 1;
-             transform: translateY(0);
+            transform: translateY(0);
           }
         }
 
