@@ -9,33 +9,16 @@ dayjs.extend(timezone);
 const BLOOM_MAX_DAY = 36;
 
 /* -----------------------------------------------------
-   SERVER: Wait for user (SSR session polling)
------------------------------------------------------ */
-async function waitForUser() {
-  const supabase = supabaseServer();
-
-  for (let i = 0; i < 10; i++) {
-    const { data } = await supabase.auth.getSession();
-    const user = data.session?.user;
-    if (user) return user;
-    await new Promise((r) => setTimeout(r, 150));
-  }
-
-  return null;
-}
-
-/* -----------------------------------------------------
    SERVER: Get bloom progress (SSR)
 ----------------------------------------------------- */
-export async function getBloomProgress() {
+export async function getBloomProgress(userId: string) {
   const supabase = supabaseServer();
-  const user = await waitForUser();
-  if (!user) return null;
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_bloom_date, last_bloom_video")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
@@ -43,7 +26,7 @@ export async function getBloomProgress() {
   const { data, error } = await supabase
     .from("bloom_progress")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .single();
 
   // Create bloom_progress row if missing
@@ -51,10 +34,10 @@ export async function getBloomProgress() {
     const { data: created } = await supabase
       .from("bloom_progress")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         current_day: 1,
         completed_all: false,
-        last_completed: null, // store pure date later
+        last_completed: null,
       })
       .select()
       .single();
@@ -69,7 +52,6 @@ export async function getBloomProgress() {
 
   let lastCompletedLocal = null;
   if (data?.last_completed) {
-    // last_completed is stored as YYYY-MM-DD
     lastCompletedLocal = dayjs(data.last_completed)
       .tz(userTimezone)
       .format("YYYY-MM-DD");
@@ -86,22 +68,22 @@ export async function getBloomProgress() {
 /* -----------------------------------------------------
    SERVER: Complete today's bloom
 ----------------------------------------------------- */
-export async function completeTodayBloom(progress, videoName) {
+export async function completeTodayBloom(
+  progress: any,
+  videoName: string,
+  userId: string
+) {
   const supabase = supabaseServer();
-  const user = await waitForUser();
-  if (!user) return null;
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
-
   const now = dayjs().tz(userTimezone);
-
-  // ⭐ FIX: store pure date string, not ISO timestamp
   const todayLocal = now.format("YYYY-MM-DD");
 
   let nextDay = progress.current_day + 1;
@@ -112,12 +94,11 @@ export async function completeTodayBloom(progress, videoName) {
     completedAll = false;
   }
 
-  // ⭐ FIX: last_completed must be YYYY-MM-DD
   const { data: bloomData } = await supabase
     .from("bloom_progress")
     .update({
       current_day: nextDay,
-      last_completed: todayLocal, // FIXED
+      last_completed: todayLocal,
       completed_all: completedAll,
       updated_at: new Date().toISOString(),
     })
@@ -128,10 +109,10 @@ export async function completeTodayBloom(progress, videoName) {
   await supabase
     .from("profiles")
     .update({
-      last_bloom_date: todayLocal, // matches bloom_progress
+      last_bloom_date: todayLocal,
       last_bloom_video: videoName,
     })
-    .eq("id", user.id);
+    .eq("id", userId);
 
   return bloomData;
 }

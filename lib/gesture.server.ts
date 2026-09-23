@@ -9,32 +9,16 @@ dayjs.extend(timezone);
 const GESTURE_MAX = 50;
 
 /* -----------------------------------------------------
-   SERVER: Wait for user (SSR session polling)
------------------------------------------------------ */
-async function waitForUser() {
-  const supabase = supabaseServer();
-
-  for (let i = 0; i < 10; i++) {
-    const { data } = await supabase.auth.getSession();
-    const user = data.session?.user;
-    if (user) return user;
-    await new Promise((r) => setTimeout(r, 150));
-  }
-  return null;
-}
-
-/* -----------------------------------------------------
    SERVER: Get gesture progress (SSR)
 ----------------------------------------------------- */
-export async function getGestureProgress() {
+export async function getGestureProgress(userId: string) {
   const supabase = supabaseServer();
-  const user = await waitForUser();
-  if (!user) return null;
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_gesture_date")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
@@ -42,18 +26,17 @@ export async function getGestureProgress() {
   const { data, error } = await supabase
     .from("gesture_progress")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .single();
 
-  // Create gesture_progress row if missing
   if (error && error.code === "PGRST116") {
     const { data: created } = await supabase
       .from("gesture_progress")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         current_index: 0,
         last_index: -1,
-        last_completed: null, // pure date stored later
+        last_completed: null,
       })
       .select()
       .single();
@@ -67,7 +50,6 @@ export async function getGestureProgress() {
 
   let lastCompletedLocal = null;
   if (data?.last_completed) {
-    // last_completed is stored as YYYY-MM-DD
     lastCompletedLocal = dayjs(data.last_completed)
       .tz(userTimezone)
       .format("YYYY-MM-DD");
@@ -83,48 +65,42 @@ export async function getGestureProgress() {
 /* -----------------------------------------------------
    SERVER: Complete today's gesture
 ----------------------------------------------------- */
-export async function completeGesture(progress) {
+export async function completeGesture(progress: any, userId: string) {
   const supabase = supabaseServer();
-  const user = await waitForUser();
-  if (!user) return null;
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
-
-  const now = dayjs().tz(userTimezone);
-
-  // ⭐ FIX: store pure date string, not ISO timestamp
-  const todayLocal = now.format("YYYY-MM-DD");
+  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
 
   let nextIndex = progress.current_index + 1;
   if (nextIndex >= GESTURE_MAX) {
     nextIndex = 0;
   }
 
-  // ⭐ FIX: last_completed must be YYYY-MM-DD
   const { data: gestureData } = await supabase
     .from("gesture_progress")
     .update({
       current_index: nextIndex,
       last_index: progress.current_index,
-      last_completed: todayLocal, // FIXED
+      last_completed: todayLocal,
       updated_at: new Date().toISOString(),
     })
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .select()
     .single();
 
   await supabase
     .from("profiles")
     .update({
-      last_gesture_date: todayLocal, // matches gesture_progress
+      last_gesture_date: todayLocal,
     })
-    .eq("id", user.id);
+    .eq("id", userId);
 
   return gestureData;
 }
@@ -132,10 +108,9 @@ export async function completeGesture(progress) {
 /* -----------------------------------------------------
    SERVER: Reset gesture cycle
 ----------------------------------------------------- */
-export async function resetGestureCycle(progress) {
+export async function resetGestureCycle(progress: any, userId: string) {
   const supabase = supabaseServer();
-  const user = await waitForUser();
-  if (!user) return null;
+  if (!userId) return null;
 
   const nowUtcIso = new Date().toISOString();
 
@@ -147,7 +122,7 @@ export async function resetGestureCycle(progress) {
       last_completed: null,
       updated_at: nowUtcIso,
     })
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .select()
     .single();
 
@@ -156,7 +131,7 @@ export async function resetGestureCycle(progress) {
     .update({
       last_gesture_date: null,
     })
-    .eq("id", user.id);
+    .eq("id", userId);
 
   return gestureData;
 }

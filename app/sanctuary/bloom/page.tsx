@@ -9,16 +9,14 @@ import MembershipGate from "@/components/MembershipGate";
 
 export default function BloomPage() {
   const [ready, setReady] = useState(false);
-  const [user, setUser] = useState(null);
-  const [bloom, setBloom] = useState(null);
-  const [gesture, setGesture] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [bloom, setBloom] = useState<any>(null);
+  const [gesture, setGesture] = useState<any>(null);
 
-  // Hydration guard
   useEffect(() => {
     setReady(true);
   }, []);
 
-  // ⭐ Reusable loader (BloomClient will call this)
   const load = useCallback(async () => {
     const {
       data: { user },
@@ -26,6 +24,8 @@ export default function BloomPage() {
 
     if (!user) {
       setUser(null);
+      setBloom(null);
+      setGesture(null);
       return;
     }
 
@@ -38,13 +38,11 @@ export default function BloomPage() {
     setGesture(gestureData);
   }, []);
 
-  // Initial load
   useEffect(() => {
     if (!ready) return;
     load();
   }, [ready, load]);
 
-  // Hydration-safe skeleton
   if (!ready || user === null) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -55,13 +53,13 @@ export default function BloomPage() {
     );
   }
 
-  // ⭐ Membership Gate — protects Bloom Ritual
   return (
     <MembershipGate>
       <BloomClient
         bloom={bloom}
         gesture={gesture}
         onRefresh={load}
+        userId={user.id}
       />
     </MembershipGate>
   );

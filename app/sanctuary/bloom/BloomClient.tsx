@@ -20,6 +20,7 @@ type RitualState =
   | "LOCKED";
 
 type BloomProgress = {
+  id: string;
   current_day: number;
   last_completed_local: string | null;
   today_local: string | null;
@@ -35,10 +36,12 @@ export default function BloomClient({
   bloom,
   gesture,
   onRefresh,
+  userId,
 }: {
   bloom: BloomProgress | null;
   gesture: GestureProgress | null;
   onRefresh: () => Promise<void>;
+  userId: string | null;
 }) {
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
@@ -57,12 +60,6 @@ export default function BloomClient({
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
-  /* -----------------------------------------------------
-     ⭐ FIXED INITIALIZATION EFFECT
-     - Does NOT override Bloom states
-     - Prevents gesture loop
-     - Allows BloomReady → BloomPlaying → BloomDone
-  ----------------------------------------------------- */
   useEffect(() => {
     if (!ready) return;
 
@@ -86,7 +83,6 @@ export default function BloomClient({
       setHasBloomedToday(true);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIndex]);
 
-      // ⭐ Preserve bloom states
       setState((prev) =>
         prev === "BLOOM_READY" ||
         prev === "BLOOM_PLAYING" ||
@@ -98,7 +94,6 @@ export default function BloomClient({
       setHasBloomedToday(false);
       setVideoSrc(BLOOMS[bloomIndex]);
 
-      // ⭐ Only set GESTURE if ritual hasn't started
       setState((prev) =>
         prev === "INIT" || prev === "GESTURE"
           ? "GESTURE"
@@ -107,18 +102,14 @@ export default function BloomClient({
     }
   }, [ready, bloom, gesture, bloomIndex]);
 
-  /* -----------------------------------------------------
-     ⭐ GESTURE COMPLETE → BLOOM_READY
-  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!ready) return;
-
-    if (!gesture) {
+    if (!gesture || !userId) {
       setState("LOCKED");
       return;
     }
 
-    await completeGestureAction(gesture);
+    await completeGestureAction(gesture, userId);
 
     setGestureIndex((prev) => {
       const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
@@ -130,14 +121,11 @@ export default function BloomClient({
     setState("BLOOM_READY");
   };
 
-  /* -----------------------------------------------------
-     ⭐ BLOOM START
-  ----------------------------------------------------- */
   const handleBloomStart = async () => {
-    if (!ready || !bloom || !videoSrc) return;
+    if (!ready || !bloom || !videoSrc || !userId) return;
 
     if (!hasBloomedToday) {
-      await completeTodayBloomAction(bloom, videoSrc);
+      await completeTodayBloomAction(bloom, videoSrc, userId);
       setHasBloomedToday(true);
       setJustBloomedNow(true);
 
