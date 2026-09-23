@@ -57,7 +57,7 @@ export default function BloomClient({
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
-  // Initialize ritual state
+  // ⭐ FIXED INITIALIZATION EFFECT — preserves state
   useEffect(() => {
     if (!ready) return;
 
@@ -80,18 +80,31 @@ export default function BloomClient({
     if (alreadyBloomed) {
       setHasBloomedToday(true);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIndex]);
-      setState("LOCKED");
+
+      // ⭐ Do NOT override Bloom states
+      setState((prev) =>
+        prev === "BLOOM_PLAYING" ||
+        prev === "BLOOM_DONE" ||
+        prev === "BLOOM_READY"
+          ? prev
+          : "LOCKED"
+      );
     } else {
       setHasBloomedToday(false);
       setVideoSrc(BLOOMS[bloomIndex]);
-      setState("GESTURE");
+
+      // ⭐ Preserve BLOOM_READY if already set
+      setState((prev) =>
+        prev === "BLOOM_READY" ? "BLOOM_READY" : "GESTURE"
+      );
     }
   }, [ready, bloom, gesture, bloomIndex]);
 
+  // ⭐ GESTURE COMPLETE
   const handleGestureComplete = async () => {
     if (!ready) return;
 
-    if (hasBloomedToday || !gesture) {
+    if (!gesture) {
       setState("LOCKED");
       return;
     }
@@ -105,9 +118,11 @@ export default function BloomClient({
 
     await onRefresh();
 
+    // ⭐ Allow Bloom to start
     setState("BLOOM_READY");
   };
 
+  // ⭐ BLOOM START
   const handleBloomStart = async () => {
     if (!ready || !bloom || !videoSrc) return;
 
