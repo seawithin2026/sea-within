@@ -3,6 +3,7 @@
 import Navigation from "@/components/layout/Navigation";
 import { useState, useEffect, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase/client";
+import MembershipGate from "@/components/MembershipGate";
 
 interface WisdomPost {
   id: string;
@@ -17,50 +18,14 @@ interface DailyMessage {
 }
 
 export default function WisdomBoardPage() {
-  const [allowed, setAllowed] = useState<boolean | null>(null);
+  return (
+    <>
+      {/* ⭐ Membership Gate — protects Wisdom Board */}
+      <MembershipGate />
 
-  // ⭐ MEMBERSHIP GATE
-  useEffect(() => {
-    const check = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return setAllowed(false);
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("membership_status")
-        .eq("id", user.id)
-        .single();
-
-      const status = profile?.membership_status;
-
-      const isMember =
-        status === "active" ||
-        status === "cancel_at_period_end" ||
-        status === "trialing" ||
-        status === "past_due" ||
-        status === "cancelling";
-
-      if (!isMember) return setAllowed(false);
-
-      setAllowed(true);
-    };
-
-    check();
-  }, []);
-
-  // ⭐ NEW — FIX FLICKER
-  if (allowed === null) {
-    return <div className="opacity-0">Wisdom Board</div>;
-  }
-
-  if (allowed === false) {
-    if (typeof window !== "undefined") window.location.href = "/reveal";
-    return null;
-  }
-
-  return <ClientWisdomBoard />;
+      <ClientWisdomBoard />
+    </>
+  );
 }
 
 /* -----------------------------------------------------

@@ -1,19 +1,34 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import AccountRouter from "@/components/AccountRouter";
 
 export default function CreateUsernamePage() {
+  return (
+    <>
+      {/* ⭐ AccountRouter — onboarding brain */}
+      <AccountRouter />
+
+      <UsernameForm />
+    </>
+  );
+}
+
+/* -----------------------------------------------------
+   ⭐ UsernameForm — runs AFTER AccountRouter
+----------------------------------------------------- */
+function UsernameForm() {
   const router = useRouter();
 
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const saveUsername = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     // Get current session
@@ -24,27 +39,27 @@ export default function CreateUsernamePage() {
     const user = session?.user;
 
     if (!user) {
-      setError('You must be signed in.');
+      setError("You must be signed in.");
       setLoading(false);
       return;
     }
 
     // Update username
     const { error: updateError } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({ username })
-      .eq('id', user.id);
+      .eq("id", user.id);
 
     if (updateError) {
-      setError('This name is already taken.');
+      setError("This name is already taken.");
       setLoading(false);
       return;
     }
 
     setLoading(false);
 
-    // ⭐ After saving username → enter the Sanctuary
-    router.push('/sanctuary');
+    // ⭐ After saving username → AccountRouter will redirect correctly
+    router.push("/account");
   };
 
   return (
@@ -72,7 +87,7 @@ export default function CreateUsernamePage() {
             disabled={loading || username.trim().length < 3}
             className="btn-golden w-full py-3 text-[12px] tracking-[2px]"
           >
-            {loading ? 'Saving...' : 'Save Name'}
+            {loading ? "Saving..." : "Save Name"}
           </button>
         </form>
       </div>

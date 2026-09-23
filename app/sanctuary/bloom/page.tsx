@@ -5,6 +5,7 @@ import BloomClient from "./BloomClient";
 import { supabase } from "@/lib/supabase/client";
 import { getBloomProgressClient } from "@/lib/bloom.client";
 import { getGestureProgressClient } from "@/lib/gesture.client";
+import MembershipGate from "@/components/MembershipGate";
 
 export default function BloomPage() {
   const [ready, setReady] = useState(false);
@@ -54,12 +55,16 @@ export default function BloomPage() {
     );
   }
 
-  // ⭐ Pass refresh callback to BloomClient
+  // ⭐ Membership Gate — protects Bloom Ritual
   return (
-    <BloomClient
-      bloom={bloom}
-      gesture={gesture}
-      onRefresh={load}
-    />
+    <>
+      <MembershipGate />
+
+      <BloomClient
+        bloom={bloom}
+        gesture={gesture}
+        onRefresh={load}
+      />
+    </>
   );
 }

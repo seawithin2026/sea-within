@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MembershipGate from "./MembershipGate"; // ⭐ Add this line
+import MembershipGate from "@/components/MembershipGate";
 import VideoGrid from "./VideoGrid";
 
 export default function SanctuaryPage() {

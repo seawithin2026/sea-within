@@ -4,8 +4,23 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Navigation from "@/components/layout/Navigation";
+import AccountRouter from "@/components/AccountRouter";
 
 export default function MyAccountPage() {
+  return (
+    <>
+      {/* ⭐ AccountRouter — onboarding brain */}
+      <AccountRouter />
+
+      <AccountContent />
+    </>
+  );
+}
+
+/* -----------------------------------------------------
+   ⭐ Account Content — only renders AFTER AccountRouter
+----------------------------------------------------- */
+function AccountContent() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -16,11 +31,6 @@ export default function MyAccountPage() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-
-      if (!user) {
-        router.replace("/login");
-        return;
-      }
 
       setUser(user);
 
@@ -37,16 +47,14 @@ export default function MyAccountPage() {
     load();
   }, []);
 
-  // ⭐ FIXED — simple, secure, Stripe-approved redirect
   const handleManageSubscription = () => {
     window.location.href =
       "https://billing.stripe.com/p/login/14AeVdcNK97p2OxcAuc3m00";
   };
 
   const handleSignOut = () => {
-  router.push("/logout");
-};
-
+    router.push("/logout");
+  };
 
   if (loading) {
     return (

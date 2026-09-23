@@ -5,6 +5,7 @@ import Navigation from "@/components/layout/Navigation";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import { supabase } from "@/lib/supabase/client";
 import { moderateContent } from "@/lib/moderation";
+import MembershipGate from "@/components/MembershipGate";
 
 interface ChatMsg {
   id: string;
@@ -54,7 +55,7 @@ export default function CommunityPage() {
     }
   };
 
-  /* REALTIME — FIXED */
+  /* REALTIME */
   useEffect(() => {
     if (user === null) return;
     if (!user?.id) return;
@@ -168,6 +169,10 @@ export default function CommunityPage() {
 
   return (
     <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+
+      {/* ⭐ Membership Gate — protects Community */}
+      <MembershipGate />
+
       {/* BACKGROUND */}
       <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
         <img
@@ -221,19 +226,16 @@ export default function CommunityPage() {
                   msg.is_own ? "own" : ""
                 } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
               >
-                {/* Username for others */}
                 {!msg.is_own && (
                   <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
                     {msg.username}
                   </p>
                 )}
 
-                {/* Message content */}
                 <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                   {msg.content}
                 </p>
 
-                {/* Username for own messages (bottom-right) */}
                 {msg.is_own && (
                   <p className="font-body text-[10px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mt-1 text-right">
                     {msg.username}
