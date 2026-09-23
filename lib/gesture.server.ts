@@ -8,9 +8,6 @@ dayjs.extend(timezone);
 
 const GESTURE_MAX = 50;
 
-/* -----------------------------------------------------
-   SERVER: Get gesture progress (SSR)
------------------------------------------------------ */
 export async function getGestureProgress(userId: string) {
   const supabase = supabaseServer();
   if (!userId) return null;
@@ -62,9 +59,6 @@ export async function getGestureProgress(userId: string) {
   };
 }
 
-/* -----------------------------------------------------
-   SERVER: Complete today's gesture
------------------------------------------------------ */
 export async function completeGesture(progress: any, userId: string) {
   const supabase = supabaseServer();
   if (!userId) return null;
@@ -79,9 +73,7 @@ export async function completeGesture(progress: any, userId: string) {
   const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
 
   let nextIndex = progress.current_index + 1;
-  if (nextIndex >= GESTURE_MAX) {
-    nextIndex = 0;
-  }
+  if (nextIndex >= GESTURE_MAX) nextIndex = 0;
 
   const { data: gestureData } = await supabase
     .from("gesture_progress")
@@ -105,9 +97,6 @@ export async function completeGesture(progress: any, userId: string) {
   return gestureData;
 }
 
-/* -----------------------------------------------------
-   SERVER: Reset gesture cycle
------------------------------------------------------ */
 export async function resetGestureCycle(progress: any, userId: string) {
   const supabase = supabaseServer();
   if (!userId) return null;

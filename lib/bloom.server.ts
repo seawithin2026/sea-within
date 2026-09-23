@@ -8,9 +8,6 @@ dayjs.extend(timezone);
 
 const BLOOM_MAX_DAY = 36;
 
-/* -----------------------------------------------------
-   SERVER: Get bloom progress (SSR)
------------------------------------------------------ */
 export async function getBloomProgress(userId: string) {
   const supabase = supabaseServer();
   if (!userId) return null;
@@ -29,7 +26,6 @@ export async function getBloomProgress(userId: string) {
     .eq("user_id", userId)
     .single();
 
-  // Create bloom_progress row if missing
   if (error && error.code === "PGRST116") {
     const { data: created } = await supabase
       .from("bloom_progress")
@@ -65,9 +61,6 @@ export async function getBloomProgress(userId: string) {
   };
 }
 
-/* -----------------------------------------------------
-   SERVER: Complete today's bloom
------------------------------------------------------ */
 export async function completeTodayBloom(
   progress: any,
   videoName: string,
@@ -83,8 +76,7 @@ export async function completeTodayBloom(
     .single();
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
-  const now = dayjs().tz(userTimezone);
-  const todayLocal = now.format("YYYY-MM-DD");
+  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
 
   let nextDay = progress.current_day + 1;
   let completedAll = progress.completed_all;

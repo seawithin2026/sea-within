@@ -9,9 +9,9 @@ import MembershipGate from "@/components/MembershipGate";
 
 export default function BloomPage() {
   const [ready, setReady] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [bloom, setBloom] = useState<any>(null);
-  const [gesture, setGesture] = useState<any>(null);
+  const [user, setUser] = useState(null);
+  const [bloom, setBloom] = useState(null);
+  const [gesture, setGesture] = useState(null);
 
   useEffect(() => {
     setReady(true);
