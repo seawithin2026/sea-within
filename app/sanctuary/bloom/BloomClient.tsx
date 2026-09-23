@@ -57,7 +57,12 @@ export default function BloomClient({
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
-  // ⭐ FIXED INITIALIZATION EFFECT — preserves state
+  /* -----------------------------------------------------
+     ⭐ FIXED INITIALIZATION EFFECT
+     - Does NOT override Bloom states
+     - Prevents gesture loop
+     - Allows BloomReady → BloomPlaying → BloomDone
+  ----------------------------------------------------- */
   useEffect(() => {
     if (!ready) return;
 
@@ -81,11 +86,11 @@ export default function BloomClient({
       setHasBloomedToday(true);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIndex]);
 
-      // ⭐ Do NOT override Bloom states
+      // ⭐ Preserve bloom states
       setState((prev) =>
+        prev === "BLOOM_READY" ||
         prev === "BLOOM_PLAYING" ||
-        prev === "BLOOM_DONE" ||
-        prev === "BLOOM_READY"
+        prev === "BLOOM_DONE"
           ? prev
           : "LOCKED"
       );
@@ -93,14 +98,18 @@ export default function BloomClient({
       setHasBloomedToday(false);
       setVideoSrc(BLOOMS[bloomIndex]);
 
-      // ⭐ Preserve BLOOM_READY if already set
+      // ⭐ Only set GESTURE if ritual hasn't started
       setState((prev) =>
-        prev === "BLOOM_READY" ? "BLOOM_READY" : "GESTURE"
+        prev === "INIT" || prev === "GESTURE"
+          ? "GESTURE"
+          : prev
       );
     }
   }, [ready, bloom, gesture, bloomIndex]);
 
-  // ⭐ GESTURE COMPLETE
+  /* -----------------------------------------------------
+     ⭐ GESTURE COMPLETE → BLOOM_READY
+  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     if (!ready) return;
 
@@ -118,11 +127,12 @@ export default function BloomClient({
 
     await onRefresh();
 
-    // ⭐ Allow Bloom to start
     setState("BLOOM_READY");
   };
 
-  // ⭐ BLOOM START
+  /* -----------------------------------------------------
+     ⭐ BLOOM START
+  ----------------------------------------------------- */
   const handleBloomStart = async () => {
     if (!ready || !bloom || !videoSrc) return;
 
@@ -241,7 +251,7 @@ export default function BloomClient({
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+             transform: translateY(0);
           }
         }
 
