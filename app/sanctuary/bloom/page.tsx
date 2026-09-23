@@ -57,14 +57,12 @@ export default function BloomPage() {
 
   // ⭐ Membership Gate — protects Bloom Ritual
   return (
-    <>
-      <MembershipGate />
-
+    <MembershipGate>
       <BloomClient
         bloom={bloom}
         gesture={gesture}
         onRefresh={load}
       />
-    </>
+    </MembershipGate>
   );
 }

@@ -19,12 +19,9 @@ interface DailyMessage {
 
 export default function WisdomBoardPage() {
   return (
-    <>
-      {/* ⭐ Membership Gate — protects Wisdom Board */}
-      <MembershipGate />
-
+    <MembershipGate>
       <ClientWisdomBoard />
-    </>
+    </MembershipGate>
   );
 }
 
@@ -191,6 +188,7 @@ function ClientWisdomBoard() {
       {/* SECTION 3 — WISDOM BOARD */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
+
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video

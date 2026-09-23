@@ -168,175 +168,174 @@ export default function CommunityPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
+    <MembershipGate>
+      <main className="min-h-[100dvh] bg-transparent flex flex-col relative overflow-hidden">
 
-      {/* ⭐ Membership Gate — protects Community */}
-      <MembershipGate />
+        {/* BACKGROUND */}
+        <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
+          <img
+            src="/images/jellyfish-bg.jpg"
+            alt="jellyfish background"
+            className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-black/10"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_70%)]"></div>
+        </div>
 
-      {/* BACKGROUND */}
-      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-        <img
-          src="/images/jellyfish-bg.jpg"
-          alt="jellyfish background"
-          className="absolute w-full h-full object-cover opacity-[1] animate-slowFloat"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-black/5 to-black/10"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.25),transparent_70%)]"></div>
-      </div>
+        <Navigation />
 
-      <Navigation />
+        {/* TITLE */}
+        <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
+          <ScrollReveal>
+            <p className="font-whisper text-sm tracking-[6px] uppercase text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
+              community circle
+            </p>
 
-      {/* TITLE */}
-      <section className="pt-32 md:pt-40 pb-10 px-6 text-center">
-        <ScrollReveal>
-          <p className="font-whisper text-sm tracking-[6px] uppercase text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.6)] mb-3">
-            community circle
-          </p>
+            <h1 className="font-display text-2xl md:text-3xl font-light text-[#7A3F45] ">
+              The Gathering
+            </h1>
+            <p className="font-body text-sm text-[#FFFFFF] mt-2">
+              A space of warmth, support, and shared light.
+            </p>
+          </ScrollReveal>
+        </section>
 
-          <h1 className="font-display text-2xl md:text-3xl font-light text-[#7A3F45] ">
-            The Gathering
-          </h1>
-          <p className="font-body text-sm text-[#FFFFFF] mt-2">
-            A space of warmth, support, and shared light.
-          </p>
-        </ScrollReveal>
-      </section>
-
-      {/* CHAT */}
-      <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
-        <div className="space-y-4 pb-24">
-          {messages.length === 0 && (
-            <div className="text-center py-20">
-              <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
-                The circle is open.
-              </p>
-              <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
-                Be the first to share your light.
-              </p>
-            </div>
-          )}
-
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.is_own ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`chat-bubble ${
-                  msg.is_own ? "own" : ""
-                } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
-              >
-                {!msg.is_own && (
-                  <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
-                    {msg.username}
-                  </p>
-                )}
-
-                <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
-                  {msg.content}
+        {/* CHAT */}
+        <section className="flex-1 overflow-y-scroll scroll-smooth px-4 md:px-8 py-6 max-w-3xl mx-auto w-full pt-10 md:pt-14 chat-scroll">
+          <div className="space-y-4 pb-24">
+            {messages.length === 0 && (
+              <div className="text-center py-20">
+                <p className="font-display text-xl text-[#3A8C8C] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] font-light">
+                  The circle is open.
                 </p>
-
-                {msg.is_own && (
-                  <p className="font-body text-[10px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mt-1 text-right">
-                    {msg.username}
-                  </p>
-                )}
+                <p className="font-body text-m text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.55)] mt-3">
+                  Be the first to share your light.
+                </p>
               </div>
-            </div>
-          ))}
+            )}
 
-          <div ref={messagesEndRef} />
-        </div>
-      </section>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.is_own ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`chat-bubble ${
+                    msg.is_own ? "own" : ""
+                  } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
+                >
+                  {!msg.is_own && (
+                    <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+                      {msg.username}
+                    </p>
+                  )}
 
-      {/* FEEDBACK */}
-      {feedback && (
-        <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
-          <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
-            {feedback}
+                  <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+                    {msg.content}
+                  </p>
+
+                  {msg.is_own && (
+                    <p className="font-body text-[10px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mt-1 text-right">
+                      {msg.username}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            <div ref={messagesEndRef} />
           </div>
-        </div>
-      )}
+        </section>
 
-      {/* INPUT BAR */}
-      <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
-        <div className="max-w-3xl mx-auto">
-          <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
-            This space is for uplifting, reflective, and supportive communication.
-          </p>
+        {/* FEEDBACK */}
+        {feedback && (
+          <div className="max-w-3xl mx-auto w-full px-4 md:px-8 pb-2">
+            <div className="bg-golden-400/10 border border-golden-400/20 rounded-lg p-3 text-sm font-body text-golden-300">
+              {feedback}
+            </div>
+          </div>
+        )}
 
-          <form onSubmit={handleSend} className="flex gap-3">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Share something uplifting..."
-              maxLength={300}
-              className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
-                 font-body text-sm text-sea-100 placeholder:text-[#FFFFFF]
-                 focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
-                 transition-all duration-300"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting || !newMessage.trim()}
-              className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
-                 rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
-                 uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
-                 disabled:opacity-40"
-            >
-              {isSubmitting ? "..." : "Send"}
-            </button>
-          </form>
-        </div>
-      </section>
+        {/* INPUT BAR */}
+        <section className="border-t border-white/5 px-4 md:px-8 py-4 sticky bottom-0 bg-[rgba(255,200,150,0.25)] backdrop-blur-xl">
+          <div className="max-w-3xl mx-auto">
+            <p className="font-body text-[10px] text-[#FFFFFF] text-center mb-3 tracking-wide">
+              This space is for uplifting, reflective, and supportive communication.
+            </p>
 
-      {/* STYLES */}
-      <style>{`
-        .chat-scroll::-webkit-scrollbar {
-          width: 0px;
-          background: transparent;
-        }
-        .chat-scroll {
-          scrollbar-width: none;
-        }
+            <form onSubmit={handleSend} className="flex gap-3">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Share something uplifting..."
+                maxLength={300}
+                className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-3
+                   font-body text-sm text-sea-100 placeholder:text-[#FFFFFF]
+                   focus:outline-none focus:border-golden-400/30 focus:bg-white/[0.08]
+                   transition-all duration-300"
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting || !newMessage.trim()}
+                className="bg-gradient-to-br from-golden-400 to-golden-600 text-sanctuary-dark
+                   rounded-full px-6 py-3 font-body text-[11px] font-medium tracking-[2px]
+                   uppercase transition-all duration-300 hover:shadow-[0_5px_20px_rgba(229,173,67,0.3)]
+                   disabled:opacity-40"
+              >
+                {isSubmitting ? "..." : "Send"}
+              </button>
+            </form>
+          </div>
+        </section>
 
-        .chat-bubble {
-          max-width: 75%;
-          padding: 14px 18px;
-          border-radius: 18px 18px 18px 4px;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          backdrop-filter: blur(10px);
-          transition: all 0.3s ease;
-        }
+        {/* STYLES */}
+        <style>{`
+          .chat-scroll::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+          }
+          .chat-scroll {
+            scrollbar-width: none;
+          }
 
-        .chat-bubble:hover {
-          background: rgba(255, 255, 255, 0.07);
-          border-color: rgba(229, 173, 67, 0.1);
-        }
+          .chat-bubble {
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 18px 18px 18px 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+          }
 
-        .chat-bubble.own {
-          border-radius: 18px 18px 4px 18px;
-          background: rgba(229, 173, 67, 0.08);
-          border: 1px solid rgba(229, 173, 67, 0.12);
-        }
+          .chat-bubble:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(229, 173, 67, 0.1);
+          }
 
-        .chat-bubble.own:hover {
-          background: rgba(229, 173, 67, 0.12);
-          border-color: rgba(229, 173, 67, 0.2);
-        }
+          .chat-bubble.own {
+            border-radius: 18px 18px 4px 18px;
+            background: rgba(229, 173, 67, 0.08);
+            border: 1px solid rgba(229, 173, 67, 0.12);
+          }
 
-        @keyframes slowFloat {
-          0% { transform: translateY(0px) scale(1); }
-          50% { transform: translateY(-18px) scale(1.015); }
-          100% { transform: translateY(0px) scale(1); }
-        }
+          .chat-bubble.own:hover {
+            background: rgba(229, 173, 67, 0.12);
+            border-color: rgba(229, 173, 67, 0.2);
+          }
 
-        .animate-slowFloat {
-          animation: slowFloat 22s ease-in-out infinite;
-        }
-      `}</style>
-    </main>
+          @keyframes slowFloat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-18px) scale(1.015); }
+            100% { transform: translateY(0px) scale(1); }
+          }
+
+          .animate-slowFloat {
+            animation: slowFloat 22s ease-in-out infinite;
+          }
+        `}</style>
+      </main>
+    </MembershipGate>
   );
 }

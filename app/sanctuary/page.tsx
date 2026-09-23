@@ -7,12 +7,10 @@ import VideoGrid from "./VideoGrid";
 export default function SanctuaryPage() {
   const [hydrated, setHydrated] = useState(false);
 
-  // Hydration-safe: only mark client-ready, no conditional DOM differences
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // Skeleton that matches server + client initial HTML
   if (!hydrated) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -24,10 +22,7 @@ export default function SanctuaryPage() {
   }
 
   return (
-    <>
-      {/* ⭐ Membership Gate runs BEFORE showing Sanctuary */}
-      <MembershipGate />
-
+    <MembershipGate>
       <main className="min-h-screen bg-black text-white sanctuary-root">
         {/* HERO VIDEO */}
         <section className="relative w-full h-[130vh] overflow-hidden sanctuary-video">
@@ -83,10 +78,8 @@ export default function SanctuaryPage() {
           </div>
         </section>
 
-        {/* DIVIDER */}
         <div className="w-full h-42 bg-gradient-to-b from-black/0 to-black"></div>
 
-        {/* GRID SECTION */}
         <section className="max-w-6xl mx-auto px-6 pb-32">
           <h2 className="text-center text-2xl md:text-3xl font-light mb-12 tracking-wide">
             Your Ritual Journey Into Self
@@ -95,6 +88,6 @@ export default function SanctuaryPage() {
           <VideoGrid />
         </section>
       </main>
-    </>
+    </MembershipGate>
   );
 }
