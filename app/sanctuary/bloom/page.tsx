@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import BloomClient from "./BloomClient";
 import { supabase } from "@/lib/supabase/client";
-import { getBloomProgressClient } from "@/lib/bloom";
-import { getGestureProgressClient } from "@/lib/gesture";
+import { getBloomProgressClient } from "@/lib/bloom.client";
+import { getGestureProgressClient } from "@/lib/gesture.client";
 
 export default function BloomPage() {
   const [ready, setReady] = useState(false);

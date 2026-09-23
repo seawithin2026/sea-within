@@ -1,5 +1,4 @@
 import { supabaseServer } from "@/lib/supabase/server";
-import { supabase } from "@/lib/supabase/client"; // ⭐ NEW: client-side supabase
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -21,6 +20,7 @@ async function waitForUser() {
     if (user) return user;
     await new Promise((r) => setTimeout(r, 150));
   }
+
   return null;
 }
 
@@ -46,6 +46,7 @@ export async function getBloomProgress() {
     .eq("user_id", user.id)
     .single();
 
+  // Create bloom_progress row if missing
   if (error && error.code === "PGRST116") {
     const { data: created } = await supabase
       .from("bloom_progress")
@@ -130,37 +131,4 @@ export async function completeTodayBloom(progress, videoName) {
     .eq("id", user.id);
 
   return bloomData;
-}
-
-/* -----------------------------------------------------
-   ⭐ NEW — CLIENT-SIDE VERSION
-   Used by BloomClient + BloomPage (hydration-safe)
------------------------------------------------------ */
-export async function getBloomProgressClient() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return null;
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("last_bloom_date, last_bloom_video")
-    .eq("id", user.id)
-    .single();
-
-  const { data } = await supabase
-    .from("bloom_progress")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
-
-  if (!data) return null;
-
-  return {
-    ...data,
-    last_completed_local: data.last_completed,
-    profile_last_bloom_date: profile?.last_bloom_date ?? null,
-    profile_last_bloom_video: profile?.last_bloom_video ?? null,
-  };
 }

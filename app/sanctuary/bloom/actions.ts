@@ -1,7 +1,7 @@
 "use server";
 
-import { completeGesture } from "@/lib/gesture";
-import { completeTodayBloom } from "@/lib/bloom";
+import { completeGesture } from "@/lib/gesture.server";
+import { completeTodayBloom } from "@/lib/bloom.server";
 
 export async function completeGestureAction(progress: any) {
   return await completeGesture(progress);
