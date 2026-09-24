@@ -12,8 +12,9 @@ export function useMembershipGate() {
     async function check() {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // ⭐ FIX: do NOT block when client hasn't loaded session yet
       if (!user) {
-        if (active) setAllowed(false);
+        if (active) setAllowed(null); 
         return;
       }
 
