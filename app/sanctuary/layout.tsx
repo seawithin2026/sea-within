@@ -7,36 +7,34 @@ import Navigation from "@/components/layout/Navigation";
 import "../globals.css";
 
 export default function SanctuaryLayout({ children }) {
-  const [ready, setReady] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    setReady(true);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!hydrated) return;
 
     async function load() {
       const { data } = await supabase.auth.getUser();
-      const user = data?.user;
+      const u = data?.user;
 
-      // ⭐ FIX: do NOT redirect yet — session may still be hydrating
-      if (!user) {
+      if (!u) {
         setUser(null);
         return;
       }
 
-      setUser(user);
+      setUser(u);
 
       const { data: profileData } = await supabase
         .from("profiles")
         .select("username, membership_status")
-        .eq("id", user.id)
+        .eq("id", u.id)
         .maybeSingle();
 
-      // ⭐ FIX: do NOT redirect yet — profile may still be loading
       if (!profileData) {
         setProfile(null);
         return;
@@ -46,15 +44,20 @@ export default function SanctuaryLayout({ children }) {
     }
 
     load();
-  }, [ready]);
+  }, [hydrated]);
 
-  // ⭐ FIX: only redirect when hydration is complete AND user is truly missing
-  if (ready && user === null) {
-    window.location.href = "/reveal";
-    return null;
+  // ⭐ FIX: do NOT redirect — show loading until hydration finishes
+  if (hydrated && user === null) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <p className="text-white/40 tracking-[3px] uppercase">
+          Loading Sanctuary…
+        </p>
+      </div>
+    );
   }
 
-  if (!ready || !user || !profile) {
+  if (!hydrated || !user || !profile) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p className="text-white/40 tracking-[3px] uppercase">
