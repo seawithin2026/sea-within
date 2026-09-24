@@ -22,8 +22,9 @@ export default function SanctuaryLayout({ children }) {
       const { data } = await supabase.auth.getUser();
       const user = data?.user;
 
+      // ⭐ FIX: do NOT redirect yet — session may still be hydrating
       if (!user) {
-        window.location.href = "/reveal";
+        setUser(null);
         return;
       }
 
@@ -35,8 +36,9 @@ export default function SanctuaryLayout({ children }) {
         .eq("id", user.id)
         .maybeSingle();
 
+      // ⭐ FIX: do NOT redirect yet — profile may still be loading
       if (!profileData) {
-        window.location.href = "/reveal";
+        setProfile(null);
         return;
       }
 
@@ -45,6 +47,12 @@ export default function SanctuaryLayout({ children }) {
 
     load();
   }, [ready]);
+
+  // ⭐ FIX: only redirect when hydration is complete AND user is truly missing
+  if (ready && user === null) {
+    window.location.href = "/reveal";
+    return null;
+  }
 
   if (!ready || !user || !profile) {
     return (
