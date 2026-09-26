@@ -17,7 +17,7 @@ export default function BloomPage() {
 
   async function fetchBloom(userId: string) {
     const { data } = await supabase
-      .from("blooms")
+      .from("bloom_progress") // ⭐ FIXED
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
@@ -26,7 +26,7 @@ export default function BloomPage() {
 
   async function fetchGesture(userId: string) {
     const { data } = await supabase
-      .from("gestures")
+      .from("gesture_progress") // ⭐ FIXED
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
@@ -47,7 +47,6 @@ export default function BloomPage() {
       const bloomData = await fetchBloom(user.id);
       const gestureData = await fetchGesture(user.id);
 
-      // ⭐ DEBUG LOGS — THIS IS WHAT YOU NEED
       console.log("USER ID:", user.id);
       console.log("BLOOM DATA:", bloomData);
       console.log("GESTURE DATA:", gestureData);
@@ -74,7 +73,6 @@ export default function BloomPage() {
     const bloomData = await fetchBloom(userId);
     const gestureData = await fetchGesture(userId);
 
-    // ⭐ DEBUG LOGS AGAIN
     console.log("REFRESH BLOOM:", bloomData);
     console.log("REFRESH GESTURE:", gestureData);
 
