@@ -47,6 +47,11 @@ export default function BloomPage() {
       const bloomData = await fetchBloom(user.id);
       const gestureData = await fetchGesture(user.id);
 
+      // ⭐ DEBUG LOGS — THIS IS WHAT YOU NEED
+      console.log("USER ID:", user.id);
+      console.log("BLOOM DATA:", bloomData);
+      console.log("GESTURE DATA:", gestureData);
+
       setBloom(bloomData);
       setGesture(gestureData);
     }
@@ -68,6 +73,11 @@ export default function BloomPage() {
     if (!userId) return;
     const bloomData = await fetchBloom(userId);
     const gestureData = await fetchGesture(userId);
+
+    // ⭐ DEBUG LOGS AGAIN
+    console.log("REFRESH BLOOM:", bloomData);
+    console.log("REFRESH GESTURE:", gestureData);
+
     setBloom(bloomData);
     setGesture(gestureData);
   }
