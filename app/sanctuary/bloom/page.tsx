@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import BloomClient from "./BloomClient";
-import { getBloomProgress } from "@/lib/bloom.server";
-import { getGestureProgress } from "@/lib/gesture.server";
 import MembershipGateWrapper from "@/components/MembershipGateWrapper";
 
 export default function BloomPage() {
@@ -17,6 +15,24 @@ export default function BloomPage() {
     setReady(true);
   }, []);
 
+  async function fetchBloom(userId: string) {
+    const { data } = await supabase
+      .from("blooms")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return data;
+  }
+
+  async function fetchGesture(userId: string) {
+    const { data } = await supabase
+      .from("gestures")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return data;
+  }
+
   useEffect(() => {
     if (!ready) return;
 
@@ -24,17 +40,12 @@ export default function BloomPage() {
       const { data } = await supabase.auth.getUser();
       const user = data?.user;
 
-      if (!user) {
-        // still let SanctuaryLayout / MembershipGate handle redirect
-        return;
-      }
+      if (!user) return;
 
       setUserId(user.id);
 
-      // server helpers still fine to call from client via fetch/RPC,
-      // but if they are pure server functions, replace with client queries:
-      const bloomData = await getBloomProgress(user.id);
-      const gestureData = await getGestureProgress(user.id);
+      const bloomData = await fetchBloom(user.id);
+      const gestureData = await fetchGesture(user.id);
 
       setBloom(bloomData);
       setGesture(gestureData);
@@ -55,8 +66,8 @@ export default function BloomPage() {
 
   async function onRefresh() {
     if (!userId) return;
-    const bloomData = await getBloomProgress(userId);
-    const gestureData = await getGestureProgress(userId);
+    const bloomData = await fetchBloom(userId);
+    const gestureData = await fetchGesture(userId);
     setBloom(bloomData);
     setGesture(gestureData);
   }
