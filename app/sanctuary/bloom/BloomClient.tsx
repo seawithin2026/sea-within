@@ -44,7 +44,10 @@ export default function BloomClient({
   userId: string | null;
 }) {
   const [ready, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
+  useEffect(() => {
+    console.log("🌸 BloomClient mounted");
+    setReady(true);
+  }, []);
 
   const [state, setState] = useState<RitualState>("INIT");
 
@@ -57,11 +60,16 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     FIXED INITIALIZATION — waits for bloom + gesture
+     INITIALIZATION
   ----------------------------------------------------- */
   useEffect(() => {
+    console.log("🔄 INIT useEffect triggered");
+    console.log("ready:", ready);
+    console.log("bloom:", bloom);
+    console.log("gesture:", gesture);
+
     if (!ready) return;
-    if (!bloom || !gesture) return; // ⭐ WAIT for real data
+    if (!bloom || !gesture) return;
 
     const localLastCompleted = bloom.last_completed_local;
     const todayLocal = bloom.today_local ?? null;
@@ -74,38 +82,51 @@ export default function BloomClient({
     const newGestureIndex = gesture.current_index ?? 0;
     const newBloomIndex = bloom.current_day - 1;
 
+    console.log("🌼 bloomIndex:", newBloomIndex);
+    console.log("🪷 gestureIndex:", newGestureIndex);
+
     setGestureIndex(newGestureIndex);
     setBloomIndex(newBloomIndex);
 
     if (alreadyBloomed) {
+      console.log("🔒 Bloom already completed today");
       setHasBloomedToday(true);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
       setState("LOCKED");
     } else {
+      console.log("🌱 Bloom NOT completed today");
       setHasBloomedToday(false);
       setVideoSrc(BLOOMS[newBloomIndex]);
       setState("GESTURE");
     }
+
+    console.log("🎬 videoSrc set to:", BLOOMS[newBloomIndex]);
   }, [ready, bloom, gesture]);
 
   /* -----------------------------------------------------
      GESTURE COMPLETE
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
+    console.log("🙏 Gesture complete clicked");
+
     if (!ready) return;
     if (!gesture || !userId) {
+      console.log("❌ Gesture missing data");
       setState("LOCKED");
       return;
     }
 
     await completeGestureAction(gesture, userId);
+    console.log("✨ Gesture completed on server");
 
     setGestureIndex((prev) => {
       const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
+      console.log("➡️ Gesture index advanced to:", next);
       return next;
     });
 
     await onRefresh();
+    console.log("🔄 Gesture refresh complete");
 
     setState("BLOOM_READY");
   };
@@ -114,21 +135,29 @@ export default function BloomClient({
      BLOOM START
   ----------------------------------------------------- */
   const handleBloomStart = async () => {
-    if (!ready || !bloom || !videoSrc || !userId) return;
+    console.log("▶️ BLOOM VIDEO PLAY DETECTED");
+    console.log("videoSrc:", videoSrc);
+
+    if (!ready || !bloom || !videoSrc || !userId) {
+      console.log("❌ Missing bloom data");
+      return;
+    }
 
     if (!hasBloomedToday) {
+      console.log("🌸 Completing bloom on server…");
       await completeTodayBloomAction(bloom, videoSrc, userId);
       setHasBloomedToday(true);
       setJustBloomedNow(true);
 
       await onRefresh();
+      console.log("🔄 Bloom refresh complete");
     }
 
     setState("BLOOM_PLAYING");
   };
 
   const handleBloomEnd = () => {
-    if (!ready) return;
+    console.log("🏁 BLOOM VIDEO ENDED");
     setState("BLOOM_DONE");
   };
 
@@ -138,6 +167,7 @@ export default function BloomClient({
      LOADING SCREEN
   ----------------------------------------------------- */
   if (!ready || !bloom || !gesture || !videoSrc) {
+    console.log("⏳ Loading screen active");
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p className="text-white/40 tracking-[3px] uppercase">
@@ -201,6 +231,8 @@ export default function BloomClient({
             loop={false}
             onPlay={handleBloomStart}
             onEnded={handleBloomEnd}
+            onLoadedData={() => console.log("🎥 VIDEO LOADED")}
+            onError={(e) => console.log("❌ VIDEO ERROR", e)}
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
