@@ -48,12 +48,8 @@ export default function BloomClient({
 
   const [state, setState] = useState<RitualState>("INIT");
 
-  const [gestureIndex, setGestureIndex] = useState(
-    gesture?.current_index ?? 0
-  );
-  const [bloomIndex, setBloomIndex] = useState(
-    bloom ? bloom.current_day - 1 : 0
-  );
+  const [gestureIndex, setGestureIndex] = useState(0);
+  const [bloomIndex, setBloomIndex] = useState(0);
 
   const [hasBloomedToday, setHasBloomedToday] = useState(false);
   const [justBloomedNow, setJustBloomedNow] = useState(false);
@@ -61,18 +57,11 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     INITIALIZATION
+     FIXED INITIALIZATION — waits for bloom + gesture
   ----------------------------------------------------- */
   useEffect(() => {
     if (!ready) return;
-
-    if (!bloom || !gesture) {
-      setGestureIndex(0);
-      setBloomIndex(0);
-      setVideoSrc(BLOOMS[0]);
-      setState("GESTURE");
-      return;
-    }
+    if (!bloom || !gesture) return; // ⭐ WAIT for real data
 
     const localLastCompleted = bloom.last_completed_local;
     const todayLocal = bloom.today_local ?? null;
@@ -82,28 +71,22 @@ export default function BloomClient({
       localLastCompleted !== null &&
       todayLocal !== null;
 
+    const newGestureIndex = gesture.current_index ?? 0;
+    const newBloomIndex = bloom.current_day - 1;
+
+    setGestureIndex(newGestureIndex);
+    setBloomIndex(newBloomIndex);
+
     if (alreadyBloomed) {
       setHasBloomedToday(true);
-      setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIndex]);
-
-      setState((prev) =>
-        prev === "BLOOM_READY" ||
-        prev === "BLOOM_PLAYING" ||
-        prev === "BLOOM_DONE"
-          ? prev
-          : "LOCKED"
-      );
+      setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
+      setState("LOCKED");
     } else {
       setHasBloomedToday(false);
-      setVideoSrc(BLOOMS[bloomIndex]);
-
-      setState((prev) =>
-        prev === "INIT" || prev === "GESTURE"
-          ? "GESTURE"
-          : prev
-      );
+      setVideoSrc(BLOOMS[newBloomIndex]);
+      setState("GESTURE");
     }
-  }, [ready, bloom, gesture, bloomIndex]);
+  }, [ready, bloom, gesture]);
 
   /* -----------------------------------------------------
      GESTURE COMPLETE
@@ -154,7 +137,7 @@ export default function BloomClient({
   /* -----------------------------------------------------
      LOADING SCREEN
   ----------------------------------------------------- */
-  if (!ready) {
+  if (!ready || !bloom || !gesture || !videoSrc) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <p className="text-white/40 tracking-[3px] uppercase">
