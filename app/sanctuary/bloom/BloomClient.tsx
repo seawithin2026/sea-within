@@ -104,13 +104,12 @@ export default function BloomClient({
   }, [ready, bloom, gesture]);
 
   /* -----------------------------------------------------
-     GESTURE COMPLETE
+     GESTURE COMPLETE — FIX APPLIED HERE
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     console.log("🙏 Gesture complete clicked");
 
-    if (!ready) return;
-    if (!gesture || !userId) {
+    if (!ready || !gesture || !userId) {
       console.log("❌ Gesture missing data");
       setState("LOCKED");
       return;
@@ -125,10 +124,12 @@ export default function BloomClient({
       return next;
     });
 
+    // ⭐ FIX: show bloom video BEFORE refresh remounts the component
+    setState("BLOOM_READY");
+
+    // ⭐ Refresh AFTER video overlay is visible
     await onRefresh();
     console.log("🔄 Gesture refresh complete");
-
-    setState("BLOOM_READY");
   };
 
   /* -----------------------------------------------------
