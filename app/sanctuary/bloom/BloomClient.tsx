@@ -35,7 +35,7 @@ type GestureProgress = {
 export default function BloomClient({
   bloom,
   gesture,
-  onRefresh,
+  onRefresh, // kept in signature but not used now
   userId,
 }: {
   bloom: BloomProgress | null;
@@ -91,11 +91,13 @@ export default function BloomClient({
     if (alreadyBloomed) {
       console.log("🔒 Bloom already completed today");
       setHasBloomedToday(true);
+      setJustBloomedNow(false);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
       setState("LOCKED");
     } else {
       console.log("🌱 Bloom NOT completed today");
       setHasBloomedToday(false);
+      setJustBloomedNow(false);
       setVideoSrc(BLOOMS[newBloomIndex]);
       setState("GESTURE");
     }
@@ -104,7 +106,7 @@ export default function BloomClient({
   }, [ready, bloom, gesture]);
 
   /* -----------------------------------------------------
-     GESTURE COMPLETE — FIX APPLIED HERE
+     GESTURE COMPLETE
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     console.log("🙏 Gesture complete clicked");
@@ -124,12 +126,8 @@ export default function BloomClient({
       return next;
     });
 
-    // ⭐ FIX: show bloom video BEFORE refresh remounts the component
+    // Show bloom video immediately, no refresh here
     setState("BLOOM_READY");
-
-    // ⭐ Refresh AFTER video overlay is visible
-    await onRefresh();
-    console.log("🔄 Gesture refresh complete");
   };
 
   /* -----------------------------------------------------
@@ -144,21 +142,24 @@ export default function BloomClient({
       return;
     }
 
+    // Only complete bloom the first time today
     if (!hasBloomedToday) {
       console.log("🌸 Completing bloom on server…");
       await completeTodayBloomAction(bloom, videoSrc, userId);
       setHasBloomedToday(true);
       setJustBloomedNow(true);
-
-      await onRefresh();
-      console.log("🔄 Bloom refresh complete");
+      console.log("🔄 Bloom completion stored on server");
     }
 
     setState("BLOOM_PLAYING");
   };
 
+  /* -----------------------------------------------------
+     BLOOM END
+  ----------------------------------------------------- */
   const handleBloomEnd = () => {
     console.log("🏁 BLOOM VIDEO ENDED");
+    // Freeze on end, show appropriate message
     setState("BLOOM_DONE");
   };
 
@@ -237,6 +238,7 @@ export default function BloomClient({
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
+          {/* First time bloom today */}
           {state === "BLOOM_DONE" && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
@@ -245,6 +247,7 @@ export default function BloomClient({
             </div>
           )}
 
+          {/* Returning later, already bloomed today */}
           {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
@@ -252,6 +255,7 @@ export default function BloomClient({
               </p>
             </div>
           )}
+
         </div>
       )}
 
