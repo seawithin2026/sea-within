@@ -35,7 +35,7 @@ type GestureProgress = {
 export default function BloomClient({
   bloom,
   gesture,
-  onRefresh, // kept but unused
+  onRefresh,
   userId,
 }: {
   bloom: BloomProgress | null;
@@ -60,7 +60,7 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     INITIALIZATION — FIXED LOGIC
+     INITIALIZATION — FIXED DATE SLICE LOGIC
   ----------------------------------------------------- */
   useEffect(() => {
     console.log("🔄 INIT useEffect triggered");
@@ -74,7 +74,10 @@ export default function BloomClient({
     const todayLocal = bloom.today_local ?? null;
     const lastBloomDate = bloom.profile_last_bloom_date ?? null;
 
-    const alreadyBloomed = lastBloomDate === todayLocal;
+    const alreadyBloomed =
+      lastBloomDate &&
+      todayLocal &&
+      lastBloomDate.slice(0, 10) === todayLocal.slice(0, 10);
 
     const newGestureIndex = gesture.current_index ?? 0;
     const newBloomIndex = bloom.current_day - 1;
@@ -90,7 +93,7 @@ export default function BloomClient({
       setHasBloomedToday(true);
       setJustBloomedNow(false);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
-      setState("LOCKED"); // auto-play replay
+      setState("LOCKED");
     } else {
       console.log("🌱 Bloom NOT completed today");
       setHasBloomedToday(false);
@@ -123,7 +126,6 @@ export default function BloomClient({
       return next;
     });
 
-    // Show bloom video immediately
     setState("BLOOM_READY");
   };
 
@@ -139,7 +141,6 @@ export default function BloomClient({
       return;
     }
 
-    // Only complete bloom the first time today
     if (!hasBloomedToday) {
       console.log("🌸 Completing bloom on server…");
       await completeTodayBloomAction(bloom, videoSrc, userId);
