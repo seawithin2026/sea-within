@@ -35,7 +35,7 @@ type GestureProgress = {
 export default function BloomClient({
   bloom,
   gesture,
-  onRefresh, // kept in signature but not used now
+  onRefresh, // kept but unused
   userId,
 }: {
   bloom: BloomProgress | null;
@@ -60,7 +60,7 @@ export default function BloomClient({
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
 
   /* -----------------------------------------------------
-     INITIALIZATION
+     INITIALIZATION — FIXED LOGIC
   ----------------------------------------------------- */
   useEffect(() => {
     console.log("🔄 INIT useEffect triggered");
@@ -71,13 +71,10 @@ export default function BloomClient({
     if (!ready) return;
     if (!bloom || !gesture) return;
 
-    const localLastCompleted = bloom.last_completed_local;
     const todayLocal = bloom.today_local ?? null;
+    const lastBloomDate = bloom.profile_last_bloom_date ?? null;
 
-    const alreadyBloomed =
-      localLastCompleted === todayLocal &&
-      localLastCompleted !== null &&
-      todayLocal !== null;
+    const alreadyBloomed = lastBloomDate === todayLocal;
 
     const newGestureIndex = gesture.current_index ?? 0;
     const newBloomIndex = bloom.current_day - 1;
@@ -93,7 +90,7 @@ export default function BloomClient({
       setHasBloomedToday(true);
       setJustBloomedNow(false);
       setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
-      setState("LOCKED");
+      setState("LOCKED"); // auto-play replay
     } else {
       console.log("🌱 Bloom NOT completed today");
       setHasBloomedToday(false);
@@ -126,7 +123,7 @@ export default function BloomClient({
       return next;
     });
 
-    // Show bloom video immediately, no refresh here
+    // Show bloom video immediately
     setState("BLOOM_READY");
   };
 
@@ -159,7 +156,6 @@ export default function BloomClient({
   ----------------------------------------------------- */
   const handleBloomEnd = () => {
     console.log("🏁 BLOOM VIDEO ENDED");
-    // Freeze on end, show appropriate message
     setState("BLOOM_DONE");
   };
 
@@ -238,7 +234,7 @@ export default function BloomClient({
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {/* First time bloom today */}
+          {/* First bloom today */}
           {state === "BLOOM_DONE" && justBloomedNow && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
@@ -247,7 +243,7 @@ export default function BloomClient({
             </div>
           )}
 
-          {/* Returning later, already bloomed today */}
+          {/* Returning later */}
           {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
             <div className="absolute bottom-10 left-10 animate-softRiseSlow">
               <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
