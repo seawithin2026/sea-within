@@ -14,14 +14,12 @@ export async function getBloomProgressClient() {
 
   if (!user) return null;
 
-  // Fetch profile fields
   const { data: profile } = await supabase
     .from("profiles")
     .select("last_bloom_date, last_bloom_video, timezone")
     .eq("id", user.id)
     .single();
 
-  // Fetch bloom progress
   const { data: bloom } = await supabase
     .from("bloom_progress")
     .select("*")
@@ -32,20 +30,17 @@ export async function getBloomProgressClient() {
 
   const userTimezone = profile?.timezone ?? "UTC";
 
-  // Convert last_completed to YYYY-MM-DD in user's timezone
   const lastCompletedLocal = bloom.last_completed
     ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
     : null;
 
-  // Get today's date in user's timezone
   const { data: todayLocal } = await supabase.rpc("get_user_today", {
     user_tz: userTimezone,
   });
 
-  // ⭐ FULL FIX — return the correct bloom object
   return {
-    id: bloom.id,                               // REQUIRED for server update
-    user_id: bloom.user_id,                     // optional but safe
+    id: bloom.id,
+    user_id: bloom.user_id,
     current_day: bloom.current_day,
     completed_all: bloom.completed_all,
 

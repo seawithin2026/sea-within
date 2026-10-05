@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
+
 import BloomClient from "./BloomClient";
 import MembershipGateWrapper from "@/components/MembershipGateWrapper";
 
 export default function BloomPage() {
   const [ready, setReady] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+
   const [bloom, setBloom] = useState<any>(null);
   const [gesture, setGesture] = useState<any>(null);
 
@@ -17,19 +19,21 @@ export default function BloomPage() {
 
   async function fetchBloom(userId: string) {
     const { data } = await supabase
-      .from("bloom_progress") // ⭐ FIXED
+      .from("bloom_progress")
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
+
     return data;
   }
 
   async function fetchGesture(userId: string) {
     const { data } = await supabase
-      .from("gesture_progress") // ⭐ FIXED
+      .from("gesture_progress")
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
+
     return data;
   }
 
@@ -70,6 +74,7 @@ export default function BloomPage() {
 
   async function onRefresh() {
     if (!userId) return;
+
     const bloomData = await fetchBloom(userId);
     const gestureData = await fetchGesture(userId);
 

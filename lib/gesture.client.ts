@@ -1,4 +1,12 @@
+"use client";
+
 import { supabase } from "@/lib/supabase/client";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export async function getGestureProgressClient() {
   const {
@@ -7,7 +15,14 @@ export async function getGestureProgressClient() {
 
   if (!user) return null;
 
-  // Fetch gesture progress
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone, last_gesture_date")
+    .eq("id", user.id)
+    .single();
+
+  const userTimezone = profile?.timezone ?? "UTC";
+
   const { data } = await supabase
     .from("gesture_progress")
     .select("*")
@@ -16,11 +31,13 @@ export async function getGestureProgressClient() {
 
   if (!data) return null;
 
-  // Gesture server stores last_completed as YYYY-MM-DD
-  const lastCompletedLocal = data.last_completed ?? null;
+  const lastCompletedLocal = data.last_completed
+    ? dayjs(data.last_completed).tz(userTimezone).format("YYYY-MM-DD")
+    : null;
 
   return {
     ...data,
     last_completed_local: lastCompletedLocal,
+    profile_last_gesture_date: profile?.last_gesture_date ?? null,
   };
 }

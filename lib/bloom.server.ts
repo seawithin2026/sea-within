@@ -9,44 +9,38 @@ dayjs.extend(timezone);
 const BLOOM_MAX_DAY = 36;
 
 export async function getBloomProgress(userId: string) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseServer();
   if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_bloom_date, last_bloom_video")
     .eq("id", userId)
-    .maybeSingle();
+    .single();
 
-  const userTimezone = profile?.timezone ?? "UTC";
-  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("bloom_progress")
     .select("*")
     .eq("user_id", userId)
-    .maybeSingle();
+    .single();
 
-  if (!data) {
-    const { data: created, error: createError } = await supabase
+  // If no bloom_progress row exists yet, create it
+  if (error && error.code === "PGRST116") {
+    const { data: created } = await supabase
       .from("bloom_progress")
-      .upsert(
-        {
-          user_id: userId,
-          current_day: 1,
-          completed_all: false,
-          last_completed: null,
-        },
-        { onConflict: "user_id" }
-      )
+      .insert({
+        user_id: userId,
+        current_day: 1,
+        completed_all: false,
+        last_completed: null,
+      })
       .select()
       .single();
 
-    if (createError) return null;
-
     return {
       ...created,
-      today_local: todayLocal,
       last_completed_local: null,
       profile_last_bloom_date: profile?.last_bloom_date ?? null,
       profile_last_bloom_video: profile?.last_bloom_video ?? null,
@@ -55,12 +49,13 @@ export async function getBloomProgress(userId: string) {
 
   let lastCompletedLocal = null;
   if (data?.last_completed) {
-    lastCompletedLocal = dayjs(data.last_completed).format("YYYY-MM-DD");
+    lastCompletedLocal = dayjs(data.last_completed)
+      .tz(userTimezone)
+      .format("YYYY-MM-DD");
   }
 
   return {
     ...data,
-    today_local: todayLocal,
     last_completed_local: lastCompletedLocal,
     profile_last_bloom_date: profile?.last_bloom_date ?? null,
     profile_last_bloom_video: profile?.last_bloom_video ?? null,
@@ -72,52 +67,59 @@ export async function completeTodayBloom(
   videoName: string,
   userId: string
 ) {
-  const supabase = await supabaseServer();
-  if (!userId) throw new Error("Missing userId in completeTodayBloom");
+  const supabase = supabaseServer();
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", userId)
-    .maybeSingle();
+    .single();
 
-  const userTimezone = profile?.timezone ?? "UTC";
-  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
-  const nowUtcIso = new Date().toISOString();
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  let nextDay = (progress?.current_day ?? 1) + 1;
-  let completedAll = progress?.completed_all ?? false;
+  // Use full ISO timestamp in user's timezone
+  const todayLocalTimestamp = dayjs().tz(userTimezone).toISOString();
+
+  let nextDay = progress.current_day + 1;
+  let completedAll = progress.completed_all;
 
   if (nextDay > BLOOM_MAX_DAY) {
     nextDay = 1;
-    completedAll = true;
+    completedAll = false;
   }
 
-  // Update bloom_progress (last_completed is DATE: YYYY-MM-DD)
+  // Safer targeting by user_id, with error surfaced
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
       current_day: nextDay,
-      last_completed: todayLocal,
+      last_completed: todayLocalTimestamp,
       completed_all: completedAll,
-      updated_at: nowUtcIso,
+      updated_at: new Date().toISOString(),
     })
     .eq("user_id", userId)
     .select()
     .single();
 
-  if (bloomError) throw new Error(`bloom_progress error: ${bloomError.message}`);
+  if (bloomError) {
+    console.error("Bloom update failed:", bloomError);
+    return null;
+  }
 
-  // Update profiles (last_bloom_date is text: YYYY-MM-DD)
   const { error: profileError } = await supabase
     .from("profiles")
     .update({
-      last_bloom_date: todayLocal,
+      last_bloom_date: todayLocalTimestamp,
       last_bloom_video: videoName,
     })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select()
+    .single();
 
-  if (profileError) throw new Error(`profiles error: ${profileError.message}`);
+  if (profileError) {
+    console.error("Profile bloom update failed:", profileError);
+  }
 
   return bloomData;
 }

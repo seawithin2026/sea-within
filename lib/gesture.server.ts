@@ -9,44 +9,37 @@ dayjs.extend(timezone);
 const GESTURE_MAX = 50;
 
 export async function getGestureProgress(userId: string) {
-  const supabase = await supabaseServer();
+  const supabase = supabaseServer();
   if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_gesture_date")
     .eq("id", userId)
-    .maybeSingle();
+    .single();
 
-  const userTimezone = profile?.timezone ?? "UTC";
-  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("gesture_progress")
     .select("*")
     .eq("user_id", userId)
-    .maybeSingle();
+    .single();
 
-  if (!data) {
-    const { data: created, error: createError } = await supabase
+  if (error && error.code === "PGRST116") {
+    const { data: created } = await supabase
       .from("gesture_progress")
-      .upsert(
-        {
-          user_id: userId,
-          current_index: 0,
-          last_index: -1,
-          last_completed: null,
-        },
-        { onConflict: "user_id" }
-      )
+      .insert({
+        user_id: userId,
+        current_index: 0,
+        last_index: -1,
+        last_completed: null,
+      })
       .select()
       .single();
 
-    if (createError) return null;
-
     return {
       ...created,
-      today_local: todayLocal,
       last_completed_local: null,
       profile_last_gesture_date: profile?.last_gesture_date ?? null,
     };
@@ -61,53 +54,97 @@ export async function getGestureProgress(userId: string) {
 
   return {
     ...data,
-    today_local: todayLocal,
     last_completed_local: lastCompletedLocal,
     profile_last_gesture_date: profile?.last_gesture_date ?? null,
   };
 }
 
 export async function completeGesture(progress: any, userId: string) {
-  const supabase = await supabaseServer();
-  if (!userId) throw new Error("Missing userId in completeGesture");
+  const supabase = supabaseServer();
+  if (!userId) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
     .eq("id", userId)
-    .maybeSingle();
+    .single();
 
-  const userTimezone = profile?.timezone ?? "UTC";
-  const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
-  const nowUtcIso = new Date().toISOString();
+  const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  let nextIndex = (progress?.current_index ?? 0) + 1;
+  // Full ISO timestamp in user's timezone
+  const todayLocalTimestamp = dayjs().tz(userTimezone).toISOString();
+
+  let nextIndex = progress.current_index + 1;
   if (nextIndex >= GESTURE_MAX) nextIndex = 0;
 
-  // Update gesture_progress (last_completed is TIMESTAMPTZ: ISO string)
   const { data: gestureData, error: gestureError } = await supabase
     .from("gesture_progress")
     .update({
       current_index: nextIndex,
-      last_index: progress?.current_index ?? 0,
-      last_completed: nowUtcIso,
+      last_index: progress.current_index,
+      last_completed: todayLocalTimestamp,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  if (gestureError) {
+    console.error("Gesture update failed:", gestureError);
+    return null;
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({
+      last_gesture_date: todayLocalTimestamp,
+    })
+    .eq("id", userId)
+    .select()
+    .single();
+
+  if (profileError) {
+    console.error("Profile gesture update failed:", profileError);
+  }
+
+  return gestureData;
+}
+
+export async function resetGestureCycle(progress: any, userId: string) {
+  const supabase = supabaseServer();
+  if (!userId) return null;
+
+  const nowUtcIso = new Date().toISOString();
+
+  const { data: gestureData, error: gestureError } = await supabase
+    .from("gesture_progress")
+    .update({
+      current_index: 0,
+      last_index: -1,
+      last_completed: null,
       updated_at: nowUtcIso,
     })
     .eq("user_id", userId)
     .select()
     .single();
 
-  if (gestureError) throw new Error(`gesture_progress error: ${gestureError.message}`);
+  if (gestureError) {
+    console.error("Gesture reset failed:", gestureError);
+    return null;
+  }
 
-  // Update profiles (last_gesture_date is text: YYYY-MM-DD)
   const { error: profileError } = await supabase
     .from("profiles")
     .update({
-      last_gesture_date: todayLocal,
+      last_gesture_date: null,
     })
-    .eq("id", userId);
+    .eq("id", userId)
+    .select()
+    .single();
 
-  if (profileError) throw new Error(`profiles error: ${profileError.message}`);
+  if (profileError) {
+    console.error("Profile gesture reset failed:", profileError);
+  }
 
   return gestureData;
 }
