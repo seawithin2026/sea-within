@@ -63,6 +63,14 @@ export default function LoginPage() {
       return;
     }
 
+    // ⭐ NEW: Update timezone after successful OTP login
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    await supabase
+      .from("profiles")
+      .update({ timezone })
+      .eq("email", email);
+
     // Redirect immediately — AccountRouter handles everything
     window.location.href = "/account";
   };
