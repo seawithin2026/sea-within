@@ -3,6 +3,19 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Stripe from "https://esm.sh/stripe@12";
 
 serve(async (req) => {
+  // Handle CORS preflight (OPTIONS request)
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "authorization, x-client-info, apikey, content-type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
+    });
+  }
+
   try {
     const supabase = createClient(
       Deno.env.get("PROJECT_URL")!,
@@ -14,6 +27,12 @@ serve(async (req) => {
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Not authenticated" }), {
         status: 401,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers":
+            "authorization, x-client-info, apikey, content-type",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+        },
       });
     }
 
@@ -24,6 +43,12 @@ serve(async (req) => {
     if (!user) {
       return new Response(JSON.stringify({ error: "Not authenticated" }), {
         status: 401,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers":
+            "authorization, x-client-info, apikey, content-type",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+        },
       });
     }
 
@@ -71,13 +96,27 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers":
+          "authorization, x-client-info, apikey, content-type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+      },
     });
 
   } catch (err) {
     console.error("Checkout Error:", err);
     return new Response(
       JSON.stringify({ error: "Something went wrong" }),
-      { status: 500 }
+      {
+        status: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers":
+            "authorization, x-client-info, apikey, content-type",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+        },
+      }
     );
   }
 });

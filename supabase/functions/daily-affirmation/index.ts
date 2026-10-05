@@ -10,20 +10,32 @@ import timezone from "https://esm.sh/dayjs@1.11.10/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+// ⭐ CORS HEADERS (used everywhere)
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://www.seawithinyourself.com",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+};
+
 serve(async (req) => {
+  // ⭐ Handle OPTIONS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
   try {
-    // 1. Init Supabase client (service role is allowed here)
     const supabase = createClient(
       Deno.env.get("PROJECT_URL")!,
       Deno.env.get("SERVICE_ROLE_KEY")!
     );
 
-    // 2. Get user from Authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Not authenticated" }), {
-        status: 401,
-      });
+      return new Response(
+        JSON.stringify({ error: "Not authenticated" }),
+        { status: 401, headers: corsHeaders }
+      );
     }
 
     const token = authHeader.replace("Bearer ", "");
@@ -31,12 +43,12 @@ serve(async (req) => {
 
     const user = authData?.user;
     if (!user) {
-      return new Response(JSON.stringify({ error: "Not authenticated" }), {
-        status: 401,
-      });
+      return new Response(
+        JSON.stringify({ error: "Not authenticated" }),
+        { status: 401, headers: corsHeaders }
+      );
     }
 
-    // 3. Fetch timezone
     const { data: profile } = await supabase
       .from("profiles")
       .select("timezone")
@@ -45,13 +57,14 @@ serve(async (req) => {
 
     const userTimezone = profile?.timezone || "UTC";
 
-    // 4. Compute today's date in user's timezone
     const today = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+    const weekday = dayjs().tz(userTimezone).format("dddd");
 
-    // 5. Check if today's affirmation already exists
+    // ⭐ Check if today's affirmation already exists
     const { data: existing } = await supabase
       .from("daily_affirmations")
       .select("*")
+      .eq("user_id", user.id)
       .eq("date", today)
       .maybeSingle();
 
@@ -61,34 +74,71 @@ serve(async (req) => {
           message: existing.message,
           attribution: existing.attribution,
         }),
-        { status: 200 }
+        { status: 200, headers: corsHeaders }
       );
     }
 
-    // 6. Pull next affirmation from pool
+    // ⭐ FRIDAY WISDOM LOGIC
+    if (weekday === "Friday") {
+      const { data: wisdom } = await supabase
+        .from("wisdom_posts")
+        .select("*")
+        .eq("is_approved", true)
+        .is("featured_at", null)
+        .order("created_at", { ascending: true })
+        .limit(1);
+
+      if (wisdom && wisdom.length > 0) {
+        const post = wisdom[0];
+
+        const { data: insertedWisdom } = await supabase
+          .from("daily_affirmations")
+          .insert({
+            user_id: user.id,
+            message: post.content,
+            attribution: post.username || "Community Member",
+            date: today,
+          })
+          .select()
+          .maybeSingle();
+
+        await supabase
+          .from("wisdom_posts")
+          .update({ featured_at: today })
+          .eq("id", post.id);
+
+        return new Response(
+          JSON.stringify({
+            message: insertedWisdom.message,
+            attribution: insertedWisdom.attribution,
+          }),
+          { status: 200, headers: corsHeaders }
+        );
+      }
+    }
+
+    // ⭐ DAILY AFFIRMATION LOGIC
     let { data: pool } = await supabase
       .from("affirmation_pool")
       .select("*")
       .order("id", { ascending: true });
 
-    // 7. If pool is empty, return error (should never happen now)
     if (!pool || pool.length === 0) {
       return new Response(
         JSON.stringify({
           error:
             "Affirmation pool is empty. Please refill it from your curated pool.",
         }),
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
-    // 8. Select first affirmation
     const affirmation = pool[0];
 
-    // 9. Insert today's affirmation
     const { data: inserted } = await supabase
       .from("daily_affirmations")
       .insert({
+        user_id: user.id,
         message: affirmation.message,
         attribution: affirmation.attribution,
         date: today,
@@ -96,7 +146,6 @@ serve(async (req) => {
       .select()
       .maybeSingle();
 
-    // 10. Remove from pool
     await supabase.from("affirmation_pool").delete().eq("id", affirmation.id);
 
     return new Response(
@@ -104,13 +153,13 @@ serve(async (req) => {
         message: inserted.message,
         attribution: inserted.attribution,
       }),
-      { status: 200 }
+      { status: 200, headers: corsHeaders }
     );
   } catch (err) {
     console.error("Affirmation error:", err);
     return new Response(
       JSON.stringify({ error: "Something went wrong" }),
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 });

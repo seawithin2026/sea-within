@@ -5,8 +5,8 @@ export function supabaseServer() {
   const cookieStore = cookies();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,   // ← FIXED
+    process.env.PROJECT_URL!,
+    process.env.SERVICE_ROLE_KEY!,   // ← FIXED
     {
       cookies: {
         get(name) {
