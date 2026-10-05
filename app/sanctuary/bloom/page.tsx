@@ -6,6 +6,12 @@ import { supabase } from "@/lib/supabase/client";
 import BloomClient from "./BloomClient";
 import MembershipGateWrapper from "@/components/MembershipGateWrapper";
 
+import { getBloomProgress } from "@/lib/bloom.server";
+import { getGestureProgress } from "@/lib/gesture.server";
+
+
+
+
 export default function BloomPage() {
   const [ready, setReady] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -16,26 +22,6 @@ export default function BloomPage() {
   useEffect(() => {
     setReady(true);
   }, []);
-
-  async function fetchBloom(userId: string) {
-    const { data } = await supabase
-      .from("bloom_progress")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    return data;
-  }
-
-  async function fetchGesture(userId: string) {
-    const { data } = await supabase
-      .from("gesture_progress")
-      .select("*")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    return data;
-  }
 
   useEffect(() => {
     if (!ready) return;
@@ -48,8 +34,9 @@ export default function BloomPage() {
 
       setUserId(user.id);
 
-      const bloomData = await fetchBloom(user.id);
-      const gestureData = await fetchGesture(user.id);
+      // FIX: use server functions that auto-create rows
+      const bloomData = await getBloomProgress(user.id);
+      const gestureData = await getGestureProgress(user.id);
 
       console.log("USER ID:", user.id);
       console.log("BLOOM DATA:", bloomData);
@@ -75,8 +62,8 @@ export default function BloomPage() {
   async function onRefresh() {
     if (!userId) return;
 
-    const bloomData = await fetchBloom(userId);
-    const gestureData = await fetchGesture(userId);
+    const bloomData = await getBloomProgress(userId);
+    const gestureData = await getGestureProgress(userId);
 
     console.log("REFRESH BLOOM:", bloomData);
     console.log("REFRESH GESTURE:", gestureData);
