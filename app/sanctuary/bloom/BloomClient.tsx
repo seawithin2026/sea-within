@@ -57,12 +57,17 @@ export default function BloomClient({
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  // Initialize on mount
   useEffect(() => {
     setReady(true);
   }, []);
 
+  // Sync state ONLY when mounting or when initial loading completes
   useEffect(() => {
     if (!ready || !bloom || !gesture) return;
+
+    // Avoid resetting state if user is already actively playing or finished in this session
+    if (state === "BLOOM_PLAYING" || state === "BLOOM_DONE") return;
 
     const todayLocal = bloom.today_local ?? null;
     const lastBloomDate = bloom.profile_last_bloom_date ?? null;
@@ -86,11 +91,9 @@ export default function BloomClient({
 
     if (alreadyBloomed) {
       setHasBloomedToday(true);
-      setJustBloomedNow(false);
       setState("LOCKED");
     } else {
       setHasBloomedToday(false);
-      setJustBloomedNow(false);
       setState("GESTURE");
     }
   }, [ready, bloom, gesture]);
@@ -110,28 +113,30 @@ export default function BloomClient({
     }
   };
 
-  const handleBloomStart = async () => {
-    if (!ready || !bloom || !videoSrc || !userId) return;
+  const handleStartVideoClick = () => {
+    setState("BLOOM_PLAYING");
+    if (videoRef.current) {
+      videoRef.current.play().catch(console.error);
+    }
+  };
 
-    if (!hasBloomedToday && !justBloomedNow && !isSubmitting) {
+  const handleBloomEnd = async () => {
+    setState("BLOOM_DONE");
+
+    if (!hasBloomedToday && !justBloomedNow && bloom && videoSrc && userId) {
       try {
         setIsSubmitting(true);
         await completeTodayBloomAction(bloom, videoSrc, userId);
         setHasBloomedToday(true);
         setJustBloomedNow(true);
+        // Refresh silently in background after video finishes
         onRefresh().catch(console.error);
       } catch (err) {
-        console.error("❌ Failed to register bloom completion:", err);
+        console.error("❌ Failed to save bloom completion:", err);
       } finally {
         setIsSubmitting(false);
       }
     }
-
-    setState("BLOOM_PLAYING");
-  };
-
-  const handleBloomEnd = () => {
-    setState("BLOOM_DONE");
   };
 
   const gestureText = GESTURES[gestureIndex] || "Take a deep breath and offer yourself a moment.";
@@ -183,34 +188,28 @@ export default function BloomClient({
       )}
 
       {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(state) && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col items-center justify-center">
+        <div className="fixed inset-0 z-40 bg-black flex flex-col items-center justify-center">
           <video
             ref={videoRef}
             key={videoSrc ?? "bloom-video"}
             src={videoSrc || ""}
-            autoPlay
             playsInline
             controls={state === "BLOOM_PLAYING" || state === "LOCKED"}
-            onPlay={handleBloomStart}
             onEnded={handleBloomEnd}
-            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+            className="w-full h-full object-cover" // 👈 Removed brightness/contrast filters
           />
 
           {state === "BLOOM_READY" && (
             <button
-              onClick={() => {
-                if (videoRef.current) {
-                  videoRef.current.play().catch(console.error);
-                }
-              }}
-              className="absolute z-50 px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 text-white tracking-[0.2em] uppercase text-xs backdrop-blur-md transition-all"
+              onClick={handleStartVideoClick}
+              className="absolute z-50 px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 text-white tracking-[0.2em] uppercase text-xs backdrop-blur-md transition-all cursor-pointer"
             >
               Begin Video
             </button>
           )}
 
           {state === "BLOOM_DONE" && justBloomedNow && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow pointer-events-none">
+            <div className="absolute bottom-10 left-10 pointer-events-none">
               <p className="text-amber-300 text-base tracking-[0.18em] uppercase">
                 You bloomed today.
               </p>
@@ -218,7 +217,7 @@ export default function BloomClient({
           )}
 
           {(state === "LOCKED" || (state === "BLOOM_DONE" && !justBloomedNow)) && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow pointer-events-none">
+            <div className="absolute bottom-10 left-10 pointer-events-none">
               <p className="text-amber-300 text-base tracking-[0.18em] uppercase">
                 Come back tomorrow.
               </p>
@@ -226,29 +225,6 @@ export default function BloomClient({
           )}
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes softRiseSlow {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 1s ease forwards;
-        }
-        .animate-softRiseSlow {
-          animation: softRiseSlow 2.4s ease forwards;
-        }
-      `}</style>
     </div>
   );
 }
