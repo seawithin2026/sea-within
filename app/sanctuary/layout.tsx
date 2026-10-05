@@ -35,36 +35,15 @@ export default function SanctuaryLayout({ children }) {
         .eq("id", u.id)
         .maybeSingle();
 
-      if (!profileData) {
-        setProfile(null);
-        return;
-      }
-
-      setProfile(profileData);
+      setProfile(profileData || null);
     }
 
     load();
   }, [hydrated]);
 
-  // ⭐ FIX: do NOT redirect — show loading until hydration finishes
-  if (hydrated && user === null) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-white/40 tracking-[3px] uppercase">
-          Loading Sanctuary…
-        </p>
-      </div>
-    );
-  }
-
+  // Blank loading screen (no text)
   if (!hydrated || !user || !profile) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-white/40 tracking-[3px] uppercase">
-          Loading Sanctuary…
-        </p>
-      </div>
-    );
+    return <div className="min-h-screen bg-black" />;
   }
 
   return (
