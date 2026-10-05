@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
+import MembershipGate from "@/components/MembershipGate"; // your gate
 
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
@@ -32,7 +33,7 @@ type RitualState =
   | "LOCKED";
 
 export default function BloomRitualPage() {
-  return <BloomContent />;
+    return <BloomContent />;
 }
 
 function BloomContent() {
@@ -66,7 +67,6 @@ function BloomContent() {
 
       const userTimezone = bloom.timezone || dayjs.tz.guess();
 
-      // Convert both dates to LOCAL timezone
       const localLastCompleted = bloom.last_completed_local;
 
       const localProfileDate = bloom.profile_last_bloom_date
@@ -80,11 +80,9 @@ function BloomContent() {
         localLastCompleted !== null &&
         localProfileDate !== null;
 
-      // Bloom index (0-based)
       const bloomIdx = bloom.current_day - 1;
       setBloomIndex(bloomIdx);
 
-      // Gesture index
       setGestureIndex(gesture.current_index);
 
       if (alreadyBloomed) {
@@ -149,112 +147,115 @@ function BloomContent() {
   };
 
   /* -----------------------------------------------------
-     RENDER
+     FINAL RETURN — MembershipGate wraps everything
   ----------------------------------------------------- */
   const gestureText = GESTURES[gestureIndex];
 
   return (
-    <div className="min-h-screen bg-transparent text-white flex flex-col">
-      <Navigation />
+    <MembershipGate>
+      <main className="min-h-screen bg-transparent text-white flex flex-col relative overflow-hidden">
 
-      {/* GESTURE SCREEN */}
-      {state === "GESTURE" && (
-        <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
-          />
+        <Navigation />
 
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
+        {/* GESTURE SCREEN */}
+        {state === "GESTURE" && (
+          <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
+            />
 
-          <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
-            <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
-              Sanctuary • Bloom Ritual
-            </p>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
 
-            <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
-              Your Bloom Ritual
-            </h1>
+            <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
+              <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
+                Sanctuary • Bloom Ritual
+              </p>
 
-            <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
-              {gestureText}
-            </p>
+              <h1 className="mt-4 text-4xl md:text-5xl tracking-[0.16em] uppercase text-white/90">
+                Your Bloom Ritual
+              </h1>
 
-            <button
-              onClick={handleGestureComplete}
-              className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
-            >
-              I offered myself a moment
-            </button>
+              <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
+                {gestureText}
+              </p>
+
+              <button
+                onClick={handleGestureComplete}
+                className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
+              >
+                I offered myself a moment
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* BLOOM VIDEO OVERLAY */}
+        {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
+          state
+        ) && (
+          <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+            <video
+              key={videoSrc}
+              src={videoSrc || ""}
+              autoPlay
+              muted
+              playsInline
+              loop={false}
+              onPlay={handleBloomStart}
+              onEnded={handleBloomEnd}
+              className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+            />
+
+            {state === "BLOOM_DONE" && justBloomedNow && (
+              <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+                <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+                  You bloomed today.
+                </p>
+              </div>
+            )}
+
+            {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
+              <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+                <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+                  Come back tomorrow.
+                </p>
+              </div>
+            )}
           </div>
-        </section>
-      )}
+        )}
 
-      {/* BLOOM VIDEO OVERLAY */}
-      {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
-        state
-      ) && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
-          <video
-            key={videoSrc}
-            src={videoSrc || ""}
-            autoPlay
-            muted
-            playsInline
-            loop={false}
-            onPlay={handleBloomStart}
-            onEnded={handleBloomEnd}
-            className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-          />
-
-          {state === "BLOOM_DONE" && justBloomedNow && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                You bloomed today.
-              </p>
-            </div>
-          )}
-
-          {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                Come back tomorrow.
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ANIMATIONS */}
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
+        {/* ANIMATIONS */}
+        <style jsx>{`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
           }
-          to {
-            opacity: 1;
-          }
-        }
 
-        @keyframes softRiseSlow {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
+          @keyframes softRiseSlow {
+            from {
+              opacity: 0;
+              transform: translateY(40px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+
+          .animate-fadeIn {
+            animation: fadeIn 1s ease forwards;
           }
-        }
 
-        .animate-fadeIn {
-          animation: fadeIn 1s ease forwards;
-        }
-
-        .animate-softRiseSlow {
-          animation: softRiseSlow 2.4s ease forwards;
-        }
-      `}</style>
-    </div>
+          .animate-softRiseSlow {
+            animation: softRiseSlow 2.4s ease forwards;
+          }
+        `}</style>
+      </main>
+    </MembershipGate>
   );
 }
