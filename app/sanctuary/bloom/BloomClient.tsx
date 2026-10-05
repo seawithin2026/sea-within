@@ -253,6 +253,14 @@ export default function BloomClient({
             </div>
           )}
 
+          {/* LOCKED replay */}
+          {state === "LOCKED" && hasBloomedToday && (
+            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+                Come back tomorrow.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
