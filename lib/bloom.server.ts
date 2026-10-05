@@ -8,10 +8,15 @@ dayjs.extend(timezone);
 
 const BLOOM_MAX_DAY = 36;
 
+/* -----------------------------------------------------
+   GET BLOOM PROGRESS
+----------------------------------------------------- */
 export async function getBloomProgress(userId: string) {
-  const supabase = supabaseServer();
   if (!userId) return null;
 
+  const supabase = supabaseServer();
+
+  // Fetch profile timezone + last bloom metadata
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone, last_bloom_date, last_bloom_video")
@@ -20,13 +25,14 @@ export async function getBloomProgress(userId: string) {
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
+  // Fetch bloom progress row
   const { data, error } = await supabase
     .from("bloom_progress")
     .select("*")
     .eq("user_id", userId)
     .single();
 
-  // If no bloom_progress row exists yet, create it
+  // If no bloom_progress row exists yet → create one
   if (error && error.code === "PGRST116") {
     const { data: created } = await supabase
       .from("bloom_progress")
@@ -44,9 +50,11 @@ export async function getBloomProgress(userId: string) {
       last_completed_local: null,
       profile_last_bloom_date: profile?.last_bloom_date ?? null,
       profile_last_bloom_video: profile?.last_bloom_video ?? null,
+      today_local: dayjs().tz(userTimezone).format("YYYY-MM-DD"),
     };
   }
 
+  // Convert last_completed into user's local timezone
   let lastCompletedLocal = null;
   if (data?.last_completed) {
     lastCompletedLocal = dayjs(data.last_completed)
@@ -59,17 +67,23 @@ export async function getBloomProgress(userId: string) {
     last_completed_local: lastCompletedLocal,
     profile_last_bloom_date: profile?.last_bloom_date ?? null,
     profile_last_bloom_video: profile?.last_bloom_video ?? null,
+    today_local: dayjs().tz(userTimezone).format("YYYY-MM-DD"),
   };
 }
 
+/* -----------------------------------------------------
+   COMPLETE TODAY'S BLOOM
+----------------------------------------------------- */
 export async function completeTodayBloom(
   progress: any,
   videoName: string,
   userId: string
 ) {
-  const supabase = supabaseServer();
   if (!userId) return null;
 
+  const supabase = supabaseServer();
+
+  // Fetch timezone
   const { data: profile } = await supabase
     .from("profiles")
     .select("timezone")
@@ -78,9 +92,10 @@ export async function completeTodayBloom(
 
   const userTimezone = profile?.timezone ?? dayjs.tz.guess();
 
-  // Use full ISO timestamp in user's timezone
+  // Full ISO timestamp in user's timezone
   const todayLocalTimestamp = dayjs().tz(userTimezone).toISOString();
 
+  // Bloom day rollover logic
   let nextDay = progress.current_day + 1;
   let completedAll = progress.completed_all;
 
@@ -89,7 +104,9 @@ export async function completeTodayBloom(
     completedAll = false;
   }
 
-  // Safer targeting by user_id, with error surfaced
+  /* -----------------------------------------------------
+     UPDATE BLOOM PROGRESS
+  ----------------------------------------------------- */
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
@@ -107,6 +124,9 @@ export async function completeTodayBloom(
     return null;
   }
 
+  /* -----------------------------------------------------
+     UPDATE PROFILE METADATA
+  ----------------------------------------------------- */
   const { error: profileError } = await supabase
     .from("profiles")
     .update({
