@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 
 import { GESTURES } from "@/data/gestures";
@@ -44,11 +44,6 @@ export default function BloomClient({
   userId: string | null;
 }) {
   const [ready, setReady] = useState(false);
-  useEffect(() => {
-    console.log("🌸 BloomClient mounted");
-    setReady(true);
-  }, []);
-
   const [state, setState] = useState<RitualState>("INIT");
 
   const [gestureIndex, setGestureIndex] = useState(0);
@@ -58,143 +53,113 @@ export default function BloomClient({
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  /* -----------------------------------------------------
-     INITIALIZATION — FIXED DATE SLICE LOGIC
-  ----------------------------------------------------- */
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
-    console.log("🔄 INIT useEffect triggered");
-    console.log("ready:", ready);
-    console.log("bloom:", bloom);
-    console.log("gesture:", gesture);
+    setReady(true);
+  }, []);
 
-    if (!ready) return;
-    if (!bloom || !gesture) return;
+  useEffect(() => {
+    if (!ready || !bloom || !gesture) return;
 
     const todayLocal = bloom.today_local ?? null;
     const lastBloomDate = bloom.profile_last_bloom_date ?? null;
 
     const alreadyBloomed =
-      lastBloomDate &&
-      todayLocal &&
-      lastBloomDate.slice(0, 10) === todayLocal.slice(0, 10);
+      Boolean(lastBloomDate) &&
+      Boolean(todayLocal) &&
+      lastBloomDate?.slice(0, 10) === todayLocal?.slice(0, 10);
 
-    const newGestureIndex = gesture.current_index ?? 0;
-    const newBloomIndex = bloom.current_day - 1;
+    const rawGestureIdx = gesture.current_index ?? 0;
+    const safeGestureIdx = GESTURES.length > 0 ? rawGestureIdx % GESTURES.length : 0;
 
-    console.log("🌼 bloomIndex:", newBloomIndex);
-    console.log("🪷 gestureIndex:", newGestureIndex);
+    const rawBloomIdx = (bloom.current_day ?? 1) - 1;
+    const safeBloomIdx = BLOOMS.length > 0 ? Math.max(0, rawBloomIdx % BLOOMS.length) : 0;
 
-    setGestureIndex(newGestureIndex);
-    setBloomIndex(newBloomIndex);
+    setGestureIndex(safeGestureIdx);
+    setBloomIndex(safeBloomIdx);
+
+    const activeVideo = bloom.profile_last_bloom_video || BLOOMS[safeBloomIdx];
+    setVideoSrc(activeVideo);
 
     if (alreadyBloomed) {
-      console.log("🔒 Bloom already completed today");
       setHasBloomedToday(true);
       setJustBloomedNow(false);
-      setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[newBloomIndex]);
       setState("LOCKED");
     } else {
-      console.log("🌱 Bloom NOT completed today");
       setHasBloomedToday(false);
       setJustBloomedNow(false);
-      setVideoSrc(BLOOMS[newBloomIndex]);
       setState("GESTURE");
     }
-
-    console.log("🎬 videoSrc set to:", BLOOMS[newBloomIndex]);
   }, [ready, bloom, gesture]);
 
-  /* -----------------------------------------------------
-     GESTURE COMPLETE
-  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
-    console.log("🙏 Gesture complete clicked");
+    if (!ready || !gesture || !userId || isSubmitting) return;
 
-    if (!ready || !gesture || !userId) {
-      console.log("❌ Gesture missing data");
-      setState("LOCKED");
-      return;
+    try {
+      setIsSubmitting(true);
+      await completeGestureAction(gesture, userId);
+      setGestureIndex((prev) => (prev + 1) % GESTURES.length);
+      setState("BLOOM_READY");
+    } catch (err) {
+      console.error("❌ Failed to complete gesture:", err);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    await completeGestureAction(gesture, userId);
-    console.log("✨ Gesture completed on server");
-
-    setGestureIndex((prev) => {
-      const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
-      console.log("➡️ Gesture index advanced to:", next);
-      return next;
-    });
-
-    setState("BLOOM_READY");
   };
 
-  /* -----------------------------------------------------
-     BLOOM START
-  ----------------------------------------------------- */
   const handleBloomStart = async () => {
-    console.log("▶️ BLOOM VIDEO PLAY DETECTED");
-    console.log("videoSrc:", videoSrc);
+    if (!ready || !bloom || !videoSrc || !userId) return;
 
-    if (!ready || !bloom || !videoSrc || !userId) {
-      console.log("❌ Missing bloom data");
-      return;
-    }
-
-    if (!hasBloomedToday) {
-      console.log("🌸 Completing bloom on server…");
-      await completeTodayBloomAction(bloom, videoSrc, userId);
-      setHasBloomedToday(true);
-      setJustBloomedNow(true);
-      console.log("🔄 Bloom completion stored on server");
+    if (!hasBloomedToday && !justBloomedNow && !isSubmitting) {
+      try {
+        setIsSubmitting(true);
+        await completeTodayBloomAction(bloom, videoSrc, userId);
+        setHasBloomedToday(true);
+        setJustBloomedNow(true);
+        onRefresh().catch(console.error);
+      } catch (err) {
+        console.error("❌ Failed to register bloom completion:", err);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
 
     setState("BLOOM_PLAYING");
   };
 
-  /* -----------------------------------------------------
-     BLOOM END
-  ----------------------------------------------------- */
   const handleBloomEnd = () => {
-    console.log("🏁 BLOOM VIDEO ENDED");
     setState("BLOOM_DONE");
   };
 
-  const gestureText = GESTURES[gestureIndex];
+  const gestureText = GESTURES[gestureIndex] || "Take a deep breath and offer yourself a moment.";
 
-  /* -----------------------------------------------------
-     LOADING SCREEN
-  ----------------------------------------------------- */
   if (!ready || !bloom || !gesture || !videoSrc) {
-    console.log("⏳ Loading screen active");
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <p className="text-white/40 tracking-[3px] uppercase">
+        <p className="text-white/40 tracking-[3px] uppercase animate-pulse">
           Loading Ritual…
         </p>
       </div>
     );
   }
 
-  /* -----------------------------------------------------
-     MAIN UI
-  ----------------------------------------------------- */
   return (
     <div className="min-h-screen bg-transparent text-white flex flex-col">
       <Navigation />
 
-      {/* GESTURE SECTION */}
       {state === "GESTURE" && (
         <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: "url('/images/bloom-hero-flowers.jpg')" }}
           />
-
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
 
           <div className="relative z-10 w-full max-w-3xl px-6 md:px-10 lg:px-16 pt-32 md:pt-40 pb-10">
-            <p className="text-[11px] tracking-[0.28em] uppercase text-[#FFFFFF]">
+            <p className="text-[11px] tracking-[0.28em] uppercase text-white/80">
               Sanctuary • Bloom Ritual
             </p>
 
@@ -202,61 +167,59 @@ export default function BloomClient({
               Your Bloom Ritual
             </h1>
 
-            <p className="mt-6 text-sm md:text-base text-[#FFFFFF] max-w-xl mx-auto leading-relaxed">
+            <p className="mt-6 text-sm md:text-base text-white max-w-xl mx-auto leading-relaxed">
               {gestureText}
             </p>
 
             <button
               onClick={handleGestureComplete}
-              className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
+              disabled={isSubmitting}
+              className="mt-6 px-10 py-3 rounded-full text-[11px] tracking-[0.22em] uppercase border border-white/20 hover:border-white/40 transition-all duration-500 backdrop-blur-sm disabled:opacity-50"
             >
-              I offered myself a moment
+              {isSubmitting ? "Updating..." : "I offered myself a moment"}
             </button>
           </div>
         </section>
       )}
 
-      {/* BLOOM VIDEO OVERLAY */}
-      {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
-        state
-      ) && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+      {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(state) && (
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col items-center justify-center">
           <video
+            ref={videoRef}
             key={videoSrc ?? "bloom-video"}
             src={videoSrc || ""}
             autoPlay
-            muted
             playsInline
-            loop={false}
+            controls={state === "BLOOM_PLAYING" || state === "LOCKED"}
             onPlay={handleBloomStart}
             onEnded={handleBloomEnd}
-            onLoadedData={() => console.log("🎥 VIDEO LOADED")}
-            onError={(e) => console.log("❌ VIDEO ERROR", e)}
             className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
           />
 
-          {/* First bloom today */}
+          {state === "BLOOM_READY" && (
+            <button
+              onClick={() => {
+                if (videoRef.current) {
+                  videoRef.current.play().catch(console.error);
+                }
+              }}
+              className="absolute z-50 px-8 py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 text-white tracking-[0.2em] uppercase text-xs backdrop-blur-md transition-all"
+            >
+              Begin Video
+            </button>
+          )}
+
           {state === "BLOOM_DONE" && justBloomedNow && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+            <div className="absolute bottom-10 left-10 animate-softRiseSlow pointer-events-none">
+              <p className="text-amber-300 text-base tracking-[0.18em] uppercase">
                 You bloomed today.
               </p>
             </div>
           )}
 
-          {/* Returning later */}
-          {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                Come back tomorrow.
-              </p>
-            </div>
-          )}
-
-          {/* LOCKED replay */}
-          {state === "LOCKED" && hasBloomedToday && (
-            <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-              <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+          {(state === "LOCKED" || (state === "BLOOM_DONE" && !justBloomedNow)) && (
+            <div className="absolute bottom-10 left-10 animate-softRiseSlow pointer-events-none">
+              <p className="text-amber-300 text-base tracking-[0.18em] uppercase">
                 Come back tomorrow.
               </p>
             </div>
@@ -264,17 +227,11 @@ export default function BloomClient({
         </div>
       )}
 
-      {/* ANIMATIONS */}
       <style jsx>{`
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
-
         @keyframes softRiseSlow {
           from {
             opacity: 0;
@@ -285,11 +242,9 @@ export default function BloomClient({
             transform: translateY(0);
           }
         }
-
         .animate-fadeIn {
           animation: fadeIn 1s ease forwards;
         }
-
         .animate-softRiseSlow {
           animation: softRiseSlow 2.4s ease forwards;
         }
