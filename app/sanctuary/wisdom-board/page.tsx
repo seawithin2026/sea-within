@@ -37,7 +37,7 @@ function ClientWisdomBoard() {
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
   const [justSubmittedPost, setJustSubmittedPost] = useState<WisdomPost | null>(null);
 
-  // ⭐ NEW — scroll progress for moving + fading scroll cue
+  // ⭐ Sanctuary-style scroll movement + fade-out
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
@@ -176,27 +176,27 @@ function ClientWisdomBoard() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS — MOVING + FADING */}
-      <div
-        className="sea-scroll-right"
-        style={{
-          opacity: scrollProgress < 0.92 ? 1 - scrollProgress : 0,
-          transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
-        }}
-      >
-        <p className="sea-scroll-word">SCROLL</p>
-
-        <div className="sea-scroll-arrows">
-          <span className="chevron-line">⌄</span>
-          <span className="chevron-line">⌄</span>
-        </div>
-      </div>
-
-      {/* SECTION 1 — HERO */}
+      {/* ⭐ SECTION 1 — HERO WITH SANCTUARY-STYLE SCROLL CUE */}
       <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video className="w-full h-full object-cover" autoPlay loop muted playsInline>
           <source src={heroVideoSrc} type="video/mp4" />
         </video>
+
+        {/* ⭐ Sanctuary-style scroll cue */}
+        <div
+          className="sea-scroll-right"
+          style={{
+            opacity: scrollProgress < 0.92 ? 1 - scrollProgress : 0,
+            transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
+          }}
+        >
+          <p className="sea-scroll-word">SCROLL</p>
+
+          <div className="sea-scroll-arrows">
+            <span className="chevron-line">⌄</span>
+            <span className="chevron-line">⌄</span>
+          </div>
+        </div>
       </section>
 
       {/* SECTION 2 — BOTTLE */}
@@ -256,7 +256,7 @@ function ClientWisdomBoard() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Click here and write a message of light to the community.  "
+                  placeholder="Click here and type a message of wisdom to the community..."
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
 
@@ -304,7 +304,7 @@ function ClientWisdomBoard() {
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
-        /* ⭐ SCROLL ARROWS — MOVING + FADING */
+        /* ⭐ SCROLL ARROWS — Sanctuary-style */
         .sea-scroll-right {
           position: fixed;
           right: 40px;
@@ -315,6 +315,7 @@ function ClientWisdomBoard() {
           flex-direction: column;
           align-items: center;
           transition: opacity 0.4s ease;
+          z-index: 9999;
         }
 
         .sea-scroll-word {
