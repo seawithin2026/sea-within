@@ -35,13 +35,9 @@ function ClientWisdomBoard() {
   const [feedbackType, setFeedbackType] = useState<"success" | "error">("success");
 
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
-
-  // ⭐ NEW — Only show the reflection once
   const [justSubmittedPost, setJustSubmittedPost] = useState<WisdomPost | null>(null);
 
-  /* -----------------------------------------------------
-     ⭐ FIX: Prevent scroll reset glitch on mount
-  ----------------------------------------------------- */
+  /* Prevent scroll reset glitch */
   useEffect(() => {
     const y = window.scrollY;
     window.scrollTo(0, y);
@@ -58,9 +54,7 @@ function ClientWisdomBoard() {
     fetchDailyMessage();
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ DAILY MESSAGE — CALL EDGE FUNCTION
-  ----------------------------------------------------- */
+  /* DAILY MESSAGE */
   const fetchDailyMessage = async () => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -78,9 +72,7 @@ function ClientWisdomBoard() {
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/daily-affirmation`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -107,9 +99,7 @@ function ClientWisdomBoard() {
     }
   };
 
-  /* -----------------------------------------------------
-     ⭐ SUBMIT POST — CLEANED
-  ----------------------------------------------------- */
+  /* SUBMIT POST */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!newPost.trim()) return;
@@ -171,11 +161,21 @@ function ClientWisdomBoard() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* SECTION 1 — HERO */}
+      {/* ⭐ SECTION 1 — HERO WITH SCROLL ARROWS */}
       <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video className="w-full h-full object-cover" autoPlay loop muted playsInline>
           <source src={heroVideoSrc} type="video/mp4" />
         </video>
+
+        {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS */}
+        <div className="sea-scroll-right">
+          <p className="sea-scroll-word">Scroll</p>
+
+          <div className="sea-scroll-arrows">
+            <span className="chevron-line">⌄</span>
+            <span className="chevron-line">⌄</span>
+          </div>
+        </div>
       </section>
 
       {/* SECTION 2 — BOTTLE */}
@@ -196,7 +196,6 @@ function ClientWisdomBoard() {
       {/* SECTION 3 — WISDOM BOARD */}
       <section className="relative h-screen w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-
           {/* LEFT — VIDEO */}
           <div className="relative h-full w-full">
             <video
@@ -236,7 +235,7 @@ function ClientWisdomBoard() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
+                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today. Write here..."
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
 
@@ -263,7 +262,6 @@ function ClientWisdomBoard() {
                 Your message will be shared with the community along with your username and today&apos;s date.
               </p>
 
-              {/* ⭐ NEW — SHOW ONLY THE JUST-SUBMITTED POST */}
               {justSubmittedPost && (
                 <div className="mt-20 w-full max-w-md text-left">
                   <p className="text-xl text-[#3b2414] leading-relaxed mb-2">
@@ -285,6 +283,65 @@ function ClientWisdomBoard() {
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
+        /* ⭐ SCROLL ARROWS */
+        .sea-scroll-right {
+          position: absolute;
+          right: 40px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .sea-scroll-word {
+          font-size: 1.1rem;
+          letter-spacing: 0.14em;
+          color: #e1a422;
+          opacity: 0.95;
+          margin-bottom: 8px;
+          animation: seaBreath 4.2s ease-in-out infinite;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        .sea-scroll-arrows {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 3px;
+          color: #e1a422;
+          animation: seaBreath 4.2s ease-in-out infinite;
+        }
+
+        .chevron-line {
+          font-size: 28px;
+          line-height: 1;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        @keyframes seaBreath {
+          0% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+            transform: translateY(8px);
+          }
+          100% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+        }
+
+        /* Existing styles below… */
         .paper-reveal {
           font-family: "Cormorant Garamond", serif;
           font-style: italic;
