@@ -37,6 +37,21 @@ function ClientWisdomBoard() {
   const [dailyMessage, setDailyMessage] = useState<DailyMessage | null>(null);
   const [justSubmittedPost, setJustSubmittedPost] = useState<WisdomPost | null>(null);
 
+  // ⭐ NEW — scroll progress for moving + fading scroll cue
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollTop / docHeight;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   /* Prevent scroll reset glitch */
   useEffect(() => {
     const y = window.scrollY;
@@ -161,21 +176,27 @@ function ClientWisdomBoard() {
     <main className="min-h-screen bg-sanctuary-dark">
       <Navigation />
 
-      {/* ⭐ SECTION 1 — HERO WITH SCROLL ARROWS */}
+      {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS — MOVING + FADING */}
+      <div
+        className="sea-scroll-right"
+        style={{
+          opacity: scrollProgress < 0.92 ? 1 - scrollProgress : 0,
+          transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
+        }}
+      >
+        <p className="sea-scroll-word">Scroll</p>
+
+        <div className="sea-scroll-arrows">
+          <span className="chevron-line">⌄</span>
+          <span className="chevron-line">⌄</span>
+        </div>
+      </div>
+
+      {/* SECTION 1 — HERO */}
       <section className="relative h-[150vh] w-full bg-black flex items-center justify-center overflow-hidden">
         <video className="w-full h-full object-cover" autoPlay loop muted playsInline>
           <source src={heroVideoSrc} type="video/mp4" />
         </video>
-
-        {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS */}
-        <div className="sea-scroll-right">
-          <p className="sea-scroll-word">SCROLL</p>
-
-          <div className="sea-scroll-arrows">
-            <span className="chevron-line">⌄</span>
-            <span className="chevron-line">⌄</span>
-          </div>
-        </div>
       </section>
 
       {/* SECTION 2 — BOTTLE */}
@@ -235,7 +256,7 @@ function ClientWisdomBoard() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today. Write here..."
+                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
 
@@ -283,9 +304,9 @@ function ClientWisdomBoard() {
 
       {/* GLOBAL STYLES */}
       <style jsx global>{`
-        /* ⭐ SCROLL ARROWS */
+        /* ⭐ SCROLL ARROWS — MOVING + FADING */
         .sea-scroll-right {
-          position: absolute;
+          position: fixed;
           right: 40px;
           top: 50%;
           transform: translateY(-50%);
@@ -293,6 +314,7 @@ function ClientWisdomBoard() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          transition: opacity 0.4s ease;
         }
 
         .sea-scroll-word {
