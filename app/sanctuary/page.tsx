@@ -134,7 +134,7 @@ export default function SanctuaryPage() {
           .sea-scroll-word {
             font-size: 1.1rem;
             letter-spacing: 0.14em;
-            color: #e1a422; /* Sea Within Gold 400 */
+            color: #f9af10; /* Sea Within Gold 400 */
             opacity: 0.95;
             margin-bottom: 8px;
             animation: seaBreath 4.2s ease-in-out infinite;
@@ -151,7 +151,7 @@ export default function SanctuaryPage() {
             flex-direction: column;
             align-items: center;
             gap: 3px;
-            color: #e1a422;
+            color: #f9af10;
             animation: seaBreath 4.2s ease-in-out infinite;
           }
 
