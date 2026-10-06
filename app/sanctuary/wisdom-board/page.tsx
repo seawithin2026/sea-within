@@ -169,7 +169,7 @@ function ClientWisdomBoard() {
 
         {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS */}
         <div className="sea-scroll-right">
-          <p className="sea-scroll-word">Scroll</p>
+          <p className="sea-scroll-word">SCROLL</p>
 
           <div className="sea-scroll-arrows">
             <span className="chevron-line">⌄</span>
