@@ -186,7 +186,7 @@ function ClientWisdomBoard() {
         <div
           className="sea-scroll-right"
           style={{
-            opacity: scrollProgress < 0.998 ? 1 - scrollProgress : 0,
+            opacity: scrollProgress < 0.995 ? 1 - scrollProgress : 0,
             transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
           }}
         >
