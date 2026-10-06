@@ -35,13 +35,13 @@ export default function SanctuaryPage() {
             className="w-full h-full object-cover"
           />
 
-          {/* RIGHT‑SIDE GOLDEN SCROLL ICON */}
+          {/* RIGHT‑SIDE SCROLL TEXT + ARROWS */}
           <div className="sea-scroll-right">
-            <div className="sea-scroll-circle">
-              <div className="sea-scroll-arrow">
-                <span className="chevron-line">⌄</span>
-                <span className="chevron-line">⌄</span>
-              </div>
+            <p className="sea-scroll-word">Scroll</p>
+
+            <div className="sea-scroll-arrows">
+              <span className="chevron-line">⌄</span>
+              <span className="chevron-line">⌄</span>
             </div>
           </div>
 
@@ -98,7 +98,7 @@ export default function SanctuaryPage() {
           <VideoGrid />
         </section>
 
-        {/* 🌊 SCROLL ICON STYLES */}
+        {/* 🌊 SCROLL TEXT + ARROWS STYLES */}
         <style jsx>{`
           /* RIGHT SIDE POSITIONING */
           .sea-scroll-right {
@@ -112,35 +112,39 @@ export default function SanctuaryPage() {
             align-items: center;
           }
 
-          /* TRANSLUCENT BLACK CIRCLE */
-          .sea-scroll-circle {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 18px rgba(0, 0, 0, 0.3);
+          /* “Scroll” TEXT — GOLD 400 + STRONG BLACK SHADOW */
+          .sea-scroll-word {
+            font-size: 1.1rem;
+            letter-spacing: 0.14em;
+            color: #e1a422; /* Sea Within Gold 400 */
+            opacity: 0.95;
+            margin-bottom: 8px;
+            animation: seaBreath 4.2s ease-in-out infinite;
+
+            text-shadow:
+              0 0 4px rgba(0, 0, 0, 0.9),
+              0 0 12px rgba(0, 0, 0, 0.7),
+              0 0 18px rgba(225, 164, 34, 0.45);
           }
 
-          /* GOLDEN ARROW */
-          .sea-scroll-arrow {
+          /* ARROWS BELOW — GOLD 400 + BLACK SHADOW */
+          .sea-scroll-arrows {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            color: #e1a422; /* Sea Within 400 gold */
+            gap: 3px;
+            color: #e1a422;
             animation: seaBreath 4.2s ease-in-out infinite;
-            text-shadow:
-              0 0 10px rgba(244, 215, 154, 0.45),
-              0 0 20px rgba(244, 215, 154, 0.35);
           }
 
           .chevron-line {
             font-size: 28px;
             line-height: 1;
+
+            text-shadow:
+              0 0 4px rgba(0, 0, 0, 0.9),
+              0 0 12px rgba(0, 0, 0, 0.7),
+              0 0 18px rgba(225, 164, 34, 0.45);
           }
 
           /* BREATHING GLOW */
@@ -148,23 +152,14 @@ export default function SanctuaryPage() {
             0% {
               opacity: 0.45;
               transform: translateY(0);
-              text-shadow:
-                0 0 6px rgba(244, 215, 154, 0.3),
-                0 0 14px rgba(244, 215, 154, 0.2);
             }
             50% {
               opacity: 1;
               transform: translateY(8px);
-              text-shadow:
-                0 0 14px rgba(244, 215, 154, 0.6),
-                0 0 26px rgba(244, 215, 154, 0.45);
             }
             100% {
               opacity: 0.45;
               transform: translateY(0);
-              text-shadow:
-                0 0 6px rgba(244, 215, 154, 0.3),
-                0 0 14px rgba(244, 215, 154, 0.2);
             }
           }
         `}</style>
