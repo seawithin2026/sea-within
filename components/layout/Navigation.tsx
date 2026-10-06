@@ -57,18 +57,12 @@ export default function Navigation() {
     loadUser();
   }, [hydrated]);
 
-  // Skeleton during hydration or scroll init
-  if (!hydrated || !scrollReady) {
-    return (
-      <nav className="fixed top-0 left-0 right-0 z-[9999] bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400">
-            SEA WITHIN
-          </span>
-        </div>
-      </nav>
-    );
-  }
+  // ⭐ Navigation visible immediately, but frozen until scrollReady
+  const navClass = scrollReady
+    ? isScrolled
+      ? "backdrop-blur-xl"
+      : "bg-transparent"
+    : "bg-transparent"; // ⭐ prevents ghost flash
 
   return (
     <>
@@ -76,13 +70,13 @@ export default function Navigation() {
         initial={false}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${
-          isScrolled ? "backdrop-blur-xl" : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${navClass}`}
         style={{
-          backgroundColor: isScrolled
-            ? "rgba(10, 22, 40, 0.90)"
-            : "transparent",
+          backgroundColor: scrollReady
+            ? isScrolled
+              ? "rgba(10, 22, 40, 0.90)"
+              : "transparent"
+            : "transparent", // ⭐ freeze background until ready
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
