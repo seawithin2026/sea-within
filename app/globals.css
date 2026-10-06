@@ -565,3 +565,33 @@ body {
   height: 24px;
   pointer-events: none;
 }
+.sea-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.sea-scroll-arrow {
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.75);
+  animation: seaPulse 3.2s ease-in-out infinite;
+  letter-spacing: 2px;
+  opacity: 0.85;
+}
+
+@keyframes seaPulse {
+  0% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+}

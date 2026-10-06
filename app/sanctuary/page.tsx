@@ -75,6 +75,11 @@ export default function SanctuaryPage() {
             >
               When you feel alive in the moment, your whole life finds its balance.
             </p>
+
+            {/* 🌊 SEA WITHIN SCROLL ARROW */}
+            <div className="sea-scroll-indicator">
+              <span className="sea-scroll-arrow">⌄</span>
+            </div>
           </div>
         </section>
 
@@ -87,6 +92,39 @@ export default function SanctuaryPage() {
 
           <VideoGrid />
         </section>
+
+        {/* 🌊 SCROLL ARROW STYLES */}
+        <style jsx>{`
+          .sea-scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+          }
+
+          .sea-scroll-arrow {
+            font-size: 38px;
+            color: rgba(255, 255, 255, 0.75);
+            animation: seaPulse 3.2s ease-in-out infinite;
+            opacity: 0.85;
+          }
+
+          @keyframes seaPulse {
+            0% {
+              opacity: 0.4;
+              transform: translateY(0);
+            }
+            50% {
+              opacity: 1;
+              transform: translateY(8px);
+            }
+            100% {
+              opacity: 0.4;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </main>
     </MembershipGate>
   );
