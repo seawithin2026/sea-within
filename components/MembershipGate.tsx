@@ -8,6 +8,13 @@ export default function MembershipGate({ children }: { children?: React.ReactNod
   const allowed = useMembershipGate();
   const router = useRouter();
 
+  // ⭐ Redirect only when allowed === true
+  useEffect(() => {
+    if (allowed === true) {
+      router.replace("/sanctuary");
+    }
+  }, [allowed, router]);
+
   // Blank screen instead of "Loading..."
   if (allowed === null) {
     return <main className="min-h-screen bg-black" />;
@@ -19,11 +26,6 @@ export default function MembershipGate({ children }: { children?: React.ReactNod
     return null;
   }
 
-  // ⭐ Allowed → redirect to Sanctuary automatically
-  useEffect(() => {
-    router.replace("/sanctuary");
-  }, []);
-
-  // Render children (they will only flash for a millisecond before redirect)
+  // Allowed → children will render for a split second before redirect
   return <>{children}</>;
 }
