@@ -186,7 +186,7 @@ function ClientWisdomBoard() {
         <div
           className="sea-scroll-right"
           style={{
-            opacity: scrollProgress < 0.98 ? 1 - scrollProgress : 0,
+            opacity: scrollProgress < 0.998 ? 1 - scrollProgress : 0,
             transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
           }}
         >
@@ -321,7 +321,7 @@ function ClientWisdomBoard() {
         .sea-scroll-word {
           font-size: 1.1rem;
           letter-spacing: 0.14em;
-          color: #e1a422;
+          color: #fdb10f;
           opacity: 0.95;
           margin-bottom: 8px;
           animation: seaBreath 4.2s ease-in-out infinite;
@@ -336,7 +336,7 @@ function ClientWisdomBoard() {
           flex-direction: column;
           align-items: center;
           gap: 3px;
-          color: #e1a422;
+          color: #fdb10f;
           animation: seaBreath 4.2s ease-in-out infinite;
         }
 
