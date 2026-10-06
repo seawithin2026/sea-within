@@ -6,9 +6,20 @@ import VideoGrid from "./VideoGrid";
 
 export default function SanctuaryPage() {
   const [hydrated, setHydrated] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     setHydrated(true);
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollTop / docHeight;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   if (!hydrated) {
@@ -36,8 +47,14 @@ export default function SanctuaryPage() {
           />
 
           {/* RIGHT‑SIDE SCROLL TEXT + ARROWS */}
-          <div className="sea-scroll-right">
-            <p className="sea-scroll-word">Scroll</p>
+          <div
+            className="sea-scroll-right"
+            style={{
+              opacity: scrollProgress < 0.92 ? 1 - scrollProgress : 0,
+              transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
+            }}
+          >
+            <p className="sea-scroll-word">SCROLL</p>
 
             <div className="sea-scroll-arrows">
               <span className="chevron-line">⌄</span>
@@ -102,7 +119,7 @@ export default function SanctuaryPage() {
         <style jsx>{`
           /* RIGHT SIDE POSITIONING */
           .sea-scroll-right {
-            position: absolute;
+            position: fixed;
             right: 40px;
             top: 50%;
             transform: translateY(-50%);
@@ -110,6 +127,7 @@ export default function SanctuaryPage() {
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: opacity 0.4s ease;
           }
 
           /* “Scroll” TEXT — GOLD 400 + STRONG BLACK SHADOW */
