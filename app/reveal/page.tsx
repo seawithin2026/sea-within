@@ -9,7 +9,22 @@ export default function RevealPage() {
   const [loading, setLoading] = useState(true);
   const [ready, setReady] = useState(false);
 
-  // MEMBERSHIP CHECK — CLIENT ONLY, NO REDIRECTS
+  // ⭐ NEW — Track scroll progress for moving + disappearing arrow
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollTop / docHeight;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // MEMBERSHIP CHECK
   useEffect(() => {
     async function checkMembership() {
       const {
@@ -43,12 +58,12 @@ export default function RevealPage() {
     checkMembership();
   }, []);
 
-  // HYDRATION GUARD FOR CLIENT-ONLY EFFECTS + ScrollReveal
+  // HYDRATION GUARD
   useEffect(() => {
     setReady(true);
   }, []);
 
-  // VIDEO + AUDIO CONTROL (runs only after hydration)
+  // VIDEO + AUDIO CONTROL
   useEffect(() => {
     if (!ready) return;
 
@@ -84,7 +99,7 @@ export default function RevealPage() {
     };
   }, [ready]);
 
-  // HYDRATION-SAFE LOADING SKELETON
+  // LOADING SKELETON
   if (loading || !ready) {
     return (
       <main className="min-h-screen bg-sanctuary-dark text-sea-100">
@@ -98,12 +113,28 @@ export default function RevealPage() {
     );
   }
 
-  // FULL PAGE CONTENT — HYDRATION SAFE
+  // FULL PAGE CONTENT
   return (
     <main className="min-h-screen bg-sanctuary-dark text-sea-100">
       <Navigation />
 
       <section className="relative px-6 pt-32 pb-40 max-w-3xl mx-auto">
+        {/* ⭐ RIGHT‑SIDE SCROLL TEXT + ARROWS — MOVING + FADING */}
+        <div
+          className="sea-scroll-right"
+          style={{
+            opacity: scrollProgress < 0.92 ? 1 - scrollProgress : 0,
+            transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
+          }}
+        >
+          <p className="sea-scroll-word">SCROLL</p>
+
+          <div className="sea-scroll-arrows">
+            <span className="chevron-line">⌄</span>
+            <span className="chevron-line">⌄</span>
+          </div>
+        </div>
+
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-golden-400/5 blur-[140px]" />
@@ -239,6 +270,67 @@ export default function RevealPage() {
           </ScrollReveal>
         )}
       </section>
+
+      {/* ⭐ SCROLL ARROW STYLES */}
+      <style jsx global>{`
+        .sea-scroll-right {
+          position: fixed;
+          right: 40px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          transition: opacity 0.4s ease;
+        }
+
+        .sea-scroll-word {
+          font-size: 1.1rem;
+          letter-spacing: 0.14em;
+          color: #e1a422;
+          opacity: 0.95;
+          margin-bottom: 8px;
+          animation: seaBreath 4.2s ease-in-out infinite;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        .sea-scroll-arrows {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 3px;
+          color: #e1a422;
+          animation: seaBreath 4.2s ease-in-out infinite;
+        }
+
+        .chevron-line {
+          font-size: 28px;
+          line-height: 1;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        @keyframes seaBreath {
+          0% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+            transform: translateY(8px);
+          }
+          100% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </main>
   );
 }
