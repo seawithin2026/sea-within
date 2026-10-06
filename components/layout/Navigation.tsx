@@ -19,6 +19,7 @@ export default function Navigation() {
 
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollReady, setScrollReady] = useState(false); // ⭐ NEW
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -27,11 +28,16 @@ export default function Navigation() {
     setHydrated(true);
   }, []);
 
-  // Scroll detection
+  // Scroll detection — FIXED
   useEffect(() => {
     if (!hydrated) return;
 
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+      setScrollReady(true); // ⭐ scroll state is now known
+    };
+
+    handleScroll(); // ⭐ run immediately to avoid ghost nav
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
@@ -51,8 +57,8 @@ export default function Navigation() {
     loadUser();
   }, [hydrated]);
 
-  // Skeleton during hydration
-  if (!hydrated) {
+  // Skeleton during hydration or scroll init
+  if (!hydrated || !scrollReady) {
     return (
       <nav className="fixed top-0 left-0 right-0 z-[9999] bg-transparent">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
