@@ -6,13 +6,29 @@ import CinematicSection from '@/components/videos/CinematicSection';
 import ElementSection from '@/components/videos/ElementSection';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreathingCircle from '@/components/ui/BreathingCircle';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // ============================================
 // SEA WITHIN — Cinematic Homepage
 // ============================================
 
 export default function HomePage() {
+  // ⭐ ADD SANCTUARY SCROLL SYSTEM
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = scrollTop / docHeight;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // ⭐ AUDIO ENABLE ON SCROLL
   useEffect(() => {
     const audio = document.getElementById('seaAudio') as HTMLAudioElement;
     if (!audio) return;
@@ -69,6 +85,22 @@ export default function HomePage() {
           overlayOpacity={0.18}
           className="flex items-center justify-center"
         >
+          {/* ⭐ SANCTUARY SCROLL ARROW */}
+          <div
+            className="sea-scroll-right"
+            style={{
+              opacity: scrollProgress < 0.995 ? 1 - scrollProgress : 0,
+              transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
+            }}
+          >
+            <p className="sea-scroll-word">SCROLL</p>
+
+            <div className="sea-scroll-arrows">
+              <span className="chevron-line">⌄</span>
+              <span className="chevron-line">⌄</span>
+            </div>
+          </div>
+
           <div className="flex flex-col items-center justify-center text-center px-6">
             <ScrollReveal delay={1000} duration={2000}>
               <div className="animate-[breathPulse_10s_ease-in-out_infinite]">
@@ -357,6 +389,68 @@ export default function HomePage() {
           </div>
         </footer>
       </main>
+
+      {/* ⭐ GLOBAL CSS FOR SANCTUARY SCROLL ARROW */}
+      <style jsx global>{`
+        .sea-scroll-right {
+          position: fixed;
+          right: 40px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          transition: opacity 0.4s ease;
+          z-index: 9999;
+        }
+
+        .sea-scroll-word {
+          font-size: 1.1rem;
+          letter-spacing: 0.14em;
+          color: #e1a422;
+          opacity: 0.95;
+          margin-bottom: 8px;
+          animation: seaBreath 4.2s ease-in-out infinite;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        .sea-scroll-arrows {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 3px;
+          color: #e1a422;
+          animation: seaBreath 4.2s ease-in-out infinite;
+        }
+
+        .chevron-line {
+          font-size: 28px;
+          line-height: 1;
+          text-shadow:
+            0 0 4px rgba(0, 0, 0, 0.9),
+            0 0 12px rgba(0, 0, 0, 0.7),
+            0 0 18px rgba(225, 164, 34, 0.45);
+        }
+
+        @keyframes seaBreath {
+          0% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+            transform: translateY(8px);
+          }
+          100% {
+            opacity: 0.45;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   );
 }
