@@ -581,17 +581,4 @@ body {
   opacity: 0.85;
 }
 
-@keyframes seaPulse {
-  0% {
-    opacity: 0.4;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(6px);
-  }
-  100% {
-    opacity: 0.4;
-    transform: translateY(0);
-  }
-}
+

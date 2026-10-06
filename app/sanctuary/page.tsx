@@ -35,6 +35,14 @@ export default function SanctuaryPage() {
             className="w-full h-full object-cover"
           />
 
+          {/* RIGHT‑SIDE GOLDEN SCROLL ARROW */}
+          <div className="sea-scroll-right">
+            <div className="sea-scroll-arrow">
+              <span className="chevron-line">⌄</span>
+              <span className="chevron-line">⌄</span>
+            </div>
+          </div>
+
           {/* OVERLAY TEXT */}
           <div
             className="absolute inset-0 flex flex-col justify-end px-10 sanctuary-hero-text"
@@ -75,11 +83,6 @@ export default function SanctuaryPage() {
             >
               When you feel alive in the moment, your whole life finds its balance.
             </p>
-
-            {/* 🌊 SEA WITHIN SCROLL ARROW */}
-            <div className="sea-scroll-indicator">
-              <span className="sea-scroll-arrow">⌄</span>
-            </div>
           </div>
         </section>
 
@@ -95,33 +98,58 @@ export default function SanctuaryPage() {
 
         {/* 🌊 SCROLL ARROW STYLES */}
         <style jsx>{`
-          .sea-scroll-indicator {
+          /* RIGHT SIDE POSITIONING */
+          .sea-scroll-right {
             position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
             pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
 
+          /* ARROW STYLE */
           .sea-scroll-arrow {
-            font-size: 38px;
-            color: rgba(255, 255, 255, 0.75);
-            animation: seaPulse 3.2s ease-in-out infinite;
-            opacity: 0.85;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #f4d79a; /* soft gold */
+            animation: seaBreath 4.2s ease-in-out infinite;
+            text-shadow:
+              0 0 10px rgba(244, 215, 154, 0.45),
+              0 0 20px rgba(244, 215, 154, 0.35);
           }
 
-          @keyframes seaPulse {
+          .chevron-line {
+            font-size: 28px;
+            line-height: 1;
+          }
+
+          /* BREATHING GLOW */
+          @keyframes seaBreath {
             0% {
-              opacity: 0.4;
+              opacity: 0.45;
               transform: translateY(0);
+              text-shadow:
+                0 0 6px rgba(244, 215, 154, 0.3),
+                0 0 14px rgba(244, 215, 154, 0.2);
             }
             50% {
               opacity: 1;
               transform: translateY(8px);
+              text-shadow:
+                0 0 14px rgba(244, 215, 154, 0.6),
+                0 0 26px rgba(244, 215, 154, 0.45);
             }
             100% {
-              opacity: 0.4;
+              opacity: 0.45;
               transform: translateY(0);
+              text-shadow:
+                0 0 6px rgba(244, 215, 154, 0.3),
+                0 0 14px rgba(244, 215, 154, 0.2);
             }
           }
         `}</style>
