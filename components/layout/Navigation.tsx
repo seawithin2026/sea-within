@@ -19,31 +19,46 @@ export default function Navigation() {
 
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scrollReady, setScrollReady] = useState(false); // ⭐ NEW
+  const [scrollReady, setScrollReady] = useState(false);
+  const [freezeNav, setFreezeNav] = useState(true); // ⭐ NEW
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
-  // Hydration guard
+  /* -----------------------------------------------------
+     HYDRATION
+  ----------------------------------------------------- */
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  // Scroll detection — FIXED
+  /* -----------------------------------------------------
+     FREEZE NAV FOR FIRST 300ms — ⭐ MAIN FIX
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const t = setTimeout(() => setFreezeNav(false), 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  /* -----------------------------------------------------
+     SCROLL DETECTION
+  ----------------------------------------------------- */
   useEffect(() => {
     if (!hydrated) return;
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
-      setScrollReady(true); // ⭐ scroll state is now known
+      setScrollReady(true);
     };
 
-    handleScroll(); // ⭐ run immediately to avoid ghost nav
+    handleScroll(); // run immediately
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hydrated]);
 
-  // Detect user
+  /* -----------------------------------------------------
+     USER DETECTION
+  ----------------------------------------------------- */
   useEffect(() => {
     if (!hydrated) return;
 
@@ -57,13 +72,39 @@ export default function Navigation() {
     loadUser();
   }, [hydrated]);
 
-  // ⭐ Navigation visible immediately, but frozen until scrollReady
-  const navClass = scrollReady
-    ? isScrolled
-      ? "backdrop-blur-xl"
-      : "bg-transparent"
-    : "bg-transparent"; // ⭐ prevents ghost flash
+  /* -----------------------------------------------------
+     NAV CLASS — FREEZE DURING MOUNT
+  ----------------------------------------------------- */
+  const navClass = freezeNav
+    ? "backdrop-blur-xl"
+    : isScrolled
+    ? "backdrop-blur-xl"
+    : "bg-transparent";
 
+  const navBg = freezeNav
+    ? "rgba(10, 22, 40, 0.90)"
+    : isScrolled
+    ? "rgba(10, 22, 40, 0.90)"
+    : "transparent";
+
+  /* -----------------------------------------------------
+     SKELETON DURING HYDRATION
+  ----------------------------------------------------- */
+  if (!hydrated) {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-[9999] bg-transparent">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400">
+            SEA WITHIN
+          </span>
+        </div>
+      </nav>
+    );
+  }
+
+  /* -----------------------------------------------------
+     FINAL NAVIGATION
+  ----------------------------------------------------- */
   return (
     <>
       <motion.nav
@@ -71,13 +112,7 @@ export default function Navigation() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${navClass}`}
-        style={{
-          backgroundColor: scrollReady
-            ? isScrolled
-              ? "rgba(10, 22, 40, 0.90)"
-              : "transparent"
-            : "transparent", // ⭐ freeze background until ready
-        }}
+        style={{ backgroundColor: navBg }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Brand */}
@@ -99,7 +134,7 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* AUTH BUTTONS — FIX APPLIED */}
+            {/* AUTH BUTTONS — NO FLASH */}
             {user === null ? (
               <div className="w-[80px] ml-8" /> // invisible placeholder
             ) : (
@@ -152,7 +187,7 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE AUTH BUTTONS — FIX APPLIED */}
+                {/* MOBILE AUTH BUTTONS */}
                 {user === null ? (
                   <div className="w-[80px]" /> // invisible placeholder
                 ) : (
