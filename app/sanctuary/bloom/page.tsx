@@ -58,6 +58,7 @@ function BloomContent() {
 
   /* -----------------------------------------------------
      INIT → Load progress → Decide state
+     ⭐ FIX APPLIED HERE
   ----------------------------------------------------- */
   useEffect(() => {
     const init = async () => {
@@ -74,18 +75,17 @@ function BloomContent() {
 
       const userTimezone = bloom.timezone || dayjs.tz.guess();
 
-      const localLastCompleted = bloom.last_completed_local;
-
-      const localProfileDate = bloom.profile_last_bloom_date
-        ? dayjs(bloom.profile_last_bloom_date)
-            .tz(userTimezone)
-            .format("YYYY-MM-DD")
+      // ⭐ REAL DB FIELD — bloom_progress.last_completed
+      const lastCompleted = bloom.last_completed
+        ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
         : null;
 
+      // ⭐ TODAY in user's timezone
+      const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+
+      // ⭐ Correct daily unlock logic
       const alreadyBloomed =
-        localLastCompleted === localProfileDate &&
-        localLastCompleted !== null &&
-        localProfileDate !== null;
+        lastCompleted === todayLocal && lastCompleted !== null;
 
       const bloomIdx = bloom.current_day - 1;
       setBloomIndex(bloomIdx);
@@ -94,7 +94,7 @@ function BloomContent() {
 
       if (alreadyBloomed) {
         setHasBloomedToday(true);
-        setVideoSrc(bloom.profile_last_bloom_video || BLOOMS[bloomIdx]);
+        setVideoSrc(bloom.last_bloom_video || BLOOMS[bloomIdx]);
         setState("LOCKED");
       } else {
         setHasBloomedToday(false);
