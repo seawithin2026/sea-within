@@ -35,11 +35,13 @@ export default function SanctuaryPage() {
             className="w-full h-full object-cover"
           />
 
-          {/* RIGHT‑SIDE GOLDEN SCROLL ARROW */}
+          {/* RIGHT‑SIDE GOLDEN SCROLL ICON */}
           <div className="sea-scroll-right">
-            <div className="sea-scroll-arrow">
-              <span className="chevron-line">⌄</span>
-              <span className="chevron-line">⌄</span>
+            <div className="sea-scroll-circle">
+              <div className="sea-scroll-arrow">
+                <span className="chevron-line">⌄</span>
+                <span className="chevron-line">⌄</span>
+              </div>
             </div>
           </div>
 
@@ -96,7 +98,7 @@ export default function SanctuaryPage() {
           <VideoGrid />
         </section>
 
-        {/* 🌊 SCROLL ARROW STYLES */}
+        {/* 🌊 SCROLL ICON STYLES */}
         <style jsx>{`
           /* RIGHT SIDE POSITIONING */
           .sea-scroll-right {
@@ -110,13 +112,26 @@ export default function SanctuaryPage() {
             align-items: center;
           }
 
-          /* ARROW STYLE */
+          /* TRANSLUCENT BLACK CIRCLE */
+          .sea-scroll-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 18px rgba(0, 0, 0, 0.3);
+          }
+
+          /* GOLDEN ARROW */
           .sea-scroll-arrow {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            color: #f4d79a; /* soft gold */
+            color: #e1a422; /* Sea Within 400 gold */
             animation: seaBreath 4.2s ease-in-out infinite;
             text-shadow:
               0 0 10px rgba(244, 215, 154, 0.45),
