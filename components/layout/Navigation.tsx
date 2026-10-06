@@ -99,17 +99,11 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* AUTH BUTTONS */}
-            {!user ? (
-              <Link
-                href="/login"
-                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
-              >
-                Sign In
-              </Link>
+            {/* AUTH BUTTONS — FIX APPLIED */}
+            {user === null ? (
+              <div className="w-[80px] ml-8" /> // invisible placeholder
             ) : (
               <div className="flex items-center gap-12 ml-8">
-                {/* ⭐ CINEMATIC SIGN OUT */}
                 <button
                   onClick={() => router.push("/logout")}
                   className="btn-golden text-[11px] px-6 py-2.5"
@@ -117,7 +111,6 @@ export default function Navigation() {
                   Sign Out
                 </button>
 
-                {/* ⭐ ACCOUNT */}
                 <Link
                   href="/account"
                   className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
@@ -159,18 +152,11 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE AUTH BUTTONS */}
-                {!user ? (
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="btn-golden text-[11px] px-6 py-2.5"
-                  >
-                    Sign In
-                  </Link>
+                {/* MOBILE AUTH BUTTONS — FIX APPLIED */}
+                {user === null ? (
+                  <div className="w-[80px]" /> // invisible placeholder
                 ) : (
                   <>
-                    {/* ⭐ CINEMATIC SIGN OUT */}
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false);
@@ -181,7 +167,6 @@ export default function Navigation() {
                       Sign Out
                     </button>
 
-                    {/* ⭐ ACCOUNT */}
                     <Link
                       href="/account"
                       onClick={() => setIsMobileMenuOpen(false)}
