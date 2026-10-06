@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navigation from "@/components/layout/Navigation";
-import MembershipGate from "@/components/MembershipGate"; // your gate
+import MembershipGate from "@/components/MembershipGate";
 
 import { GESTURES } from "@/data/gestures";
 import { BLOOMS } from "@/data/blooms";
@@ -33,7 +33,7 @@ type RitualState =
   | "LOCKED";
 
 export default function BloomRitualPage() {
-    return <BloomContent />;
+  return <BloomContent />;
 }
 
 function BloomContent() {
@@ -46,8 +46,15 @@ function BloomContent() {
   const [justBloomedNow, setJustBloomedNow] = useState(false);
 
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
-
   const [videoEnded, setVideoEnded] = useState(false);
+
+  /* -----------------------------------------------------
+     ⭐ FIX: Prevent scroll reset glitch on mount
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const y = window.scrollY;
+    window.scrollTo(0, y);
+  }, []);
 
   /* -----------------------------------------------------
      INIT → Load progress → Decide state

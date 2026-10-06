@@ -39,6 +39,14 @@ function ClientWisdomBoard() {
   // ⭐ NEW — Only show the reflection once
   const [justSubmittedPost, setJustSubmittedPost] = useState<WisdomPost | null>(null);
 
+  /* -----------------------------------------------------
+     ⭐ FIX: Prevent scroll reset glitch on mount
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const y = window.scrollY;
+    window.scrollTo(0, y);
+  }, []);
+
   /* Slow bottle video */
   useEffect(() => {
     const bottle = document.getElementById("bottleVideo") as HTMLVideoElement | null;
