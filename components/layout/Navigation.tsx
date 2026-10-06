@@ -20,7 +20,10 @@ export default function Navigation() {
   const [hydrated, setHydrated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollReady, setScrollReady] = useState(false);
-  const [freezeNav, setFreezeNav] = useState(true); // ⭐ NEW
+
+  // ⭐ Cinematic lock
+  const [freezeNav, setFreezeNav] = useState(true);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
@@ -32,10 +35,11 @@ export default function Navigation() {
   }, []);
 
   /* -----------------------------------------------------
-     FREEZE NAV FOR FIRST 300ms — ⭐ MAIN FIX
+     ⭐ CINEMATIC LOCK — 600ms
+     Prevents ALL layout-shift flickers
   ----------------------------------------------------- */
   useEffect(() => {
-    const t = setTimeout(() => setFreezeNav(false), 300);
+    const t = setTimeout(() => setFreezeNav(false), 600);
     return () => clearTimeout(t);
   }, []);
 
@@ -73,7 +77,7 @@ export default function Navigation() {
   }, [hydrated]);
 
   /* -----------------------------------------------------
-     NAV CLASS — FREEZE DURING MOUNT
+     NAV CLASS — LOCKED DURING CINEMATIC BUFFER
   ----------------------------------------------------- */
   const navClass = freezeNav
     ? "backdrop-blur-xl"
@@ -112,7 +116,14 @@ export default function Navigation() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${navClass}`}
-        style={{ backgroundColor: navBg }}
+        style={{
+          backgroundColor: navBg,
+
+          // ⭐ Cinematic lock properties
+          height: freezeNav ? "80px" : undefined,
+          transform: freezeNav ? "translateY(0)" : undefined,
+          opacity: freezeNav ? 1 : undefined,
+        }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Brand */}
