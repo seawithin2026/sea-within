@@ -184,7 +184,7 @@ function ClientWisdomBoard() {
           transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
         }}
       >
-        <p className="sea-scroll-word">Scroll</p>
+        <p className="sea-scroll-word">SCROLL</p>
 
         <div className="sea-scroll-arrows">
           <span className="chevron-line">⌄</span>
@@ -256,7 +256,7 @@ function ClientWisdomBoard() {
                 <textarea
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  placeholder="Offer a helping hand by sending a message — your words may be someone’s light today."
+                  placeholder="Click here and write a message of light to the community.  "
                   className="w-full h-48 bg-transparent resize-none focus:outline-none text-xl leading-relaxed ink-writing placeholder:text-stone-600"
                 />
 
