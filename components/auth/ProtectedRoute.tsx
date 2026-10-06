@@ -42,9 +42,10 @@ export default function ProtectedRoute({ children }) {
     return () => { active = false };
   }, []);
 
-  if (status === "loading") {
-    return <div className="text-white p-10">Loading...</div>;
-  }
+if (status === "loading") {
+  return <div className="min-h-screen bg-black" />;
+}
+
 
   if (status === "blocked") return null;
 

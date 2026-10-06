@@ -5,12 +5,9 @@ import { useMembershipGate } from "./useMembershipGate";
 export default function MembershipGate({ children }: { children?: React.ReactNode }) {
   const allowed = useMembershipGate();
 
+  // Blank screen instead of "Loading..."
   if (allowed === null) {
-    return (
-      <main className="min-h-screen flex items-center justify-center text-white">
-        <p className="text-white/40 tracking-[3px] uppercase">Loading...</p>
-      </main>
-    );
+    return <main className="min-h-screen bg-black" />;
   }
 
   if (allowed === false) {
