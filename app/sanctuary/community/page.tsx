@@ -225,7 +225,7 @@ export default function CommunityPage() {
                   } bg-white/20 backdrop-blur-xl rounded-2xl px-4 py-3`}
                 >
                   {!msg.is_own && (
-                    <p className="font-body text-[11px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
+                    <p className="font-body text-[11px] tracking-[1px] uppercase text-[#78131d] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mb-1">
                       {msg.username}
                     </p>
                   )}
@@ -235,7 +235,7 @@ export default function CommunityPage() {
                   </p>
 
                   {msg.is_own && (
-                    <p className="font-body text-[10px] tracking-[1px] uppercase text-[#7A3F45] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mt-1 text-right">
+                    <p className="font-body text-[10px] tracking-[1px] uppercase text-[#78131d] drop-shadow-[0_0_6px_rgba(0,0,0,0.65)] mt-1 text-right">
                       {msg.username}
                     </p>
                   )}
