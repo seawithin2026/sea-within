@@ -49,7 +49,7 @@ function BloomContent() {
   const [videoEnded, setVideoEnded] = useState(false);
 
   /* -----------------------------------------------------
-     ⭐ FIX: Prevent scroll reset glitch on mount
+     ⭐ Prevent scroll reset glitch
   ----------------------------------------------------- */
   useEffect(() => {
     const y = window.scrollY;
@@ -57,53 +57,65 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     INIT → Load progress → Decide state
-     ⭐ FIX APPLIED HERE
+     ⭐ INIT LOGIC — moved outside so we can call it again
+  ----------------------------------------------------- */
+  const init = async () => {
+    const bloom = await getBloomProgress();
+    const gesture = await getGestureProgress();
+
+    if (!bloom || !gesture) {
+      setGestureIndex(0);
+      setBloomIndex(0);
+      setVideoSrc(BLOOMS[0]);
+      setState("GESTURE");
+      return;
+    }
+
+    const userTimezone = bloom.timezone || dayjs.tz.guess();
+
+    const lastCompleted = bloom.last_completed
+      ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
+      : null;
+
+    const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
+
+    const alreadyBloomed =
+      lastCompleted === todayLocal && lastCompleted !== null;
+
+    const bloomIdx = bloom.current_day - 1;
+    setBloomIndex(bloomIdx);
+
+    setGestureIndex(gesture.current_index);
+
+    if (alreadyBloomed) {
+      setHasBloomedToday(true);
+      setVideoSrc(bloom.last_bloom_video || BLOOMS[bloomIdx]);
+      setState("LOCKED");
+    } else {
+      setHasBloomedToday(false);
+      setVideoSrc(BLOOMS[bloomIdx]);
+      setState("GESTURE");
+    }
+  };
+
+  /* -----------------------------------------------------
+     ⭐ Run init on first load
   ----------------------------------------------------- */
   useEffect(() => {
-    const init = async () => {
-      const bloom = await getBloomProgress();
-      const gesture = await getGestureProgress();
+    init();
+  }, []);
 
-      if (!bloom || !gesture) {
-        setGestureIndex(0);
-        setBloomIndex(0);
-        setVideoSrc(BLOOMS[0]);
-        setState("GESTURE");
-        return;
-      }
-
-      const userTimezone = bloom.timezone || dayjs.tz.guess();
-
-      // ⭐ REAL DB FIELD — bloom_progress.last_completed
-      const lastCompleted = bloom.last_completed
-        ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
-        : null;
-
-      // ⭐ TODAY in user's timezone
-      const todayLocal = dayjs().tz(userTimezone).format("YYYY-MM-DD");
-
-      // ⭐ Correct daily unlock logic
-      const alreadyBloomed =
-        lastCompleted === todayLocal && lastCompleted !== null;
-
-      const bloomIdx = bloom.current_day - 1;
-      setBloomIndex(bloomIdx);
-
-      setGestureIndex(gesture.current_index);
-
-      if (alreadyBloomed) {
-        setHasBloomedToday(true);
-        setVideoSrc(bloom.last_bloom_video || BLOOMS[bloomIdx]);
-        setState("LOCKED");
-      } else {
-        setHasBloomedToday(false);
-        setVideoSrc(BLOOMS[bloomIdx]);
-        setState("GESTURE");
-      }
+  /* -----------------------------------------------------
+     ⭐ Run init again when tab becomes active
+     FIX FOR YOUR ISSUE
+  ----------------------------------------------------- */
+  useEffect(() => {
+    const handleFocus = () => {
+      init(); // re-check bloom state
     };
 
-    init();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, []);
 
   /* -----------------------------------------------------
@@ -132,8 +144,8 @@ function BloomContent() {
   };
 
   /* -----------------------------------------------------
-     BLOOM_READY → BLOOM_PLAYING (onPlay)
-     BLOOM_PLAYING → BLOOM_DONE (onEnded)
+     BLOOM_READY → BLOOM_PLAYING
+     BLOOM_PLAYING → BLOOM_DONE
   ----------------------------------------------------- */
   const handleBloomStart = async () => {
     if (!hasBloomedToday) {
@@ -154,7 +166,7 @@ function BloomContent() {
   };
 
   /* -----------------------------------------------------
-     FINAL RETURN — MembershipGate wraps everything
+     FINAL RETURN
   ----------------------------------------------------- */
   const gestureText = GESTURES[gestureIndex];
 
