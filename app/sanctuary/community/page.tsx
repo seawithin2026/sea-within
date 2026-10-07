@@ -291,71 +291,57 @@ export default function CommunityPage() {
 
         {/* STYLES */}
 <style>{`
-.chat-scroll::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
-}
-.chat-scroll {
-  scrollbar-width: none;
-}
+  .chat-scroll::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  .chat-scroll {
+    scrollbar-width: none;
+  }
 
-/* ⭐ UNIVERSAL BUBBLE — using your OWN bubble clarity */
-.chat-bubble {
-  max-width: 75%;
-  padding: 14px 18px;
-  border-radius: 18px;
+  .chat-bubble {
+    max-width: 75%;
+    padding: 14px 18px;
+    border-radius: 18px 18px 18px 4px;
 
-  /* ⭐ Your own bubble clarity applied to ALL bubbles */
-  background: rgba(229, 173, 67, 0.22); /* clearer, warm, visible */
-  border: 1px solid rgba(229, 173, 67, 0.28);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
+    /* ⭐ Upgraded visibility */
+    background: rgba(229, 173, 67, 0.22); /* was 0.08 */
+    border: 1px solid rgba(229, 173, 67, 0.28); /* was 0.12 */
+    box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
 
-  transition: all 0.3s ease;
-}
+    transition: all 0.3s ease;
+  }
 
-/* ⭐ Hover effect */
-.chat-bubble:hover {
-  background: rgba(229, 173, 67, 0.28);
-  border-color: rgba(229, 173, 67, 0.32);
-  box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
-}
+  .chat-bubble:hover {
+      background: rgba(229, 173, 67, 0.28); /* was 0.12 */
+    border-color: rgba(229, 173, 67, 0.32); /* was 0.2 */
+    box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
+  }
 
-/* ⭐ REMOVE OWN OVERRIDES — all bubbles identical */
-.chat-bubble.own {
-  border-radius: 18px;
-  background: rgba(229, 173, 67, 0.22);
-  border: 1px solid rgba(229, 173, 67, 0.28);
-  box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
-}
+  .chat-bubble.own {
+    border-radius: 18px 18px 4px 18px;
 
-/* ⭐ TEXT UPGRADE — darker, bolder, larger */
-.chat-bubble p {
-  font-size: 15px; /* bigger */
-  font-weight: 600; /* bolder */
-  color: #2A4A4A; /* darker teal */
-  line-height: 1.55;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65); /* stronger contrast */
-}
+    /* ⭐ Upgraded visibility for own messages */
+    background: rgba(229, 173, 67, 0.22); /* was 0.08 */
+    border: 1px solid rgba(229, 173, 67, 0.28); /* was 0.12 */
+    box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
+  }
 
-/* ⭐ USERNAME TEXT — clearer and visible */
-.chat-bubble p:first-child {
-  font-size: 12px;
-  font-weight: 700;
-  color: #7A3F45;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
-}
+  .chat-bubble.own:hover {
+    background: rgba(229, 173, 67, 0.28); /* was 0.12 */
+    border-color: rgba(229, 173, 67, 0.32); /* was 0.2 */
+    box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
+  }
 
-@keyframes slowFloat {
-  0% { transform: translateY(0px) scale(1); }
-  50% { transform: translateY(-18px) scale(1.015); }
-  100% { transform: translateY(0px) scale(1); }
-}
+  @keyframes slowFloat {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-18px) scale(1.015); }
+    100% { transform: translateY(0px) scale(1); }
+  }
 
-.animate-slowFloat {
-  animation: slowFloat 22s ease-in-out infinite;
-}
-
+  .animate-slowFloat {
+    animation: slowFloat 22s ease-in-out infinite;
+  }
 `}</style>
 
       </main>
