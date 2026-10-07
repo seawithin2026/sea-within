@@ -34,6 +34,7 @@ export default function AccountRouter() {
           terms_accepted_at: new Date().toISOString(),
         });
 
+        // Fetch again after insert
         const { data: newProfile } = await supabase
           .from("profiles")
           .select("*")
@@ -73,13 +74,8 @@ export default function AccountRouter() {
         return;
       }
 
-      // ⭐ STEP 6 — Fully onboarded → go to account
+      // 6. Fully onboarded
       router.replace("/account");
-
-      // ⭐ STEP 7 — After 5 seconds → redirect to Sanctuary
-      setTimeout(() => {
-        router.replace("/sanctuary");
-      }, 5000);
     }
 
     run();
