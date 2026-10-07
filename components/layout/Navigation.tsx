@@ -25,7 +25,9 @@ export default function Navigation() {
   const [freezeNav, setFreezeNav] = useState(true);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+
+  // ⭐ IMPORTANT FIX: user starts as undefined (loading)
+  const [user, setUser] = useState<any>(undefined);
 
   /* -----------------------------------------------------
      HYDRATION
@@ -70,7 +72,9 @@ export default function Navigation() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      setUser(user);
+
+      // ⭐ FIX: user is now null when signed out, not undefined
+      setUser(user ?? null);
     }
 
     loadUser();
@@ -145,9 +149,14 @@ export default function Navigation() {
               </Link>
             ))}
 
-            {/* AUTH BUTTONS — NO FLASH */}
+            {/* ⭐ AUTH BUTTONS — FIXED */}
             {user === null ? (
-              <div className="w-[80px] ml-8" /> // invisible placeholder
+              <Link
+                href="/login"
+                className="btn-golden text-[11px] px-6 py-2.5 ml-8"
+              >
+                Sign In
+              </Link>
             ) : (
               <div className="flex items-center gap-12 ml-8">
                 <button
@@ -198,9 +207,15 @@ export default function Navigation() {
                   </Link>
                 ))}
 
-                {/* MOBILE AUTH BUTTONS */}
+                {/* ⭐ MOBILE AUTH BUTTONS — FIXED */}
                 {user === null ? (
-                  <div className="w-[80px]" /> // invisible placeholder
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="btn-golden text-[11px] px-6 py-2.5"
+                  >
+                    Sign In
+                  </Link>
                 ) : (
                   <>
                     <button
