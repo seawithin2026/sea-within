@@ -79,7 +79,7 @@ export default function AccountRouter() {
       // ⭐ STEP 7 — After 5 seconds → redirect to Sanctuary
       setTimeout(() => {
         router.replace("/sanctuary");
-      }, 5000);
+      }, 3000);
     }
 
     run();

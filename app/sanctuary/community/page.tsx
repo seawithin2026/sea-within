@@ -299,40 +299,58 @@ export default function CommunityPage() {
     scrollbar-width: none;
   }
 
-  .chat-bubble {
-    max-width: 75%;
-    padding: 14px 18px;
-    border-radius: 18px 18px 18px 4px;
+.chat-bubble {
+  max-width: 75%;
+  padding: 18px 22px;
+  border-radius: 18px 18px 18px 4px;
 
-    /* ⭐ Upgraded visibility */
-    background: rgba(255, 255, 255, 0.28); /* was 0.05 */
-    border: 1px solid rgba(255, 255, 255, 0.22); /* was 0.06 */
-    backdrop-filter: blur(14px); /* slightly stronger blur */
-    box-shadow: 0 0 22px rgba(0, 0, 0, 0.28); /* soft glow for definition */
+  /* ⭐ MUCH CLEARER BUBBLE */
+  background: rgba(255, 255, 255, 0.42); /* was 0.05 */
+  border: 1px solid rgba(255, 255, 255, 0.34); /* was 0.06 */
+  backdrop-filter: blur(18px); /* stronger blur */
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.35); /* stronger glow */
 
-    transition: all 0.3s ease;
-  }
+  transition: all 0.3s ease;
+}
 
-  .chat-bubble:hover {
-    background: rgba(255, 255, 255, 0.34); /* was 0.07 */
-    border-color: rgba(229, 173, 67, 0.18); /* was 0.1 */
-    box-shadow: 0 0 26px rgba(0, 0, 0, 0.32);
-  }
+/* ⭐ Hover effect */
+.chat-bubble:hover {
+  background: rgba(255, 255, 255, 0.50);
+  border-color: rgba(229, 173, 67, 0.28);
+  box-shadow: 0 0 38px rgba(0, 0, 0, 0.40);
+}
 
-  .chat-bubble.own {
-    border-radius: 18px 18px 4px 18px;
+/* ⭐ OWN MESSAGES — clearer golden bubble */
+.chat-bubble.own {
+  border-radius: 18px 18px 4px 18px;
 
-    /* ⭐ Upgraded visibility for own messages */
-    background: rgba(229, 173, 67, 0.22); /* was 0.08 */
-    border: 1px solid rgba(229, 173, 67, 0.28); /* was 0.12 */
-    box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
-  }
+  background: rgba(229, 173, 67, 0.32); /* was 0.08 */
+  border: 1px solid rgba(229, 173, 67, 0.38); /* was 0.12 */
+  box-shadow: 0 0 32px rgba(229, 173, 67, 0.30);
+}
 
-  .chat-bubble.own:hover {
-    background: rgba(229, 173, 67, 0.28); /* was 0.12 */
-    border-color: rgba(229, 173, 67, 0.32); /* was 0.2 */
-    box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
-  }
+.chat-bubble.own:hover {
+  background: rgba(229, 173, 67, 0.40);
+  border-color: rgba(229, 173, 67, 0.45);
+  box-shadow: 0 0 38px rgba(229, 173, 67, 0.38);
+}
+
+/* ⭐ TEXT UPGRADE — clearer, darker, bolder, larger */
+.chat-bubble p {
+  font-size: 15px; /* was 13–14px */
+  font-weight: 600; /* bolder */
+  color: #2A4A4A; /* darker teal */
+  line-height: 1.55;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65); /* stronger contrast */
+}
+
+/* ⭐ USERNAME TEXT — clearer and more visible */
+.chat-bubble p:first-child {
+  font-size: 12px;
+  font-weight: 700;
+  color: #7A3F45; /* your rose-brown */
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
+}
 
   @keyframes slowFloat {
     0% { transform: translateY(0px) scale(1); }
