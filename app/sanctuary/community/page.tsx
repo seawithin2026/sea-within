@@ -230,7 +230,7 @@ export default function CommunityPage() {
                     </p>
                   )}
 
-                  <p className="font-body text-sm text-[#3A8C8C] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+                  <p className="font-body text-sm text-[#1C4444] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                     {msg.content}
                   </p>
 
