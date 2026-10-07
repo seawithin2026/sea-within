@@ -290,51 +290,61 @@ export default function CommunityPage() {
         </section>
 
         {/* STYLES */}
-        <style>{`
-          .chat-scroll::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-          }
-          .chat-scroll {
-            scrollbar-width: none;
-          }
+<style>{`
+  .chat-scroll::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+  .chat-scroll {
+    scrollbar-width: none;
+  }
 
-          .chat-bubble {
-            max-width: 75%;
-            padding: 14px 18px;
-            border-radius: 18px 18px 18px 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-          }
+  .chat-bubble {
+    max-width: 75%;
+    padding: 14px 18px;
+    border-radius: 18px 18px 18px 4px;
 
-          .chat-bubble:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(229, 173, 67, 0.1);
-          }
+    /* ⭐ Upgraded visibility */
+    background: rgba(255, 255, 255, 0.28); /* was 0.05 */
+    border: 1px solid rgba(255, 255, 255, 0.22); /* was 0.06 */
+    backdrop-filter: blur(14px); /* slightly stronger blur */
+    box-shadow: 0 0 22px rgba(0, 0, 0, 0.28); /* soft glow for definition */
 
-          .chat-bubble.own {
-            border-radius: 18px 18px 4px 18px;
-            background: rgba(229, 173, 67, 0.08);
-            border: 1px solid rgba(229, 173, 67, 0.12);
-          }
+    transition: all 0.3s ease;
+  }
 
-          .chat-bubble.own:hover {
-            background: rgba(229, 173, 67, 0.12);
-            border-color: rgba(229, 173, 67, 0.2);
-          }
+  .chat-bubble:hover {
+    background: rgba(255, 255, 255, 0.34); /* was 0.07 */
+    border-color: rgba(229, 173, 67, 0.18); /* was 0.1 */
+    box-shadow: 0 0 26px rgba(0, 0, 0, 0.32);
+  }
 
-          @keyframes slowFloat {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-18px) scale(1.015); }
-            100% { transform: translateY(0px) scale(1); }
-          }
+  .chat-bubble.own {
+    border-radius: 18px 18px 4px 18px;
 
-          .animate-slowFloat {
-            animation: slowFloat 22s ease-in-out infinite;
-          }
-        `}</style>
+    /* ⭐ Upgraded visibility for own messages */
+    background: rgba(229, 173, 67, 0.22); /* was 0.08 */
+    border: 1px solid rgba(229, 173, 67, 0.28); /* was 0.12 */
+    box-shadow: 0 0 22px rgba(229, 173, 67, 0.25);
+  }
+
+  .chat-bubble.own:hover {
+    background: rgba(229, 173, 67, 0.28); /* was 0.12 */
+    border-color: rgba(229, 173, 67, 0.32); /* was 0.2 */
+    box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
+  }
+
+  @keyframes slowFloat {
+    0% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-18px) scale(1.015); }
+    100% { transform: translateY(0px) scale(1); }
+  }
+
+  .animate-slowFloat {
+    animation: slowFloat 22s ease-in-out infinite;
+  }
+`}</style>
+
       </main>
     </MembershipGate>
   );
