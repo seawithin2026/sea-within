@@ -335,7 +335,7 @@ export default function CommunityPage() {
     .chat-bubble p {
   font-size: 15px;          /* bigger */
   font-weight: 600;         /* bolder */
-  color: #245A5A;           /* darker teal */
+  color: #0c4d4d;           /* darker teal */
   line-height: 1.55;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.65); /* stronger contrast */
 }
