@@ -230,7 +230,7 @@ export default function CommunityPage() {
                     </p>
                   )}
 
-                  <p className="font-body text-sm text-[#1C4444] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
+                  <p className="font-body text-sm text-[#245A5A] leading-relaxed drop-shadow-[0_0_4px_rgba(0,0,0,0.55)]">
                     {msg.content}
                   </p>
 
@@ -332,6 +332,14 @@ export default function CommunityPage() {
     border-color: rgba(229, 173, 67, 0.32); /* was 0.2 */
     box-shadow: 0 0 26px rgba(229, 173, 67, 0.32);
   }
+    .chat-bubble p {
+  font-size: 15px;          /* bigger */
+  font-weight: 600;         /* bolder */
+  color: #245A5A;           /* darker teal */
+  line-height: 1.55;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.65); /* stronger contrast */
+}
+
 
   @keyframes slowFloat {
     0% { transform: translateY(0px) scale(1); }
