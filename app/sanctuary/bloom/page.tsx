@@ -57,7 +57,7 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     ⭐ INIT LOGIC — moved outside so we can call it again
+     ⭐ INIT LOGIC
   ----------------------------------------------------- */
   const init = async () => {
     const bloom = await getBloomProgress();
@@ -98,20 +98,13 @@ function BloomContent() {
     }
   };
 
-  /* -----------------------------------------------------
-     ⭐ Run init on first load
-  ----------------------------------------------------- */
   useEffect(() => {
     init();
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ Run init again when tab becomes active
-     FIX FOR YOUR ISSUE
-  ----------------------------------------------------- */
   useEffect(() => {
     const handleFocus = () => {
-      init(); // re-check bloom state
+      init();
     };
 
     window.addEventListener("focus", handleFocus);
@@ -119,7 +112,8 @@ function BloomContent() {
   }, []);
 
   /* -----------------------------------------------------
-     GESTURE → BLOOM_READY
+     ⭐ GESTURE → BLOOM_READY
+     FIX APPLIED HERE
   ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     const gesture = await getGestureProgress();
@@ -139,6 +133,9 @@ function BloomContent() {
       const next = prev + 1 >= GESTURES.length ? 0 : prev + 1;
       return next;
     });
+
+    // ⭐ REAL FIX — update videoSrc immediately
+    setVideoSrc(BLOOMS[bloomIndex]);
 
     setState("BLOOM_READY");
   };
@@ -165,9 +162,6 @@ function BloomContent() {
     setState("BLOOM_DONE");
   };
 
-  /* -----------------------------------------------------
-     FINAL RETURN
-  ----------------------------------------------------- */
   const gestureText = GESTURES[gestureIndex];
 
   return (
@@ -215,7 +209,7 @@ function BloomContent() {
         ) && (
           <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
             <video
-              key={videoSrc}
+              key={videoSrc}   // ⭐ prevents cached flicker
               src={videoSrc || ""}
               autoPlay
               muted
