@@ -18,12 +18,13 @@ export default function LogoutPage() {
     // Trigger veil fade-out before redirect
     const veilTimer = setTimeout(() => {
       setVeil(true);
-    }, 2800); // veil appears at 2.8s
+    }, 2800);
 
-    // Redirect after veil fully fades in
+    // ⭐ FIX: prevent scroll glitch before redirect
     const redirectTimer = setTimeout(() => {
+      window.scrollTo(0, 0);   // ← FIX
       window.location.href = '/';
-    }, 3500); // 3.5 seconds total
+    }, 3500);
 
     return () => {
       clearTimeout(veilTimer);
