@@ -48,17 +48,11 @@ function BloomContent() {
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
 
-  /* -----------------------------------------------------
-     ⭐ Prevent scroll reset glitch
-  ----------------------------------------------------- */
   useEffect(() => {
     const y = window.scrollY;
     window.scrollTo(0, y);
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ INIT LOGIC
-  ----------------------------------------------------- */
   const init = async () => {
     const bloom = await getBloomProgress();
     const gesture = await getGestureProgress();
@@ -111,10 +105,6 @@ function BloomContent() {
     return () => window.removeEventListener("focus", handleFocus);
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ GESTURE → BLOOM_READY
-     FIX APPLIED HERE
-  ----------------------------------------------------- */
   const handleGestureComplete = async () => {
     const gesture = await getGestureProgress();
     if (!gesture) {
@@ -134,21 +124,19 @@ function BloomContent() {
       return next;
     });
 
-    // ⭐ REAL FIX — update videoSrc immediately
     setVideoSrc(BLOOMS[bloomIndex]);
 
     setState("BLOOM_READY");
   };
 
-  /* -----------------------------------------------------
-     BLOOM_READY → BLOOM_PLAYING
-     BLOOM_PLAYING → BLOOM_DONE
-  ----------------------------------------------------- */
   const handleBloomStart = async () => {
+    // ⭐ FIX: force correct video immediately
+    setVideoSrc(BLOOMS[bloomIndex]);
+
     if (!hasBloomedToday) {
       const bloom = await getBloomProgress();
       if (bloom) {
-        await completeTodayBloom(bloom, videoSrc!);
+        await completeTodayBloom(bloom, BLOOMS[bloomIndex]);
         setHasBloomedToday(true);
         setJustBloomedNow(true);
       }
@@ -170,7 +158,6 @@ function BloomContent() {
 
         <Navigation />
 
-        {/* GESTURE SCREEN */}
         {state === "GESTURE" && (
           <section className="relative min-h-screen w-full flex flex-col justify-center items-center text-center overflow-hidden">
             <div
@@ -203,13 +190,12 @@ function BloomContent() {
           </section>
         )}
 
-        {/* BLOOM VIDEO OVERLAY */}
         {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
           state
         ) && (
           <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
             <video
-              key={videoSrc}   // ⭐ prevents cached flicker
+              key={videoSrc}
               src={videoSrc || ""}
               autoPlay
               muted
@@ -238,7 +224,6 @@ function BloomContent() {
           </div>
         )}
 
-        {/* ANIMATIONS */}
         <style jsx>{`
           @keyframes fadeIn {
             from {
