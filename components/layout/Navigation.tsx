@@ -21,33 +21,20 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollReady, setScrollReady] = useState(false);
 
-  // ⭐ Cinematic lock
   const [freezeNav, setFreezeNav] = useState(true);
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // ⭐ IMPORTANT FIX: user starts as undefined (loading)
   const [user, setUser] = useState<any>(undefined);
 
-  /* -----------------------------------------------------
-     HYDRATION
-  ----------------------------------------------------- */
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  /* -----------------------------------------------------
-     ⭐ CINEMATIC LOCK — 600ms
-     Prevents ALL layout-shift flickers
-  ----------------------------------------------------- */
   useEffect(() => {
     const t = setTimeout(() => setFreezeNav(false), 600);
     return () => clearTimeout(t);
   }, []);
 
-  /* -----------------------------------------------------
-     SCROLL DETECTION
-  ----------------------------------------------------- */
   useEffect(() => {
     if (!hydrated) return;
 
@@ -56,15 +43,12 @@ export default function Navigation() {
       setScrollReady(true);
     };
 
-    handleScroll(); // run immediately
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hydrated]);
 
-  /* -----------------------------------------------------
-     USER DETECTION
-  ----------------------------------------------------- */
   useEffect(() => {
     if (!hydrated) return;
 
@@ -73,16 +57,12 @@ export default function Navigation() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // ⭐ FIX: user is now null when signed out, not undefined
       setUser(user ?? null);
     }
 
     loadUser();
   }, [hydrated]);
 
-  /* -----------------------------------------------------
-     NAV CLASS — LOCKED DURING CINEMATIC BUFFER
-  ----------------------------------------------------- */
   const navClass = freezeNav
     ? "backdrop-blur-xl"
     : isScrolled
@@ -95,9 +75,6 @@ export default function Navigation() {
     ? "rgba(10, 22, 40, 0.90)"
     : "transparent";
 
-  /* -----------------------------------------------------
-     SKELETON DURING HYDRATION
-  ----------------------------------------------------- */
   if (!hydrated) {
     return (
       <nav className="fixed top-0 left-0 right-0 z-[9999] bg-transparent">
@@ -110,9 +87,6 @@ export default function Navigation() {
     );
   }
 
-  /* -----------------------------------------------------
-     FINAL NAVIGATION
-  ----------------------------------------------------- */
   return (
     <>
       <motion.nav
@@ -122,34 +96,36 @@ export default function Navigation() {
         className={`fixed top-0 left-0 right-0 z-[9999] transition-all duration-700 ${navClass}`}
         style={{
           backgroundColor: navBg,
-
-          // ⭐ Cinematic lock properties
           height: freezeNav ? "80px" : undefined,
           transform: freezeNav ? "translateY(0)" : undefined,
           opacity: freezeNav ? 1 : undefined,
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Brand */}
           <Link href="/" className="group flex items-center gap-3">
             <span className="text-2xl font-display font-semibold tracking-[4px] text-golden-400 group-hover:text-golden-300 transition-colors duration-500">
               SEA WITHIN
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.href}
-                href={link.href}
+                onClick={() => {
+                  if (user === null) {
+                    router.push("/reveal");
+                  } else {
+                    router.push(link.href);
+                  }
+                }}
                 className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
               >
                 {link.label}
-              </Link>
+              </button>
             ))}
 
-            {/* ⭐ AUTH BUTTONS — FIXED */}
             {user === null ? (
               <Link
                 href="/login"
@@ -176,7 +152,7 @@ export default function Navigation() {
             )}
           </div>
 
-          {/* Mobile Toggle */}
+          {/* MOBILE TOGGLE */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden text-white/60 hover:text-golden-400 transition-colors"
@@ -185,7 +161,7 @@ export default function Navigation() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* MOBILE MENU */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -197,17 +173,22 @@ export default function Navigation() {
             >
               <div className="px-6 py-8 flex flex-col gap-12">
                 {navLinks.map((link) => (
-                  <Link
+                  <button
                     key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      if (user === null) {
+                        router.push("/reveal");
+                      } else {
+                        router.push(link.href);
+                      }
+                    }}
                     className="font-body text-[13px] tracking-[2px] uppercase text-white/60 hover:text-golden-400 transition-colors"
                   >
                     {link.label}
-                  </Link>
+                  </button>
                 ))}
 
-                {/* ⭐ MOBILE AUTH BUTTONS — FIXED */}
                 {user === null ? (
                   <Link
                     href="/login"
