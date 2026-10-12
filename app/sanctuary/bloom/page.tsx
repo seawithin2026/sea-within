@@ -48,7 +48,6 @@ function BloomContent() {
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
 
-  // ⭐ NEW: Wait until bloom state is fully loaded
   const [bloomLoaded, setBloomLoaded] = useState(false);
 
   useEffect(() => {
@@ -65,7 +64,7 @@ function BloomContent() {
       setBloomIndex(0);
       setVideoSrc(BLOOMS[0]);
       setState("GESTURE");
-      setBloomLoaded(true); // ⭐ mark loaded
+      setBloomLoaded(true);
       return;
     }
 
@@ -87,7 +86,8 @@ function BloomContent() {
 
     if (alreadyBloomed) {
       setHasBloomedToday(true);
-      setVideoSrc(bloom.last_bloom_video || BLOOMS[bloomIdx]);
+      // ✅ force today’s bloom video based on current_day
+      setVideoSrc(BLOOMS[bloomIdx]);
       setState("LOCKED");
     } else {
       setHasBloomedToday(false);
@@ -95,7 +95,7 @@ function BloomContent() {
       setState("GESTURE");
     }
 
-    setBloomLoaded(true); // ⭐ bloom state is ready
+    setBloomLoaded(true);
   };
 
   useEffect(() => {
@@ -184,7 +184,6 @@ function BloomContent() {
           </section>
         )}
 
-        {/* ⭐ VIDEO ONLY RENDERS WHEN BLOOM STATE IS READY */}
         {bloomLoaded &&
           ["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
             state
