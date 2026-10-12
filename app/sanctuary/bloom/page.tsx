@@ -96,14 +96,7 @@ function BloomContent() {
     init();
   }, []);
 
-  useEffect(() => {
-    const handleFocus = () => {
-      init();
-    };
-
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, []);
+  // ❌ Removed the window focus listener that caused the wrong video flash
 
   const handleGestureComplete = async () => {
     const gesture = await getGestureProgress();
@@ -130,8 +123,8 @@ function BloomContent() {
   };
 
   const handleBloomStart = async () => {
-    // ⭐ FIX: force correct video immediately
-    setVideoSrc(BLOOMS[bloomIndex]);
+    // ❌ Removed second videoSrc override (caused remount flicker)
+    // setVideoSrc(BLOOMS[bloomIndex]);
 
     if (!hasBloomedToday) {
       const bloom = await getBloomProgress();
@@ -195,7 +188,7 @@ function BloomContent() {
         ) && (
           <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
             <video
-              key={videoSrc}
+              key={bloomIndex}   /* ✅ FIXED: stable key prevents wrong video flash */
               src={videoSrc || ""}
               autoPlay
               muted
