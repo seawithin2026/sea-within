@@ -48,6 +48,9 @@ function BloomContent() {
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [videoEnded, setVideoEnded] = useState(false);
 
+  // ⭐ NEW: Wait until bloom state is fully loaded
+  const [bloomLoaded, setBloomLoaded] = useState(false);
+
   useEffect(() => {
     const y = window.scrollY;
     window.scrollTo(0, y);
@@ -62,6 +65,7 @@ function BloomContent() {
       setBloomIndex(0);
       setVideoSrc(BLOOMS[0]);
       setState("GESTURE");
+      setBloomLoaded(true); // ⭐ mark loaded
       return;
     }
 
@@ -90,13 +94,13 @@ function BloomContent() {
       setVideoSrc(BLOOMS[bloomIdx]);
       setState("GESTURE");
     }
+
+    setBloomLoaded(true); // ⭐ bloom state is ready
   };
 
   useEffect(() => {
     init();
   }, []);
-
-  // ❌ Removed the window focus listener that caused the wrong video flash
 
   const handleGestureComplete = async () => {
     const gesture = await getGestureProgress();
@@ -123,9 +127,6 @@ function BloomContent() {
   };
 
   const handleBloomStart = async () => {
-    // ❌ Removed second videoSrc override (caused remount flicker)
-    // setVideoSrc(BLOOMS[bloomIndex]);
-
     if (!hasBloomedToday) {
       const bloom = await getBloomProgress();
       if (bloom) {
@@ -183,39 +184,41 @@ function BloomContent() {
           </section>
         )}
 
-        {["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
-          state
-        ) && (
-          <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
-            <video
-              key={bloomIndex}   /* ✅ FIXED: stable key prevents wrong video flash */
-              src={videoSrc || ""}
-              autoPlay
-              muted
-              playsInline
-              loop={false}
-              onPlay={handleBloomStart}
-              onEnded={handleBloomEnd}
-              className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-            />
+        {/* ⭐ VIDEO ONLY RENDERS WHEN BLOOM STATE IS READY */}
+        {bloomLoaded &&
+          ["BLOOM_READY", "BLOOM_PLAYING", "BLOOM_DONE", "LOCKED"].includes(
+            state
+          ) && (
+            <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
+              <video
+                key={bloomIndex}
+                src={videoSrc || ""}
+                autoPlay
+                muted
+                playsInline
+                loop={false}
+                onPlay={handleBloomStart}
+                onEnded={handleBloomEnd}
+                className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+              />
 
-            {state === "BLOOM_DONE" && justBloomedNow && (
-              <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-                <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                  You bloomed today.
-                </p>
-              </div>
-            )}
+              {state === "BLOOM_DONE" && justBloomedNow && (
+                <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+                  <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+                    You bloomed today.
+                  </p>
+                </div>
+              )}
 
-            {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
-              <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-                <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                  Come back tomorrow.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+              {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
+                <div className="absolute bottom-10 left-10 animate-softRiseSlow">
+                  <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
+                    Come back tomorrow.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
         <style jsx>{`
           @keyframes fadeIn {
