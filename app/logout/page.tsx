@@ -15,22 +15,16 @@ export default function LogoutPage() {
     // ⭐ Start veil first (calm transition)
     const veilTimer = setTimeout(() => {
       setVeil(true);
-    }, 2200); // slightly earlier for smoother timing
+    }, 2200);
 
-    // ⭐ Sign out AFTER veil begins (prevents glitch)
-    const signOutTimer = setTimeout(async () => {
-      await supabase.auth.signOut();
-    }, 2600);
-
-    // ⭐ Redirect AFTER sign-out + veil (no harsh jump)
+    // ⭐ Redirect softly (no sign-out yet)
     const redirectTimer = setTimeout(() => {
-      window.scrollTo(0, 0); // prevent scroll flash
-      window.location.href = '/';
+      window.scrollTo(0, 0);
+      window.location.href = '/signed-out';
     }, 3600);
 
     return () => {
       clearTimeout(veilTimer);
-      clearTimeout(signOutTimer);
       clearTimeout(redirectTimer);
     };
   }, []);
