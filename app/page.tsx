@@ -7,8 +7,6 @@ import ElementSection from '@/components/videos/ElementSection';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BreathingCircle from '@/components/ui/BreathingCircle';
 import { useEffect, useState } from 'react';
-import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
 
 
 // ============================================
@@ -72,33 +70,7 @@ export default function HomePage() {
     }
   };
 
-// ⭐ FOOTER MEMBERSHIP CHECK
-  const router = useRouter();
 
-  async function go(path: string) {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // Not logged in → reveal
-    if (!user) {
-      router.push("/reveal");
-      return;
-    }
-
-    // Check membership
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_member")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile?.is_member) {
-      router.push("/reveal");
-      return;
-    }
-
-    // Member → allow navigation
-    router.push(path);
-  }
   return (
     <>
       {/* ⭐ FIXED — Navigation must be OUTSIDE <main> */}
@@ -389,13 +361,13 @@ export default function HomePage() {
             </p>
 
             <div className="flex justify-center flex-wrap gap-8 mt-10">
-              <a href="/sanctuary" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+              <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Sanctuary
               </a>
-              <a href="/sanctuary/bloom" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+              <a href="reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Bloom
               </a>
-              <a href="/sanctuary/wisdom-board" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+              <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Wisdom Board
               </a>
               <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
