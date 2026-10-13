@@ -126,17 +126,19 @@ function BloomContent() {
     setState("BLOOM_READY");
   };
 
-  const handleBloomStart = async () => {
-    if (!hasBloomedToday) {
-      const bloom = await getBloomProgress();
-      if (bloom) {
-        await completeTodayBloom(bloom, BLOOMS[bloomIndex]);
-        setHasBloomedToday(true);
-        setJustBloomedNow(true);
-      }
+const handleBloomStart = async () => {
+  if (!hasBloomedToday) {
+    const bloom = await getBloomProgress();
+    if (bloom && videoSrc) {
+      // ✅ use the actual video that is playing
+      await completeTodayBloom(bloom, videoSrc);
+      setHasBloomedToday(true);
+      setJustBloomedNow(true);
     }
+  }
 
-    setState("BLOOM_PLAYING");
+  setState("BLOOM_PLAYING");
+
   };
 
   const handleBloomEnd = () => {
