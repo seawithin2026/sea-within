@@ -28,10 +28,10 @@ export async function getBloomProgress() {
   const user = await waitForUser();
   if (!user) return null;
 
-  // Fetch profile timezone + bloom metadata
+  // Fetch profile timezone + bloom metadata (video ignored for ritual engine)
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("timezone, last_bloom_date, last_bloom_video")
+    .select("timezone, last_bloom_date")
     .eq("id", user.id)
     .single();
 
@@ -41,7 +41,7 @@ export async function getBloomProgress() {
 
   const userTimezone = profile?.timezone || "UTC";
 
-  // Fetch bloom progress
+  // Fetch bloom_progress (authoritative bloom state)
   const { data, error } = await supabase
     .from("bloom_progress")
     .select("*")
@@ -67,7 +67,6 @@ export async function getBloomProgress() {
       ...created,
       last_completed_local: null,
       profile_last_bloom_date: profile?.last_bloom_date ?? null,
-      profile_last_bloom_video: profile?.last_bloom_video ?? null,
     };
   }
 
@@ -85,7 +84,6 @@ export async function getBloomProgress() {
     ...data,
     last_completed_local: lastCompletedLocal,
     profile_last_bloom_date: profile?.last_bloom_date ?? null,
-    profile_last_bloom_video: profile?.last_bloom_video ?? null,
   };
 }
 
@@ -109,7 +107,6 @@ export async function completeTodayBloom(progress: any, videoName: string) {
 
   const userTimezone = profile?.timezone || "UTC";
 
-  // Compute "today" in user's timezone
   const now = dayjs().tz(userTimezone);
   const today = now.format("YYYY-MM-DD");
 
@@ -122,7 +119,7 @@ export async function completeTodayBloom(progress: any, videoName: string) {
     completedAll = false;
   }
 
-  // Update bloom_progress
+  // Update bloom_progress (authoritative)
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
@@ -137,16 +134,14 @@ export async function completeTodayBloom(progress: any, videoName: string) {
 
   if (bloomError) throw bloomError;
 
-  // Update profile bloom metadata
-  const { error: profileUpdateError } = await supabase
+  // Update profile metadata (non-authoritative, used for history)
+  await supabase
     .from("profiles")
     .update({
       last_bloom_date: today,
       last_bloom_video: videoName,
     })
     .eq("id", user.id);
-
-  if (profileUpdateError) throw profileUpdateError;
 
   return bloomData;
 }
@@ -158,7 +153,6 @@ export async function resetBloomCycle(progress: any) {
   const user = await waitForUser();
   if (!user) return null;
 
-  // Fetch timezone
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("timezone")
@@ -172,7 +166,6 @@ export async function resetBloomCycle(progress: any) {
   const userTimezone = profile?.timezone || "UTC";
   const now = dayjs().tz(userTimezone);
 
-  // Reset bloom_progress
   const { data: bloomData, error: bloomError } = await supabase
     .from("bloom_progress")
     .update({
@@ -187,16 +180,13 @@ export async function resetBloomCycle(progress: any) {
 
   if (bloomError) throw bloomError;
 
-  // Reset profile bloom metadata
-  const { error: profileUpdateError } = await supabase
+  await supabase
     .from("profiles")
     .update({
       last_bloom_date: null,
       last_bloom_video: null,
     })
     .eq("id", user.id);
-
-  if (profileUpdateError) throw profileUpdateError;
 
   return bloomData;
 }
