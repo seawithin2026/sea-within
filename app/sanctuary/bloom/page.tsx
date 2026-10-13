@@ -209,18 +209,11 @@ function BloomContent() {
                 className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
               />
 
-              {state === "BLOOM_DONE" && justBloomedNow && (
+              {/* ⭐ Unified message block — no overlap, no flicker */}
+              {(state === "BLOOM_DONE" || state === "LOCKED") && (
                 <div className="absolute bottom-10 left-10 animate-softRiseSlow">
                   <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                    You bloomed today.
-                  </p>
-                </div>
-              )}
-
-              {(state === "LOCKED" || (state === "BLOOM_DONE" && hasBloomedToday)) && (
-                <div className="absolute bottom-10 left-10 animate-softRiseSlow">
-                  <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
-                    Come back tomorrow.
+                    {justBloomedNow ? "You bloomed today." : "Come back tomorrow."}
                   </p>
                 </div>
               )}
