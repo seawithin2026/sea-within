@@ -8,26 +8,29 @@ export default function LogoutPage() {
   const [veil, setVeil] = useState(false);
 
   useEffect(() => {
-    // Sign out immediately
-    supabase.auth.signOut();
-
     // Slow down the video playback
     const vid = document.querySelector("video");
     if (vid) vid.playbackRate = 0.6;
 
-    // Trigger veil fade-out before redirect
+    // ⭐ Start veil first (calm transition)
     const veilTimer = setTimeout(() => {
       setVeil(true);
-    }, 2800);
+    }, 2200); // slightly earlier for smoother timing
 
-    // ⭐ FIX: prevent scroll glitch before redirect
+    // ⭐ Sign out AFTER veil begins (prevents glitch)
+    const signOutTimer = setTimeout(async () => {
+      await supabase.auth.signOut();
+    }, 2600);
+
+    // ⭐ Redirect AFTER sign-out + veil (no harsh jump)
     const redirectTimer = setTimeout(() => {
-      window.scrollTo(0, 0);   // ← FIX
+      window.scrollTo(0, 0); // prevent scroll flash
       window.location.href = '/';
-    }, 3500);
+    }, 3600);
 
     return () => {
       clearTimeout(veilTimer);
+      clearTimeout(signOutTimer);
       clearTimeout(redirectTimer);
     };
   }, []);
@@ -79,7 +82,7 @@ export default function LogoutPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, ease: 'easeOut' }}
+          transition={{ duration: 0.9, ease: 'easeOut' }}
           className="absolute inset-0 bg-black/80 backdrop-blur-xl"
         />
       )}
