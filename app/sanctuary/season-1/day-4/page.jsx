@@ -77,7 +77,7 @@ export default function Day4Page() {
             <p>A dome of light that curves upward from your feet, arches over your crown, and seals behind your spine.</p>
             <p>This is the Luminous Sphere — a ritual once used to guard initiates as they stepped into their becoming.</p>
             <p>Nothing heavy can cross this threshold. Nothing draining can enter.</p>
-            <p>This dome is not escape — it is sovereignty.</p>
+            <p>This dome is not an escape — it is sovereignty.</p>
             <p>A sanctuary woven from your own radiance.</p>
           </div>
         </div>
