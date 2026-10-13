@@ -209,8 +209,8 @@ function BloomContent() {
                 className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
               />
 
-              {/* ⭐ Unified message block — no overlap, no flicker */}
-              {(state === "BLOOM_DONE" || state === "LOCKED") && (
+              {/* ⭐ FIX: Only show message AFTER video ends */}
+              {state === "BLOOM_DONE" && (
                 <div className="absolute bottom-10 left-10 animate-softRiseSlow">
                   <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
                     {justBloomedNow ? "You bloomed today." : "Come back tomorrow."}
