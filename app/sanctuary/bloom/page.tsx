@@ -70,7 +70,6 @@ function BloomContent() {
 
     const userTimezone = bloom.timezone || dayjs.tz.guess();
 
-    // ⭐ Correct: convert UTC → local using timezone
     const lastCompleted = bloom.last_completed
       ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
       : null;
@@ -81,11 +80,14 @@ function BloomContent() {
       lastCompleted === todayLocal && lastCompleted !== null;
 
     const bloomIdx = bloom.current_day - 1;
-    setBloomIndex(bloomIdx);
+
+    // ⭐ FIX: Do NOT load next bloom if already bloomed today
+    if (!alreadyBloomed) {
+      setBloomIndex(bloomIdx);
+      setVideoSrc(BLOOMS[bloomIdx]);
+    }
 
     setGestureIndex(gesture.current_index);
-
-    setVideoSrc(BLOOMS[bloomIdx]);
 
     if (alreadyBloomed) {
       setHasBloomedToday(true);
@@ -131,7 +133,6 @@ function BloomContent() {
       const bloom = await getBloomProgress();
 
       if (bloom && videoSrc) {
-        // ⭐ Correct: save the actual video that played
         await completeTodayBloom(bloom, videoSrc);
         setHasBloomedToday(true);
         setJustBloomedNow(true);
@@ -192,7 +193,6 @@ function BloomContent() {
           ) && (
             <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
               <video
-                // ⭐ Correct: remove key={bloomIndex}
                 src={videoSrc || ""}
                 autoPlay
                 muted
