@@ -398,7 +398,7 @@ export default function HomePage() {
               <a href="/sanctuary/wisdom-board" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Wisdom Board
               </a>
-              <a href="/sanctuary/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+              <a href="/community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Community
               </a>
             </div>
