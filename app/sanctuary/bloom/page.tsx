@@ -70,6 +70,7 @@ function BloomContent() {
 
     const userTimezone = bloom.timezone || dayjs.tz.guess();
 
+    // ⭐ Correct: convert UTC → local using timezone
     const lastCompleted = bloom.last_completed
       ? dayjs(bloom.last_completed).tz(userTimezone).format("YYYY-MM-DD")
       : null;
@@ -84,14 +85,13 @@ function BloomContent() {
 
     setGestureIndex(gesture.current_index);
 
+    setVideoSrc(BLOOMS[bloomIdx]);
+
     if (alreadyBloomed) {
       setHasBloomedToday(true);
-      // ✅ force today’s bloom video based on current_day
-      setVideoSrc(BLOOMS[bloomIdx]);
       setState("LOCKED");
     } else {
       setHasBloomedToday(false);
-      setVideoSrc(BLOOMS[bloomIdx]);
       setState("GESTURE");
     }
 
@@ -126,19 +126,19 @@ function BloomContent() {
     setState("BLOOM_READY");
   };
 
-const handleBloomStart = async () => {
-  if (!hasBloomedToday) {
-    const bloom = await getBloomProgress();
-    if (bloom && videoSrc) {
-      // ✅ use the actual video that is playing
-      await completeTodayBloom(bloom, videoSrc);
-      setHasBloomedToday(true);
-      setJustBloomedNow(true);
+  const handleBloomStart = async () => {
+    if (!hasBloomedToday) {
+      const bloom = await getBloomProgress();
+
+      if (bloom && videoSrc) {
+        // ⭐ Correct: save the actual video that played
+        await completeTodayBloom(bloom, videoSrc);
+        setHasBloomedToday(true);
+        setJustBloomedNow(true);
+      }
     }
-  }
 
-  setState("BLOOM_PLAYING");
-
+    setState("BLOOM_PLAYING");
   };
 
   const handleBloomEnd = () => {
@@ -192,7 +192,7 @@ const handleBloomStart = async () => {
           ) && (
             <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
               <video
-                key={bloomIndex}
+                // ⭐ Correct: remove key={bloomIndex}
                 src={videoSrc || ""}
                 autoPlay
                 muted
