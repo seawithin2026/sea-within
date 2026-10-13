@@ -81,8 +81,14 @@ function BloomContent() {
 
     const bloomIdx = bloom.current_day - 1;
 
-    // ⭐ FIX: Do NOT load next bloom if already bloomed today
-    if (!alreadyBloomed) {
+    // ⭐ FIX: Replay the bloom completed today instead of loading the next one
+    if (alreadyBloomed) {
+      const completedBloomIdx = bloom.current_day - 2;
+      const safeIdx = completedBloomIdx >= 0 ? completedBloomIdx : 0;
+
+      setBloomIndex(safeIdx);
+      setVideoSrc(BLOOMS[safeIdx]);
+    } else {
       setBloomIndex(bloomIdx);
       setVideoSrc(BLOOMS[bloomIdx]);
     }
@@ -211,7 +217,7 @@ function BloomContent() {
                 </div>
               )}
 
-              {state === "BLOOM_DONE" && !justBloomedNow && hasBloomedToday && (
+              {(state === "LOCKED" || (state === "BLOOM_DONE" && hasBloomedToday)) && (
                 <div className="absolute bottom-10 left-10 animate-softRiseSlow">
                   <p className="text-golden-400 text-base tracking-[0.18em] uppercase">
                     Come back tomorrow.
