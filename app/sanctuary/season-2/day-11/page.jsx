@@ -54,4 +54,64 @@ export default function Day11Page() {
           </p>
 
           <div className="element-paragraph">
-            <p>Place your hand on
+            <p>Place your hand on the earth or any natural surface.</p>
+            <p>Early humans grounded themselves through touch to steady the body.</p>
+            <p>Feel the coolness, the texture, the weight.</p>
+            <p>This is your body returning to origin.</p>
+          </div>
+        </div>
+
+        {/* MIND — THE SETTLING THOUGHT */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season2/day11-mind.mp4" />
+            </video>
+          </div>
+          <p className="grid-title fire">THE SETTLING THOUGHT</p>
+          <p className="grid-text">
+            Echoing ancient awareness practices where stillness settled the mind.
+          </p>
+
+          <div className="element-paragraph">
+            <p>Let your thoughts slow as your hand rests on the earth.</p>
+            <p>Ancient humans believed the ground absorbed mental noise.</p>
+            <p>Notice how your mind softens and widens.</p>
+            <p>This is your mind settling into presence.</p>
+          </div>
+        </div>
+
+        {/* SPIRIT — THE RETURNING QUIET */}
+        <div className="grid-element">
+          <div className="grid-media">
+            <video autoPlay muted loop playsInline>
+              <source src="/video-season2/day11-spirit.mp4" />
+            </video>
+          </div>
+          <p className="grid-title earth">THE RETURNING QUIET</p>
+          <p className="grid-text">
+            Inspired by mythic earth‑keeper traditions where contact awakened spiritual calm.
+          </p>
+
+          <div className="element-paragraph">
+            <p>Feel the quiet rise from the earth into your chest.</p>
+            <p>Mythic earth‑keepers believed stillness lived in the ground itself.</p>
+            <p>Let that quiet settle inside you.</p>
+            <p>Your spirit returns when you touch what is steady.</p>
+          </div>
+        </div>
+
+      </section>
+
+      {/* -------------------------------------------------- */}
+      {/* 4. CLOSING TEXT — MYTHIC REALISM */}
+      {/* -------------------------------------------------- */}
+      <footer className="closing">
+        <span>You are grounded.</span>
+        <span>You are settled.</span>
+        <span>You have returned.</span>
+      </footer>
+
+    </div>
+  );
+}
