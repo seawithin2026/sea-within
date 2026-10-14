@@ -1,0 +1,197 @@
+/* -------------------------------------------------- */
+/* ROOT COLORS */
+/* -------------------------------------------------- */
+:root {
+  --bg-dark: #05060a;
+  --bg-deep: #050814;
+
+  --accent-fire: #ffb36b;
+  --accent-water: #6bdcff;
+  --accent-earth: #9be58a;
+
+  --text-main: #f7f7fb;
+  --text-soft: #c5c7d7;
+}
+
+/* -------------------------------------------------- */
+/* PAGE WRAPPER */
+/* -------------------------------------------------- */
+.day15-wrapper {
+  width: 100%;
+  background: radial-gradient(circle at top, #1a2038 0, #05060a 60%, #020308 100%);
+  padding-bottom: 80px;
+}
+
+/* -------------------------------------------------- */
+/* 1. FULL-SCREEN HERO */
+/* -------------------------------------------------- */
+.day15-hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.day15-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.day15-hero-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  color: white;
+}
+
+.day15-hero-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  opacity: 0.85;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.day15-hero-title {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.day15-hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+/* -------------------------------------------------- */
+/* 2. CINEMATIC OPENING TEXT */
+/* -------------------------------------------------- */
+.cinematic-opening {
+  margin: 60px auto 40px;
+  max-width: 560px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-main);
+  opacity: 0.92;
+}
+
+.cinematic-opening span {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.cinematic-opening .mt {
+  margin-top: 14px;
+}
+
+/* -------------------------------------------------- */
+/* 3. CINEMATIC GRID */
+/* -------------------------------------------------- */
+.day15-grid {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 20px 0;
+  scroll-snap-type: x mandatory;
+  margin: 40px 0;
+}
+
+.day15-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.grid-element {
+  min-width: 260px;
+  max-width: 260px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.grid-media {
+  width: 100%;
+  height: 360px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04);
+}
+
+.grid-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-title {
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-main);
+}
+
+.grid-title.fire { color: var(--accent-fire); }
+.grid-title.water { color: var(--accent-water); }
+.grid-title.earth { color: var(--accent-earth); }
+
+.grid-text {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.element-paragraph {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-main);
+  max-width: 240px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.element-paragraph p {
+  margin-bottom: 6px;
+}
+
+/* DESKTOP GRID */
+@media (min-width: 768px) {
+  .day15-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    overflow: visible;
+  }
+
+  .grid-element {
+    min-width: unset;
+    max-width: unset;
+  }
+}
+
+/* -------------------------------------------------- */
+/* 4. CLOSING TEXT */
+/* -------------------------------------------------- */
+.closing {
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--text-soft);
+  text-align: center;
+}
+
+.closing span {
+  white-space: nowrap;
+}
