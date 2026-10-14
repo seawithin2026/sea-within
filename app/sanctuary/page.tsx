@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import MembershipGate from "@/components/MembershipGate";
-import VideoGrid from "./VideoGrid";
+import VideoGrid from "./VideoGrid";        // Season 1
+import Season2Grid from "./Season2Grid";    // Season 2
 
 export default function SanctuaryPage() {
   const [hydrated, setHydrated] = useState(false);
@@ -35,6 +36,7 @@ export default function SanctuaryPage() {
   return (
     <MembershipGate>
       <main className="min-h-screen bg-black text-white sanctuary-root">
+
         {/* HERO VIDEO */}
         <section className="relative w-full h-[130vh] overflow-hidden sanctuary-video">
           <video
@@ -107,17 +109,24 @@ export default function SanctuaryPage() {
 
         <div className="w-full h-42 bg-gradient-to-b from-black/0 to-black"></div>
 
+        {/* MAIN CONTENT */}
         <section className="max-w-6xl mx-auto px-6 pb-32">
           <h2 className="text-center text-2xl md:text-3xl font-light mb-12 tracking-wide">
             Your Ritual Journey Into Self
           </h2>
 
+          {/* SEASON 1 GRID */}
           <VideoGrid />
+
+          {/* DIVIDER */}
+          <div className="h-px w-full bg-white/10 my-16"></div>
+
+          {/* SEASON 2 GRID */}
+          <Season2Grid />
         </section>
 
         {/* 🌊 SCROLL TEXT + ARROWS STYLES */}
         <style jsx>{`
-          /* RIGHT SIDE POSITIONING */
           .sea-scroll-right {
             position: fixed;
             right: 40px;
@@ -130,22 +139,19 @@ export default function SanctuaryPage() {
             transition: opacity 0.4s ease;
           }
 
-          /* “Scroll” TEXT — GOLD 400 + STRONG BLACK SHADOW */
           .sea-scroll-word {
             font-size: 1.1rem;
             letter-spacing: 0.14em;
-            color: #f9af10; /* Sea Within Gold 400 */
+            color: #f9af10;
             opacity: 0.95;
             margin-bottom: 8px;
             animation: seaBreath 4.2s ease-in-out infinite;
-
             text-shadow:
               0 0 4px rgba(0, 0, 0, 0.9),
               0 0 12px rgba(0, 0, 0, 0.7),
               0 0 18px rgba(225, 164, 34, 0.45);
           }
 
-          /* ARROWS BELOW — GOLD 400 + BLACK SHADOW */
           .sea-scroll-arrows {
             display: flex;
             flex-direction: column;
@@ -158,14 +164,12 @@ export default function SanctuaryPage() {
           .chevron-line {
             font-size: 28px;
             line-height: 1;
-
             text-shadow:
               0 0 4px rgba(0, 0, 0, 0.9),
               0 0 12px rgba(0, 0, 0, 0.7),
               0 0 18px rgba(225, 164, 34, 0.45);
           }
 
-          /* BREATHING GLOW */
           @keyframes seaBreath {
             0% {
               opacity: 0.45;
