@@ -581,4 +581,62 @@ body {
   opacity: 0.85;
 }
 
+.sea-scroll-right {
+  position: fixed;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.4s ease;
+}
+
+.sea-scroll-word {
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  color: #f9af10;
+  opacity: 0.95;
+  margin-bottom: 8px;
+  animation: seaBreath 4.2s ease-in-out infinite;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 0 12px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(225, 164, 34, 0.45);
+}
+
+.sea-scroll-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: #f9af10;
+  animation: seaBreath 4.2s ease-in-out infinite;
+}
+
+.chevron-line {
+  font-size: 28px;
+  line-height: 1;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 0 12px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(225, 164, 34, 0.45);
+}
+
+@keyframes seaBreath {
+  0% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+}
+
 
