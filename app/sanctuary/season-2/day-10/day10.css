@@ -35,8 +35,8 @@
 .day10-hero-video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top;
+  object-fit: contain;
+  object-position: center;
 }
 
 .day10-hero-overlay {
