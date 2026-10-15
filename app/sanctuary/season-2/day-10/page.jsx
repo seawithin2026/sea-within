@@ -64,7 +64,7 @@ export default function Day10Page() {
         {/* MIND — THE SENSE LISTENING */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
               <source src="/video-season2/day10-mind.mp4" />
             </video>
           </div>
