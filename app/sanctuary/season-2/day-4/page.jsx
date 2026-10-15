@@ -84,7 +84,7 @@ export default function Day4Page() {
         {/* SPIRIT — THE RELEASE WITHIN */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}>
               <source src="/video-season2/day4-spirit.mp4" />
             </video>
           </div>

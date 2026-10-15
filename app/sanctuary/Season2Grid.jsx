@@ -240,7 +240,7 @@ export default function Season2Grid() {
         />
         <div className="absolute bottom-6 left-6 z-20">
           <p className="text-xs text-slate-300">Day 14</p>
-          <p className="text-lg font-light">Speak Your Truth</p>
+          <p className="text-lg font-light">The Future Whisper</p>
         </div>
       </Link>
 
@@ -257,7 +257,7 @@ export default function Season2Grid() {
         />
         <div className="absolute bottom-6 left-6 z-20">
           <p className="text-xs text-slate-300">Day 15</p>
-          <p className="text-lg font-light">The Purpose Spark</p>
+          <p className="text-lg font-light">The Soft Promise</p>
         </div>
       </Link>
 

@@ -64,7 +64,7 @@ export default function Day2Page() {
         {/* MIND — LISTENING MIND */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.5)}>
               <source src="/video-season2/day2-mind.mp4" />
             </video>
           </div>

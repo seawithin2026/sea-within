@@ -44,7 +44,7 @@ export default function Day7Page() {
         {/* BODY — THE SHAKE RELEASE */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}>
               <source src="/video-season2/day7-body.mp4" />
             </video>
           </div>
@@ -84,7 +84,7 @@ export default function Day7Page() {
         {/* SPIRIT — THE TRUTH RELEASE */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}>
               <source src="/video-season2/day7-spirit.mp4" />
             </video>
           </div>
