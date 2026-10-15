@@ -44,7 +44,7 @@ export default function Day4Page() {
         {/* BODY — THE UNFAMILIAR MOVE */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
               <source src="/video-season2/day4-body.mp4" />
             </video>
           </div>
@@ -84,7 +84,7 @@ export default function Day4Page() {
         {/* SPIRIT — THE RELEASE WITHIN */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
               <source src="/video-season2/day4-spirit.mp4" />
             </video>
           </div>

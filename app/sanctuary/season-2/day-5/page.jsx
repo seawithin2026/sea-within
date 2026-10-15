@@ -84,7 +84,7 @@ export default function Day5Page() {
         {/* SPIRIT — THE ABUNDANCE WITHIN */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
               <source src="/video-season2/day5-spirit.mp4" />
             </video>
           </div>

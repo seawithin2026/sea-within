@@ -44,7 +44,7 @@ export default function Day3Page() {
         {/* BODY — SUN TOUCH */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.3)}>
               <source src="/video-season2/day3-body.mp4" />
             </video>
           </div>
