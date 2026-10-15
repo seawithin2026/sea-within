@@ -1,13 +1,9 @@
-import ScrollCue from "../ScrollCue";
-import { useScrollProgress } from "../useScrollProgress";
+import ScrollWrapper from "../ScrollWrapper";
 
 export default function Season2Layout({ children }) {
-  const scrollProgress = useScrollProgress();
-
   return (
-    <div className="season2-layout">
+    <ScrollWrapper>
       {children}
-      <ScrollCue scrollProgress={scrollProgress} />
-    </div>
+    </ScrollWrapper>
   );
 }
