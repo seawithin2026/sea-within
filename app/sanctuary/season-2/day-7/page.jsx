@@ -64,7 +64,7 @@ export default function Day7Page() {
         {/* MIND — THE SOUND RELEASE */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}>
               <source src="/video-season2/day7-mind.mp4" />
             </video>
           </div>
