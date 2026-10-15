@@ -20,7 +20,7 @@ export default function Day3Page() {
 
         <div className="day3-hero-overlay">
           <p className="day3-hero-tag">SEASON 2 · DAY 3</p>
-          <h1 className="day3-hero-title">The Sun on Skin Ritual</h1>
+          <h1 className="day3-hero-title">The Sun on Skin</h1>
           <p className="day3-hero-subtitle">Warmth · Renewal · Awakening</p>
         </div>
       </section>

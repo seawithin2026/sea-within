@@ -20,7 +20,7 @@ export default function Day1Page() {
 
         <div className="day1-hero-overlay">
           <p className="day1-hero-tag">SEASON 2 · DAY 1</p>
-          <h1 className="day1-hero-title">The Breath of Arrival Ritual</h1>
+          <h1 className="day1-hero-title">The Breath of Arrival</h1>
           <p className="day1-hero-subtitle">Spirit · Health · Wealth</p>
         </div>
       </section>

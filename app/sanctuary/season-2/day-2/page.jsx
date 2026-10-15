@@ -20,7 +20,7 @@ export default function Day2Page() {
 
         <div className="day2-hero-overlay">
           <p className="day2-hero-tag">SEASON 2 · DAY 2</p>
-          <h1 className="day2-hero-title">The Stillness Minute Ritual</h1>
+          <h1 className="day2-hero-title">The Stillness</h1>
           <p className="day2-hero-subtitle">Silence · Clarity · Presence</p>
         </div>
       </section>
