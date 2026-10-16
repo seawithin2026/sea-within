@@ -84,7 +84,7 @@ export default function Day13Page() {
         {/* SPIRIT — THE OFFERING GESTURE */}
         <div className="grid-element">
           <div className="grid-media">
-            <video autoPlay muted loop playsInline>
+            <video autoPlay muted loop playsInline onLoadedMetadata={(e) => (e.currentTarget.playbackRate = 0.4)}>
               <source src="/video-season2/day13-spirit.mp4" />
             </video>
           </div>
