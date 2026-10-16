@@ -132,6 +132,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+}
+
+/* Adjust the framing of ONLY the third video */
+.day3-grid .grid-element:nth-child(1) .grid-media video {
+  object-position: center 70%;
 }
 
 .grid-title {
