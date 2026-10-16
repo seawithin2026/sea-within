@@ -137,7 +137,7 @@
 
 /* Adjust the framing of ONLY the third video */
 .day3-grid .grid-element:nth-child(1) .grid-media video {
-  object-position: center 70%;
+  object-position: center 40%;
 }
 
 .grid-title {
