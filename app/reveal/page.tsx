@@ -173,67 +173,80 @@ export default function RevealPage() {
           </ScrollReveal>
         )}
 
-        {/* The Descent */}
+        {/* Welcome to Sea Within */}
         {ready && (
           <ScrollReveal delay={400}>
             <h2 className="font-display text-3xl font-light mb-4">
-              The Descent
+              Welcome to Sea Within
             </h2>
             <p className="font-body text-white/60 leading-relaxed mb-14">
-              As you move deeper, imagine the world above softening. Light
-              bending. Sound dissolving. Everything slowing into something
-              gentler, truer.
+             Sea Within is a sanctuary for growth, reflection, and self-discovery.
+             In a world that often asks us to wear masks and meet endless expectations, Sea Within offers a space to slow down, reconnect with yourself, and remember the beauty that has been within you all along.
+             Every journey is unique. There is no right or wrong way to experience Sea Within. Move at your own pace, follow your intuition, and explore what speaks to you.
+
             </p>
           </ScrollReveal>
         )}
 
-        {/* What Sea Within Is */}
+        {/* Sanctuary */}
         {ready && (
           <ScrollReveal delay={500}>
             <h2 className="font-display text-3xl font-light mb-4">
-              What Sea Within Is
+              The Sanctuary
             </h2>
             <p className="font-body text-white/60 leading-relaxed mb-14">
-              Sea Within is a sanctuary for your inner world — a cinematic ritual
-              space you enter when life feels loud and you need a moment that
-              feels like breath again.
+              The Sanctuary is a library of guided rituals designed to support your personal growth and wellbeing.
+              Each day contains three simple rituals that can be completed at your own pace.
+              You can choose to follow the journey day by day, or explore whichever day feels most meaningful to you in the present moment. There is no pressure to keep up and no expectation to follow a specific path.
+              Trust yourself. The experience is yours to create.
+
             </p>
           </ScrollReveal>
         )}
 
-        {/* Gathering Circle */}
+        {/* Bloom */}
         {ready && (
           <ScrollReveal delay={600}>
             <h2 className="font-display text-3xl font-light mb-4">
-              The Gathering Circle
+              Bloom
             </h2>
             <p className="font-body text-white/60 leading-relaxed mb-14">
-              You walk your inner world alone — but you don’t have to feel alone
-              inside it.
+              Bloom offers a daily opportunity to give yourself a moment of care and presence.
+              Each day you will receive a gentle gesture designed to help you pause, reflect, and reconnect with yourself.
+              Once you complete the gesture a special video will be revealed to you.
+
             </p>
           </ScrollReveal>
         )}
 
-        {/* What You Receive */}
+        {/* Wisdom Board */}
         {ready && (
           <ScrollReveal delay={700}>
             <h2 className="font-display text-3xl font-light mb-4">
-              What You Receive
+              The Wisdom Board
             </h2>
             <p className="font-body text-white/60 leading-relaxed mb-14">
-              You don’t receive content — you receive experiences.
+              The Wisdom Board is a place of shared inspiration.
+              Each day you will receive a message of wisdom drawn from the Sea Within community.
+              These messages are designed to offer a moment of reflection, encouragement, and perspective. Sometimes a single sentence can brighten a day, offer comfort, or remind us of a truth we needed to hear.
+
             </p>
           </ScrollReveal>
         )}
 
-        {/* Transformation */}
+        {/* Community */}
         {ready && (
           <ScrollReveal delay={800}>
             <h2 className="font-display text-3xl font-light mb-4">
-              The Transformation
+              The Community
             </h2>
             <p className="font-body text-white/60 leading-relaxed mb-14">
-              Sea Within is for those who feel everything and carry it alone.
+              The Community is a place to connect with like-minded souls walking their own journeys of growth and self-discovery.
+              Share uplifting messages, personal reflections, lessons you've learned along the way, and moments that have inspired you.
+              Here, you may find encouragement, meaningful conversations, new friendships, and a sense of belonging among people who understand the importance of personal growth and authentic living.
+              You are never walking this journey alone.
+
+
             </p>
           </ScrollReveal>
         )}
