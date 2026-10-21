@@ -263,7 +263,7 @@ export default function LegalPage() {
         {/*       REFUND POLICY       */}
         {/* ========================= */}
 
-        <h1 className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
+        <h1 id="refund" className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
           Refund Policy
         </h1>
         <p className="text-xs text-white/40 text-center mb-10">Last updated: June 2026</p>
@@ -321,7 +321,7 @@ export default function LegalPage() {
         {/*    COMMUNITY GUIDELINES   */}
         {/* ========================= */}
 
-        <h1 className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
+        <h1 id="community" className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
           Community Guidelines
         </h1>
         <p className="text-xs text-white/40 text-center mb-10">Last updated: June 2026</p>
