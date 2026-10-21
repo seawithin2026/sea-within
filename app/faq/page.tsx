@@ -84,7 +84,7 @@ const faqSections: { title: string; items: FAQItem[] }[] = [
               </li>
               <li>Log in to your customer portal.</li>
               <li>
-                Locate the cancellation option and select{' '}
+                Locate your card information and select the arrow beside it and you'll see {' '}
                 <strong>Cancel Subscription</strong>.
               </li>
             </ol>
