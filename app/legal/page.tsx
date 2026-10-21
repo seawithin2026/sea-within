@@ -34,27 +34,23 @@ export default function LegalPage() {
             <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">2. Information We Collect</h2>
             <p className="mb-2">We collect the following types of information:</p>
             <p className="mt-1">
-              <span className="text-golden-300">Account Information:</span> email address, encrypted password, and profile details you choose to share.
+              <span className="text-golden-300">Account Information:</span> email address, profile details you choose to share, and information required to securely authenticate and manage your account.
             </p>
             <p className="mt-1">
-              <span className="text-golden-300">Usage Information:</span> pages visited, interactions within the sanctuary, device and browser information, and IP address (for security and fraud prevention).
+              <span className="text-golden-300">Usage Information:</span> how you interact with the sanctuary and the features you use.
             </p>
             <p className="mt-1">
               <span className="text-golden-300">Payment Information:</span> handled exclusively by Stripe. We do not store or access your credit card details.
             </p>
             <p className="mt-1">
-              <span className="text-golden-300">User‑Generated Content:</span> posts on the Wisdom Board and reflections or entries you create.
+              <span className="text-golden-300">User‑Generated Content:</span> content you create or share within the Wisdom Board and Community. 
             </p>
           </section>
 
           <section>
             <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">3. How We Use Your Information</h2>
             <p>
-              We use your information to create and manage your account, provide
-              access to sanctuary features, process payments and subscriptions,
-              improve the experience and performance of the site, protect
-              against fraud or misuse, and send essential service emails (such
-              as password resets, receipts, and important updates).
+              We use your information to create and manage your account, provide access to sanctuary features, process payments and subscriptions, and ensure the service functions as intended.
             </p>
             <p className="mt-2">We do not sell your data and we do not share your data with advertisers.</p>
           </section>
@@ -62,10 +58,7 @@ export default function LegalPage() {
           <section>
             <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">4. Legal Basis (GDPR)</h2>
             <p>
-              If you are in the EU, we process your data under contractual
-              necessity (account creation and subscription access), legitimate
-              interest (security and fraud prevention), and consent (where
-              applicable for communication).
+             For users in the European Union, we process personal information to provide and maintain the service, manage accounts and subscriptions, and fulfill our legal obligations where applicable.
             </p>
           </section>
 
@@ -149,11 +142,10 @@ export default function LegalPage() {
           <section>
             <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">2. Use of the Service</h2>
             <p>
-              Sea Within provides a cinematic sanctuary experience, which may
-              include features such as rituals, bloom cycles, reflective
-              practices, and community interactions. Some features may evolve
-              over time as the platform grows. You agree to use the service
-              respectfully and lawfully.
+             Sea Within provides a cinematic sanctuary experience centered
+             around moments of reflection, personal growth, rituals, bloom cycles, 
+             and community interaction. Certain features, experiences, and content may evolve over time as the platform grows and develops. 
+             You agree to use the service respectfully and lawfully.
             </p>
           </section>
 
@@ -228,8 +220,19 @@ export default function LegalPage() {
             </p>
           </section>
 
+              <section>
+            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">9. Service Availability & Ongoing Development</h2>
+            <p>
+            We strive to provide a reliable and uninterrupted experience; however, the Service is provided on an "as available" basis. From time to time, the website may experience temporary outages, maintenance periods, technical issues, delays, or interruptions that are beyond our reasonable control.
+            As Sea Within continues to grow and evolve, features may be improved, updated, modified, or temporarily unavailable while enhancements are being made. We are committed to continuously improving the platform and providing the best experience possible for our community.
+            While we make every reasonable effort to maintain the availability and functionality of the Service, we do not guarantee uninterrupted access at all times. By using the Service, you acknowledge that occasional technical issues or service interruptions may occur and agree to exercise patience and understanding as we work to resolve them.
+            We appreciate your support and understanding as Sea Within continues its journey of growth and improvement.
+            </p>
+          </section>
+           
+
           <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">9. Termination</h2>
+            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">10. Termination</h2>
             <p>
               We may suspend or terminate your account if you violate these
               terms, misuse the platform, or engage in harmful behavior. You may
@@ -238,17 +241,17 @@ export default function LegalPage() {
           </section>
 
           <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">10. Governing Law</h2>
-            <p>These terms are governed by the laws of New Brunswick, Canada.</p>
+            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">11. Governing Law</h2>
+            <p>These Terms are governed by the laws of New Brunswick, Canada. Users are responsible for complying with any local laws applicable in their jurisdiction.</p>
           </section>
 
           <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">11. Changes to Terms</h2>
+            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">12. Changes to Terms</h2>
             <p>We may update these Terms from time to time. Continued use of the platform means you accept the updated terms.</p>
           </section>
 
           <section>
-            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">12. Contact</h2>
+            <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">13. Contact</h2>
             <p>
               For questions about these Terms, contact us at{' '}
               <span className="text-golden-300">seawithinyourself@gmail.com</span>.
@@ -367,57 +370,11 @@ export default function LegalPage() {
             </p>
           </section>
         </div>
-{/* ========================= */}
-{/*   ACCESSIBILITY STATEMENT */}
-{/* ========================= */}
-
-<h1 className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
-  Accessibility Statement
-</h1>
-
-<p className="text-xs text-white/40 text-center mb-10">
-  Last updated: June 2026
-</p>
-
-<div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
-
-  {/* ACCESSIBILITY SECTIONS */}
-  <section>
-    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">1. Commitment</h2>
-    <p>
-      Sea Within is committed to creating a sanctuary that is accessible to as many people
-      as possible. We aim to provide an inclusive, intuitive experience for all users.
-    </p>
-  </section>
-
-  <section>
-    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">2. Ongoing Improvements</h2>
-    <p>
-      Accessibility is an ongoing effort. We continue refining design, navigation, and
-      compatibility with assistive technologies.
-    </p>
-  </section>
-
-  <section>
-    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">3. Known Limitations</h2>
-    <p>
-      Some areas may not yet fully meet accessibility standards. We are actively improving
-      contrast, keyboard navigation, and screen‑reader support.
-    </p>
-  </section>
-
-  <section>
-    <h2 className="text-golden-300 text-sm tracking-[2px] mb-2">4. Feedback</h2>
-    <p>
-      If you encounter accessibility barriers, contact{' '}
-      <span className="text-golden-300">seawithinyourself@gmail.com</span>. Your feedback
-      helps us improve.
-    </p>
-  </section>
+  
 </div>
 
       </div>
-    </div>
+  
   );
 }
 
