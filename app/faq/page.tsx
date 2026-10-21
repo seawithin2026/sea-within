@@ -221,18 +221,6 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <footer className="mt-14 text-center sm:mt-16">
-          <p className="text-sm text-white/65">
-            Still have a question?
-          </p>
-
-          <a
-            href="mailto:seawithinyourself@gmail.com"
-            className="mt-3 inline-flex items-center justify-center rounded-full border border-golden-300/50 px-6 py-3 text-xs uppercase tracking-[0.18em] text-golden-300 transition hover:border-golden-200 hover:bg-golden-300/10 hover:text-golden-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-golden-300"
-          >
-            Contact Sea Within
-          </a>
-
           <p className="mt-8 text-xs text-white/35">
             <a
               href="/"
@@ -241,7 +229,6 @@ export default function FAQPage() {
               Return to homepage
             </a>
           </p>
-        </footer>
       </div>
     </main>
   );
