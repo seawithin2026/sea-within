@@ -378,13 +378,13 @@ export default function HomePage() {
             <div className="flex justify-center flex-wrap gap-8 mt-10">
               <a
                 href="/faq"
-                className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
+                className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors"
               >
                 FAQ
               </a>
             </div>
 
-            <p className="font-body text-[11px] text-white/15 mt-12">
+            <p className="font-body text-[11px] text-white/30 mt-12">
               &copy; {new Date().getFullYear()} Sea Within. All rights reserved.
             </p>
           </div>
