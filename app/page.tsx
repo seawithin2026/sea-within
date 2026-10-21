@@ -377,7 +377,7 @@ export default function HomePage() {
 
             <div className="flex justify-center flex-wrap gap-8 mt-10">
               <a
-                href="/legal"
+                href="/faq"
                 className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
               >
                 FAQ
