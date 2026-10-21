@@ -361,16 +361,16 @@ export default function HomePage() {
             </p>
 
             <div className="flex justify-center flex-wrap gap-8 mt-10">
-              <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
-                Sanctuary
+              <a href="/legal#privacy"  className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+                Privacy
               </a>
-              <a href="reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
-                Bloom
+              <a href="/legal#terms"  className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+                Terms of Service
               </a>
-              <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
-                Wisdom Board
+              <a href="/legal#refund"  className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+                Refund Policy
               </a>
-              <a href="/reveal" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
+              <a href="/legal#community" className="font-body text-[11px] tracking-[2px] uppercase text-white/30 hover:text-golden-400 transition-colors">
                 Community
               </a>
             </div>
@@ -380,7 +380,7 @@ export default function HomePage() {
                 href="/legal"
                 className="font-body text-[11px] tracking-[2px] uppercase text-white/20 hover:text-golden-400 transition-colors"
               >
-                Legal
+                FAQ
               </a>
             </div>
 
