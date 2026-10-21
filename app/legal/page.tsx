@@ -13,7 +13,7 @@ export default function LegalPage() {
   Privacy Policy
 </h1>
         <p className="text-xs text-white/40 text-center mb-10">
-          Last updated: June 2026
+          Last updated: October 2026
         </p>
 
         <div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
@@ -125,7 +125,7 @@ export default function LegalPage() {
         <h1 id="terms" className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
   Terms of Service
 </h1>
-        <p className="text-xs text-white/40 text-center mb-10">Last updated: June 2026</p>
+        <p className="text-xs text-white/40 text-center mb-10">Last updated: October 2026</p>
 
         <div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
 
@@ -266,7 +266,7 @@ export default function LegalPage() {
         <h1 id="refund" className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
           Refund Policy
         </h1>
-        <p className="text-xs text-white/40 text-center mb-10">Last updated: June 2026</p>
+        <p className="text-xs text-white/40 text-center mb-10">Last updated: October 2026</p>
 
         <div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
 
@@ -324,7 +324,7 @@ export default function LegalPage() {
         <h1 id="community" className="font-display text-3xl text-golden-400 tracking-[4px] mt-20 mb-6 text-center">
           Community Guidelines
         </h1>
-        <p className="text-xs text-white/40 text-center mb-10">Last updated: June 2026</p>
+        <p className="text-xs text-white/40 text-center mb-10">Last updated: October 2026</p>
 
         <div className="space-y-8 text-sm leading-relaxed text-white/80 font-body">
 
