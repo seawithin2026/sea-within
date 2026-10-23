@@ -198,18 +198,16 @@ function BloomContent() {
             state
           ) && (
             <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl animate-fadeIn flex flex-col">
-             
-<video
-  src={videoSrc || ""}
-  autoPlay
-  muted
-  playsInline
-  loop={false}
-  onPlay={handleBloomStart}
-  onEnded={handleBloomEnd}
-  className="bloom-video w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
-/>
-
+              <video
+                src={videoSrc || ""}
+                autoPlay
+                muted
+                playsInline
+                loop={false}
+                onPlay={handleBloomStart}
+                onEnded={handleBloomEnd}
+                className="w-full h-full object-cover brightness-[1.25] contrast-[1.1]"
+              />
 
               {/* ⭐ FIX: Only show message AFTER video ends */}
             {videoEnded && (
@@ -224,21 +222,6 @@ function BloomContent() {
           )}
 
         <style jsx>{`
-
-
-/* Keep the existing desktop appearance */
-.bloom-video {
-  object-fit: cover;
-}
-
-/* Mobile only */
-@media (max-width: 767px) {
-  .bloom-video {
-    object-fit: contain;
-    object-position: center;
-  }
-}
-
           @keyframes fadeIn {
             from {
               opacity: 0;
