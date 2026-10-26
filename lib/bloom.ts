@@ -6,7 +6,7 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const BLOOM_MAX_DAY = 41;
+const BLOOM_MAX_DAY = 43;
 
 /* -----------------------------------------------------
    🌿 SESSION HELPER — WAIT FOR USER (OTP‑safe)
