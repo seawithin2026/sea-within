@@ -6,7 +6,6 @@ import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
 
-
 export const metadata = {
   metadataBase: new URL('https://www.seawithinyourself.com'),
 
@@ -36,7 +35,6 @@ export const metadata = {
   },
 };
 
-
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['300'],
@@ -54,10 +52,31 @@ const inter = Inter({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}
+    >
       <head>
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
-        <link rel="preload" as="image" href="/images/bloom-hero-flowers.jpg" />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/bloom-hero-flowers.jpg"
+        />
+
+        {/* Help Google identify the Sea Within website */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Sea Within",
+              "alternateName": "seawithinyourself.com",
+              "url": "https://www.seawithinyourself.com/"
+            }),
+          }}
+        />
       </head>
 
       <body className="bg-sanctuary-dark text-sea-100 antialiased">
