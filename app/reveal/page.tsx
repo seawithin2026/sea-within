@@ -254,7 +254,7 @@ export default function RevealPage() {
         {/* CINEMATIC FULL‑BLEED VIDEO */}
         <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
           <video
-            id="marketingVideo"
+            id="invitationVideo"
             src="/videos/invitation.mp4"
             playsInline
             className="w-full h-auto object-contain"
