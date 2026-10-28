@@ -6,19 +6,36 @@ import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
 
+
 export const metadata = {
   metadataBase: new URL('https://www.seawithinyourself.com'),
+
+  applicationName: 'Sea Within',
+
   title: 'Sea Within | Cinematic Calm & Personal Growth',
+
   description:
-    'Step into Sea Within, a cinematic space for mindful rituals, self-reflection, and personal growth. Slow down, unwind, and reconnect with yourself.',
+    'Explore Sea Within, a cinematic sanctuary for calm and personal growth. Discover mindful rituals, atmospheric videos, and quiet moments to unwind and reconnect with yourself.',
+
   alternates: {
     canonical: '/',
   },
+
   robots: {
     index: true,
     follow: true,
   },
+
+  openGraph: {
+    type: 'website',
+    url: 'https://www.seawithinyourself.com/',
+    siteName: 'Sea Within',
+    title: 'Sea Within | Cinematic Calm & Personal Growth',
+    description:
+      'Explore Sea Within, a cinematic sanctuary for calm and personal growth. Discover mindful rituals, atmospheric videos, and quiet moments to unwind and reconnect with yourself.',
+  },
 };
+
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
