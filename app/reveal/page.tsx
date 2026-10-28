@@ -255,7 +255,7 @@ export default function RevealPage() {
         <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-visible">
           <video
             id="marketingVideo"
-            src="/videos/marketing.mp4"
+            src="/videos/invitation.mp4"
             playsInline
             className="w-full h-auto object-contain"
             controls
