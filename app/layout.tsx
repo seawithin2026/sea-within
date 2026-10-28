@@ -14,7 +14,7 @@ export const metadata = {
   title: 'Sea Within | Cinematic Calm & Personal Growth',
 
   description:
-    'Explore Sea Within, a cinematic sanctuary for calm and personal growth. Discover mindful rituals, atmospheric videos, and quiet moments to unwind and reconnect with yourself.',
+    'Sea Within is a cinematic sanctuary for self-discovery, personal growth, and inner peace. Return to yourself through mindful rituals in The Sanctuary, give yourself a moment to Bloom, find inspiration and reflection on The Wisdom Board, and discover connection and belonging in The Community.',
 
   alternates: {
     canonical: '/',
@@ -31,7 +31,7 @@ export const metadata = {
     siteName: 'Sea Within',
     title: 'Sea Within | Cinematic Calm & Personal Growth',
     description:
-      'Explore Sea Within, a cinematic sanctuary for calm and personal growth. Discover mindful rituals, atmospheric videos, and quiet moments to unwind and reconnect with yourself.',
+      'Sea Within is a cinematic sanctuary for self-discovery, personal growth, and inner peace. Return to yourself through mindful rituals in The Sanctuary, give yourself a moment to Bloom, find inspiration and reflection on The Wisdom Board, and discover connection and belonging in The Community.',
   },
 };
 
