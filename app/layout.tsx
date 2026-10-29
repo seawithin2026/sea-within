@@ -57,6 +57,11 @@ export default function RootLayout({ children }) {
       className={`scroll-smooth ${cormorant.variable} ${inter.variable}`}
     >
       <head>
+          {/* Pinterest website verification */}
+  <meta
+    name="p:domain_verify"
+    content="713bf34004dc8b5e3c27e4c7359d624f"
+  />
         <link rel="preload" as="image" href="/images/jellyfish-bg.jpg" />
         <link
           rel="preload"
