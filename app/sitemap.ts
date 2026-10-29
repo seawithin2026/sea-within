@@ -1,3 +1,4 @@
+
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -11,6 +12,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}/reveal`,
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/about-sea-within.html`,
+      priority: 0.7,
     },
   ];
 }
