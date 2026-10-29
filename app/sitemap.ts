@@ -17,5 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/about-sea-within.html`,
       priority: 0.7,
     },
+    {
+      url: `${baseUrl}/faq`,
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/legal`,
+      priority: 0.5,
+    },
   ];
 }
