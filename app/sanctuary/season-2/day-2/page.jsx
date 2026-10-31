@@ -31,7 +31,7 @@ export default function Day2Page() {
       <section className="opening cinematic-opening">
         <span>Stillness has been a sacred practice across countless ancient traditions — a quiet doorway into clarity.</span>
         <span>Today, you follow a mythic lineage inspired by these truths: the belief that silence restores what noise steals.</span>
-        <span>In this pause, your breath slows, your thoughts settle, and your inner world opens like dawn over old mountains.</span>
+        <span>In this pause, your breath slows, your thoughts settle, and your inner world opens like dawn over mountains.</span>
         <span className="mt">The elders taught that peace is not created — it is revealed when the world grows quiet.</span>
         <span>Let this minute return you to yourself.</span>
       </section>
