@@ -1,6 +1,7 @@
+
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 
 interface CinematicSectionProps {
   videoSrc: string;
@@ -9,6 +10,7 @@ interface CinematicSectionProps {
   children?: ReactNode;
   className?: string;
   id?: string;
+  onVideoReady?: () => void;
 }
 
 export default function CinematicSection({
@@ -18,9 +20,23 @@ export default function CinematicSection({
   children,
   className = '',
   id,
+  onVideoReady,
 }: CinematicSectionProps) {
+  const [videoReady, setVideoReady] = useState(false);
+
+  const handleVideoReady = () => {
+    if (!videoReady) {
+      setVideoReady(true);
+      onVideoReady?.();
+    }
+  };
+
   return (
-    <section id={id} className={`relative w-screen h-screen overflow-hidden ${className}`}>
+    <section
+      id={id}
+      className={`relative w-screen h-screen overflow-hidden ${className}`}
+      style={{ backgroundColor: '#020b19' }}
+    >
       <video
         src={videoSrc}
         autoPlay
@@ -28,7 +44,12 @@ export default function CinematicSection({
         loop
         playsInline
         poster={posterSrc}
-        className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover"
+        onCanPlay={handleVideoReady}
+        onError={handleVideoReady}
+        className="absolute top-1/2 left-1/2 min-w-full min-h-full -translate-x-1/2 -translate-y-1/2 object-cover transition-opacity duration-1000"
+        style={{
+          opacity: videoReady ? 1 : 0,
+        }}
       />
 
       <div

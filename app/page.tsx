@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 export default function HomePage() {
   // ⭐ ADD SANCTUARY SCROLL SYSTEM
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,13 +86,14 @@ export default function HomePage() {
           id="surface"
           videoSrc="/videos/ocean-surface.mp4"
           overlayOpacity={0.18}
+          onVideoReady={() => setHeroVideoReady(true)}
           className="flex items-center justify-center"
         >
           {/* ⭐ SANCTUARY SCROLL ARROW */}
           <div
             className="sea-scroll-right"
             style={{
-              opacity: scrollProgress < 0.995 ? 1 - scrollProgress : 0,
+              opacity: heroVideoReady && scrollProgress < 0.995? 1 - scrollProgress: 0,
               transform: `translateY(calc(-50% + ${scrollProgress * 20}px))`,
             }}
           >
