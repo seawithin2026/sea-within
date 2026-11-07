@@ -261,7 +261,28 @@ export default function RevealPage() {
             controls
           />
         </div>
+        {/* SEA WITHIN SNEAK PEEK */}
+        {ready && (
+          <ScrollReveal delay={850}>
+            <div className="text-center mt-10 mb-10">
+              <p className="font-body text-white/60 leading-relaxed mb-5">
+                Wondering what's behind the doors? Before becoming a member,
+                take a little sneak peek inside Sea Within and discover what
+                the experience has to offer.
+              </p>
 
+              <a
+                href="https://www.youtube.com/watch?v=-0VAYHTiAUs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 text-golden-400 hover:text-golden-300 transition-colors duration-300 font-display text-xl border-b border-golden-400/40 hover:border-golden-300 pb-2"
+              >
+                <span>▶</span>
+                Watch the Sea Within Sneak Peek
+              </a>
+            </div>
+          </ScrollReveal>
+        )}
         {/* Invitation */}
         {ready && (
           <ScrollReveal delay={900}>
