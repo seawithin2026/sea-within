@@ -50,87 +50,70 @@
   }
   </script>
 
+
   <style>
     .hero {
-  width: 100%;
-  margin: 30px 0 40px;
-  overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid rgba(240, 199, 123, 0.35);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.3);
-}
+      width: 100%;
+      margin: 30px 0 0;
+      overflow: hidden;
+      border-radius: 18px;
+      border: 1px solid rgba(240, 199, 123, 0.35);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.3);
+    }
 
-.hero img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
+
+    .hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
     :root {
       color-scheme: dark;
-
       --background: #061923;
       --surface: #0b2a3a;
       --surface-soft: #124458;
-
       --text: #f6f4ee;
       --muted: #c6d8dc;
-
       --sea-glass: #56d5d0;
       --gold: #e8ac3d;
-
       --line: rgba(86, 213, 208, 0.34);
       --line-gold: rgba(240, 199, 123, 0.42);
     }
 
-    * {
-      box-sizing: border-box;
-    }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       background:
-        radial-gradient(
-          ellipse at 15% 3%,
-          rgba(21, 117, 143, 0.42),
-          transparent 43%
-        ),
-        radial-gradient(
-          ellipse at 88% 26%,
-          rgba(116, 69, 125, 0.20),
-          transparent 35%
-        ),
-        radial-gradient(
-          ellipse at 50% 100%,
-          rgba(9, 91, 107, 0.24),
-          transparent 45%
-        ),
+        radial-gradient(ellipse at 15% 3%, rgba(21, 117, 143, 0.42), transparent 43%),
+        radial-gradient(ellipse at 88% 26%, rgba(116, 69, 125, 0.20), transparent 35%),
+        radial-gradient(ellipse at 50% 100%, rgba(9, 91, 107, 0.24), transparent 45%),
         var(--background);
-
       color: var(--text);
       font-family: Georgia, "Times New Roman", serif;
       line-height: 1.85;
     }
+
 
     a {
       color: var(--sea-glass);
       text-underline-offset: 4px;
       transition: color 180ms ease;
     }
+    a:hover { color: #d3eee7; }
 
-    a:hover {
-      color: #d3eee7;
-    }
 
     .page {
       width: min(100% - 40px, 920px);
       margin: 0 auto;
       padding: 34px 0 76px;
     }
+
 
     header {
       padding: 16px 0 48px;
@@ -148,10 +131,7 @@
       text-decoration: none;
       text-transform: uppercase;
     }
-
-    .brand:hover {
-      color: #e8ac3d;
-    }
+    .brand:hover { color: #e8ac3d; }
 
     .eyebrow {
       margin: 42px 0 12px;
@@ -168,13 +148,12 @@
       line-height: 1.28;
     }
 
-    
-     h1 {
-  max-width: 780px;
-  margin: 0 auto 24px;
+    h1 {
+      max-width: 780px;
+      margin: 0 0 24px;
       font-size: clamp(2.45rem, 7vw, 4.3rem);
       text-shadow: 0 4px 32px rgba(55, 166, 190, 0.18);
-      color: rgba(101, 205, 201, 0.83)
+      color: rgba(101, 205, 201, 0.83);
     }
 
     h2 {
@@ -188,9 +167,7 @@
       color: var(--gold);
     }
 
-    p {
-      margin: 0 0 18px;
-    }
+    p { margin: 0 0 18px; }
 
     .lead {
       max-width: 780px;
@@ -198,18 +175,24 @@
       font-size: 1.14rem;
     }
 
-    .spaces {
-      margin-top: 58px;
+    /* ONLY INTRO TEXT COLUMN IS NARROWED/CENTERED; TEXT STAYS LEFT-ALIGNED */
+    .about-content {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 30px 0 0;
+      text-align: left;
     }
+    .about-content h1 { max-width: 100%; }
+    .about-content .lead { max-width: 100%; }
+
+    .spaces { margin-top: 58px; }
 
     .space {
       padding: 30px 0;
       border-bottom: 1px solid var(--line);
     }
 
-    .space h2 {
-      text-shadow: 0 3px 24px rgba(86, 213, 208, 0.14);
-    }
+    .space h2 { text-shadow: 0 3px 24px rgba(86, 213, 208, 0.14); }
 
     .space-number {
       display: block;
@@ -220,89 +203,89 @@
       letter-spacing: 0.16em;
     }
 
-    .space p,
-    .section-intro {
+    .space p, .section-intro {
       max-width: 730px;
       color: var(--muted);
     }
 
-    /* CINEMATIC VIDEO SECTION */
+    /* FOUR WEBSITE SECTION VIDEOS — LANDSCAPE 16:9 */
+    .section-videos {
+      margin-top: 28px;
+    }
+    .section-video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .section-video-card {
+      max-width: 730px;
+      margin: 0 auto 28px;
+      overflow: hidden;
+      border: 1px solid rgba(86, 213, 208, 0.34);
+      border-radius: 13px;
+      background: linear-gradient(160deg, #16485c, #092634);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28), 0 0 24px rgba(37, 141, 161, 0.08);
+    }
+    .section-video-card video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #04141b;
+      object-fit: cover;
+    }
+    .section-video-card figcaption {
+      padding: 12px 15px;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+    }
 
+    /* CINEMATIC VIDEO SECTION — EXISTING SOCIAL VIDEOS */
     .video-showcase {
       margin-top: 58px;
       padding: 38px 24px;
       border: 1px solid var(--line-gold);
       border-radius: 18px;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(18, 68, 88, 0.52),
-          rgba(7, 29, 44, 0.32)
-        );
-
-      box-shadow:
-        0 18px 60px rgba(0, 0, 0, 0.22),
-        inset 0 0 45px rgba(72, 183, 198, 0.06);
+      background: linear-gradient(145deg, rgba(18, 68, 88, 0.52), rgba(7, 29, 44, 0.32));
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22), inset 0 0 45px rgba(72, 183, 198, 0.06);
     }
 
     .video-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
-  margin-top: 26px;
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-}
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 26px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
     .video-card {
       margin: 0;
       overflow: hidden;
       border: 1px solid rgba(86, 213, 208, 0.34);
       border-radius: 13px;
-
-      background:
-        linear-gradient(
-          160deg,
-          #16485c,
-          #092634
-        );
-
-      box-shadow:
-        0 16px 38px rgba(0, 0, 0, 0.28),
-        0 0 24px rgba(37, 141, 161, 0.08);
-
-      transition:
-        transform 220ms ease,
-        box-shadow 220ms ease,
-        border-color 220ms ease;
+      background: linear-gradient(160deg, #16485c, #092634);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28), 0 0 24px rgba(37, 141, 161, 0.08);
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     }
-
     .video-card:hover {
       transform: translateY(-4px);
       border-color: rgba(240, 199, 123, 0.66);
-
-      box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.32),
-        0 0 26px rgba(86, 213, 208, 0.10);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.32), 0 0 26px rgba(86, 213, 208, 0.10);
     }
-
-  .video-card video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  background: #04141b;
-  object-fit: cover;
-}
-    
-
+    .video-card video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background: #04141b;
+      object-fit: cover;
+    }
     .video-card figcaption {
       padding: 15px 17px 18px;
       color: var(--gold);
       letter-spacing: 0.03em;
     }
-
     .video-card figcaption span {
       display: block;
       margin-top: 5px;
@@ -311,75 +294,37 @@
       letter-spacing: normal;
     }
 
-    /* CLOSING SECTION */
-
+    /* CLOSING SECTION — LEFT AS ORIGINALLY DESIGNED */
     .closing {
       margin-top: 52px;
       padding: 30px;
-
       background:
-        radial-gradient(
-          ellipse at 12% 0%,
-          rgba(44, 144, 165, 0.32),
-          transparent 48%
-        ),
-        linear-gradient(
-          145deg,
-          rgba(20, 73, 92, 0.86),
-          rgba(6, 26, 39, 0.98)
-        );
-
+        radial-gradient(ellipse at 12% 0%, rgba(44, 144, 165, 0.32), transparent 48%),
+        linear-gradient(145deg, rgba(20, 73, 92, 0.86), rgba(6, 26, 39, 0.98));
       border: 1px solid var(--line-gold);
       border-radius: 16px;
-
       box-shadow: 0 18px 52px rgba(0, 0, 0, 0.22);
     }
-
-    .closing p {
-      color: var(--muted);
-    }
+    .closing p { color: var(--muted); }
 
     .cta-link {
       display: inline-block;
       margin-top: 6px;
       padding: 11px 19px;
-
       border: 1px solid rgba(192, 146, 31, 0.62);
       border-radius: 999px;
-
       color: #061923;
-
-      background:
-        linear-gradient(
-          120deg,
-          var(--sea-glass),
-          #9ce6df
-        );
-
+      background: linear-gradient(120deg, var(--sea-glass), #9ce6df);
       font-weight: bold;
       text-decoration: none;
-
       box-shadow: 0 6px 24px rgba(48, 181, 188, 0.18);
-
-      transition:
-        background 180ms ease,
-        border-color 180ms ease,
-        transform 180ms ease;
+      transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
     }
-
     .cta-link:hover {
-      background:
-        linear-gradient(
-          120deg,
-          #e8ac3d,
-          var(--gold)
-        );
-
+      background: linear-gradient(120deg, #e8ac3d, var(--gold));
       border-color: var(--gold);
       transform: translateY(-2px);
     }
-
-    /* BOTTOM SEA WITHIN BRAND: GOLD */
 
     .closing-brand {
       color: var(--gold);
@@ -395,324 +340,220 @@
       font-family: Arial, sans-serif;
       font-size: 0.84rem;
     }
-@media (max-width: 620px) {
-  .page {
-    width: min(100% - 28px, 920px);
-    padding-top: 20px;
-  }
 
-  header {
-    padding-bottom: 34px;
-  }
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 28px, 920px);
+        padding-top: 20px;
+      }
+      header { padding-bottom: 34px; }
+      .eyebrow { margin-top: 32px; }
+      .section-video-grid { grid-template-columns: 1fr; }
+      .video-grid { grid-template-columns: 1fr; max-width: 360px; }
+      .closing { padding: 22px; }
+      .about-content { padding-left: 0; padding-right: 0; }
+    }
 
-  .eyebrow {
-    margin-top: 32px;
-  }
-
-  .video-grid {
-    grid-template-columns: 1fr;
-    max-width: 360px;
-  }
-
-  .closing {
-    padding: 22px;
-  }
-}
 
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 
 <body>
-
   <div class="page">
-
     <header>
+      <!-- TOP SEA WITHIN BRAND -->
+      <a class="brand" href="https://www.seawithinyourself.com/">Sea Within</a>
 
-      <!-- TOP SEA WITHIN LOGO: BOLD GOLD -->
-       <!-- HERO IMAGE -->
+      <!-- HERO IMAGE: KEPT AS FULL-WIDTH IMAGE -->
+      <section class="hero">
+        <img src="/images/sea-within-journey.png" alt="Sea Within — A cinematic journey of self-discovery, reflection, and growth">
+      </section>
 
-</section>
-      <a class="brand" href="https://www.seawithinyourself.com/">
-        Sea Within
-      </a>
-<section class="hero">
-  <img
-    src="/images/sea-within-journey.png"
-    alt="Sea Within — A cinematic journey of self-discovery, reflection, and growth"
-  >
-  
+      <!-- INTRO TEXT: CENTERED COLUMN, LEFT-ALIGNED COPY -->
+      <div class="about-content">
+        <h1>Sea Within — A Journey Back to Yourself</h1>
+        <h2>Some things aren't found by looking outward. They begin when you turn inward.</h2>
 
-      <h1>Sea Within — A Journey Back to Yourself</h1>
+        <p class="lead">
+          Life can take us in so many directions. Between expectations,
+          responsibilities, uncertainty, and the noise of everyday life,
+          we can sometimes lose touch with the space within us where
+          possibility, wisdom, and personal growth begin.
+        </p>
 
-      <h2>
-        Some things aren't found by looking outward.
-        They begin when you turn inward.
-      </h2>
+        <p>
+          <strong>Sea Within was created as an invitation to reconnect with that space.</strong>
+        </p>
 
-      <p class="lead">
-        Life can take us in so many directions. Between expectations,
-        responsibilities, uncertainty, and the noise of everyday life,
-        we can sometimes lose touch with the space within us where
-        possibility, wisdom, and personal growth begin.
-      </p>
+        <p class="lead">
+          An online experience designed to inspire mindful living,
+          self-discovery, reflection, and growth — while reminding you
+          that you don't have to become someone else to discover more
+          of who you are.
+        </p>
 
-      <p>
-        <strong>
-          Sea Within was created as an invitation to reconnect with that space.
-        </strong>
-      </p>
-
-      <p class="lead">
-        An online experience designed to inspire mindful living,
-        self-discovery, reflection, and growth — while reminding you
-        that you don't have to become someone else to discover more
-        of who you are.
-      </p>
-
-      <p class="lead">
-        This isn't about having all the answers. It's about creating
-        space to explore, discovering what is already within you,
-        and opening the door to possibilities you may not have considered.
-      </p>
-
+        <p class="lead">
+          This isn't about having all the answers. It's about creating
+          space to explore, discovering what is already within you,
+          and opening the door to possibilities you may not have considered.
+        </p>
+      </div>
     </header>
 
 
     <main>
-
       <!-- FOUR SEA WITHIN SPACES -->
-
       <section class="spaces" aria-labelledby="spaces-heading">
-
-        <h2 id="spaces-heading">
-          A place to discover, reflect, and grow
-        </h2>
-
+        <h2 id="spaces-heading">A place to discover, reflect, and grow</h2>
         <p class="section-intro">
           Sea Within brings together meaningful experiences designed
           to encourage self-discovery, mindfulness, inspiration,
           and connection.
         </p>
 
-
         <article class="space">
-
-          <span class="space-number">
-            01 / THE SANCTUARY
-          </span>
-
+          <span class="space-number">01 / THE SANCTUARY</span>
           <h2>The Sanctuary</h2>
-
           <p>
             A space to step away from the noise, explore daily mindful
             rituals, and discover new perspectives through small moments
             of reflection and awareness.
           </p>
-
         </article>
-
+        <figure class="section-video-card">
+          <video controls preload="metadata" playsinline aria-label="The Sanctuary website video">
+            <source src="/videos/reveal-sanctuary.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+          <figcaption>The Sanctuary</figcaption>
+        </figure>
 
         <article class="space">
-
-          <span class="space-number">
-            02 / BLOOM
-          </span>
-
+          <span class="space-number">02 / BLOOM</span>
           <h2>Bloom</h2>
-
           <p>
             A daily moment created just for you. An invitation to pause,
             reconnect with yourself, and allow something meaningful
             to unfold within.
           </p>
-
         </article>
-
+        <figure class="section-video-card">
+          <video controls preload="metadata" playsinline aria-label="Bloom website video">
+            <source src="/videos/reveal-bloom.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+          <figcaption>Bloom</figcaption>
+        </figure>
 
         <article class="space">
-
-          <span class="space-number">
-            03 / WISDOM BOARD
-          </span>
-
+          <span class="space-number">03 / WISDOM BOARD</span>
           <h2>Wisdom Board</h2>
-
           <p>
             Words, thoughts, and shared wisdom that offer a new
             perspective, inspire reflection, and remind us that sometimes
             a single thought can open an unexpected door.
           </p>
-
         </article>
-
+        <figure class="section-video-card">
+          <video controls preload="metadata" playsinline aria-label="Wisdom Board website video">
+            <source src="/videos/reveal-wisdom-board.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+          <figcaption>Wisdom Board</figcaption>
+        </figure>
 
         <article class="space">
-
-          <span class="space-number">
-            04 / COMMUNITY
-          </span>
-
+          <span class="space-number">04 / COMMUNITY</span>
           <h2>Community</h2>
-
           <p>
             A space to connect with others who value self-discovery,
             personal growth, kindness, and the possibilities of living
             more mindfully. A place where you can show up as yourself
             and feel welcome.
           </p>
-
         </article>
-
+        <figure class="section-video-card">
+          <video controls preload="metadata" playsinline aria-label="Community website video">
+            <source src="/videos/reveal-community.mp4" type="video/mp4">
+            Your browser does not support embedded video.
+          </video>
+          <figcaption>Community</figcaption>
+        </figure>
       </section>
 
 
-      <!-- SOCIAL VIDEO SHOWCASE -->
-
+      <!-- SOCIAL VIDEO SHOWCASE — EXISTING PORTRAIT VIDEOS KEPT -->
       <section class="video-showcase" aria-labelledby="videos-heading">
-
-        <p class="eyebrow">
-          Sea Within on social media
-        </p>
-
-        <h2 id="videos-heading">
-          A feeling. A message. An invitation.
-        </h2>
-
+        <p class="eyebrow">Sea Within on social media</p>
+        <h2 id="videos-heading">A feeling. A message. An invitation.</h2>
         <p class="section-intro">
           Discover moments from Sea Within — reflections, reminders,
           and invitations to connect with what matters within you.
         </p>
 
-
         <div class="video-grid">
-
-          <!-- Replace VIDEO_FILE_PATH placeholders with your hosted video URLs -->
-
           <figure class="video-card">
-
-            <video controls preload="metadata" playsinline
-              aria-label="Sea Within social video: Life is not a race">
-
+            <video controls preload="metadata" playsinline aria-label="Sea Within social video: Life is not a race">
               <source src="/videos/Sea Within_Life is not a race..mp4" type="video/mp4">
-
               Your browser does not support embedded video.
-
             </video>
-
-            <figcaption>
-              Life Is Not a Race
-              <span>A reminder to live at your own pace.</span>
-            </figcaption>
-
+            <figcaption>Life Is Not a Race<span>A reminder to live at your own pace.</span></figcaption>
           </figure>
-
-
           <figure class="video-card">
-
-            <video controls preload="metadata" playsinline
-              aria-label="Sea Within social video: Feel the calling">
-
+            <video controls preload="metadata" playsinline aria-label="Sea Within social video: Feel the calling">
               <source src="/videos/Sea Within_Feel the calling.mp4" type="video/mp4">
-
               Your browser does not support embedded video.
-
             </video>
-
-            <figcaption>
-              Feel the Calling
-              <span>An invitation to those who connect with Sea Within.</span>
-            </figcaption>
-
+            <figcaption>Feel the Calling<span>An invitation to those who connect with Sea Within.</span></figcaption>
           </figure>
-
-
           <figure class="video-card">
-
-            <video controls preload="metadata" playsinline
-              aria-label="Sea Within social video: Discover Reflect Grow">
-
+            <video controls preload="metadata" playsinline aria-label="Sea Within social video: Discover Reflect Grow">
               <source src="/videos/Sea Within_More than a feeling.mp4" type="video/mp4">
-
               Your browser does not support embedded video.
-
             </video>
-
-            <figcaption>
-              Discover. Reflect. Grow.
-              <span>Small moments that open new possibilities.</span>
-            </figcaption>
-
+            <figcaption>Discover. Reflect. Grow.<span>Small moments that open new possibilities.</span></figcaption>
           </figure>
-
-
           <figure class="video-card">
-
-            <video controls preload="metadata" playsinline
-              aria-label="Sea Within social video: A message from Sea Within">
-
+            <video controls preload="metadata" playsinline aria-label="Sea Within social video: A message from Sea Within">
               <source src="/videos/Sea Within_Possibilities Within.mp4" type="video/mp4">
-
               Your browser does not support embedded video.
-
             </video>
-
-            <figcaption>
-              Be Part of Something Greater
-              <span>Human connection, belonging, and possibility.</span>
-            </figcaption>
-
+            <figcaption>Be Part of Something Greater<span>Human connection, belonging, and possibility.</span></figcaption>
           </figure>
-
         </div>
-
       </section>
 
 
-      <!-- FINAL INVITATION -->
-
+      <!-- FINAL INVITATION — ORIGINAL CONTENT KEPT -->
       <section class="closing" aria-labelledby="invitation-heading">
-
         <h2>More than content. An experience.</h2>
-
         <p>
           Sea Within isn't about collecting information or rushing
           through another list of things to accomplish.
         </p>
-
         <p>
           It's about the moments you take for yourself. The thoughts
           that stay with you. The things you begin to see differently.
           The possibilities that slowly reveal themselves when you
           make space to explore.
         </p>
-
         <p>
           Your journey is your own. There is no perfect pace,
           no expectation to be someone you're not, and no single
           answer waiting to be found.
         </p>
+        <p>Only the opportunity to discover more.</p>
 
-        <p>
-          Only the opportunity to discover more.
-        </p>
-
-
-        <h2 id="invitation-heading">
-          Be part of something greater
-        </h2>
-
+        <h2 id="invitation-heading">Be part of something greater</h2>
         <p>
           We believe there is something meaningful about people
           coming together without needing to be the same — people
           who value authenticity, openness, encouragement, and
           the beauty of discovering what life can become.
         </p>
-
         <p>
           We aren't here to measure our community by numbers.
           We believe in the quality of our people, in the value
@@ -720,52 +561,23 @@
           individuals can feel welcomed, supported, and free to
           explore their own possibilities.
         </p>
-
         <p>
           If something within you connects with what Sea Within
           represents, perhaps this is your invitation.
         </p>
-
-        <p>
-          <strong>Discover. Reflect. Grow.</strong>
-        </p>
-
-        <!-- BOTTOM SEA WITHIN BRAND: GOLD -->
-        <p class="closing-brand">
-          Sea Within — A cinematic journey back to yourself.
-        </p>
-
-        <p>
-          Come discover what's possible within.
-        </p>
-
-        <a class="cta-link"
-          href="https://www.seawithinyourself.com/reveal">
-          Discover Sea Within
-        </a>
-
+        <p><strong>Discover. Reflect. Grow.</strong></p>
+        <p class="closing-brand">Sea Within — A cinematic journey back to yourself.</p>
+        <p>Come discover what's possible within.</p>
+        <a class="cta-link" href="https://www.seawithinyourself.com/reveal">Discover Sea Within</a>
       </section>
-
     </main>
 
 
     <!-- FOOTER -->
-
     <footer>
-
-      <p>
-        <a href="https://www.seawithinyourself.com/">
-          Visit Sea Within
-        </a>
-      </p>
-
-      <p>
-        Sea Within — Explore | Reflect | Grow.
-      </p>
-
+      <p><a href="https://www.seawithinyourself.com/">Visit Sea Within</a></p>
+      <p>Sea Within — Explore | Reflect | Grow.</p>
     </footer>
-
   </div>
-
 </body>
 </html>
