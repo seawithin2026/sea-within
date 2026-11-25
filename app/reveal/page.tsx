@@ -201,6 +201,20 @@ export default function RevealPage() {
               Trust yourself. The experience is yours to create.
 
             </p>
+
+            {/* LANDSCAPE VIDEO — THE SANCTUARY */}
+            <div className="mt-6 mb-14 overflow-hidden rounded-2xl border border-golden-400/20 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+              <video
+                controls
+                preload="metadata"
+                playsInline
+                className="block w-full aspect-video h-auto bg-black object-contain"
+                aria-label="The Sanctuary preview video"
+              >
+                <source src="/videos/reveal-sanctuary.mp4" type="video/mp4" />
+                Your browser does not support video playback.
+              </video>
+            </div>
           </ScrollReveal>
         )}
 
@@ -216,6 +230,20 @@ export default function RevealPage() {
               Once you complete the gesture a special video will be revealed to you.
 
             </p>
+
+            {/* LANDSCAPE VIDEO — BLOOM */}
+            <div className="mt-6 mb-14 overflow-hidden rounded-2xl border border-golden-400/20 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+              <video
+                controls
+                preload="metadata"
+                playsInline
+                className="block w-full aspect-video h-auto bg-black object-contain"
+                aria-label="Bloom preview video"
+              >
+                <source src="/videos/reveal-bloom.mp4" type="video/mp4" />
+                Your browser does not support video playback.
+              </video>
+            </div>
           </ScrollReveal>
         )}
 
@@ -231,6 +259,20 @@ export default function RevealPage() {
               These messages are designed to offer a moment of reflection, encouragement, and perspective. Sometimes a single sentence can brighten a day, offer comfort, or remind us of a truth we needed to hear.
 
             </p>
+
+            {/* LANDSCAPE VIDEO — WISDOM BOARD */}
+            <div className="mt-6 mb-14 overflow-hidden rounded-2xl border border-golden-400/20 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+              <video
+                controls
+                preload="metadata"
+                playsInline
+                className="block w-full aspect-video h-auto bg-black object-contain"
+                aria-label="Wisdom Board preview video"
+              >
+                <source src="/videos/reveal-wisdom-board.mp4" type="video/mp4" />
+                Your browser does not support video playback.
+              </video>
+            </div>
           </ScrollReveal>
         )}
 
@@ -248,6 +290,20 @@ export default function RevealPage() {
 
 
             </p>
+
+            {/* LANDSCAPE VIDEO — COMMUNITY */}
+            <div className="mt-6 mb-14 overflow-hidden rounded-2xl border border-golden-400/20 bg-black/30 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+              <video
+                controls
+                preload="metadata"
+                playsInline
+                className="block w-full aspect-video h-auto bg-black object-contain"
+                aria-label="Community preview video"
+              >
+                <source src="/videos/reveal-community.mp4" type="video/mp4" />
+                Your browser does not support video playback.
+              </video>
+            </div>
           </ScrollReveal>
         )}
 
