@@ -1,83 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About Sea Within | Cinematic Calm &amp; Personal Growth</title>
+  <title>Sea Within | Mindful Living, Self-Discovery &amp; Personal Growth</title>
 
-  <meta
-    name="description"
-    content="Discover Sea Within, a cinematic sanctuary for self-discovery, personal growth, and inner peace. Explore The Sanctuary, Bloom, The Wisdom Board, and The Community."
-  >
-
+  <meta name="description" content="Discover Sea Within, an online experience for mindful living, self-discovery, personal growth, daily inspiration, and meaningful connection. Discover, reflect, grow.">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.seawithinyourself.com/about-sea-within.html">
+  <meta name="theme-color" content="#092b35">
 
-  <link
-    rel="canonical"
-    href="https://www.seawithinyourself.com/about-sea-within.html"
-  >
-
-  <meta name="theme-color" content="#101714">
-
-  <!-- Social sharing information -->
+  <!-- Social sharing metadata -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sea Within">
-  <meta
-    property="og:title"
-    content="About Sea Within | Cinematic Calm &amp; Personal Growth"
-  >
-  <meta
-    property="og:description"
-    content="A cinematic sanctuary for self-discovery, personal growth, inner peace, mindful rituals, and meaningful connection."
-  >
-  <meta
-    property="og:url"
-    content="https://www.seawithinyourself.com/about-sea-within.html"
-  >
-  <meta
-    property="og:image"
-    content="https://www.seawithinyourself.com/images/sea-within-cover.png"
-  >
-  <meta
-    property="og:image:alt"
-    content="Sea Within — a cinematic journey into calm and personal growth."
-  >
+  <meta property="og:title" content="Sea Within — A Journey Back to Yourself">
+  <meta property="og:description" content="An online experience for mindful living, self-discovery, personal growth, daily inspiration, and meaningful connection.">
+  <meta property="og:url" content="https://www.seawithinyourself.com/about-sea-within.html">
+  <meta property="og:image" content="https://www.seawithinyourself.com/images/sea-within-cover.png">
+  <meta property="og:image:alt" content="Sea Within — Discover, Reflect, Grow. A cinematic journey back to yourself.">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta
-    name="twitter:title"
-    content="About Sea Within | Cinematic Calm &amp; Personal Growth"
-  >
-  <meta
-    name="twitter:description"
-    content="Discover Sea Within, a cinematic space for calm, mindful rituals, self-reflection, and personal growth."
-  >
-  <meta
-    name="twitter:image"
-    content="https://www.seawithinyourself.com/images/sea-within-cover.png"
-  >
+  <meta name="twitter:title" content="Sea Within — A Journey Back to Yourself">
+  <meta name="twitter:description" content="Discover Sea Within, an online experience for mindful living, self-discovery, personal growth, daily inspiration, and meaningful connection.">
+  <meta name="twitter:image" content="https://www.seawithinyourself.com/images/sea-within-cover.png">
 
-  <!-- Structured information for search engines -->
+  <!-- SEO Structured Data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "AboutPage",
-    "name": "About Sea Within",
+    "name": "About Sea Within — A Journey Back to Yourself",
     "url": "https://www.seawithinyourself.com/about-sea-within.html",
-    "description": "Sea Within is a cinematic sanctuary for self-discovery, personal growth, and inner peace. It brings together mindful rituals, cinematic experiences, community wisdom, and conversation.",
+    "description": "Sea Within is an online experience designed to inspire mindful living, self-discovery, reflection, personal growth, daily inspiration, and meaningful connection.",
     "primaryImageOfPage": {
       "@type": "ImageObject",
-      "url": "https://www.seawithinyourself.com/images/sea-within-cover.png"
+      "url": "https://www.seawithinyourself.com/images/sea-within-journey.png"
     },
-    "image": [
-      "https://www.seawithinyourself.com/images/sea-within-cover.png",
-      "https://www.seawithinyourself.com/images/remember.png",
-      "https://www.seawithinyourself.com/images/path.png",
-      "https://www.seawithinyourself.com/images/constellation.png",
-      "https://www.seawithinyourself.com/images/key-within.png"
-    ],
     "isPartOf": {
       "@type": "WebSite",
       "name": "Sea Within",
@@ -94,12 +53,19 @@
   <style>
     :root {
       color-scheme: dark;
-      --background: #101714;
-      --surface: #18221d;
-      --text: #f2eee5;
-      --muted: #c0c8bf;
-      --gold: #d6b879;
-      --line: rgba(214, 184, 121, 0.25);
+
+      --background: #061923;
+      --surface: #0b2a3a;
+      --surface-soft: #124458;
+
+      --text: #f6f4ee;
+      --muted: #c6d8dc;
+
+      --sea-glass: #56d5d0;
+      --gold: #e8ac3d;
+
+      --line: rgba(86, 213, 208, 0.34);
+      --line-gold: rgba(240, 199, 123, 0.42);
     }
 
     * {
@@ -112,90 +78,111 @@
 
     body {
       margin: 0;
-      background: var(--background);
+      background:
+        radial-gradient(
+          ellipse at 15% 3%,
+          rgba(21, 117, 143, 0.42),
+          transparent 43%
+        ),
+        radial-gradient(
+          ellipse at 88% 26%,
+          rgba(116, 69, 125, 0.20),
+          transparent 35%
+        ),
+        radial-gradient(
+          ellipse at 50% 100%,
+          rgba(9, 91, 107, 0.24),
+          transparent 45%
+        ),
+        var(--background);
+
       color: var(--text);
       font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.8;
+      line-height: 1.85;
     }
 
     a {
-      color: var(--gold);
+      color: var(--sea-glass);
       text-underline-offset: 4px;
+      transition: color 180ms ease;
     }
 
     a:hover {
-      color: #f1dba9;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
+      color: #d3eee7;
     }
 
     .page {
-      width: min(100% - 40px, 900px);
+      width: min(100% - 40px, 920px);
       margin: 0 auto;
-      padding: 36px 0 72px;
+      padding: 34px 0 76px;
     }
 
     header {
-      padding: 16px 0 50px;
+      padding: 16px 0 48px;
       border-bottom: 1px solid var(--line);
     }
 
+    /* TOP BRAND: BOLD GOLD */
     .brand {
+      display: inline-block;
       color: var(--gold);
-      font-size: 0.9rem;
-      letter-spacing: 0.25em;
+      font-weight: 700;
+      text-shadow: 0 0 22px rgba(240, 199, 123, 0.16);
+      font-size: 1rem;
+      letter-spacing: 0.26em;
       text-decoration: none;
       text-transform: uppercase;
     }
 
-    .cover-image {
-      width: 100%;
-      height: auto;
-      margin-top: 30px;
-      border: 1px solid var(--line);
-      border-radius: 4px;
+    .brand:hover {
+      color: #e8ac3d;
     }
 
     .eyebrow {
-      margin: 48px 0 12px;
-      color: var(--gold);
+      margin: 42px 0 12px;
+      color: var(--sea-glass);
+      text-shadow: 0 0 20px rgba(86, 213, 208, 0.22);
       font-family: Arial, sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
     }
 
-    h1, h2 {
+    h1, h2, h3 {
       font-weight: normal;
-      line-height: 1.25;
+      line-height: 1.28;
     }
 
     h1 {
-      max-width: 750px;
+      max-width: 780px;
       margin: 0 0 24px;
-      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-size: clamp(2.45rem, 7vw, 4.3rem);
+      text-shadow: 0 4px 32px rgba(55, 166, 190, 0.18);
     }
 
     h2 {
       margin: 0 0 14px;
-      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      font-size: clamp(1.55rem, 4vw, 2.1rem);
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+      color: var(--gold);
     }
 
     p {
       margin: 0 0 18px;
     }
 
-    .intro {
-      max-width: 760px;
+    .lead {
+      max-width: 780px;
       color: var(--muted);
-      font-size: 1.15rem;
+      font-size: 1.14rem;
     }
 
     .spaces {
-      margin-top: 56px;
+      margin-top: 58px;
     }
 
     .space {
@@ -203,70 +190,180 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .space h2 {
+      text-shadow: 0 3px 24px rgba(86, 213, 208, 0.14);
+    }
+
     .space-number {
       display: block;
       margin-bottom: 8px;
-      color: var(--gold);
+      color: var(--sea-glass);
       font-family: Arial, sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       letter-spacing: 0.16em;
     }
 
-    .space p {
-      max-width: 720px;
+    .space p,
+    .section-intro {
+      max-width: 730px;
       color: var(--muted);
     }
 
-    /* Sea Within image gallery */
-    .visuals {
-      margin-top: 56px;
+    /* CINEMATIC VIDEO SECTION */
+
+    .video-showcase {
+      margin-top: 58px;
+      padding: 38px 24px;
+      border: 1px solid var(--line-gold);
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(18, 68, 88, 0.52),
+          rgba(7, 29, 44, 0.32)
+        );
+
+      box-shadow:
+        0 18px 60px rgba(0, 0, 0, 0.22),
+        inset 0 0 45px rgba(72, 183, 198, 0.06);
     }
 
-    .visuals-intro {
-      max-width: 720px;
-      margin-bottom: 26px;
-      color: var(--muted);
-    }
-
-    .image-gallery {
+    .video-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+      gap: 18px;
+      margin-top: 26px;
     }
 
-    .image-card {
+    .video-card {
       margin: 0;
       overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 8px;
+      border: 1px solid rgba(86, 213, 208, 0.34);
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          160deg,
+          #16485c,
+          #092634
+        );
+
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.28),
+        0 0 24px rgba(37, 141, 161, 0.08);
+
+      transition:
+        transform 220ms ease,
+        box-shadow 220ms ease,
+        border-color 220ms ease;
     }
 
-    .image-card img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: auto;
-  object-fit: contain;
-}
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240, 199, 123, 0.66);
 
-    .image-card figcaption {
-      padding: 14px 16px;
+      box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.32),
+        0 0 26px rgba(86, 213, 208, 0.10);
+    }
+
+    .video-card video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #04141b;
+      object-fit: cover;
+    }
+
+    .video-card figcaption {
+      padding: 15px 17px 18px;
       color: var(--gold);
-      font-size: 1.05rem;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
     }
+
+    .video-card figcaption span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      letter-spacing: normal;
+    }
+
+    /* CLOSING SECTION */
 
     .closing {
-      margin-top: 48px;
-      padding: 28px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
+      margin-top: 52px;
+      padding: 30px;
+
+      background:
+        radial-gradient(
+          ellipse at 12% 0%,
+          rgba(44, 144, 165, 0.32),
+          transparent 48%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(20, 73, 92, 0.86),
+          rgba(6, 26, 39, 0.98)
+        );
+
+      border: 1px solid var(--line-gold);
+      border-radius: 16px;
+
+      box-shadow: 0 18px 52px rgba(0, 0, 0, 0.22);
     }
 
     .closing p {
       color: var(--muted);
+    }
+
+    .cta-link {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 11px 19px;
+
+      border: 1px solid rgba(86, 213, 208, 0.62);
+      border-radius: 999px;
+
+      color: #061923;
+
+      background:
+        linear-gradient(
+          120deg,
+          var(--sea-glass),
+          #9ce6df
+        );
+
+      font-weight: bold;
+      text-decoration: none;
+
+      box-shadow: 0 6px 24px rgba(48, 181, 188, 0.18);
+
+      transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .cta-link:hover {
+      background:
+        linear-gradient(
+          120deg,
+          #9ce6df,
+          var(--gold)
+        );
+
+      border-color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* BOTTOM SEA WITHIN BRAND: GOLD */
+
+    .closing-brand {
+      color: var(--gold);
+      font-weight: 700;
+      text-shadow: 0 0 18px rgba(240, 199, 123, 0.12);
     }
 
     footer {
@@ -275,29 +372,29 @@
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-family: Arial, sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 620px) {
       .page {
-        width: min(100% - 28px, 900px);
+        width: min(100% - 28px, 920px);
         padding-top: 20px;
       }
 
       header {
-        padding-bottom: 32px;
+        padding-bottom: 34px;
       }
 
       .eyebrow {
-        margin-top: 34px;
+        margin-top: 32px;
+      }
+
+      .video-grid {
+        grid-template-columns: 1fr;
       }
 
       .closing {
         padding: 22px;
-      }
-
-      .image-gallery {
-        grid-template-columns: 1fr;
       }
     }
 
@@ -310,169 +407,326 @@
 </head>
 
 <body>
+
   <div class="page">
 
     <header>
+
+      <!-- TOP SEA WITHIN LOGO: BOLD GOLD -->
       <a class="brand" href="https://www.seawithinyourself.com/">
         Sea Within
       </a>
 
-      <!-- Main cover image -->
-      <img
-        class="cover-image"
-        src="/images/sea-within-cover.png"
-        alt="Sea Within — a cinematic journey into calm and personal growth, inspired by the ocean."
-        width="1200"
-        height="675"
-        fetchpriority="high"
-      >
-
-      <p class="eyebrow">A place to return to yourself</p>
-
-      <h1>Discover Sea Within</h1>
-
-      <p class="intro">
-        Sea Within is a cinematic sanctuary for self-discovery,
-        personal growth, and inner peace. Through immersive visual
-        experiences, mindful rituals, shared wisdom, and meaningful
-        conversation, Sea Within offers a space to slow down,
-        reconnect with yourself, and explore your own journey.
+      <p class="eyebrow">
+        A cinematic journey back to yourself
       </p>
+
+      <h1>Sea Within — A Journey Back to Yourself</h1>
+
+      <h2>
+        Some things aren't found by looking outward.
+        They begin when you turn inward.
+      </h2>
+
+      <p class="lead">
+        Life can take us in so many directions. Between expectations,
+        responsibilities, uncertainty, and the noise of everyday life,
+        we can sometimes lose touch with the space within us where
+        possibility, wisdom, and personal growth begin.
+      </p>
+
+      <p>
+        <strong>
+          Sea Within was created as an invitation to reconnect with that space.
+        </strong>
+      </p>
+
+      <p class="lead">
+        An online experience designed to inspire mindful living,
+        self-discovery, reflection, and growth — while reminding you
+        that you don't have to become someone else to discover more
+        of who you are.
+      </p>
+
+      <p class="lead">
+        This isn't about having all the answers. It's about creating
+        space to explore, discovering what is already within you,
+        and opening the door to possibilities you may not have considered.
+      </p>
+
     </header>
 
+
     <main>
+
+      <!-- FOUR SEA WITHIN SPACES -->
+
       <section class="spaces" aria-labelledby="spaces-heading">
-        <h2 id="spaces-heading">Explore the spaces within Sea Within</h2>
 
-        <article class="space">
-          <span class="space-number">01 / THE SANCTUARY</span>
-          <h2>The Sanctuary</h2>
-          <p>
-            The Sanctuary is a cinematic space for calm and reflection.
-            Through immersive atmospheric videos and mindful rituals,
-            visitors are invited to slow down, unwind, and make space
-            for themselves.
-          </p>
-        </article>
+        <h2 id="spaces-heading">
+          A place to discover, reflect, and grow
+        </h2>
 
-        <article class="space">
-          <span class="space-number">02 / BLOOM</span>
-          <h2>Bloom</h2>
-          <p>
-            Bloom offers a moment to pause and focus on personal growth.
-            Through daily gestures and a cinematic video experience,
-            visitors can take a little time for themselves and reconnect
-            with their personal journey.
-          </p>
-        </article>
-
-        <article class="space">
-          <span class="space-number">03 / THE WISDOM BOARD</span>
-          <h2>The Wisdom Board</h2>
-          <p>
-            The Wisdom Board is a place to discover wisdom, thoughts,
-            and reflections shared by community members. It brings
-            people's words and perspectives together, offering moments
-            of inspiration for reflection and personal growth.
-          </p>
-        </article>
-
-        <article class="space">
-          <span class="space-number">04 / THE COMMUNITY</span>
-          <h2>The Community</h2>
-          <p>
-            The Community is a chat space where like-minded souls can
-            connect and converse. Members can share thoughts, exchange
-            perspectives, and engage with others on their own journeys.
-          </p>
-        </article>
-      </section>
-
-      <!-- Supporting Sea Within images -->
-      <section class="visuals" aria-labelledby="visuals-heading">
-        <p class="eyebrow">The Sea Within collection</p>
-
-        <h2 id="visuals-heading">Along the journey</h2>
-
-        <p class="visuals-intro">
-          Explore visual pieces from the Sea Within world, created
-          to accompany a journey of reflection and personal growth.
+        <p class="section-intro">
+          Sea Within brings together meaningful experiences designed
+          to encourage self-discovery, mindfulness, inspiration,
+          and connection.
         </p>
 
-        <div class="image-gallery">
 
-          <figure class="image-card">
-            <img
-              src="/images/sea-within-remember.png"
-              alt="Remember — artwork from the Sea Within visual collection."
-              width="800"
-              height="600"
-              loading="lazy"
-              decoding="async"
-            >
-            <figcaption>Remember</figcaption>
+        <article class="space">
+
+          <span class="space-number">
+            01 / THE SANCTUARY
+          </span>
+
+          <h2>The Sanctuary</h2>
+
+          <p>
+            A space to step away from the noise, explore daily mindful
+            rituals, and discover new perspectives through small moments
+            of reflection and awareness.
+          </p>
+
+        </article>
+
+
+        <article class="space">
+
+          <span class="space-number">
+            02 / BLOOM
+          </span>
+
+          <h2>Bloom</h2>
+
+          <p>
+            A daily moment created just for you. An invitation to pause,
+            reconnect with yourself, and allow something meaningful
+            to unfold within.
+          </p>
+
+        </article>
+
+
+        <article class="space">
+
+          <span class="space-number">
+            03 / WISDOM BOARD
+          </span>
+
+          <h2>Wisdom Board</h2>
+
+          <p>
+            Words, thoughts, and shared wisdom that offer a new
+            perspective, inspire reflection, and remind us that sometimes
+            a single thought can open an unexpected door.
+          </p>
+
+        </article>
+
+
+        <article class="space">
+
+          <span class="space-number">
+            04 / COMMUNITY
+          </span>
+
+          <h2>Community</h2>
+
+          <p>
+            A space to connect with others who value self-discovery,
+            personal growth, kindness, and the possibilities of living
+            more mindfully. A place where you can show up as yourself
+            and feel welcome.
+          </p>
+
+        </article>
+
+      </section>
+
+
+      <!-- SOCIAL VIDEO SHOWCASE -->
+
+      <section class="video-showcase" aria-labelledby="videos-heading">
+
+        <p class="eyebrow">
+          Sea Within on social media
+        </p>
+
+        <h2 id="videos-heading">
+          A feeling. A message. An invitation.
+        </h2>
+
+        <p class="section-intro">
+          Discover moments from Sea Within — reflections, reminders,
+          and invitations to connect with what matters within you.
+        </p>
+
+
+        <div class="video-grid">
+
+          <!-- Replace VIDEO_FILE_PATH placeholders with your hosted video URLs -->
+
+          <figure class="video-card">
+
+            <video controls preload="metadata" playsinline
+              aria-label="Sea Within social video: Life is not a race">
+
+              <source src="/public/videos/Sea Within_Life is not a race..mp4" type="video/mp4">
+
+              Your browser does not support embedded video.
+
+            </video>
+
+            <figcaption>
+              Life Is Not a Race
+              <span>A reminder to live at your own pace.</span>
+            </figcaption>
+
           </figure>
 
-          <figure class="image-card">
-            <img
-              src="/images/sea-within-path.png"
-              alt="The Path — artwork from the Sea Within visual collection."
-              width="800"
-              height="600"
-              loading="lazy"
-              decoding="async"
-            >
-            <figcaption>The Path</figcaption>
+
+          <figure class="video-card">
+
+            <video controls preload="metadata" playsinline
+              aria-label="Sea Within social video: Feel the calling">
+
+              <source src="/public/videos/Sea Within_Feel the calling.mp4" type="video/mp4">
+
+              Your browser does not support embedded video.
+
+            </video>
+
+            <figcaption>
+              Feel the Calling
+              <span>An invitation to those who connect with Sea Within.</span>
+            </figcaption>
+
           </figure>
 
-          <figure class="image-card">
-            <img
-              src="/images/sea-within-shine.png"
-              alt="Constellation — artwork from the Sea Within visual collection."
-              width="800"
-              height="600"
-              loading="lazy"
-              decoding="async"
-            >
-            <figcaption>Constellation</figcaption>
+
+          <figure class="video-card">
+
+            <video controls preload="metadata" playsinline
+              aria-label="Sea Within social video: Discover Reflect Grow">
+
+              <source src="/public/videos/Sea Within_More than a feeling.mp4" type="video/mp4">
+
+              Your browser does not support embedded video.
+
+            </video>
+
+            <figcaption>
+              Discover. Reflect. Grow.
+              <span>Small moments that open new possibilities.</span>
+            </figcaption>
+
           </figure>
 
-          <figure class="image-card">
-            <img
-              src="/images/sea-within-key.png"
-              alt="The Key Within — artwork from the Sea Within visual collection."
-              width="800"
-              height="600"
-              loading="lazy"
-              decoding="async"
-            >
-            <figcaption>The Key Within</figcaption>
+
+          <figure class="video-card">
+
+            <video controls preload="metadata" playsinline
+              aria-label="Sea Within social video: A message from Sea Within">
+
+              <source src="/public/videos/Sea Within_Possibilities Within.mp4" type="video/mp4">
+
+              Your browser does not support embedded video.
+
+            </video>
+
+            <figcaption>
+              Be Part of Something Greater
+              <span>Human connection, belonging, and possibility.</span>
+            </figcaption>
+
           </figure>
 
         </div>
+
       </section>
+
+
+      <!-- FINAL INVITATION -->
 
       <section class="closing" aria-labelledby="invitation-heading">
-        <h2 id="invitation-heading">Your journey begins within</h2>
+
+        <h2>More than content. An experience.</h2>
 
         <p>
-          Whether you are seeking a quiet moment, space for personal
-          growth, inspiration from others, or conversation with
-          like-minded people, Sea Within brings these experiences
-          together in one cinematic world.
+          Sea Within isn't about collecting information or rushing
+          through another list of things to accomplish.
         </p>
 
         <p>
-          Explore the experience and discover your Sea Within.
+          It's about the moments you take for yourself. The thoughts
+          that stay with you. The things you begin to see differently.
+          The possibilities that slowly reveal themselves when you
+          make space to explore.
         </p>
 
-        <a href="https://www.seawithinyourself.com/reveal">
-          Explore the invitation
+        <p>
+          Your journey is your own. There is no perfect pace,
+          no expectation to be someone you're not, and no single
+          answer waiting to be found.
+        </p>
+
+        <p>
+          Only the opportunity to discover more.
+        </p>
+
+
+        <h2 id="invitation-heading">
+          Be part of something greater
+        </h2>
+
+        <p>
+          We believe there is something meaningful about people
+          coming together without needing to be the same — people
+          who value authenticity, openness, encouragement, and
+          the beauty of discovering what life can become.
+        </p>
+
+        <p>
+          We aren't here to measure our community by numbers.
+          We believe in the quality of our people, in the value
+          of genuine connection, and in creating a space where
+          individuals can feel welcomed, supported, and free to
+          explore their own possibilities.
+        </p>
+
+        <p>
+          If something within you connects with what Sea Within
+          represents, perhaps this is your invitation.
+        </p>
+
+        <p>
+          <strong>Discover. Reflect. Grow.</strong>
+        </p>
+
+        <!-- BOTTOM SEA WITHIN BRAND: GOLD -->
+        <p class="closing-brand">
+          Sea Within — A cinematic journey back to yourself.
+        </p>
+
+        <p>
+          Come discover what's possible within.
+        </p>
+
+        <a class="cta-link"
+          href="https://www.seawithinyourself.com/reveal">
+          Discover Sea Within
         </a>
+
       </section>
+
     </main>
 
+
+    <!-- FOOTER -->
+
     <footer>
+
       <p>
         <a href="https://www.seawithinyourself.com/">
           Visit Sea Within
@@ -480,10 +734,12 @@
       </p>
 
       <p>
-        Sea Within — A cinematic journey into calm and personal growth.
+        Sea Within — Explore | Reflect | Grow.
       </p>
+
     </footer>
 
   </div>
+
 </body>
 </html>
